@@ -1,0 +1,228 @@
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Windows;
+using TaskbarGroups.App.Helpers;
+using TaskbarGroups.App.Models;
+using TaskbarGroups.Core;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
+using DrawingImage = System.Drawing.Image;
+using MessageBox = Wpf.Ui.Controls.MessageBox;
+
+namespace TaskbarGroups.App;
+
+/// <summary>
+/// Create/edit a taskbar group: name, icon and its list of shortcuts.
+/// </summary>
+public partial class GroupEditorWindow : FluentWindow
+{
+    private readonly ObservableCollection<ShortcutEntry> _shortcuts = new();
+    private DrawingImage? _groupImage;
+    private readonly bool _isEditing;
+    private readonly string? _originalName;
+
+    public GroupEditorWindow(Category? existing = null)
+    {
+        InitializeComponent();
+        SystemThemeWatcher.Watch(this);
+
+        ShortcutsItemsControl.ItemsSource = _shortcuts;
+        _shortcuts.CollectionChanged += (_, _) => UpdateEmptyHint();
+
+        if (existing is not null)
+        {
+            _isEditing = true;
+            _originalName = existing.Name;
+            HeaderText.Text = "Editar grupo";
+            Title = "Editar grupo";
+            NameTextBox.Text = existing.Name;
+            LoadExistingIcon(existing);
+            LoadExistingShortcuts(existing);
+        }
+
+        UpdateEmptyHint();
+    }
+
+    private void LoadExistingIcon(Category category)
+    {
+        try
+        {
+            _groupImage = category.LoadIconImage();
+            GroupIconPreview.Source = _groupImage.ToImageSource();
+            GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+        }
+        catch { /* keep placeholder */ }
+    }
+
+    private void LoadExistingShortcuts(Category category)
+    {
+        if (category.ShortcutList is null) return;
+        foreach (var ps in category.ShortcutList)
+            _shortcuts.Add(BuildEntry(ps));
+    }
+
+    private static ShortcutEntry BuildEntry(ProgramShortcut ps)
+    {
+        ImageSource_TryResolve(ps, out var icon);
+        return new ShortcutEntry { Shortcut = ps, Icon = icon };
+    }
+
+    private static void ImageSource_TryResolve(ProgramShortcut ps, out System.Windows.Media.ImageSource? icon)
+    {
+        try { icon = Category.ResolveShortcutImage(ps).ToImageSource(); }
+        catch { icon = null; }
+    }
+
+    private void AddProgram_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Selecciona programas o accesos directos",
+            Filter = "Programas y accesos directos|*.exe;*.lnk|Todos los archivos|*.*",
+            Multiselect = true
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        foreach (var path in dialog.FileNames)
+            AddShortcut(new ProgramShortcut { FilePath = path, isWindowsApp = false });
+    }
+
+    private void AddFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFolderDialog
+        {
+            Title = "Selecciona una carpeta",
+            Multiselect = true
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        foreach (var path in dialog.FolderNames)
+            AddShortcut(new ProgramShortcut { FilePath = path, isWindowsApp = false });
+    }
+
+    private void AddStoreApp_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = new StoreAppPickerWindow { Owner = this };
+        if (picker.ShowDialog() == true && picker.SelectedApps.Count > 0)
+        {
+            foreach (var app in picker.SelectedApps)
+                AddShortcut(new ProgramShortcut
+                {
+                    FilePath = app.AppUserModelId,
+                    name = app.DisplayName,
+                    isWindowsApp = true
+                });
+        }
+    }
+
+    private void AddShortcut(ProgramShortcut ps)
+    {
+        if (_shortcuts.Any(s => s.Shortcut.FilePath.Equals(ps.FilePath, StringComparison.OrdinalIgnoreCase)))
+            return;
+        _shortcuts.Add(BuildEntry(ps));
+    }
+
+    private void RemoveShortcut_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement fe && fe.Tag is ShortcutEntry entry)
+            _shortcuts.Remove(entry);
+    }
+
+    private void ChangeIcon_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = "Selecciona una imagen para el grupo",
+            Filter = "Imágenes|*.png;*.jpg;*.jpeg;*.bmp;*.ico"
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        try
+        {
+            using var ms = new MemoryStream(File.ReadAllBytes(dialog.FileName));
+            _groupImage = DrawingImage.FromStream(ms);
+            GroupIconPreview.Source = _groupImage.ToImageSource();
+            GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+        }
+        catch
+        {
+            ShowError("No se pudo cargar la imagen seleccionada.");
+        }
+    }
+
+    private async void Save_Click(object sender, RoutedEventArgs e)
+    {
+        string name = NameTextBox.Text?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            ShowError("Dale un nombre al grupo.");
+            return;
+        }
+        if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+        {
+            ShowError("El nombre contiene caracteres no válidos.");
+            return;
+        }
+        if (_shortcuts.Count == 0)
+        {
+            ShowError("Añade al menos un acceso directo al grupo.");
+            return;
+        }
+
+        var category = new Category
+        {
+            Name = name,
+            ShortcutList = _shortcuts.Select(s => s.Shortcut).ToList()
+        };
+
+        DrawingImage groupImage = _groupImage ?? GenerateDefaultGroupImage(name);
+        try
+        {
+            category.CreateConfig(groupImage);
+        }
+        catch (Exception ex)
+        {
+            await new MessageBox
+            {
+                Title = "No se pudo guardar",
+                Content = ex.Message,
+                CloseButtonText = "Cerrar"
+            }.ShowDialogAsync();
+            return;
+        }
+
+        DialogResult = true;
+        Close();
+    }
+
+    private void Cancel_Click(object sender, RoutedEventArgs e)
+    {
+        DialogResult = false;
+        Close();
+    }
+
+    private void UpdateEmptyHint()
+        => NoShortcutsText.Visibility = _shortcuts.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    private static DrawingImage GenerateDefaultGroupImage(string name)
+    {
+        var bmp = new Bitmap(128, 128);
+        using var g = Graphics.FromImage(bmp);
+        g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+        g.Clear(Color.FromArgb(0, 120, 212));
+        string initial = string.IsNullOrWhiteSpace(name) ? "?" : name.Trim()[..1].ToUpperInvariant();
+        using var font = new Font("Segoe UI", 56, System.Drawing.FontStyle.Bold, GraphicsUnit.Pixel);
+        var size = g.MeasureString(initial, font);
+        g.DrawString(initial, font, System.Drawing.Brushes.White,
+            (128 - size.Width) / 2, (128 - size.Height) / 2);
+        return bmp;
+    }
+
+    private void ShowError(string message)
+        => _ = new MessageBox { Title = "Atención", Content = message, CloseButtonText = "Entendido" }
+            .ShowDialogAsync();
+}

@@ -1,0 +1,128 @@
+<ui:FluentWindow x:Class="TaskbarGroups.App.GroupEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:local="clr-namespace:TaskbarGroups.App"
+        mc:Ignorable="d"
+        Title="Editar grupo"
+        Height="700" Width="560"
+        MinHeight="520" MinWidth="460"
+        WindowBackdropType="Mica"
+        WindowCornerPreference="Round"
+        ExtendsContentIntoTitleBar="True"
+        WindowStartupLocation="CenterOwner">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar Grid.Row="0" Title="Editar grupo" Padding="12,6" />
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,4,24,0">
+            <StackPanel>
+                <TextBlock x:Name="HeaderText" Text="Nuevo grupo"
+                           FontSize="24" FontWeight="SemiBold" Margin="0,0,0,16"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+                <ui:Card Padding="16" Margin="0,0,0,16">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="0" Width="72" Height="72" CornerRadius="14"
+                                Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                            <Grid>
+                                <ui:SymbolIcon x:Name="GroupIconPlaceholder" Symbol="AppsList24"
+                                               FontSize="32"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                <Image x:Name="GroupIconPreview" Width="56" Height="56"
+                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                            </Grid>
+                        </Border>
+
+                        <StackPanel Grid.Column="1" Margin="16,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Nombre del grupo" FontSize="13" Margin="0,0,0,4"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <ui:TextBox x:Name="NameTextBox" PlaceholderText="Mi grupo"
+                                        Margin="0,0,0,10" />
+                            <ui:Button Content="Cambiar icono"
+                                       Icon="{ui:SymbolIcon Image24}"
+                                       Click="ChangeIcon_Click" />
+                        </StackPanel>
+                    </Grid>
+                </ui:Card>
+
+                <Grid Margin="0,0,0,8">
+                    <TextBlock Text="Accesos directos" FontSize="16" FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <ui:Button Content="Programa" Icon="{ui:SymbolIcon AppGeneric24}"
+                                   Margin="0,0,8,0" Click="AddProgram_Click" />
+                        <ui:Button Content="Carpeta" Icon="{ui:SymbolIcon Folder24}"
+                                   Margin="0,0,8,0" Click="AddFolder_Click" />
+                        <ui:Button Content="App Store" Icon="{ui:SymbolIcon AppsAddIn24}"
+                                   Appearance="Info" Click="AddStoreApp_Click" />
+                    </StackPanel>
+                </Grid>
+
+                <ItemsControl x:Name="ShortcutsItemsControl" Margin="0,4,0,16">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="0,0,0,8" Padding="12,8" CornerRadius="8"
+                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <Image Grid.Column="0" Source="{Binding Icon}" Width="32" Height="32"
+                                           VerticalAlignment="Center"
+                                           RenderOptions.BitmapScalingMode="HighQuality" />
+                                    <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding DisplayName}" FontSize="14"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                        <TextBlock Text="{Binding SubtitleText}" FontSize="11"
+                                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                                    </StackPanel>
+                                    <ui:Button Grid.Column="2" Icon="{ui:SymbolIcon Delete24}"
+                                               Appearance="Transparent"
+                                               ToolTip="Quitar"
+                                               Tag="{Binding}" Click="RemoveShortcut_Click" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <TextBlock x:Name="NoShortcutsText"
+                           Text="Añade programas, carpetas o apps de la Store a este grupo"
+                           FontSize="13" Margin="0,4,0,16" TextAlignment="Center"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <Border Grid.Row="2" Padding="24,12"
+                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                BorderThickness="0,1,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button Content="Cancelar" Margin="0,0,8,0" Click="Cancel_Click" />
+                <ui:Button x:Name="SaveButton" Content="Guardar grupo"
+                           Appearance="Primary" Icon="{ui:SymbolIcon Save24}"
+                           Click="Save_Click" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</ui:FluentWindow>
