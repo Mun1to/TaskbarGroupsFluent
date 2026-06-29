@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
+using TaskbarGroups.App.Helpers;
 using TaskbarGroups.App.Models;
 using TaskbarGroups.App.Services;
 using TaskbarGroups.Core;
@@ -101,14 +102,7 @@ public partial class MainWindow : FluentWindow
 
         // Open the folder with the .lnk selected. Windows 11 blocks programmatic
         // taskbar pinning, so the final right-click is the user's to make.
-        try
-        {
-            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{group.ShortcutPath}\"")
-            {
-                UseShellExecute = true
-            });
-        }
-        catch { /* ignore */ }
+        ShellHelper.SelectInExplorer(group.ShortcutPath);
 
         await new MessageBox
         {

@@ -156,15 +156,16 @@ public partial class GroupEditorWindow : FluentWindow
 
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
-        string name = NameTextBox.Text?.Trim() ?? "";
+        string name = (NameTextBox.Text ?? "").Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
             ShowError("Dale un nombre al grupo.");
             return;
         }
-        if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
+        // Windows folder names can't end in a dot or contain these characters.
+        if (name.EndsWith(".") || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
-            ShowError("El nombre contiene caracteres no válidos.");
+            ShowError("El nombre no puede terminar en punto ni contener: \\ / : * ? \" < > |");
             return;
         }
         if (_shortcuts.Count == 0)

@@ -22,7 +22,9 @@ public partial class App : Application
             return;
         }
 
-        string groupName = e.Args[0];
+        // The pinned shortcut passes the group name unquoted, so a name with
+        // spaces arrives split across several args. Rejoin to rebuild it.
+        string groupName = string.Join(" ", e.Args);
         string groupDir = Path.Combine(Paths.ConfigPath, groupName);
 
         if (!File.Exists(Path.Combine(groupDir, "ObjectData.xml")))
