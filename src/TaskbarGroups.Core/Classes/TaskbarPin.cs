@@ -18,7 +18,20 @@ namespace TaskbarGroups.Core
         [DllImport("shell32.dll")]
         private static extern void SHChangeNotify(int wEventId, uint uFlags, IntPtr dwItem1, IntPtr dwItem2);
 
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern IntPtr FindWindow(string lpClassName, string? lpWindowName);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint msg, IntPtr wParam,
+            IntPtr lParam, uint flags, uint timeout, out IntPtr result);
+
         private const int SHCNE_ASSOCCHANGED = 0x08000000;
+
+        // Undocumented message the "Exit Explorer" menu posts to the taskbar window.
+        // It shuts the shell down cleanly (flushing the icon cache) instead of a
+        // hard kill, which can corrupt the cache and blank out other pinned icons.
+        private const uint WM_EXIT_EXPLORER = 0x5B4; // WM_USER + 436
+        private const uint SMTO_BLOCK = 0x0001;
 
         private static string PinnedDir => Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
@@ -83,30 +96,49 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
-        /// Restarts the Windows shell so the taskbar reloads its pinned icons.
-        /// Windows respawns explorer.exe on its own; we only start it ourselves if
-        /// it doesn't come back. Safe to call from a background thread.
+        /// Restarts the Windows shell so the taskbar reloads its pinned icons,
+        /// using a clean shutdown that preserves the icon cache (a hard kill can
+        /// corrupt it and blank out other pinned icons). Safe from a background
+        /// thread.
         /// </summary>
         public static void RestartExplorer()
         {
+            bool exited = false;
             try
             {
-                foreach (var p in Process.GetProcessesByName("explorer"))
+                IntPtr tray = FindWindow("Shell_TrayWnd", null);
+                if (tray != IntPtr.Zero)
                 {
-                    try { p.Kill(); } catch { }
+                    // Ask the shell to exit cleanly; it flushes its caches first.
+                    SendMessageTimeout(tray, WM_EXIT_EXPLORER, IntPtr.Zero, IntPtr.Zero,
+                        SMTO_BLOCK, 5000, out _);
+
+                    for (int i = 0; i < 40 && Process.GetProcessesByName("explorer").Any(); i++)
+                        Thread.Sleep(150);
+                    exited = !Process.GetProcessesByName("explorer").Any();
                 }
             }
-            catch { return; }
+            catch { /* fall through to the hard fallback */ }
 
-            // Give the shell a moment to respawn by itself.
-            for (int i = 0; i < 20; i++)
+            // Fallback only if the clean exit didn't work: hard-kill the shell.
+            if (!exited)
             {
-                Thread.Sleep(150);
-                if (Process.GetProcessesByName("explorer").Any())
-                    return;
+                try
+                {
+                    foreach (var p in Process.GetProcessesByName("explorer"))
+                        try { p.Kill(); } catch { }
+                    Thread.Sleep(400);
+                }
+                catch { }
             }
 
-            try { Process.Start(new ProcessStartInfo("explorer.exe") { UseShellExecute = true }); }
+            // A clean shell exit does NOT auto-respawn, so relaunch it. (Starting
+            // explorer.exe with no shell running becomes the shell; no window opens.)
+            try
+            {
+                if (!Process.GetProcessesByName("explorer").Any())
+                    Process.Start(new ProcessStartInfo("explorer.exe") { UseShellExecute = true });
+            }
             catch { }
         }
     }
