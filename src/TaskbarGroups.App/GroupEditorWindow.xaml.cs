@@ -41,6 +41,7 @@ public partial class GroupEditorWindow : FluentWindow
             _originalName = existing.Name;
             HeaderText.Text = Loc.Get("Loc_Editor_TitleEdit");
             Title = Loc.Get("Loc_Editor_TitleEdit");
+            EditorTitleBar.Title = Loc.Get("Loc_Editor_TitleEdit");
             NameTextBox.Text = existing.Name;
             LoadExistingIcon(existing);
             LoadExistingShortcuts(existing);

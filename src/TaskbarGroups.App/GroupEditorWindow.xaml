@@ -21,7 +21,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Title="{DynamicResource Loc_Editor_TitleNew}" Padding="12,6" />
+        <ui:TitleBar x:Name="EditorTitleBar" Grid.Row="0" Title="{DynamicResource Loc_Editor_TitleNew}" Padding="12,6" />
 
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,4,24,0">
             <StackPanel>
