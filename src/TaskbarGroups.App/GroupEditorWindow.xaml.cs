@@ -217,14 +217,38 @@ public partial class GroupEditorWindow : FluentWindow
             return;
         }
 
-        // If the user changed the icon of a group that is pinned to the taskbar,
-        // refresh the pinned button (Windows caches it). Per the user's choice this
-        // restarts Explorer so the new icon shows immediately.
-        if (_isEditing && _iconChanged)
-            RefreshTaskbarIcon(name);
+        if (_isEditing)
+        {
+            bool renamed = _originalName is not null
+                && !string.Equals(_originalName, name, StringComparison.Ordinal);
+
+            // Refresh the pinned taskbar button when the icon or the name changed
+            // (Windows caches it). Per the user's choice this restarts Explorer.
+            if (_iconChanged || renamed)
+                RefreshTaskbarIcon(name);
+
+            // A rename writes a new config folder + .lnk; delete the old ones so the
+            // group isn't duplicated.
+            if (renamed)
+                DeleteOldGroup(_originalName!);
+        }
 
         DialogResult = true;
         Close();
+    }
+
+    // Remove the previous group's config folder and shortcut after a rename.
+    private static void DeleteOldGroup(string oldName)
+    {
+        try
+        {
+            string oldConfig = Path.Combine(Paths.ConfigPath, oldName);
+            if (Directory.Exists(oldConfig)) Directory.Delete(oldConfig, true);
+
+            string oldLnk = Paths.ShortcutFileFor(oldName);
+            if (File.Exists(oldLnk)) File.Delete(oldLnk);
+        }
+        catch { /* a leftover old group is non-fatal; the user can delete it */ }
     }
 
     private void RefreshTaskbarIcon(string currentName)
