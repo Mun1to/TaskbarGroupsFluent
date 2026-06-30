@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media.Imaging;
 using TaskbarGroups.App.Helpers;
 using TaskbarGroups.App.Models;
 using TaskbarGroups.Core;
@@ -146,17 +147,29 @@ public partial class GroupEditorWindow : FluentWindow
         };
         if (dialog.ShowDialog(this) != true) return;
 
+        BitmapImage source;
         try
         {
-            using var ms = new MemoryStream(File.ReadAllBytes(dialog.FileName));
-            _groupImage = DrawingImage.FromStream(ms);
-            GroupIconPreview.Source = _groupImage.ToImageSource();
-            GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+            source = new BitmapImage();
+            source.BeginInit();
+            source.CacheOption = BitmapCacheOption.OnLoad;
+            source.UriSource = new Uri(dialog.FileName);
+            source.EndInit();
+            source.Freeze();
         }
         catch
         {
             ShowError("No se pudo cargar la imagen seleccionada.");
+            return;
         }
+
+        // Let the user crop/position the image before applying it.
+        var editor = new IconEditorWindow(source) { Owner = this };
+        if (editor.ShowDialog() != true || editor.Result is null) return;
+
+        _groupImage = editor.Result;
+        GroupIconPreview.Source = _groupImage.ToImageSource();
+        GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
 
     private async void Save_Click(object sender, RoutedEventArgs e)
