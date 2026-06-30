@@ -25,8 +25,13 @@ public static class Loc
     /// </summary>
     public static void ApplySystemLanguage(Application app)
     {
-        string lang = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-            .Equals("es", StringComparison.OrdinalIgnoreCase) ? "es" : "en";
+        // TBG_LANG ("es"/"en") forces a language; otherwise follow Windows.
+        string? forced = Environment.GetEnvironmentVariable("TBG_LANG");
+        string lang =
+            !string.IsNullOrWhiteSpace(forced)
+                ? (forced.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase) ? "es" : "en")
+                : (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
+                    .Equals("es", StringComparison.OrdinalIgnoreCase) ? "es" : "en");
 
         try
         {
