@@ -25,6 +25,7 @@ public partial class GroupEditorWindow : FluentWindow
     private DrawingImage? _groupImage;
     private readonly bool _isEditing;
     private readonly string? _originalName;
+    private bool _iconChanged;
 
     public GroupEditorWindow(Category? existing = null)
     {
@@ -168,6 +169,7 @@ public partial class GroupEditorWindow : FluentWindow
         if (editor.ShowDialog() != true || editor.Result is null) return;
 
         _groupImage = editor.Result;
+        _iconChanged = true;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
@@ -214,8 +216,30 @@ public partial class GroupEditorWindow : FluentWindow
             return;
         }
 
+        // If the user changed the icon of a group that is pinned to the taskbar,
+        // refresh the pinned button (Windows caches it). Per the user's choice this
+        // restarts Explorer so the new icon shows immediately.
+        if (_isEditing && _iconChanged)
+            RefreshTaskbarIcon(name);
+
         DialogResult = true;
         Close();
+    }
+
+    private void RefreshTaskbarIcon(string currentName)
+    {
+        try
+        {
+            // The pin was created under the original name; find it by that, then
+            // overwrite it with the freshly built shortcut (carrying the new icon).
+            string? pinnedLnk = TaskbarPin.FindPinnedShortcut(
+                _originalName ?? currentName, Paths.BackgroundApplication);
+            if (pinnedLnk is null) return; // not pinned — nothing to refresh
+
+            TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));
+            System.Threading.Tasks.Task.Run(TaskbarPin.RestartExplorer);
+        }
+        catch { /* never block saving on a refresh failure */ }
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)

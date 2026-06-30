@@ -143,7 +143,7 @@ namespace TaskbarGroups.Core
                 // "cannot create a file that already exists" because the previous
                 // save left a .lnk with the same name there.
                 System.IO.File.Move(Path.Combine(path, this.Name + ".lnk"),
-                    Path.Combine(Paths.ShortcutsPath, Regex.Replace(this.Name, @"(_)+", " ") + ".lnk"),
+                    Paths.ShortcutFileFor(this.Name),
                     overwrite: true); // Move .lnk to correct directory
             }
             catch

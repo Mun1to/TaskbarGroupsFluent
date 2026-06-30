@@ -33,6 +33,14 @@ namespace TaskbarGroups.Core
         public static string ShortcutsPath = setupShortcutsPath();
 
         /// <summary>
+        /// The .lnk file for a group inside <see cref="ShortcutsPath"/>. The "_" to
+        /// space substitution mirrors how the shortcut is named when it is created.
+        /// </summary>
+        public static string ShortcutFileFor(string groupName)
+            => Path.Combine(ShortcutsPath,
+                System.Text.RegularExpressions.Regex.Replace(groupName, @"(_)+", " ") + ".lnk");
+
+        /// <summary>
         /// Path to the background flyout executable, deployed alongside the main
         /// app under a "Background" subfolder. Pinned shortcuts target this exe.
         /// </summary>
