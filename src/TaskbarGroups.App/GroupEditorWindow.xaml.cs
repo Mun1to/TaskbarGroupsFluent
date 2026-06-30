@@ -88,7 +88,9 @@ public partial class GroupEditorWindow : FluentWindow
         foreach (var app in picker.SelectedApps)
             AddShortcut(new ProgramShortcut
             {
-                FilePath = app.TargetPath,
+                // Store the shortcut (.lnk) so the icon and launch match what Windows
+                // shows in the Start Menu, not the resolved stub .exe.
+                FilePath = app.ShortcutPath,
                 name = app.DisplayName,
                 isWindowsApp = false
             });

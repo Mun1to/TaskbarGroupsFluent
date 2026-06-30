@@ -14,7 +14,16 @@ namespace TaskbarGroups.Core
     public class InstalledAppInfo
     {
         public string DisplayName { get; set; } = "";
-        public string TargetPath { get; set; } = ""; // resolved .exe the shortcut points to
+
+        // The Start Menu .lnk itself. We launch and draw the icon from this, not
+        // from the resolved .exe: the shortcut carries the real logo and the
+        // correct launch command even when its target is a stub (e.g. Discord's
+        // Update.exe), which a bare .exe would render as a generic icon.
+        public string ShortcutPath { get; set; } = "";
+
+        // The executable the shortcut resolves to — shown to the user and used to
+        // deduplicate apps that have more than one Start Menu shortcut.
+        public string TargetPath { get; set; } = "";
     }
 
     /// <summary>
@@ -92,7 +101,12 @@ namespace TaskbarGroups.Core
                         if (!File.Exists(target)) continue;
 
                         if (!found.ContainsKey(target))
-                            found[target] = new InstalledAppInfo { DisplayName = name, TargetPath = target };
+                            found[target] = new InstalledAppInfo
+                            {
+                                DisplayName = name,
+                                ShortcutPath = lnk,
+                                TargetPath = target
+                            };
                     }
                     catch { /* skip shortcuts we can't read */ }
                 }

@@ -70,8 +70,10 @@ public partial class ProgramPickerWindow : FluentWindow
         {
             try
             {
+                // Resolve the icon from the shortcut itself (not the resolved .exe),
+                // so stub-launched apps like Discord keep their real logo.
                 using var img = Category.ResolveShortcutImage(
-                    new ProgramShortcut { FilePath = item.Info.TargetPath, isWindowsApp = false });
+                    new ProgramShortcut { FilePath = item.Info.ShortcutPath, isWindowsApp = false });
                 var source = img.ToImageSource();
                 Dispatcher.Invoke(() => item.Icon = source);
             }
@@ -110,7 +112,7 @@ public partial class ProgramPickerWindow : FluentWindow
         var added = new List<InstalledAppItem>();
         foreach (string path in dialog.FileNames)
         {
-            if (_allItems.Any(i => i.Info.TargetPath.Equals(path, StringComparison.OrdinalIgnoreCase)))
+            if (_allItems.Any(i => i.Info.ShortcutPath.Equals(path, StringComparison.OrdinalIgnoreCase)))
                 continue;
 
             var item = new InstalledAppItem
@@ -118,6 +120,7 @@ public partial class ProgramPickerWindow : FluentWindow
                 Info = new InstalledAppInfo
                 {
                     DisplayName = Path.GetFileNameWithoutExtension(path),
+                    ShortcutPath = path,
                     TargetPath = path
                 },
                 IsSelected = true

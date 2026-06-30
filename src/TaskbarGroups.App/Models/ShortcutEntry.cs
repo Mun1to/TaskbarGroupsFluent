@@ -23,5 +23,5 @@ public class ShortcutEntry
     public string SubtitleText =>
         Shortcut.isWindowsApp ? "App de Microsoft Store"
         : Directory.Exists(Shortcut.FilePath) ? "Carpeta"
-        : Path.GetExtension(Shortcut.FilePath).TrimStart('.').ToUpperInvariant();
+        : "Programa";
 }
