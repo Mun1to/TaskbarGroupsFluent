@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="Apps de Microsoft Store"
+        Title="{DynamicResource Loc_Store_Title}"
         Height="640" Width="500"
         MinHeight="480" MinWidth="420"
         WindowBackdropType="Mica"
@@ -21,17 +21,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Title="Apps de Microsoft Store" Padding="12,6" />
+        <ui:TitleBar Grid.Row="0" Title="{DynamicResource Loc_Store_Title}" Padding="12,6" />
 
         <StackPanel Grid.Row="1" Margin="20,4,20,12">
-            <TextBlock Text="Selecciona apps de la Store"
+            <TextBlock Text="{DynamicResource Loc_Store_Heading}"
                        FontSize="20" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-            <TextBlock Text="Apps sin .exe (WhatsApp, Instagram, TikTok…) que el explorador no puede anclar"
+            <TextBlock Text="{DynamicResource Loc_Store_Subtitle}"
                        FontSize="12" Margin="0,2,0,10"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                        TextWrapping="Wrap" />
-            <ui:TextBox x:Name="SearchBox" PlaceholderText="Buscar app…"
+            <ui:TextBox x:Name="SearchBox" PlaceholderText="{DynamicResource Loc_Store_Search}"
                         Icon="{ui:SymbolIcon Search24}"
                         TextChanged="SearchBox_TextChanged" />
         </StackPanel>
@@ -77,12 +77,12 @@
                 BorderBrush="{DynamicResource ControlElevationBorderBrush}"
                 BorderThickness="0,1,0,0">
             <Grid>
-                <TextBlock x:Name="CountText" Text="0 seleccionadas"
+                <TextBlock x:Name="CountText"
                            VerticalAlignment="Center"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <ui:Button Content="Cancelar" Margin="0,0,8,0" Click="Cancel_Click" />
-                    <ui:Button x:Name="AddButton" Content="Añadir" Appearance="Primary"
+                    <ui:Button Content="{DynamicResource Loc_Common_Cancel}" Margin="0,0,8,0" Click="Cancel_Click" />
+                    <ui:Button x:Name="AddButton" Content="{DynamicResource Loc_Common_Add}" Appearance="Primary"
                                Icon="{ui:SymbolIcon Add24}" Click="Add_Click" />
                 </StackPanel>
             </Grid>

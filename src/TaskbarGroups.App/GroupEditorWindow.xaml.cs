@@ -39,8 +39,8 @@ public partial class GroupEditorWindow : FluentWindow
         {
             _isEditing = true;
             _originalName = existing.Name;
-            HeaderText.Text = "Editar grupo";
-            Title = "Editar grupo";
+            HeaderText.Text = Loc.Get("Loc_Editor_TitleEdit");
+            Title = Loc.Get("Loc_Editor_TitleEdit");
             NameTextBox.Text = existing.Name;
             LoadExistingIcon(existing);
             LoadExistingShortcuts(existing);
@@ -102,7 +102,7 @@ public partial class GroupEditorWindow : FluentWindow
     {
         var dialog = new Microsoft.Win32.OpenFolderDialog
         {
-            Title = "Selecciona una carpeta",
+            Title = Loc.Get("Loc_Editor_PickFolder"),
             Multiselect = true
         };
         if (dialog.ShowDialog(this) != true) return;
@@ -143,8 +143,8 @@ public partial class GroupEditorWindow : FluentWindow
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "Selecciona una imagen para el grupo",
-            Filter = "Imágenes|*.png;*.jpg;*.jpeg;*.bmp;*.ico"
+            Title = Loc.Get("Loc_Editor_PickImage"),
+            Filter = Loc.Get("Loc_Editor_ImagesFilter") + "|*.png;*.jpg;*.jpeg;*.bmp;*.ico"
         };
         if (dialog.ShowDialog(this) != true) return;
 
@@ -160,7 +160,7 @@ public partial class GroupEditorWindow : FluentWindow
         }
         catch
         {
-            ShowError("No se pudo cargar la imagen seleccionada.");
+            ShowError(Loc.Get("Loc_Editor_ImageLoadFail"));
             return;
         }
 
@@ -179,18 +179,18 @@ public partial class GroupEditorWindow : FluentWindow
         string name = (NameTextBox.Text ?? "").Trim();
         if (string.IsNullOrWhiteSpace(name))
         {
-            ShowError("Dale un nombre al grupo.");
+            ShowError(Loc.Get("Loc_Editor_NeedName"));
             return;
         }
         // Windows folder names can't end in a dot or contain these characters.
         if (name.EndsWith(".") || name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
-            ShowError("El nombre no puede terminar en punto ni contener: \\ / : * ? \" < > |");
+            ShowError(Loc.Get("Loc_Editor_BadName"));
             return;
         }
         if (_shortcuts.Count == 0)
         {
-            ShowError("Añade al menos un acceso directo al grupo.");
+            ShowError(Loc.Get("Loc_Editor_NeedShortcut"));
             return;
         }
 
@@ -209,9 +209,9 @@ public partial class GroupEditorWindow : FluentWindow
         {
             await new MessageBox
             {
-                Title = "No se pudo guardar",
+                Title = Loc.Get("Loc_Editor_SaveFailTitle"),
                 Content = ex.Message,
-                CloseButtonText = "Cerrar"
+                CloseButtonText = Loc.Get("Loc_Common_Close")
             }.ShowDialogAsync();
             return;
         }
@@ -266,6 +266,10 @@ public partial class GroupEditorWindow : FluentWindow
     }
 
     private void ShowError(string message)
-        => _ = new MessageBox { Title = "Atención", Content = message, CloseButtonText = "Entendido" }
-            .ShowDialogAsync();
+        => _ = new MessageBox
+        {
+            Title = Loc.Get("Loc_Common_Attention"),
+            Content = message,
+            CloseButtonText = Loc.Get("Loc_Common_Understood")
+        }.ShowDialogAsync();
 }

@@ -1,4 +1,5 @@
 using System.Windows.Media;
+using TaskbarGroups.App.Helpers;
 using TaskbarGroups.Core;
 
 namespace TaskbarGroups.App.Models;
@@ -18,5 +19,7 @@ public class GroupItem
     public string ShortcutPath { get; init; } = "";
 
     public string ShortcutCountText =>
-        ShortcutCount == 1 ? "1 acceso directo" : $"{ShortcutCount} accesos directos";
+        ShortcutCount == 1
+            ? Loc.Get("Loc_Group_ShortcutOne")
+            : Loc.Format("Loc_Group_ShortcutMany", ShortcutCount);
 }

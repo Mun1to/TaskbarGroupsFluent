@@ -33,6 +33,7 @@ public partial class ProgramPickerWindow : FluentWindow
     {
         InitializeComponent();
         SystemThemeWatcher.Watch(this);
+        UpdateCount();
         Loaded += async (_, _) => await LoadAppsAsync();
     }
 
@@ -93,7 +94,9 @@ public partial class ProgramPickerWindow : FluentWindow
     private void UpdateCount()
     {
         int n = _allItems.Count(i => i.IsSelected);
-        CountText.Text = n == 1 ? "1 seleccionado" : $"{n} seleccionados";
+        CountText.Text = n == 1
+            ? Loc.Get("Loc_Prog_CountOne")
+            : Loc.Format("Loc_Prog_CountMany", n);
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -103,8 +106,9 @@ public partial class ProgramPickerWindow : FluentWindow
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Title = "Selecciona un programa o acceso directo",
-            Filter = "Programas y accesos directos|*.exe;*.lnk|Todos los archivos|*.*",
+            Title = Loc.Get("Loc_Prog_PickTitle"),
+            Filter = Loc.Get("Loc_Prog_FilterPrograms") + "|*.exe;*.lnk|"
+                     + Loc.Get("Loc_Prog_FilterAll") + "|*.*",
             Multiselect = true
         };
         if (dialog.ShowDialog(this) != true) return;

@@ -56,12 +56,11 @@ public partial class MainWindow : FluentWindow
 
         var confirm = await new MessageBox
         {
-            Title = "Eliminar grupo",
-            Content = $"¿Seguro que quieres eliminar el grupo \"{group.Name}\"?\n\n" +
-                      "Si lo tenías anclado, desánclalo de la barra de tareas aparte.",
-            PrimaryButtonText = "Eliminar",
+            Title = Loc.Get("Loc_Del_Title"),
+            Content = Loc.Format("Loc_Del_Message", group.Name),
+            PrimaryButtonText = Loc.Get("Loc_Common_Delete"),
             PrimaryButtonAppearance = ControlAppearance.Danger,
-            CloseButtonText = "Cancelar"
+            CloseButtonText = Loc.Get("Loc_Common_Cancel")
         }.ShowDialogAsync();
 
         if (confirm != Wpf.Ui.Controls.MessageBoxResult.Primary) return;
@@ -76,9 +75,9 @@ public partial class MainWindow : FluentWindow
         {
             await new MessageBox
             {
-                Title = "No se pudo eliminar",
+                Title = Loc.Get("Loc_Del_FailTitle"),
                 Content = ex.Message,
-                CloseButtonText = "Cerrar"
+                CloseButtonText = Loc.Get("Loc_Common_Close")
             }.ShowDialogAsync();
         }
 
@@ -93,9 +92,9 @@ public partial class MainWindow : FluentWindow
         {
             await new MessageBox
             {
-                Title = "Acceso directo no encontrado",
-                Content = "No se encontró el acceso directo del grupo. Vuelve a guardarlo desde el editor.",
-                CloseButtonText = "Cerrar"
+                Title = Loc.Get("Loc_Pin_NotFoundTitle"),
+                Content = Loc.Get("Loc_Pin_NotFoundBody"),
+                CloseButtonText = Loc.Get("Loc_Common_Close")
             }.ShowDialogAsync();
             return;
         }
@@ -106,14 +105,9 @@ public partial class MainWindow : FluentWindow
 
         await new MessageBox
         {
-            Title = "Anclar a la barra de tareas",
-            Content =
-                "Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:\n\n" +
-                "1.  Haz clic derecho en el archivo resaltado.\n" +
-                "2.  Pulsa \"Mostrar más opciones\" (o Mayús + F10).\n" +
-                "3.  Elige \"Anclar a la barra de tareas\".\n\n" +
-                "Luego haz clic en ese icono de la barra para abrir el grupo.",
-            CloseButtonText = "Entendido"
+            Title = Loc.Get("Loc_Pin_Title"),
+            Content = Loc.Get("Loc_Pin_Body"),
+            CloseButtonText = Loc.Get("Loc_Common_Understood")
         }.ShowDialogAsync();
     }
 }

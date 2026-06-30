@@ -31,6 +31,7 @@ public partial class StoreAppPickerWindow : FluentWindow
     {
         InitializeComponent();
         SystemThemeWatcher.Watch(this);
+        UpdateCount();
         Loaded += async (_, _) => await LoadAppsAsync();
     }
 
@@ -88,7 +89,9 @@ public partial class StoreAppPickerWindow : FluentWindow
     private void UpdateCount()
     {
         int n = _allItems.Count(i => i.IsSelected);
-        CountText.Text = n == 1 ? "1 seleccionada" : $"{n} seleccionadas";
+        CountText.Text = n == 1
+            ? Loc.Get("Loc_Store_CountOne")
+            : Loc.Format("Loc_Store_CountMany", n);
     }
 
     private void SearchBox_TextChanged(object sender, TextChangedEventArgs e)

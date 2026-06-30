@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Comunes -->
+    <s:String x:Key="Loc_Common_AppName">Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Common_Cancel">Cancelar</s:String>
+    <s:String x:Key="Loc_Common_Add">Añadir</s:String>
+    <s:String x:Key="Loc_Common_Edit">Editar</s:String>
+    <s:String x:Key="Loc_Common_Delete">Eliminar</s:String>
+    <s:String x:Key="Loc_Common_Close">Cerrar</s:String>
+    <s:String x:Key="Loc_Common_Understood">Entendido</s:String>
+    <s:String x:Key="Loc_Common_Remove">Quitar</s:String>
+    <s:String x:Key="Loc_Common_Attention">Atención</s:String>
+
+    <!-- Ventana principal -->
+    <s:String x:Key="Loc_Main_Heading">Tus grupos</s:String>
+    <s:String x:Key="Loc_Main_Subheading">Agrupa tus accesos directos y ánclalos a la barra de tareas</s:String>
+    <s:String x:Key="Loc_Main_AddGroup">Añadir grupo</s:String>
+    <s:String x:Key="Loc_Main_Pin">Anclar a la barra de tareas</s:String>
+    <s:String x:Key="Loc_Main_EmptyTitle">Aún no tienes grupos</s:String>
+    <s:String x:Key="Loc_Main_EmptySubtitle">Crea tu primer grupo para empezar a organizar la barra de tareas</s:String>
+    <s:String x:Key="Loc_Main_CreateFirst">Crear primer grupo</s:String>
+
+    <!-- Tarjeta de grupo -->
+    <s:String x:Key="Loc_Group_ShortcutOne">1 acceso directo</s:String>
+    <s:String x:Key="Loc_Group_ShortcutMany">{0} accesos directos</s:String>
+
+    <!-- Eliminar grupo -->
+    <s:String x:Key="Loc_Del_Title">Eliminar grupo</s:String>
+    <s:String x:Key="Loc_Del_Message" xml:space="preserve">¿Seguro que quieres eliminar el grupo "{0}"?&#10;&#10;Si lo tenías anclado, desánclalo de la barra de tareas aparte.</s:String>
+    <s:String x:Key="Loc_Del_FailTitle">No se pudo eliminar</s:String>
+
+    <!-- Anclar -->
+    <s:String x:Key="Loc_Pin_NotFoundTitle">Acceso directo no encontrado</s:String>
+    <s:String x:Key="Loc_Pin_NotFoundBody">No se encontró el acceso directo del grupo. Vuelve a guardarlo desde el editor.</s:String>
+    <s:String x:Key="Loc_Pin_Title">Anclar a la barra de tareas</s:String>
+    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
+
+    <!-- Editor de grupo -->
+    <s:String x:Key="Loc_Editor_TitleNew">Nuevo grupo</s:String>
+    <s:String x:Key="Loc_Editor_TitleEdit">Editar grupo</s:String>
+    <s:String x:Key="Loc_Editor_NameLabel">Nombre del grupo</s:String>
+    <s:String x:Key="Loc_Editor_NamePlaceholder">Mi grupo</s:String>
+    <s:String x:Key="Loc_Editor_ChangeIcon">Cambiar icono</s:String>
+    <s:String x:Key="Loc_Editor_Shortcuts">Accesos directos</s:String>
+    <s:String x:Key="Loc_Editor_Program">Programa</s:String>
+    <s:String x:Key="Loc_Editor_Folder">Carpeta</s:String>
+    <s:String x:Key="Loc_Editor_StoreApp">App Store</s:String>
+    <s:String x:Key="Loc_Editor_EmptyHint">Añade programas, carpetas o apps de la Store a este grupo</s:String>
+    <s:String x:Key="Loc_Editor_Save">Guardar grupo</s:String>
+    <s:String x:Key="Loc_Editor_NeedName">Dale un nombre al grupo.</s:String>
+    <s:String x:Key="Loc_Editor_BadName">El nombre no puede terminar en punto ni contener: \ / : * ? " &lt; &gt; |</s:String>
+    <s:String x:Key="Loc_Editor_NeedShortcut">Añade al menos un acceso directo al grupo.</s:String>
+    <s:String x:Key="Loc_Editor_SaveFailTitle">No se pudo guardar</s:String>
+    <s:String x:Key="Loc_Editor_PickFolder">Selecciona una carpeta</s:String>
+    <s:String x:Key="Loc_Editor_PickImage">Selecciona una imagen para el grupo</s:String>
+    <s:String x:Key="Loc_Editor_ImagesFilter">Imágenes</s:String>
+    <s:String x:Key="Loc_Editor_ImageLoadFail">No se pudo cargar la imagen seleccionada.</s:String>
+
+    <!-- Subtítulos de acceso directo -->
+    <s:String x:Key="Loc_Sub_StoreApp">App de Microsoft Store</s:String>
+    <s:String x:Key="Loc_Sub_Folder">Carpeta</s:String>
+    <s:String x:Key="Loc_Sub_Program">Programa</s:String>
+
+    <!-- Selector de apps de la Store -->
+    <s:String x:Key="Loc_Store_Title">Apps de Microsoft Store</s:String>
+    <s:String x:Key="Loc_Store_Heading">Selecciona apps de la Store</s:String>
+    <s:String x:Key="Loc_Store_Subtitle">Apps sin .exe (WhatsApp, Instagram, TikTok…) que el explorador no puede anclar</s:String>
+    <s:String x:Key="Loc_Store_Search">Buscar app…</s:String>
+    <s:String x:Key="Loc_Store_CountOne">1 seleccionada</s:String>
+    <s:String x:Key="Loc_Store_CountMany">{0} seleccionadas</s:String>
+
+    <!-- Selector de programas instalados -->
+    <s:String x:Key="Loc_Prog_Title">Programas instalados</s:String>
+    <s:String x:Key="Loc_Prog_Heading">Selecciona programas instalados</s:String>
+    <s:String x:Key="Loc_Prog_Subtitle">Elige de la lista, sin buscar el .exe a mano. ¿No aparece? Usa Examinar.</s:String>
+    <s:String x:Key="Loc_Prog_Search">Buscar programa…</s:String>
+    <s:String x:Key="Loc_Prog_Browse">Examinar…</s:String>
+    <s:String x:Key="Loc_Prog_CountOne">1 seleccionado</s:String>
+    <s:String x:Key="Loc_Prog_CountMany">{0} seleccionados</s:String>
+    <s:String x:Key="Loc_Prog_PickTitle">Selecciona un programa o acceso directo</s:String>
+    <s:String x:Key="Loc_Prog_FilterPrograms">Programas y accesos directos</s:String>
+    <s:String x:Key="Loc_Prog_FilterAll">Todos los archivos</s:String>
+
+    <!-- Editor de icono -->
+    <s:String x:Key="Loc_Icon_Title">Ajustar icono</s:String>
+    <s:String x:Key="Loc_Icon_Hint">Arrastra para mover · rueda o barra para acercar</s:String>
+    <s:String x:Key="Loc_Icon_Apply">Aplicar</s:String>
+
+    <!-- Errores -->
+    <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">Ocurrió un error inesperado:&#10;&#10;{0}</s:String>
+
+</ResourceDictionary>

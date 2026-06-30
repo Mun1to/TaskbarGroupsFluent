@@ -1,0 +1,94 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Common -->
+    <s:String x:Key="Loc_Common_AppName">Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Common_Cancel">Cancel</s:String>
+    <s:String x:Key="Loc_Common_Add">Add</s:String>
+    <s:String x:Key="Loc_Common_Edit">Edit</s:String>
+    <s:String x:Key="Loc_Common_Delete">Delete</s:String>
+    <s:String x:Key="Loc_Common_Close">Close</s:String>
+    <s:String x:Key="Loc_Common_Understood">Got it</s:String>
+    <s:String x:Key="Loc_Common_Remove">Remove</s:String>
+    <s:String x:Key="Loc_Common_Attention">Heads up</s:String>
+
+    <!-- Main window -->
+    <s:String x:Key="Loc_Main_Heading">Your groups</s:String>
+    <s:String x:Key="Loc_Main_Subheading">Group your shortcuts and pin them to the taskbar</s:String>
+    <s:String x:Key="Loc_Main_AddGroup">Add group</s:String>
+    <s:String x:Key="Loc_Main_Pin">Pin to taskbar</s:String>
+    <s:String x:Key="Loc_Main_EmptyTitle">You don't have any groups yet</s:String>
+    <s:String x:Key="Loc_Main_EmptySubtitle">Create your first group to start organising your taskbar</s:String>
+    <s:String x:Key="Loc_Main_CreateFirst">Create first group</s:String>
+
+    <!-- Group card -->
+    <s:String x:Key="Loc_Group_ShortcutOne">1 shortcut</s:String>
+    <s:String x:Key="Loc_Group_ShortcutMany">{0} shortcuts</s:String>
+
+    <!-- Delete group -->
+    <s:String x:Key="Loc_Del_Title">Delete group</s:String>
+    <s:String x:Key="Loc_Del_Message" xml:space="preserve">Are you sure you want to delete the group "{0}"?&#10;&#10;If it was pinned, unpin it from the taskbar separately.</s:String>
+    <s:String x:Key="Loc_Del_FailTitle">Couldn't delete</s:String>
+
+    <!-- Pin -->
+    <s:String x:Key="Loc_Pin_NotFoundTitle">Shortcut not found</s:String>
+    <s:String x:Key="Loc_Pin_NotFoundBody">The group's shortcut wasn't found. Save it again from the editor.</s:String>
+    <s:String x:Key="Loc_Pin_Title">Pin to taskbar</s:String>
+    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.</s:String>
+
+    <!-- Group editor -->
+    <s:String x:Key="Loc_Editor_TitleNew">New group</s:String>
+    <s:String x:Key="Loc_Editor_TitleEdit">Edit group</s:String>
+    <s:String x:Key="Loc_Editor_NameLabel">Group name</s:String>
+    <s:String x:Key="Loc_Editor_NamePlaceholder">My group</s:String>
+    <s:String x:Key="Loc_Editor_ChangeIcon">Change icon</s:String>
+    <s:String x:Key="Loc_Editor_Shortcuts">Shortcuts</s:String>
+    <s:String x:Key="Loc_Editor_Program">Program</s:String>
+    <s:String x:Key="Loc_Editor_Folder">Folder</s:String>
+    <s:String x:Key="Loc_Editor_StoreApp">Store app</s:String>
+    <s:String x:Key="Loc_Editor_EmptyHint">Add programs, folders or Store apps to this group</s:String>
+    <s:String x:Key="Loc_Editor_Save">Save group</s:String>
+    <s:String x:Key="Loc_Editor_NeedName">Give the group a name.</s:String>
+    <s:String x:Key="Loc_Editor_BadName">The name can't end in a dot or contain: \ / : * ? " &lt; &gt; |</s:String>
+    <s:String x:Key="Loc_Editor_NeedShortcut">Add at least one shortcut to the group.</s:String>
+    <s:String x:Key="Loc_Editor_SaveFailTitle">Couldn't save</s:String>
+    <s:String x:Key="Loc_Editor_PickFolder">Select a folder</s:String>
+    <s:String x:Key="Loc_Editor_PickImage">Select an image for the group</s:String>
+    <s:String x:Key="Loc_Editor_ImagesFilter">Images</s:String>
+    <s:String x:Key="Loc_Editor_ImageLoadFail">Couldn't load the selected image.</s:String>
+
+    <!-- Shortcut subtitles -->
+    <s:String x:Key="Loc_Sub_StoreApp">Microsoft Store app</s:String>
+    <s:String x:Key="Loc_Sub_Folder">Folder</s:String>
+    <s:String x:Key="Loc_Sub_Program">Program</s:String>
+
+    <!-- Store app picker -->
+    <s:String x:Key="Loc_Store_Title">Microsoft Store apps</s:String>
+    <s:String x:Key="Loc_Store_Heading">Pick Store apps</s:String>
+    <s:String x:Key="Loc_Store_Subtitle">Apps with no .exe (WhatsApp, Instagram, TikTok…) the file picker can't reach</s:String>
+    <s:String x:Key="Loc_Store_Search">Search app…</s:String>
+    <s:String x:Key="Loc_Store_CountOne">1 selected</s:String>
+    <s:String x:Key="Loc_Store_CountMany">{0} selected</s:String>
+
+    <!-- Installed programs picker -->
+    <s:String x:Key="Loc_Prog_Title">Installed programs</s:String>
+    <s:String x:Key="Loc_Prog_Heading">Pick installed programs</s:String>
+    <s:String x:Key="Loc_Prog_Subtitle">Pick from the list, no need to find the .exe by hand. Not listed? Use Browse.</s:String>
+    <s:String x:Key="Loc_Prog_Search">Search program…</s:String>
+    <s:String x:Key="Loc_Prog_Browse">Browse…</s:String>
+    <s:String x:Key="Loc_Prog_CountOne">1 selected</s:String>
+    <s:String x:Key="Loc_Prog_CountMany">{0} selected</s:String>
+    <s:String x:Key="Loc_Prog_PickTitle">Select a program or shortcut</s:String>
+    <s:String x:Key="Loc_Prog_FilterPrograms">Programs and shortcuts</s:String>
+    <s:String x:Key="Loc_Prog_FilterAll">All files</s:String>
+
+    <!-- Icon editor -->
+    <s:String x:Key="Loc_Icon_Title">Adjust icon</s:String>
+    <s:String x:Key="Loc_Icon_Hint">Drag to move · wheel or slider to zoom</s:String>
+    <s:String x:Key="Loc_Icon_Apply">Apply</s:String>
+
+    <!-- Errors -->
+    <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">An unexpected error occurred:&#10;&#10;{0}</s:String>
+
+</ResourceDictionary>

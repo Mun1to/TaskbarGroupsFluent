@@ -34,15 +34,15 @@
 
             <Grid Grid.Row="0" Margin="0,0,0,20">
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Tus grupos"
+                    <TextBlock Text="{DynamicResource Loc_Main_Heading}"
                                FontSize="28" FontWeight="SemiBold"
                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                    <TextBlock Text="Agrupa tus accesos directos y ánclalos a la barra de tareas"
+                    <TextBlock Text="{DynamicResource Loc_Main_Subheading}"
                                FontSize="13" Margin="0,2,0,0"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 </StackPanel>
                 <ui:Button x:Name="AddGroupButton"
-                           Content="Añadir grupo"
+                           Content="{DynamicResource Loc_Main_AddGroup}"
                            Icon="{ui:SymbolIcon Add24}"
                            Appearance="Primary"
                            HorizontalAlignment="Right" VerticalAlignment="Center"
@@ -91,7 +91,7 @@
                                             </StackPanel>
                                         </Grid>
 
-                                        <ui:Button Grid.Row="1" Content="Anclar a la barra de tareas"
+                                        <ui:Button Grid.Row="1" Content="{DynamicResource Loc_Main_Pin}"
                                                    Icon="{ui:SymbolIcon Pin24}"
                                                    Appearance="Primary" HorizontalAlignment="Stretch"
                                                    Tag="{Binding}" Click="PinToTaskbar_Click" />
@@ -101,10 +101,10 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <ui:Button Grid.Column="0" Content="Editar" Icon="{ui:SymbolIcon Edit24}"
+                                            <ui:Button Grid.Column="0" Content="{DynamicResource Loc_Common_Edit}" Icon="{ui:SymbolIcon Edit24}"
                                                        HorizontalAlignment="Stretch" Margin="0,0,4,0"
                                                        Tag="{Binding}" Click="EditGroup_Click" />
-                                            <ui:Button Grid.Column="1" Content="Eliminar" Icon="{ui:SymbolIcon Delete24}"
+                                            <ui:Button Grid.Column="1" Content="{DynamicResource Loc_Common_Delete}" Icon="{ui:SymbolIcon Delete24}"
                                                        HorizontalAlignment="Stretch" Margin="4,0,0,0"
                                                        Tag="{Binding}" Click="DeleteGroup_Click" />
                                         </Grid>
@@ -120,14 +120,14 @@
                         <ui:SymbolIcon Symbol="AppsAddIn24" FontSize="56"
                                        HorizontalAlignment="Center"
                                        Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
-                        <TextBlock Text="Aún no tienes grupos"
+                        <TextBlock Text="{DynamicResource Loc_Main_EmptyTitle}"
                                    FontSize="18" FontWeight="SemiBold"
                                    Margin="0,16,0,0" HorizontalAlignment="Center"
                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                        <TextBlock Text="Crea tu primer grupo para empezar a organizar la barra de tareas"
+                        <TextBlock Text="{DynamicResource Loc_Main_EmptySubtitle}"
                                    FontSize="13" Margin="0,4,0,16" HorizontalAlignment="Center"
                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                        <ui:Button Content="Crear primer grupo"
+                        <ui:Button Content="{DynamicResource Loc_Main_CreateFirst}"
                                    Icon="{ui:SymbolIcon Add24}"
                                    Appearance="Primary"
                                    HorizontalAlignment="Center"

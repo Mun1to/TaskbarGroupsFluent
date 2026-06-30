@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="Programas instalados"
+        Title="{DynamicResource Loc_Prog_Title}"
         Height="640" Width="520"
         MinHeight="480" MinWidth="440"
         WindowBackdropType="Mica"
@@ -21,17 +21,17 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Title="Programas instalados" Padding="12,6" />
+        <ui:TitleBar Grid.Row="0" Title="{DynamicResource Loc_Prog_Title}" Padding="12,6" />
 
         <StackPanel Grid.Row="1" Margin="20,4,20,12">
-            <TextBlock Text="Selecciona programas instalados"
+            <TextBlock Text="{DynamicResource Loc_Prog_Heading}"
                        FontSize="20" FontWeight="SemiBold"
                        Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-            <TextBlock Text="Elige de la lista, sin buscar el .exe a mano. ¿No aparece? Usa Examinar."
+            <TextBlock Text="{DynamicResource Loc_Prog_Subtitle}"
                        FontSize="12" Margin="0,2,0,10"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                        TextWrapping="Wrap" />
-            <ui:TextBox x:Name="SearchBox" PlaceholderText="Buscar programa…"
+            <ui:TextBox x:Name="SearchBox" PlaceholderText="{DynamicResource Loc_Prog_Search}"
                         Icon="{ui:SymbolIcon Search24}"
                         TextChanged="SearchBox_TextChanged" />
         </StackPanel>
@@ -82,15 +82,15 @@
                 BorderThickness="0,1,0,0">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <ui:Button Content="Examinar…" Icon="{ui:SymbolIcon FolderOpen24}"
+                    <ui:Button Content="{DynamicResource Loc_Prog_Browse}" Icon="{ui:SymbolIcon FolderOpen24}"
                                Click="Browse_Click" />
-                    <TextBlock x:Name="CountText" Text="0 seleccionados"
+                    <TextBlock x:Name="CountText"
                                VerticalAlignment="Center" Margin="12,0,0,0"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <ui:Button Content="Cancelar" Margin="0,0,8,0" Click="Cancel_Click" />
-                    <ui:Button x:Name="AddButton" Content="Añadir" Appearance="Primary"
+                    <ui:Button Content="{DynamicResource Loc_Common_Cancel}" Margin="0,0,8,0" Click="Cancel_Click" />
+                    <ui:Button x:Name="AddButton" Content="{DynamicResource Loc_Common_Add}" Appearance="Primary"
                                Icon="{ui:SymbolIcon Add24}" Click="Add_Click" />
                 </StackPanel>
             </Grid>

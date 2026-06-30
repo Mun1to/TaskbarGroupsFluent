@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="Ajustar icono"
+        Title="{DynamicResource Loc_Icon_Title}"
         Height="540" Width="420"
         ResizeMode="NoResize"
         WindowBackdropType="Mica"
@@ -20,10 +20,10 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <ui:TitleBar Grid.Row="0" Title="Ajustar icono" Padding="12,6" />
+        <ui:TitleBar Grid.Row="0" Title="{DynamicResource Loc_Icon_Title}" Padding="12,6" />
 
         <StackPanel Grid.Row="1" Margin="24,8,24,0" HorizontalAlignment="Center">
-            <TextBlock Text="Arrastra para mover · rueda o barra para acercar"
+            <TextBlock Text="{DynamicResource Loc_Icon_Hint}"
                        FontSize="12" Margin="0,0,0,12" HorizontalAlignment="Center"
                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
@@ -58,8 +58,8 @@
                 BorderBrush="{DynamicResource ControlElevationBorderBrush}"
                 BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <ui:Button Content="Cancelar" Margin="0,0,8,0" Click="Cancel_Click" />
-                <ui:Button Content="Aplicar" Appearance="Primary"
+                <ui:Button Content="{DynamicResource Loc_Common_Cancel}" Margin="0,0,8,0" Click="Cancel_Click" />
+                <ui:Button Content="{DynamicResource Loc_Icon_Apply}" Appearance="Primary"
                            Icon="{ui:SymbolIcon Checkmark24}" Click="Apply_Click" />
             </StackPanel>
         </Border>
