@@ -79,16 +79,19 @@ public partial class GroupEditorWindow : FluentWindow
 
     private void AddProgram_Click(object sender, RoutedEventArgs e)
     {
-        var dialog = new Microsoft.Win32.OpenFileDialog
-        {
-            Title = "Selecciona programas o accesos directos",
-            Filter = "Programas y accesos directos|*.exe;*.lnk|Todos los archivos|*.*",
-            Multiselect = true
-        };
-        if (dialog.ShowDialog(this) != true) return;
+        // Pick from the list of installed programs (built from the Start Menu) so
+        // the user doesn't have to find the right .exe; the picker's "Examinar…"
+        // button still covers anything that isn't listed.
+        var picker = new ProgramPickerWindow { Owner = this };
+        if (picker.ShowDialog() != true) return;
 
-        foreach (var path in dialog.FileNames)
-            AddShortcut(new ProgramShortcut { FilePath = path, isWindowsApp = false });
+        foreach (var app in picker.SelectedApps)
+            AddShortcut(new ProgramShortcut
+            {
+                FilePath = app.TargetPath,
+                name = app.DisplayName,
+                isWindowsApp = false
+            });
     }
 
     private void AddFolder_Click(object sender, RoutedEventArgs e)
