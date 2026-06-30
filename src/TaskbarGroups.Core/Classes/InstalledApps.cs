@@ -95,7 +95,7 @@ namespace TaskbarGroups.Core
                             {
                                 DisplayName = name,
                                 ShortcutPath = lnk,
-                                TargetPath = target
+                                TargetPath = DisplayExe(target, name)
                             };
                     }
                     catch { /* skip shortcuts we can't read */ }
@@ -125,6 +125,42 @@ namespace TaskbarGroups.Core
         {
             string file = Path.GetFileName(target).ToLowerInvariant();
             return file.StartsWith("unins") || file == "setup.exe" || file == "installer.exe";
+        }
+
+        // Squirrel/Electron apps (Discord, Slack, GitHub Desktop…) point their
+        // shortcut at Update.exe, a stub that updates then launches the real app.
+        // For the subtitle only, dig out the real executable (e.g. Discord.exe) so
+        // it isn't shown as "Update.exe". Launch still goes through the shortcut,
+        // which is the correct way to start these apps.
+        private static string DisplayExe(string target, string appName)
+        {
+            if (!Path.GetFileName(target).Equals("Update.exe", StringComparison.OrdinalIgnoreCase))
+                return target;
+            try
+            {
+                string baseDir = Path.GetDirectoryName(target)!;
+                var dirs = new List<string>();
+                string current = Path.Combine(baseDir, "current");
+                if (Directory.Exists(current)) dirs.Add(current);
+                dirs.AddRange(Directory.GetDirectories(baseDir, "app-*")
+                    .OrderByDescending(d => d, StringComparer.OrdinalIgnoreCase));
+
+                foreach (string dir in dirs)
+                {
+                    string named = Path.Combine(dir, appName + ".exe");
+                    if (File.Exists(named)) return named;
+
+                    string real = Directory.EnumerateFiles(dir, "*.exe").FirstOrDefault(f =>
+                    {
+                        string fn = Path.GetFileName(f);
+                        return !fn.StartsWith("Update", StringComparison.OrdinalIgnoreCase)
+                            && !fn.Equals("Squirrel.exe", StringComparison.OrdinalIgnoreCase);
+                    });
+                    if (real != null) return real;
+                }
+            }
+            catch { /* fall back to the stub path */ }
+            return target;
         }
 
         private static readonly string WindowsDir =
