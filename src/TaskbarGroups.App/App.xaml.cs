@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Threading;
+using Wpf.Ui.Appearance;
 
 namespace TaskbarGroups.App;
 
@@ -13,6 +14,10 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         DispatcherUnhandledException += OnUnhandledException;
+        // Follow the system's light/dark mode and accent colour instead of the
+        // fixed "Dark" theme declared in App.xaml. SystemThemeWatcher on each
+        // window then keeps it in sync if the user switches theme while open.
+        ApplicationThemeManager.ApplySystemTheme();
         base.OnStartup(e);
     }
 

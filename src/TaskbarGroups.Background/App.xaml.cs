@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Windows;
 using TaskbarGroups.Core;
+using Wpf.Ui.Appearance;
 
 namespace TaskbarGroups.Background;
 
@@ -15,6 +16,9 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Match the system light/dark theme instead of the fixed "Dark" in App.xaml.
+        ApplicationThemeManager.ApplySystemTheme();
 
         if (e.Args.Length == 0)
         {
