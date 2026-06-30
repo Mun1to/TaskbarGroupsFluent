@@ -60,13 +60,12 @@ namespace TaskbarGroups.Core
                 SafeStartMenu(Environment.SpecialFolder.StartMenu),
             };
 
-            dynamic shell;
-            try { shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application")); }
+            // WScript.Shell resolves shortcut targets reliably. Shell.Application's
+            // GetLink.Path returns "" for many installer-made shortcuts (Brave,
+            // Chrome, Edge, Office…), which silently dropped those programs.
+            dynamic wsh;
+            try { wsh = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")); }
             catch { return new List<InstalledAppInfo>(); }
-
-            // Cache one Shell namespace object per directory; ParseName is cheap, but
-            // recreating the namespace for every .lnk is not.
-            var folderCache = new Dictionary<string, dynamic>(StringComparer.OrdinalIgnoreCase);
 
             foreach (string root in roots)
             {
@@ -83,18 +82,8 @@ namespace TaskbarGroups.Core
                         string name = Path.GetFileNameWithoutExtension(lnk);
                         if (LooksLikeJunkName(name)) continue;
 
-                        string dir = Path.GetDirectoryName(lnk)!;
-                        if (!folderCache.TryGetValue(dir, out dynamic folder))
-                        {
-                            folder = shell.NameSpace(dir);
-                            folderCache[dir] = folder;
-                        }
-                        if (folder == null) continue;
-
-                        dynamic item = folder.ParseName(Path.GetFileName(lnk));
-                        if (item == null) continue;
-
-                        string target = item.GetLink.Path as string;
+                        dynamic shortcut = wsh.CreateShortcut(lnk);
+                        string target = (shortcut.TargetPath as string) ?? "";
                         if (string.IsNullOrWhiteSpace(target)) continue;
                         if (!target.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
                         if (IsExecutableJunk(target)) continue;
