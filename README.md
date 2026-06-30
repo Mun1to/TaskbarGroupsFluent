@@ -24,9 +24,13 @@
 
 ## ✨ Features
 
-- **Fluent design** — Mica backdrop, rounded corners, and a light/dark theme that follows Windows.
+- **Fluent design** — Mica backdrop, rounded corners, and a light/dark theme **and accent colour that follow Windows automatically**.
+- **Pick from installed programs** — choose desktop apps from a searchable list (built from your Start Menu) instead of hunting for the right `.exe`. A *Browse…* button still covers anything not listed.
 - **Microsoft Store apps** — add UWP/MSIX apps with no `.exe` (WhatsApp, Instagram, TikTok…) from a built-in picker. These are the apps the classic file dialog can't reach.
-- **Crisp 256px icons** — extracted from the Windows jumbo image list, with no shortcut-arrow overlay.
+- **Crop & zoom icons** — a built-in editor to position and crop any image before applying it as the group icon.
+- **Crisp 256px icons** — extracted from the Windows jumbo image list, with no shortcut-arrow overlay. Apps launched through a shortcut stub (e.g. Discord) keep their real logo.
+- **Live taskbar updates** — changing a pinned group's icon refreshes the taskbar button.
+- **English & Spanish** — the UI follows your Windows display language (override with the `TBG_LANG` env var).
 - **One-click pinning helper** — opens the shortcut folder ready to pin (Windows 11 blocks fully automatic taskbar pinning).
 - **Programs, folders and Store apps** in the same group.
 - **.NET 8** — the whole shell/UWP/icon interop ported off .NET Framework 4.7.2.
@@ -41,21 +45,23 @@
 
 ## 🚀 Usage
 
-1. Click **Añadir grupo** and give the group a name and icon.
-2. Add shortcuts with **Programa** (`.exe` / `.lnk`), **Carpeta**, or **App Store** (installed UWP apps).
-3. **Guardar grupo**.
-4. On the group's card, click **Anclar a la barra de tareas** and follow the 3 steps (right-click the highlighted shortcut → *Show more options* → *Pin to taskbar*).
+1. Click **Add group** and give the group a name and icon (crop/zoom it in the built-in editor).
+2. Add shortcuts with **Program** (pick from your installed programs, or browse), **Folder**, or **Store app**.
+3. Click **Save group**.
+4. On the group's card, click **Pin to taskbar** and follow the 3 steps (right-click the highlighted shortcut → *Show more options* → *Pin to taskbar*).
 5. Click the pinned icon to open the flyout with your apps.
+
+> The UI is in English or Spanish depending on your Windows display language. Force it with the `TBG_LANG=en` / `TBG_LANG=es` environment variable.
 
 ## 📸 Screenshots
 
-| Group editor | Store app picker |
+| Group editor | Installed-programs picker |
 | --- | --- |
-| <img src="docs/screenshots/group-editor.png" width="380" /> | <img src="docs/screenshots/store-picker.png" width="380" /> |
+| <img src="docs/screenshots/group-editor.png" width="380" /> | <img src="docs/screenshots/program-picker.png" width="380" /> |
 
-| Taskbar flyout | |
+| Store app picker | Taskbar flyout |
 | --- | --- |
-| <img src="docs/screenshots/flyout.png" width="380" /> | |
+| <img src="docs/screenshots/store-picker.png" width="380" /> | <img src="docs/screenshots/flyout.png" width="380" /> |
 
 ## 🛠️ Building from source
 
@@ -78,8 +84,8 @@ dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contain
 
 | Project | Role |
 | --- | --- |
-| `TaskbarGroups.Core` | UI-agnostic logic: data model, shell/UWP/icon interop, paths |
-| `TaskbarGroups.App` | Fluent editor — main window, group editor, Store app picker |
+| `TaskbarGroups.Core` | UI-agnostic logic: data model, shell/UWP/icon interop, installed-app discovery, paths |
+| `TaskbarGroups.App` | Fluent editor — main window, group editor, program & Store pickers, icon crop editor, localization |
 | `TaskbarGroups.Background` | Borderless flyout shown above the taskbar |
 
 The app deploys the background flyout next to itself; a pinned shortcut launches it with the group name as its argument.
