@@ -87,6 +87,7 @@ namespace TaskbarGroups.Core
                         if (string.IsNullOrWhiteSpace(target)) continue;
                         if (!target.EndsWith(".exe", StringComparison.OrdinalIgnoreCase)) continue;
                         if (IsExecutableJunk(target)) continue;
+                        if (IsSystemOrSdkTool(target)) continue;
                         if (!File.Exists(target)) continue;
 
                         if (!found.ContainsKey(target))
@@ -124,6 +125,22 @@ namespace TaskbarGroups.Core
         {
             string file = Path.GetFileName(target).ToLowerInvariant();
             return file.StartsWith("unins") || file == "setup.exe" || file == "installer.exe";
+        }
+
+        private static readonly string WindowsDir =
+            Environment.GetFolderPath(Environment.SpecialFolder.Windows).ToLowerInvariant();
+
+        // Hide Windows system tools and SDK utilities — they all have Start Menu
+        // shortcuts (Task Manager, Registry Editor, ODBC, accessibility, dev SDK
+        // tools…) but nobody groups them. Anything under %windir% or an SDK folder
+        // is filtered out; it's still reachable through the "Browse…" button.
+        private static bool IsSystemOrSdkTool(string target)
+        {
+            string t = target.ToLowerInvariant();
+            if (WindowsDir.Length > 0 && t.StartsWith(WindowsDir + "\\")) return true;
+            return t.Contains(@"\windows kits\")
+                || t.Contains(@"\microsoft sdks\")
+                || t.Contains(@"\vulkansdk\");
         }
     }
 }
