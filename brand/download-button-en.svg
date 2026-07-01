@@ -1,0 +1,16 @@
+<svg width="320" height="72" viewBox="0 0 320 72" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="tbg-btn-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4cc2ff" />
+      <stop offset="50%" stop-color="#0a84ff" />
+      <stop offset="100%" stop-color="#0060c0" />
+    </linearGradient>
+  </defs>
+  <rect width="320" height="72" rx="16" fill="url(#tbg-btn-gradient)" />
+  <text x="160" y="32" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#ffffff">
+    ⬇ Download for Windows
+  </text>
+  <text x="160" y="54" text-anchor="middle" font-family="Segoe UI, Helvetica, Arial, sans-serif" font-size="13" font-weight="400" fill="#e0f0ff">
+    One-click installer (.exe)
+  </text>
+</svg>

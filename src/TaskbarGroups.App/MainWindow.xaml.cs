@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using TaskbarGroups.App.Helpers;
 using TaskbarGroups.App.Models;
@@ -21,7 +22,50 @@ public partial class MainWindow : FluentWindow
     {
         InitializeComponent();
         SystemThemeWatcher.Watch(this);
-        Loaded += (_, _) => RefreshGroups();
+        Loaded += (_, _) =>
+        {
+            RefreshGroups();
+            _ = CheckForUpdatesAsync();
+        };
+    }
+
+    // Offer to self-update when a newer release is on GitHub. Best-effort: any
+    // failure (offline, no installer asset…) silently leaves the app as-is.
+    private async Task CheckForUpdatesAsync()
+    {
+        var info = await UpdateChecker.CheckAsync();
+        if (info is null) return;
+
+        var choice = await new MessageBox
+        {
+            Title = Loc.Get("Loc_Update_Title"),
+            Content = Loc.Format("Loc_Update_Message", info.Tag),
+            PrimaryButtonText = Loc.Get("Loc_Update_Now"),
+            PrimaryButtonAppearance = ControlAppearance.Primary,
+            CloseButtonText = Loc.Get("Loc_Update_Later")
+        }.ShowDialogAsync();
+
+        if (choice != Wpf.Ui.Controls.MessageBoxResult.Primary) return;
+
+        string? installer = await UpdateChecker.DownloadInstallerAsync(info.DownloadUrl);
+        if (installer is null)
+        {
+            await new MessageBox
+            {
+                Title = Loc.Get("Loc_Update_Title"),
+                Content = Loc.Get("Loc_Update_Failed"),
+                CloseButtonText = Loc.Get("Loc_Common_Close")
+            }.ShowDialogAsync();
+            return;
+        }
+
+        try
+        {
+            // The installer closes the running app, overwrites in place and relaunches.
+            Process.Start(new ProcessStartInfo(installer, "/SILENT /NORESTART") { UseShellExecute = true });
+            Application.Current.Shutdown();
+        }
+        catch { /* if the installer can't launch, keep running the current version */ }
     }
 
     private void RefreshGroups()

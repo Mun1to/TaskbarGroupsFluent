@@ -94,6 +94,13 @@
     <s:String x:Key="Loc_Emoji_Heading">Elige un emoji</s:String>
     <s:String x:Key="Loc_Emoji_Subtitle">Úsalo como icono del grupo, sin subir ninguna imagen.</s:String>
 
+    <!-- Actualización automática -->
+    <s:String x:Key="Loc_Update_Title">Actualización disponible</s:String>
+    <s:String x:Key="Loc_Update_Message">Hay una versión nueva ({0}). ¿Actualizar ahora? La app se cerrará mientras se instala y volverá a abrirse.</s:String>
+    <s:String x:Key="Loc_Update_Now">Actualizar ahora</s:String>
+    <s:String x:Key="Loc_Update_Later">Más tarde</s:String>
+    <s:String x:Key="Loc_Update_Failed">No se pudo descargar la actualización. Inténtalo de nuevo más tarde.</s:String>
+
     <!-- Errores -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">Ocurrió un error inesperado:&#10;&#10;{0}</s:String>
 
