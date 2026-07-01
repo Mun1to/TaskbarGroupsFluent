@@ -44,7 +44,7 @@
     <s:String x:Key="Loc_Editor_NamePlaceholder">Mi grupo</s:String>
     <s:String x:Key="Loc_Editor_ChangeIcon">Cambiar icono</s:String>
     <s:String x:Key="Loc_Editor_Shortcuts">Accesos directos</s:String>
-    <s:String x:Key="Loc_Editor_Program">Programa</s:String>
+    <s:String x:Key="Loc_Editor_Program">Aplicación</s:String>
     <s:String x:Key="Loc_Editor_Folder">Carpeta</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">App Store</s:String>
     <s:String x:Key="Loc_Editor_EmptyHint">Añade programas, carpetas o apps de la Store a este grupo</s:String>
@@ -72,10 +72,10 @@
     <s:String x:Key="Loc_Store_CountMany">{0} seleccionadas</s:String>
 
     <!-- Selector de programas instalados -->
-    <s:String x:Key="Loc_Prog_Title">Programas instalados</s:String>
-    <s:String x:Key="Loc_Prog_Heading">Selecciona programas instalados</s:String>
-    <s:String x:Key="Loc_Prog_Subtitle">Elige de la lista, sin buscar el .exe a mano. ¿No aparece? Usa Examinar.</s:String>
-    <s:String x:Key="Loc_Prog_Search">Buscar programa…</s:String>
+    <s:String x:Key="Loc_Prog_Title">Aplicaciones</s:String>
+    <s:String x:Key="Loc_Prog_Heading">Selecciona aplicaciones</s:String>
+    <s:String x:Key="Loc_Prog_Subtitle">Elige de la lista de apps instaladas. ¿No aparece? Usa Examinar.</s:String>
+    <s:String x:Key="Loc_Prog_Search">Buscar aplicación…</s:String>
     <s:String x:Key="Loc_Prog_Browse">Examinar…</s:String>
     <s:String x:Key="Loc_Prog_CountOne">1 seleccionado</s:String>
     <s:String x:Key="Loc_Prog_CountMany">{0} seleccionados</s:String>

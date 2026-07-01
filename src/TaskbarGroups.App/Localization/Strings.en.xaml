@@ -44,7 +44,7 @@
     <s:String x:Key="Loc_Editor_NamePlaceholder">My group</s:String>
     <s:String x:Key="Loc_Editor_ChangeIcon">Change icon</s:String>
     <s:String x:Key="Loc_Editor_Shortcuts">Shortcuts</s:String>
-    <s:String x:Key="Loc_Editor_Program">Program</s:String>
+    <s:String x:Key="Loc_Editor_Program">App</s:String>
     <s:String x:Key="Loc_Editor_Folder">Folder</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">Store app</s:String>
     <s:String x:Key="Loc_Editor_EmptyHint">Add programs, folders or Store apps to this group</s:String>
@@ -72,10 +72,10 @@
     <s:String x:Key="Loc_Store_CountMany">{0} selected</s:String>
 
     <!-- Installed programs picker -->
-    <s:String x:Key="Loc_Prog_Title">Installed programs</s:String>
-    <s:String x:Key="Loc_Prog_Heading">Pick installed programs</s:String>
-    <s:String x:Key="Loc_Prog_Subtitle">Pick from the list, no need to find the .exe by hand. Not listed? Use Browse.</s:String>
-    <s:String x:Key="Loc_Prog_Search">Search program…</s:String>
+    <s:String x:Key="Loc_Prog_Title">Apps</s:String>
+    <s:String x:Key="Loc_Prog_Heading">Pick apps</s:String>
+    <s:String x:Key="Loc_Prog_Subtitle">Pick from your installed apps. Not listed? Use Browse.</s:String>
+    <s:String x:Key="Loc_Prog_Search">Search apps…</s:String>
     <s:String x:Key="Loc_Prog_Browse">Browse…</s:String>
     <s:String x:Key="Loc_Prog_CountOne">1 selected</s:String>
     <s:String x:Key="Loc_Prog_CountMany">{0} selected</s:String>

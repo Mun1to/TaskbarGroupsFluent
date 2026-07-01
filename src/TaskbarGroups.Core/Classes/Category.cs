@@ -248,7 +248,12 @@ namespace TaskbarGroups.Core
             {
                 if (shortcutObject.isWindowsApp)
                 {
-                    // Resolve the UWP app's icon from its AppxManifest via PackageManager.
+                    // AppsFolder id (UWP or Win32): resolve through the shell's own
+                    // image pipeline — correct for every app type. Fall back to the
+                    // AppxManifest logo for older UWP-only entries.
+                    Image shellIcon = AppCatalog.GetIcon(programPath, 256);
+                    if (shellIcon != null)
+                        return shellIcon;
                     try { return handleWindowsApp.getWindowsAppIcon(programPath, true); }
                     catch { return GetErrorImage(); }
                 }

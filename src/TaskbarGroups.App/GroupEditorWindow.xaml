@@ -65,11 +65,9 @@
                                Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <ui:Button Content="{DynamicResource Loc_Editor_Program}" Icon="{ui:SymbolIcon AppGeneric24}"
-                                   Margin="0,0,8,0" Click="AddProgram_Click" />
+                                   Appearance="Info" Margin="0,0,8,0" Click="AddProgram_Click" />
                         <ui:Button Content="{DynamicResource Loc_Editor_Folder}" Icon="{ui:SymbolIcon Folder24}"
-                                   Margin="0,0,8,0" Click="AddFolder_Click" />
-                        <ui:Button Content="{DynamicResource Loc_Editor_StoreApp}" Icon="{ui:SymbolIcon AppsAddIn24}"
-                                   Appearance="Info" Click="AddStoreApp_Click" />
+                                   Click="AddFolder_Click" />
                     </StackPanel>
                 </Grid>
 

@@ -17,17 +17,17 @@ using Wpf.Ui.Controls;
 namespace TaskbarGroups.App;
 
 /// <summary>
-/// Lets the user pick already-installed desktop programs from a searchable list
-/// (built from the Start Menu) instead of hunting for the right .exe by hand.
-/// An "Examinar…" button still allows picking an executable manually.
+/// Unified app picker backed by the shell AppsFolder catalog (UWP + Win32, already
+/// curated) plus a "Browse…" escape hatch for executables not in the catalog.
 /// </summary>
 public partial class ProgramPickerWindow : FluentWindow
 {
-    private readonly ObservableCollection<InstalledAppItem> _allItems = new();
+    private readonly ObservableCollection<AppPickerItem> _allItems = new();
     private ICollectionView? _view;
 
-    public List<InstalledAppInfo> SelectedApps =>
-        _allItems.Where(i => i.IsSelected).Select(i => i.Info).ToList();
+    /// <summary>The shortcuts to add for the apps the user selected.</summary>
+    public List<ProgramShortcut> SelectedShortcuts =>
+        _allItems.Where(i => i.IsSelected).Select(i => i.Shortcut).ToList();
 
     public ProgramPickerWindow()
     {
@@ -41,10 +41,20 @@ public partial class ProgramPickerWindow : FluentWindow
     {
         LoadingRing.Visibility = Visibility.Visible;
 
-        var infos = await Task.Run(InstalledApps.EnumerateInstalled);
-        foreach (var info in infos)
+        var entries = await Task.Run(AppCatalog.Enumerate);
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in entries.OrderBy(e => e.DisplayName, StringComparer.CurrentCultureIgnoreCase))
         {
-            var item = new InstalledAppItem { Info = info };
+            var item = new AppPickerItem
+            {
+                Shortcut = new ProgramShortcut
+                {
+                    FilePath = entry.LaunchId,
+                    name = entry.DisplayName,
+                    isWindowsApp = true
+                }
+            };
+            if (!seen.Add(item.Key)) continue;
             item.PropertyChanged += Item_PropertyChanged;
             _allItems.Add(item);
         }
@@ -61,33 +71,27 @@ public partial class ProgramPickerWindow : FluentWindow
     {
         string query = SearchBox.Text?.Trim() ?? "";
         if (query.Length == 0) return true;
-        return obj is InstalledAppItem item
+        return obj is AppPickerItem item
                && item.DisplayName.Contains(query, StringComparison.OrdinalIgnoreCase);
     }
 
-    private void LoadIcons(IEnumerable<InstalledAppItem> items)
+    private void LoadIcons(IEnumerable<AppPickerItem> items)
     {
         foreach (var item in items)
         {
             try
             {
-                // Resolve the icon from the shortcut itself (not the resolved .exe),
-                // so stub-launched apps like Discord keep their real logo.
-                using var img = Category.ResolveShortcutImage(
-                    new ProgramShortcut { FilePath = item.Info.ShortcutPath, isWindowsApp = false });
+                using var img = Category.ResolveShortcutImage(item.Shortcut);
                 var source = img.ToImageSource();
                 Dispatcher.Invoke(() => item.Icon = source);
             }
-            catch
-            {
-                // Leave the placeholder background for programs whose icon won't resolve.
-            }
+            catch { /* leave the placeholder for apps whose icon won't resolve */ }
         }
     }
 
     private void Item_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(InstalledAppItem.IsSelected))
+        if (e.PropertyName == nameof(AppPickerItem.IsSelected))
             UpdateCount();
     }
 
@@ -113,29 +117,27 @@ public partial class ProgramPickerWindow : FluentWindow
         };
         if (dialog.ShowDialog(this) != true) return;
 
-        var added = new List<InstalledAppItem>();
+        var added = new List<AppPickerItem>();
         foreach (string path in dialog.FileNames)
         {
-            if (_allItems.Any(i => i.Info.ShortcutPath.Equals(path, StringComparison.OrdinalIgnoreCase)))
-                continue;
-
-            var item = new InstalledAppItem
+            var item = new AppPickerItem
             {
-                Info = new InstalledAppInfo
+                Shortcut = new ProgramShortcut
                 {
-                    DisplayName = Path.GetFileNameWithoutExtension(path),
-                    ShortcutPath = path,
-                    TargetPath = path
+                    FilePath = path,
+                    name = Path.GetFileNameWithoutExtension(path),
+                    isWindowsApp = false
                 },
                 IsSelected = true
             };
+            if (_allItems.Any(i => i.Key.Equals(item.Key, StringComparison.OrdinalIgnoreCase)))
+                continue;
             item.PropertyChanged += Item_PropertyChanged;
             _allItems.Insert(0, item);
             added.Add(item);
         }
 
         if (added.Count == 0) return;
-
         _view?.Refresh();
         UpdateCount();
         _ = Task.Run(() => LoadIcons(added));
@@ -143,7 +145,7 @@ public partial class ProgramPickerWindow : FluentWindow
 
     private void Add_Click(object sender, RoutedEventArgs e)
     {
-        DialogResult = SelectedApps.Count > 0;
+        DialogResult = SelectedShortcuts.Count > 0;
         Close();
     }
 

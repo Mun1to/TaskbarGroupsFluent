@@ -60,14 +60,10 @@
                                             <Image Source="{Binding Icon}" Width="28" Height="28"
                                                    RenderOptions.BitmapScalingMode="HighQuality" />
                                         </Border>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="12,0,0,0">
-                                            <TextBlock Text="{Binding DisplayName}"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                                            <TextBlock Text="{Binding TargetPath}" FontSize="11"
-                                                       TextTrimming="CharacterEllipsis"
-                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                                        </StackPanel>
+                                        <TextBlock Grid.Column="1" Text="{Binding DisplayName}"
+                                                   VerticalAlignment="Center" Margin="12,0,0,0"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
                                     </Grid>
                                 </CheckBox.Content>
                             </CheckBox>

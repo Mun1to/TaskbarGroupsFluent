@@ -82,21 +82,14 @@ public partial class GroupEditorWindow : FluentWindow
 
     private void AddProgram_Click(object sender, RoutedEventArgs e)
     {
-        // Pick from the list of installed programs (built from the Start Menu) so
-        // the user doesn't have to find the right .exe; the picker's "Examinar…"
-        // button still covers anything that isn't listed.
+        // Unified app picker: the shell AppsFolder catalog (UWP + Win32) plus a
+        // Browse… escape hatch. Each selection already carries the right launch id
+        // and icon path, so we just add it.
         var picker = new ProgramPickerWindow { Owner = this };
         if (picker.ShowDialog() != true) return;
 
-        foreach (var app in picker.SelectedApps)
-            AddShortcut(new ProgramShortcut
-            {
-                // Store the shortcut (.lnk) so the icon and launch match what Windows
-                // shows in the Start Menu, not the resolved stub .exe.
-                FilePath = app.ShortcutPath,
-                name = app.DisplayName,
-                isWindowsApp = false
-            });
+        foreach (var shortcut in picker.SelectedShortcuts)
+            AddShortcut(shortcut);
     }
 
     private void AddFolder_Click(object sender, RoutedEventArgs e)
