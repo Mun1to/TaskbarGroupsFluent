@@ -1,8 +1,10 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using TaskbarGroups.App.Helpers;
+using TaskbarGroups.Core;
 using Wpf.Ui.Appearance;
 
 namespace TaskbarGroups.App;
@@ -23,6 +25,11 @@ public partial class App : Application
         // window then keeps it in sync if the user switches theme while open.
         ApplicationThemeManager.ApplySystemTheme();
         base.OnStartup(e);
+
+        // After an update that changes icon resolution, refresh group caches once so
+        // pinned flyouts don't keep showing icons rendered by the previous build.
+        // Off the UI thread — it re-resolves every shortcut's icon.
+        Task.Run(IconCacheMaintenance.RefreshIfStale);
     }
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

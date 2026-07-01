@@ -12,6 +12,9 @@
   <ItemGroup>
     <PackageReference Include="KaitaiStruct.Runtime.CSharp" Version="0.10.0" />
     <PackageReference Include="TxFileManager" Version="1.5.0.1" />
+    <!-- Colour-emoji rendering (Segoe UI Emoji): WPF's RenderTargetBitmap rasterises
+         colour glyphs as black, so we render group emoji icons through Skia instead. -->
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
   </ItemGroup>
 
 </Project>

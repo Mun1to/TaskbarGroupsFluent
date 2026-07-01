@@ -43,6 +43,7 @@
     <s:String x:Key="Loc_Editor_NameLabel">Nombre del grupo</s:String>
     <s:String x:Key="Loc_Editor_NamePlaceholder">Mi grupo</s:String>
     <s:String x:Key="Loc_Editor_ChangeIcon">Cambiar icono</s:String>
+    <s:String x:Key="Loc_Editor_Emoji">Emoji</s:String>
     <s:String x:Key="Loc_Editor_Shortcuts">Accesos directos</s:String>
     <s:String x:Key="Loc_Editor_Program">Aplicación</s:String>
     <s:String x:Key="Loc_Editor_Folder">Carpeta</s:String>
@@ -87,6 +88,11 @@
     <s:String x:Key="Loc_Icon_Title">Ajustar icono</s:String>
     <s:String x:Key="Loc_Icon_Hint">Arrastra para mover · rueda o barra para acercar</s:String>
     <s:String x:Key="Loc_Icon_Apply">Aplicar</s:String>
+
+    <!-- Selector de emoji -->
+    <s:String x:Key="Loc_Emoji_Title">Elegir emoji</s:String>
+    <s:String x:Key="Loc_Emoji_Heading">Elige un emoji</s:String>
+    <s:String x:Key="Loc_Emoji_Subtitle">Úsalo como icono del grupo, sin subir ninguna imagen.</s:String>
 
     <!-- Errores -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">Ocurrió un error inesperado:&#10;&#10;{0}</s:String>

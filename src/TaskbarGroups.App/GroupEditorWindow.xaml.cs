@@ -153,6 +153,17 @@ public partial class GroupEditorWindow : FluentWindow
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
 
+    private void ChangeEmoji_Click(object sender, RoutedEventArgs e)
+    {
+        var picker = new EmojiPickerWindow { Owner = this };
+        if (picker.ShowDialog() != true || picker.Result is null) return;
+
+        _groupImage = picker.Result;
+        _iconChanged = true;
+        GroupIconPreview.Source = _groupImage.ToImageSource();
+        GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+    }
+
     private async void Save_Click(object sender, RoutedEventArgs e)
     {
         string name = (NameTextBox.Text ?? "").Trim();

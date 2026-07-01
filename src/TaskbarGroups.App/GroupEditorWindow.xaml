@@ -52,9 +52,15 @@
                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                             <ui:TextBox x:Name="NameTextBox" PlaceholderText="{DynamicResource Loc_Editor_NamePlaceholder}"
                                         Margin="0,0,0,10" />
-                            <ui:Button Content="{DynamicResource Loc_Editor_ChangeIcon}"
-                                       Icon="{ui:SymbolIcon Image24}"
-                                       Click="ChangeIcon_Click" />
+                            <StackPanel Orientation="Horizontal">
+                                <ui:Button Content="{DynamicResource Loc_Editor_ChangeIcon}"
+                                           Icon="{ui:SymbolIcon Image24}"
+                                           Margin="0,0,8,0"
+                                           Click="ChangeIcon_Click" />
+                                <ui:Button Content="{DynamicResource Loc_Editor_Emoji}"
+                                           Icon="{ui:SymbolIcon Emoji24}"
+                                           Click="ChangeEmoji_Click" />
+                            </StackPanel>
                         </StackPanel>
                     </Grid>
                 </ui:Card>

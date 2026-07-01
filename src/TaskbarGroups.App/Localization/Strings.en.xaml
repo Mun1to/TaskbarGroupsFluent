@@ -43,6 +43,7 @@
     <s:String x:Key="Loc_Editor_NameLabel">Group name</s:String>
     <s:String x:Key="Loc_Editor_NamePlaceholder">My group</s:String>
     <s:String x:Key="Loc_Editor_ChangeIcon">Change icon</s:String>
+    <s:String x:Key="Loc_Editor_Emoji">Emoji</s:String>
     <s:String x:Key="Loc_Editor_Shortcuts">Shortcuts</s:String>
     <s:String x:Key="Loc_Editor_Program">App</s:String>
     <s:String x:Key="Loc_Editor_Folder">Folder</s:String>
@@ -87,6 +88,11 @@
     <s:String x:Key="Loc_Icon_Title">Adjust icon</s:String>
     <s:String x:Key="Loc_Icon_Hint">Drag to move · wheel or slider to zoom</s:String>
     <s:String x:Key="Loc_Icon_Apply">Apply</s:String>
+
+    <!-- Emoji picker -->
+    <s:String x:Key="Loc_Emoji_Title">Pick an emoji</s:String>
+    <s:String x:Key="Loc_Emoji_Heading">Choose an emoji</s:String>
+    <s:String x:Key="Loc_Emoji_Subtitle">Use it as the group icon — no image upload needed.</s:String>
 
     <!-- Errors -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">An unexpected error occurred:&#10;&#10;{0}</s:String>

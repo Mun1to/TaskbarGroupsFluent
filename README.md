@@ -26,8 +26,9 @@
 
 - **Fluent design** — Mica backdrop, rounded corners, and a light/dark theme **and accent colour that follow Windows automatically**.
 - **Add any installed app** — one searchable list of everything installed (desktop **and** Microsoft Store apps), read straight from the Windows shell app catalog (`AppsFolder`). No hunting for the right `.exe`; a *Browse…* button covers anything unlisted.
-- **Correct icons for every app** — icons come from the Windows shell image pipeline (the same ones the Start Menu shows), high-res and transparent, for UWP and desktop apps alike — including apps launched through a stub (e.g. Discord).
+- **Correct icons for every app** — icons come from the Windows shell image pipeline (the same ones the Start Menu shows), high-res and transparent, for UWP and desktop apps alike — including apps launched through a stub (e.g. Discord). When the shell can't resolve one (some Squirrel/Electron apps), it falls back to the executable's own icon, so you never get a blank placeholder.
 - **Crop & zoom icons** — a built-in editor to position and crop any image before applying it as the group icon.
+- **Emoji icons** — no image handy? Pick a colour emoji as the group icon (rendered crisp and centred), no upload needed.
 - **Live taskbar updates** — changing a pinned group's icon refreshes the taskbar button (with a clean shell restart that won't disturb your other icons).
 - **English & Spanish** — the UI follows your Windows display language (override with the `TBG_LANG` env var).
 - **One-click pinning helper** — opens the shortcut folder ready to pin (Windows 11 blocks fully automatic taskbar pinning).
@@ -44,7 +45,7 @@
 
 ## 🚀 Usage
 
-1. Click **Add group** and give the group a name and icon (crop/zoom it in the built-in editor).
+1. Click **Add group** and give the group a name and icon (upload & crop an image, or hit **Emoji** to pick one).
 2. Add shortcuts with **App** (pick any installed app — desktop or Store — from the searchable list, or *Browse…*) or **Folder**.
 3. Click **Save group**.
 4. On the group's card, click **Pin to taskbar** and follow the 3 steps (right-click the highlighted shortcut → *Show more options* → *Pin to taskbar*).
@@ -58,9 +59,9 @@
 | --- | --- |
 | <img src="docs/screenshots/group-editor.png" width="380" /> | <img src="docs/screenshots/program-picker.png" width="380" /> |
 
-| Taskbar flyout | |
+| Emoji picker | Taskbar flyout |
 | --- | --- |
-| <img src="docs/screenshots/flyout.png" width="380" /> | |
+| <img src="docs/screenshots/emoji-picker.png" width="380" /> | <img src="docs/screenshots/flyout.png" width="380" /> |
 
 ## 🛠️ Building from source
 
