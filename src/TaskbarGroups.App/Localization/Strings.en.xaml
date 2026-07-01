@@ -59,7 +59,7 @@
     <s:String x:Key="Loc_Editor_ImageLoadFail">Couldn't load the selected image.</s:String>
 
     <!-- Shortcut subtitles -->
-    <s:String x:Key="Loc_Sub_StoreApp">Microsoft Store app</s:String>
+    <s:String x:Key="Loc_Sub_StoreApp">App</s:String>
     <s:String x:Key="Loc_Sub_Folder">Folder</s:String>
     <s:String x:Key="Loc_Sub_Program">Program</s:String>
 

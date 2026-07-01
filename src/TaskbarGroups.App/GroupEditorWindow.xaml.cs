@@ -105,21 +105,6 @@ public partial class GroupEditorWindow : FluentWindow
             AddShortcut(new ProgramShortcut { FilePath = path, isWindowsApp = false });
     }
 
-    private void AddStoreApp_Click(object sender, RoutedEventArgs e)
-    {
-        var picker = new StoreAppPickerWindow { Owner = this };
-        if (picker.ShowDialog() == true && picker.SelectedApps.Count > 0)
-        {
-            foreach (var app in picker.SelectedApps)
-                AddShortcut(new ProgramShortcut
-                {
-                    FilePath = app.AppUserModelId,
-                    name = app.DisplayName,
-                    isWindowsApp = true
-                });
-        }
-    }
-
     private void AddShortcut(ProgramShortcut ps)
     {
         if (_shortcuts.Any(s => s.Shortcut.FilePath.Equals(ps.FilePath, StringComparison.OrdinalIgnoreCase)))

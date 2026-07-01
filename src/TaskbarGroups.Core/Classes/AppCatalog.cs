@@ -124,7 +124,7 @@ namespace TaskbarGroups.Core
                     {
                         item.GetDisplayName(SIGDN.NORMALDISPLAY, out string name);
                         item.GetDisplayName(SIGDN.PARENTRELATIVEPARSING, out string id);
-                        if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(id))
+                        if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(id) && !IsNoise(id))
                             list.Add(new AppCatalogEntry { DisplayName = name, LaunchId = id });
                     }
                     catch { /* skip items we can't read */ }
@@ -136,6 +136,25 @@ namespace TaskbarGroups.Core
             }
             catch { /* return whatever we gathered */ }
             return list;
+        }
+
+        // Hide AppsFolder entries that aren't really "apps you'd group": web links,
+        // documentation/console files, Control Panel applets (their id is a
+        // "{CLSID}\tool.exe" path), Windows system apps, and SDK tools. Real apps
+        // use their own AUMID or a plain executable path, so this has no false
+        // positives on user apps; anything hidden is reachable via Browse….
+        private static bool IsNoise(string id)
+        {
+            string lid = id.ToLowerInvariant();
+            if (lid.StartsWith("http://") || lid.StartsWith("https://")) return true;
+            if (lid.EndsWith(".url") || lid.EndsWith(".msc") || lid.EndsWith(".txt")
+                || lid.EndsWith(".chm") || lid.EndsWith(".htm") || lid.EndsWith(".html")) return true;
+            // Control Panel / system applets live under a CLSID folder: "{GUID}\tool".
+            if (id.Length > 38 && id[0] == '{' && id.IndexOf('}') == 37) return true;
+            if (lid.StartsWith("microsoft.windows.")) return true;            // Control Panel, Admin Tools, Remote Desktop…
+            if (lid.StartsWith("windows.immersivecontrolpanel")) return true; // Settings
+            if (lid.Contains(@"\vulkansdk\") || lid.Contains(@"\windows kits\")) return true;
+            return false;
         }
 
         /// <summary>

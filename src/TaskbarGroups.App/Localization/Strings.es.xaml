@@ -59,7 +59,7 @@
     <s:String x:Key="Loc_Editor_ImageLoadFail">No se pudo cargar la imagen seleccionada.</s:String>
 
     <!-- Subtítulos de acceso directo -->
-    <s:String x:Key="Loc_Sub_StoreApp">App de Microsoft Store</s:String>
+    <s:String x:Key="Loc_Sub_StoreApp">Aplicación</s:String>
     <s:String x:Key="Loc_Sub_Folder">Carpeta</s:String>
     <s:String x:Key="Loc_Sub_Program">Programa</s:String>
 
