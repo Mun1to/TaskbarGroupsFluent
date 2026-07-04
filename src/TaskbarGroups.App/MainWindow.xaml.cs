@@ -59,6 +59,10 @@ public partial class MainWindow : FluentWindow
             return;
         }
 
+        // Back up the user's groups before updating. Updates don't touch this data
+        // (it lives under %APPDATA%, separate from the app), but this is a safety net.
+        ConfigBackup.Create();
+
         try
         {
             // The installer closes the running app, overwrites in place and relaunches.
