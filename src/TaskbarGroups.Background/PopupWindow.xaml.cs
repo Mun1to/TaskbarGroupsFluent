@@ -20,12 +20,14 @@ public partial class PopupWindow : Window
 {
     private readonly Category _category;
     private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
+    private bool _isDark = true;
 
     public PopupWindow(Category category)
     {
         InitializeComponent();
         _category = category;
 
+        ApplyTheme();
         ApplyAppearance();
         LoadItems();
 
@@ -34,15 +36,32 @@ public partial class PopupWindow : Window
         Closed += (_, _) => Application.Current.Shutdown();
     }
 
+    // Follow the Windows light/dark setting: a light panel with dark text under a
+    // light theme, a dark panel with white text under a dark one. The template
+    // binds text/border/hover to these window resources via DynamicResource.
+    private void ApplyTheme()
+    {
+        _isDark = !IsLightTheme();
+        _tint = _isDark ? Color.FromRgb(0x20, 0x20, 0x20) : Color.FromRgb(0xF3, 0xF3, 0xF3);
+
+        Resources["FlyoutTextBrush"] = Frozen(_isDark ? Colors.White : Color.FromRgb(0x1A, 0x1A, 0x1A));
+        Resources["FlyoutBorderBrush"] = Frozen(_isDark
+            ? Color.FromArgb(0x22, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x22, 0x00, 0x00, 0x00));
+        Resources["FlyoutHoverBrush"] = Frozen(_isDark
+            ? Color.FromArgb(0x22, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x14, 0x00, 0x00, 0x00));
+        Resources["FlyoutPressBrush"] = Frozen(_isDark
+            ? Color.FromArgb(0x11, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x22, 0x00, 0x00, 0x00));
+    }
+
+    private static SolidColorBrush Frozen(Color c)
+    {
+        var b = new SolidColorBrush(c);
+        b.Freeze();
+        return b;
+    }
+
     private void ApplyAppearance()
     {
-        try
-        {
-            var c = System.Drawing.ColorTranslator.FromHtml(_category.ColorString);
-            _tint = Color.FromRgb(c.R, c.G, c.B);
-        }
-        catch { /* keep default tint */ }
-
         int count = _category.ShortcutList?.Count ?? 0;
         int columns = _category.Width > 0 ? _category.Width : Math.Min(Math.Max(count, 1), 6);
         ItemsHost.MaxWidth = columns * 80 + 20;
@@ -52,7 +71,7 @@ public partial class PopupWindow : Window
     // can show a frozen frame until something forces a repaint. Instead this is a
     // normal GPU-composited window: on Windows 11 it gets a translucent acrylic
     // backdrop and rounded corners via DWM; elsewhere it falls back to an opaque
-    // rounded panel. Either way it never freezes.
+    // rounded panel. Either way it never freezes, and it follows the system theme.
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
@@ -61,12 +80,13 @@ public partial class PopupWindow : Window
 
         if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
         {
-            int dark = 1;
+            try { acrylic = WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic); }
+            catch { acrylic = false; }
+            // Set the acrylic tint (dark/light) after the backdrop so it sticks.
+            int dark = _isDark ? 1 : 0;
             DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
             int round = DWMWCP_ROUND;
             DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref round, sizeof(int));
-            try { acrylic = WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic); }
-            catch { acrylic = false; }
         }
 
         if (acrylic)
@@ -82,6 +102,22 @@ public partial class PopupWindow : Window
             Background = solid;
             RootBorder.Background = solid;
         }
+    }
+
+    // The Windows "apps" light/dark preference (true = light). TBG_THEME=light|dark
+    // forces it, mirroring the TBG_LANG language override.
+    private static bool IsLightTheme()
+    {
+        string forced = Environment.GetEnvironmentVariable("TBG_THEME");
+        if (!string.IsNullOrWhiteSpace(forced))
+            return forced.Trim().StartsWith("l", StringComparison.OrdinalIgnoreCase);
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            return key?.GetValue("AppsUseLightTheme") is int v && v != 0;
+        }
+        catch { return false; }
     }
 
     private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;

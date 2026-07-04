@@ -25,10 +25,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#22FFFFFF" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FlyoutHoverBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="#11FFFFFF" />
+                                <Setter TargetName="Bd" Property="Background" Value="{DynamicResource FlyoutPressBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -38,7 +38,7 @@
     </Window.Resources>
 
     <Border x:Name="RootBorder" CornerRadius="8" Padding="10"
-            Background="#F0202020" BorderBrush="#22FFFFFF" BorderThickness="1">
+            Background="#F0202020" BorderBrush="{DynamicResource FlyoutBorderBrush}" BorderThickness="1">
         <ItemsControl x:Name="ItemsHost">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -53,7 +53,7 @@
                         <StackPanel VerticalAlignment="Center">
                             <Image Source="{Binding Icon}" Width="44" Height="44"
                                    RenderOptions.BitmapScalingMode="HighQuality" />
-                            <TextBlock Text="{Binding DisplayName}" Foreground="White"
+                            <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
                                        FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
                                        TextTrimming="CharacterEllipsis" MaxWidth="68" />
                         </StackPanel>
