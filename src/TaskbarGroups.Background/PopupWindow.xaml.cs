@@ -1,11 +1,14 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Windows;
+using System.Windows.Interop;
 using System.Windows.Media;
 using TaskbarGroups.Background.Helpers;
 using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
+using Wpf.Ui.Controls;
 
 namespace TaskbarGroups.Background;
 
@@ -16,6 +19,7 @@ namespace TaskbarGroups.Background;
 public partial class PopupWindow : Window
 {
     private readonly Category _category;
+    private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
 
     public PopupWindow(Category category)
     {
@@ -35,14 +39,57 @@ public partial class PopupWindow : Window
         try
         {
             var c = System.Drawing.ColorTranslator.FromHtml(_category.ColorString);
-            RootBorder.Background = new SolidColorBrush(Color.FromArgb(240, c.R, c.G, c.B));
+            _tint = Color.FromRgb(c.R, c.G, c.B);
         }
-        catch { /* keep default background */ }
+        catch { /* keep default tint */ }
 
         int count = _category.ShortcutList?.Count ?? 0;
         int columns = _category.Width > 0 ? _category.Width : Math.Min(Math.Max(count, 1), 6);
         ItemsHost.MaxWidth = columns * 80 + 20;
     }
+
+    // A per-pixel transparent (AllowsTransparency) window is software-rendered and
+    // can show a frozen frame until something forces a repaint. Instead this is a
+    // normal GPU-composited window: on Windows 11 it gets a translucent acrylic
+    // backdrop and rounded corners via DWM; elsewhere it falls back to an opaque
+    // rounded panel. Either way it never freezes.
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        bool acrylic = false;
+
+        if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
+        {
+            int dark = 1;
+            DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
+            int round = DWMWCP_ROUND;
+            DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref round, sizeof(int));
+            try { acrylic = WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic); }
+            catch { acrylic = false; }
+        }
+
+        if (acrylic)
+        {
+            // Let the acrylic show through a translucent tint.
+            Background = Brushes.Transparent;
+            RootBorder.Background = new SolidColorBrush(Color.FromArgb(150, _tint.R, _tint.G, _tint.B));
+        }
+        else
+        {
+            // No acrylic: opaque so nothing shows through (avoids a black backdrop).
+            var solid = new SolidColorBrush(Color.FromArgb(255, _tint.R, _tint.G, _tint.B));
+            Background = solid;
+            RootBorder.Background = solid;
+        }
+    }
+
+    private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
+    private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
+    private const int DWMWCP_ROUND = 2;
+
+    [DllImport("dwmapi.dll")]
+    private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
 
     private void LoadItems()
     {
