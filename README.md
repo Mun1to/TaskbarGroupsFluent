@@ -1,6 +1,8 @@
 <div align="center">
 
-# 📌 Taskbar Groups — Fluent
+<img src="brand/logo.png" width="128" height="128" alt="Taskbar Groups Fluent logo" />
+
+# Taskbar Groups — Fluent
 
 **Group your shortcuts into a single taskbar icon.** A modern **WPF / .NET 8** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
 

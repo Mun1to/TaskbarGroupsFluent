@@ -1,6 +1,8 @@
 <div align="center">
 
-# 📌 Taskbar Groups — Fluent
+<img src="brand/logo.png" width="128" height="128" alt="Logo de Taskbar Groups Fluent" />
+
+# Taskbar Groups — Fluent
 
 **Agrupa tus accesos directos en un solo icono de la barra de tareas.** Una reescritura moderna en **WPF / .NET 8** de Taskbar Groups, con interfaz Fluent (estilo WinUI 3).
 
