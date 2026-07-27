@@ -12,6 +12,11 @@
     <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
+  <!-- The app mark, shown in the title bar. Same artwork as Icon.ico. -->
+  <ItemGroup>
+    <Resource Include="..\assets\logo.png" Link="Assets\logo.png" />
+  </ItemGroup>
+
   <!-- Deploy the background flyout exe next to the app so pinned shortcuts can launch it. -->
   <Target Name="CopyBackgroundClient" AfterTargets="Build">
     <ItemGroup>

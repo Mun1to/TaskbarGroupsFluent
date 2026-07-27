@@ -22,7 +22,7 @@
 
         <ui:TitleBar Grid.Row="0" Title="Taskbar Groups" Padding="12,6">
             <ui:TitleBar.Icon>
-                <ui:SymbolIcon Symbol="AppsList24" />
+                <ui:ImageIcon Source="pack://application:,,,/Assets/logo.png" Width="18" Height="18" />
             </ui:TitleBar.Icon>
         </ui:TitleBar>
 
