@@ -39,7 +39,17 @@ namespace TaskbarGroups.Core
         private static extern bool DeleteObject(IntPtr hObject);
 
         [DllImport("gdi32.dll")]
-        private static extern int GetObject(IntPtr hgdiobj, int cbBuffer, ref DIBSECTION lpvObject);
+        private static extern int GetObject(IntPtr hgdiobj, int cbBuffer, ref BITMAP lpvObject);
+
+        [DllImport("gdi32.dll")]
+        private static extern int GetDIBits(IntPtr hdc, IntPtr hbm, uint startScan, uint scanLines,
+            IntPtr bits, ref BITMAPINFOHEADER bmi, uint usage);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetDC(IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        private static extern int ReleaseDC(IntPtr hWnd, IntPtr hdc);
 
         // Extracts an icon straight from a PE file's resources at a requested size —
         // bypasses the (sometimes stale/generic) system image list.
@@ -62,23 +72,11 @@ namespace TaskbarGroups.Core
         private struct BITMAPINFOHEADER
         {
             public uint biSize;
-            public int biWidth, biHeight; // biHeight < 0 = top-down, > 0 = bottom-up
+            public int biWidth, biHeight; // biHeight < 0 asks for top-down rows
             public ushort biPlanes, biBitCount;
             public uint biCompression, biSizeImage;
             public int biXPelsPerMeter, biYPelsPerMeter;
             public uint biClrUsed, biClrImportant;
-        }
-
-        // BITMAP alone can't tell us the row order: bmHeight is always positive.
-        // Only the DIB header carries the sign we need.
-        [StructLayout(LayoutKind.Sequential)]
-        private struct DIBSECTION
-        {
-            public BITMAP dsBm;
-            public BITMAPINFOHEADER dsBmih;
-            public uint dsBitfield0, dsBitfield1, dsBitfield2;
-            public IntPtr dshSection;
-            public uint dsOffset;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -333,38 +331,56 @@ namespace TaskbarGroups.Core
             finally { if (h[0] != IntPtr.Zero) DestroyIcon(h[0]); }
         }
 
-        // The shell returns a 32-bit premultiplied-alpha DIB section. Image.FromHbitmap
-        // drops the alpha (black background), so read the DIB pixels directly and clone
-        // them into an owned bitmap.
+        // Image.FromHbitmap drops the alpha (black background), so the pixels have to
+        // be read out by hand. Reading them straight out of the DIB is not enough: the
+        // shell stores the rows either way round and its DIB header does not reliably
+        // say which — measured on Windows 11, a 96px icon reads "bottom-up" and is one,
+        // a 256px icon reads "bottom-up" and isn't, which left every large icon (and
+        // every icon in the app picker) upside down.
+        //
+        // GetDIBits sidesteps the guesswork: a negative biHeight asks GDI for the rows
+        // top-down, and GDI knows how the bitmap is actually stored. It also hands back
+        // straight, non-premultiplied alpha — hence Format32bppArgb; reading those bytes
+        // as premultiplied left a bright fringe around soft edges.
         private static Bitmap? BitmapFromHBitmap(IntPtr hbitmap)
         {
-            int dibSize = Marshal.SizeOf<DIBSECTION>();
-            DIBSECTION ds = default;
-            int read = GetObject(hbitmap, dibSize, ref ds);
-            BITMAP bm = ds.dsBm;
-            if (read == 0 || bm.bmWidth <= 0 || bm.bmHeight <= 0) return null;
+            BITMAP bm = default;
+            if (GetObject(hbitmap, Marshal.SizeOf<BITMAP>(), ref bm) == 0) return null;
+            if (bm.bmWidth <= 0 || bm.bmHeight <= 0) return null;
 
-            // Non-DIB or non-32bpp: no usable alpha, and GDI+ sorts out the row order
-            // itself. GetObject only fills the DIB header for real DIB sections.
-            if (read < dibSize || bm.bmBits == IntPtr.Zero || bm.bmBitsPixel != 32)
+            // Non-32bpp: no usable alpha to preserve, and GDI+ handles the row order.
+            if (bm.bmBitsPixel != 32)
             {
                 using var opaque = Image.FromHbitmap(hbitmap);
                 return new Bitmap(opaque);
             }
 
-            // Wrap the DIB pixels (premultiplied BGRA) and deep-copy into a bitmap
-            // that owns its memory; cloning a PArgb bitmap yields correct alpha.
-            using var wrapped = new Bitmap(bm.bmWidth, bm.bmHeight, bm.bmWidthBytes,
-                PixelFormat.Format32bppPArgb, bm.bmBits);
-            var copy = new Bitmap(wrapped);
+            var bmp = new Bitmap(bm.bmWidth, bm.bmHeight, PixelFormat.Format32bppArgb);
+            var rect = new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
+            BitmapData data = bmp.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+            bool copied;
+            try
+            {
+                var bmi = new BITMAPINFOHEADER
+                {
+                    biSize = (uint)Marshal.SizeOf<BITMAPINFOHEADER>(),
+                    biWidth = bm.bmWidth,
+                    biHeight = -bm.bmHeight, // negative: top row first
+                    biPlanes = 1,
+                    biBitCount = 32,
+                    biCompression = 0,       // BI_RGB
+                };
+                IntPtr hdc = GetDC(IntPtr.Zero);
+                try
+                {
+                    copied = GetDIBits(hdc, hbitmap, 0, (uint)bm.bmHeight, data.Scan0, ref bmi, 0) != 0;
+                }
+                finally { ReleaseDC(IntPtr.Zero, hdc); }
+            }
+            finally { bmp.UnlockBits(data); }
 
-            // Wrapping reads rows top-down, but the shell hands back a bottom-up DIB
-            // (biHeight > 0) on current Windows builds, which flipped every icon
-            // upside down. The header is the only reliable source for the row order,
-            // so read it instead of assuming either one.
-            if (ds.dsBmih.biHeight > 0)
-                copy.RotateFlip(RotateFlipType.RotateNoneFlipY);
-            return copy;
+            if (!copied) { bmp.Dispose(); return null; }
+            return bmp;
         }
     }
 }
