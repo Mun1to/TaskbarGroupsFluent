@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0A0E17">
+  <title>Taskbar Groups Fluent - Una barra de tareas ordenada</title>
+  <meta name="description" content="Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows. Lo pulsas y se abre un panel con todas tus apps. Gratis, open source y con el aspecto de Windows 11.">
+  <link rel="icon" type="image/png" href="assets/icon-256.png?v=1">
+  <!-- La tarjeta al compartir va SIEMPRE en inglés: el crawler no ejecuta el JS que
+       traduce la página, así que solo hay una versión, y el enlace se pega sobre todo
+       en sitios internacionales. La web sí se adapta al idioma de quien la abre. -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mun1to.github.io/TaskbarGroupsFluent/">
+  <meta property="og:title" content="Taskbar Groups Fluent - One icon, all your apps">
+  <meta property="og:description" content="Group your shortcuts into a single taskbar button. Click it and a Fluent flyout pops up with every app in the group. Free and open source for Windows 10/11.">
+  <meta property="og:image" content="https://mun1to.github.io/TaskbarGroupsFluent/assets/og.png?v=1">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Taskbar Groups Fluent - One icon, all your apps">
+  <meta name="twitter:description" content="Group your shortcuts into a single taskbar button. Free and open source for Windows 10/11.">
+  <meta name="twitter:image" content="https://mun1to.github.io/TaskbarGroupsFluent/assets/og.png?v=1">
+  <!-- Progressive enhancement + control central de movimiento:
+       .js     → hay JavaScript
+       .motion → las animaciones están activas. Decisión de diseño: se muestran a TODOS
+                 los visitantes, también a quien tiene "reducir movimiento" en su sistema.
+                 La URL ?motion=off las desactiva (válvula de escape para pruebas). -->
+  <script>
+    (function () {
+      var d = document.documentElement;
+      d.classList.add("js");
+      var off = /[?&]motion=off/.test(location.search);
+      if (!off) d.classList.add("motion");
+
+      // Idioma decidido ANTES de pintar, para que nadie vea el texto cambiar:
+      // manda ?lang=, luego lo que eligió el visitante, y si no, su navegador.
+      var q = /[?&]lang=(es|en)/.exec(location.search);
+      var saved = null;
+      try { saved = localStorage.getItem("tbgf-lang"); } catch (e) {}
+      var nav = (navigator.language || "es").toLowerCase();
+      d.lang = (q && q[1]) || saved || (nav.indexOf("es") === 0 ? "es" : "en");
+    })();
+  </script>
+  <style>
+    :root {
+      /* Landing monotema oscura por diseño: se declara al navegador para que los
+         controles nativos (scrollbar, inputs) también rendericen en oscuro. */
+      color-scheme: dark;
+      --bg: #0A0E17;
+      --surface: #141A28;
+      --border: #232C40;
+      --border-strong: #35415C;
+      --text: #E9EDF8;
+      --muted: #93A0C7;
+      /* Los azules salen del propio logo de la app (el degradado del panel). */
+      --primary: #0067C0;
+      --primary-strong: #4CC2FF;
+      --accent: #FFC83D;
+      --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+      /* La curva premium (ease-out-quint): arranque rápido, aterrizaje suave */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      /* clip y no hidden: `hidden` convierte el body en contenedor de scroll y
+         eso rompe el position:sticky del hero. */
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: rgba(76, 194, 255, 0.4); }
+
+    /* ---------- Grano sutil (textura premium) ---------- */
+    .grain {
+      position: fixed; inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: 0.05;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+    }
+
+    /* ---------- Capas de fondo con parallax ---------- */
+    .backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .orb { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
+    .orb-a {
+      width: 660px; height: 660px;
+      top: -240px; left: 50%; margin-left: -330px;
+      background: radial-gradient(circle, rgba(76, 194, 255, 0.30), transparent 65%);
+    }
+    .orb-b {
+      width: 460px; height: 460px;
+      top: 46vh; right: -160px;
+      background: radial-gradient(circle, rgba(255, 200, 61, 0.13), transparent 65%);
+    }
+    .orb-c {
+      width: 520px; height: 520px;
+      top: 115vh; left: -200px;
+      background: radial-gradient(circle, rgba(0, 103, 192, 0.20), transparent 65%);
+    }
+
+    /* ---------- Nav ---------- */
+    nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1000px; margin: 0 auto;
+      padding: 26px 24px;
+      z-index: 5;
+    }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .brand img { width: 36px; height: 36px; object-fit: contain; }
+    .brand span { font-size: 17.5px; font-weight: 650; letter-spacing: -0.3px; }
+    .nav-right { display: flex; align-items: center; gap: 4px; }
+
+    /* Botones del header sin recuadro fijo: al pasar el ratón aparece una píldora
+       suave bajo el texto. La zona clicable se ve, pero no ensucia en reposo. */
+    nav a.gh, .lang {
+      background: none; border: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-family: var(--font);
+      font-size: 14.5px; font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: background-color 0.18s var(--ease), color 0.18s var(--ease);
+    }
+    nav a.gh:hover, .lang:hover { background: rgba(233, 237, 248, 0.1); color: var(--text); }
+    nav a.gh:active, .lang:active { background: rgba(233, 237, 248, 0.16); }
+
+    /* ==========================================================================
+       HERO A PANTALLA COMPLETA + LÁMINA QUE LO TAPA
+       Al entrar solo se ve el hero: ocupa la pantalla entera y nada asoma por
+       abajo salvo la flecha que invita a bajar. El hero se queda PEGADO (sticky)
+       y el resto de la página es una lámina que sube por encima y lo cubre.
+       Por eso .sheet lleva fondo sólido: si fuese transparente, el hero se vería
+       a través y el efecto de tapar desaparecería.
+       ========================================================================== */
+    .hero-wrap { position: sticky; top: 0; height: 100svh; z-index: 0; }
+    .hero {
+      height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 96px 24px 40px;
+      will-change: transform, opacity;
+    }
+    .sheet {
+      position: relative;
+      z-index: 1;
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      border-radius: 30px 30px 0 0;
+      box-shadow: 0 -34px 80px rgba(0, 0, 0, 0.6);
+    }
+
+    /* Flecha de "sigue bajando": lo único que asoma en la primera pantalla */
+    .scroll-cue {
+      position: absolute;
+      left: 50%; bottom: 30px;
+      translate: -50% 0;
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      color: var(--muted);
+      font-size: 11.5px; letter-spacing: 1.6px; text-transform: uppercase;
+      transition: opacity 0.4s ease;
+    }
+    .scroll-cue svg { animation: cue 1.9s ease-in-out infinite; }
+    @keyframes cue {
+      0%, 100% { transform: translateY(0); opacity: 0.55; }
+      50% { transform: translateY(7px); opacity: 1; }
+    }
+    /* Entrada propia en vez de .fade-up: comparten especificidad y la regla de
+       fade-up ganaba, dejando la flecha visible para siempre al scrollear. */
+    html.motion .scroll-cue { opacity: 0; transition: opacity 0.6s var(--ease) 1100ms; }
+    html.motion body.ready .scroll-cue { opacity: 1; }
+    html.motion body.scrolled .scroll-cue,
+    body.scrolled .scroll-cue { opacity: 0; pointer-events: none; transition-delay: 0s; }
+
+    h1 {
+      font-size: clamp(42px, 7.6vw, 80px);
+      font-weight: 760;
+      letter-spacing: -2.2px;
+      line-height: 1.06;
+      margin-bottom: 24px;
+    }
+    /* Segunda línea del titular en el azul de marca, plano y sin degradado. */
+    h1 .accent { color: var(--primary-strong); }
+    .sub {
+      font-size: clamp(17px, 2.3vw, 20px);
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 36px;
+    }
+    .sub b { color: var(--text); font-weight: 600; }
+    .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 15px 30px;
+      border-radius: 13px;
+      font-size: 16px; font-weight: 600;
+      transition: box-shadow 0.2s, background 0.15s, border-color 0.15s;
+    }
+    .btn.primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 8px 34px rgba(0, 103, 192, 0.5);
+    }
+    .btn.primary:hover { background: #0a7ad8; box-shadow: 0 10px 44px rgba(76, 194, 255, 0.45); }
+    .btn.ghost {
+      background: rgba(20, 26, 40, 0.7);
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+    }
+    .btn.ghost:hover { border-color: var(--primary-strong); }
+    .os-note { margin-top: 16px; font-size: 13px; color: var(--muted); }
+    .inline-link { text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s; }
+    .inline-link:hover { color: var(--text); }
+
+    /* ==========================================================================
+       ENTRADA DEL HERO — "line mask reveal": cada línea del titular vive dentro
+       de una caja con overflow:hidden y sube desde abajo, en cascada. Solo
+       transform → GPU.
+       ========================================================================== */
+    .line { display: block; overflow: hidden; }
+    .line > span { display: block; }
+    html.motion .line > span {
+      transform: translateY(112%);
+      transition: transform 1s var(--ease);
+      transition-delay: calc(var(--i, 0) * 110ms);
+    }
+    html.motion body.ready .line > span { transform: none; }
+
+    /* El resto del hero (sub, cta, nota) hace fade-up escalonado tras el titular */
+    html.motion .fade-up {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+      transition-delay: calc(var(--i, 0) * 110ms + 300ms);
+    }
+    html.motion body.ready .fade-up { opacity: 1; transform: none; }
+
+    /* Cuando la entrada del hero termina (body.settled), se apagan sus transiciones
+       para que el motor de parallax pueda mover esos elementos frame a frame. */
+    html.motion body.settled .fade-up,
+    html.motion body.settled .line > span { transition: none; }
+
+    /* ---------- Secciones ---------- */
+    /* scroll-margin-top: al saltar desde un enlace de ancla, deja aire arriba en
+       vez de pegar el título al borde y comerse parte de la sección. */
+    section { max-width: 1000px; margin: 0 auto; padding: 82px 24px 0; scroll-margin-top: 24px; }
+
+    /* ==========================================================================
+       MOVIMIENTO AL SCROLLEAR — la sección entera SUBE como una tarjeta.
+       El movimiento lo lleva el bloque completo ([data-rise]), no cada texto por
+       su cuenta: así se lee como una pieza que entra desde abajo en vez de como
+       un montón de trozos descoordinados. Dentro, los hijos solo se encienden en
+       cascada corta (opacidad, sin desplazarse), que es lo que da el remate.
+       ========================================================================== */
+    html.motion [data-rise] {
+      opacity: 0;
+      transform: translateY(70px);
+      transition: opacity 0.75s var(--ease), transform 0.9s var(--ease);
+      will-change: transform;
+    }
+    html.motion [data-rise].in { opacity: 1; transform: none; }
+
+    html.motion [data-reveal] {
+      opacity: 0;
+      transition: opacity 0.55s var(--ease);
+      transition-delay: calc(var(--i, 0) * 55ms + 120ms);
+    }
+    html.motion [data-reveal].in { opacity: 1; }
+
+    .kicker {
+      text-align: center;
+      font-size: 12px; font-weight: 650;
+      text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    h2 {
+      text-align: center;
+      font-size: clamp(28px, 4.4vw, 40px);
+      font-weight: 720;
+      letter-spacing: -1px;
+      margin-bottom: 18px;
+    }
+    .section-sub { text-align: center; color: var(--muted); max-width: 540px; margin: 0 auto 52px; }
+
+    /* ==========================================================================
+       DEMO — una barra de tareas de mentira con un grupo anclado de verdad.
+       Es LO que hace la app, así que enseñarlo vale más que describirlo: se pulsa
+       el botón del grupo y sale el panel, igual que en Windows. Todo con CSS y un
+       puñado de líneas de JS; la landing no carga ni una librería.
+       ========================================================================== */
+    #demo { padding-top: 76px; }
+    .demo-shell {
+      max-width: 760px;
+      margin: 0 auto;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+    }
+    /* Un escritorio recreado: degradado de fondo, el panel y la barra abajo. */
+    .demo-desktop {
+      position: relative;
+      height: 340px;
+      background:
+        radial-gradient(120% 90% at 50% 8%, rgba(76, 194, 255, 0.16), transparent 60%),
+        linear-gradient(160deg, #10182B 0%, #0C1220 55%, #131B2E 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+    .demo-hint {
+      position: absolute;
+      left: 50%; top: 40%;
+      translate: -50% -50%;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      color: var(--muted);
+      font-size: 13.5px;
+      text-align: center;
+      transition: opacity 0.35s var(--ease);
+      pointer-events: none;
+    }
+    .demo-desktop.open .demo-hint { opacity: 0; }
+    .demo-hint svg { animation: cue 1.9s ease-in-out infinite; }
+
+    /* El panel: nace pegado a la barra y crece hacia arriba, como el de verdad. */
+    .flyout {
+      position: absolute;
+      left: 50%;
+      bottom: 74px;
+      translate: -50% 0;
+      width: 292px;
+      padding: 14px;
+      background: rgba(32, 38, 54, 0.82);
+      /* El desenfoque de fondo es lo que hace que se lea como Windows 11 y no
+         como una caja gris: se ve el escritorio a través del panel. */
+      backdrop-filter: blur(26px) saturate(150%);
+      -webkit-backdrop-filter: blur(26px) saturate(150%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      transform: translateY(14px) scale(0.96);
+      transform-origin: 50% 100%;
+      transition: opacity 0.28s var(--ease), transform 0.38s var(--ease);
+      pointer-events: none;
+    }
+    .demo-desktop.open .flyout { opacity: 1; transform: none; pointer-events: auto; }
+    .flyout-title {
+      font-size: 12px; font-weight: 650;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--muted);
+      margin: 2px 4px 12px;
+    }
+    .flyout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .fly-app {
+      display: flex; flex-direction: column; align-items: center; gap: 7px;
+      padding: 11px 4px 9px;
+      border-radius: 9px;
+      font-size: 11.5px;
+      color: var(--text);
+      transition: background-color 0.14s;
+    }
+    .fly-app:hover { background: rgba(255, 255, 255, 0.09); }
+    /* Cada "app" es un cuadrado con degradado y su inicial: sin imágenes de
+       terceros, sin logos ajenos y sin una sola petición de red. */
+    .app-ic {
+      width: 34px; height: 34px;
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    /* La barra de tareas, centrada como en Windows 11 */
+    .taskbar {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      height: 56px;
+      background: rgba(24, 30, 44, 0.86);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+      z-index: 2;
+    }
+    .tb-btn {
+      width: 42px; height: 42px;
+      border: none; background: none;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: default;
+      transition: background-color 0.15s;
+    }
+    .tb-btn .app-ic { width: 26px; height: 26px; border-radius: 7px; font-size: 12px; }
+    /* El botón del grupo: el único pulsable, y se nota (cursor, aro y el
+       subrayado de "app abierta" que pinta Windows bajo el icono activo). */
+    .tb-group { cursor: pointer; position: relative; }
+    .tb-group:hover { background: rgba(255, 255, 255, 0.1); }
+    .tb-group img { width: 28px; height: 28px; object-fit: contain; }
+    .tb-group::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: 3px;
+      translate: -50% 0;
+      width: 5px; height: 3px;
+      border-radius: 2px;
+      background: var(--primary-strong);
+      transition: width 0.3s var(--ease);
+    }
+    .demo-desktop.open .tb-group::after { width: 17px; }
+    /* Anillo que late para señalar dónde hay que pulsar; se apaga al abrir. */
+    html.motion .tb-group::before {
+      content: "";
+      position: absolute; inset: -2px;
+      border-radius: 10px;
+      border: 2px solid var(--primary-strong);
+      animation: ping 2.4s var(--ease) infinite;
+    }
+    html.motion .demo-desktop.open .tb-group::before { display: none; }
+    @keyframes ping {
+      0% { opacity: 0.9; transform: scale(1); }
+      70%, 100% { opacity: 0; transform: scale(1.35); }
+    }
+
+    /* ---------- Puntos fuertes ---------- */
+    .points { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .point {
+      background: rgba(20, 26, 40, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 24px 20px;
+      text-align: center;
+      transition: border-color 0.15s, translate 0.25s var(--ease);
+    }
+    .point:hover { border-color: var(--border-strong); translate: 0 -3px; }
+    .point .ic { font-size: 24px; margin-bottom: 10px; }
+    .point h3 { font-size: 15.5px; margin-bottom: 5px; font-weight: 650; }
+    .point p { font-size: 13.5px; color: var(--muted); line-height: 1.5; }
+
+    /* ---------- Capturas reales ---------- */
+    .shot { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .shot img { display: block; width: 100%; height: auto; }
+
+    /* ==========================================================================
+       PILA DE CAPTURAS — misma receta que .hero-wrap/.sheet (sticky + tarjeta
+       sólida que sube y tapa la anterior), aplicada a escala de tarjeta. Cada
+       .shot-card se pega un poco más abajo que la de antes (--stack creciente),
+       así al scrollear la cabecera de la anterior se queda asomando arriba.
+       ========================================================================== */
+    .shots { position: relative; }
+    .shot-card {
+      max-width: 760px;
+      margin: 0 auto 30px;
+      padding: 18px 18px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+      position: sticky;
+      /* El asomo (46px) es justo el alto de la cabecera: así de la tarjeta de
+         atrás se lee su número y su título enteros. Con menos, el texto sale
+         cortado por la mitad y parece un fallo, no un apilado. */
+      top: calc(20px + (var(--stack) - 1) * 46px);
+      z-index: var(--stack);
+    }
+    .shot-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .shot-num { font-size: 15px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+    .shot-head h3 { flex: 1; font-size: 16.5px; font-weight: 650; }
+    .shot-cap { text-align: center; color: var(--muted); font-size: 13px; margin-top: 14px; }
+
+    /* Zoom al clic: el cursor y un aro sutil al enfocar avisan de que se puede
+       ampliar (el teclado también funciona, es tabindex+role=button). */
+    .shot.zoomable { cursor: zoom-in; transition: outline-color 0.15s; outline: 2px solid transparent; outline-offset: 3px; }
+    .shot.zoomable:hover, .shot.zoomable:focus-visible { outline-color: var(--primary-strong); }
+
+    /* El apilado se desactiva en dos casos, y en ambos las tarjetas vuelven al
+       flujo normal, una debajo de otra:
+       - Pantallas estrechas: poco recorrido de scroll para apreciarlo.
+       - Ventanas bajas: una tarjeta pegada más alta que el hueco disponible
+         nunca deja ver su parte de abajo, así que el pie se quedaría cortado. */
+    @media (max-width: 720px), (max-height: 800px) {
+      .shot-card { position: static; }
+    }
+
+    /* Zoom de capturas: <dialog> nativo a pantalla completa, imagen centrada. */
+    #lightbox {
+      border: none; padding: 0;
+      max-width: 100vw; max-height: 100vh;
+      width: 100vw; height: 100vh;
+      background: rgba(5, 7, 16, 0.92);
+      align-items: center; justify-content: center;
+    }
+    /* display solo cuando está abierto: si no, pisaría la regla nativa del
+       navegador que oculta el <dialog> cerrado y seguiría bloqueando clics. */
+    #lightbox[open] { display: flex; animation: lightbox-in 0.2s var(--ease); }
+    #lightbox::backdrop { background: transparent; }
+    @keyframes lightbox-in { from { opacity: 0; } to { opacity: 1; } }
+    #lightbox img {
+      max-width: 92vw; max-height: 92vh;
+      width: auto;
+      border-radius: 10px;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+    }
+    #lightbox-close {
+      position: fixed;
+      top: 22px; right: 22px;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(20, 26, 40, 0.85);
+      border: 1px solid var(--border-strong);
+      border-radius: 50%;
+      color: var(--text);
+      cursor: pointer;
+      transition: background-color 0.15s;
+    }
+    #lightbox-close:hover { background: rgba(233, 237, 248, 0.14); }
+
+    /* ---------- Los tres pasos ---------- */
+    .steps {
+      display: flex; align-items: center; justify-content: center;
+      gap: 18px; flex-wrap: wrap;
+      font-size: clamp(16px, 2.4vw, 21px);
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .steps b { color: var(--text); font-weight: 650; }
+    .steps .arrow { color: var(--accent); font-weight: 700; }
+
+    /* ---------- Créditos ---------- */
+    .credits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .credit {
+      background: rgba(20, 26, 40, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 20px;
+      transition: border-color 0.15s;
+    }
+    .credit:hover { border-color: var(--border-strong); }
+    .credit h3 { font-size: 14.5px; font-weight: 650; margin-bottom: 5px; }
+    .credit h3 a { color: var(--primary-strong); }
+    .credit h3 a:hover { text-decoration: underline; }
+    .credit p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* ---------- Cierre y pie ---------- */
+    .final { padding-bottom: 20px; }
+    footer {
+      max-width: 1000px;
+      margin: 84px auto 0;
+      padding: 30px 24px 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    footer a { color: var(--primary-strong); }
+    footer a:hover { text-decoration: underline; }
+    footer .legal { margin-top: 6px; font-size: 12.5px; opacity: 0.8; }
+
+    /* ---------- Responsive ---------- */
+    @media (max-width: 900px) {
+      .points { grid-template-columns: repeat(2, 1fr); }
+      .credits { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .points { grid-template-columns: 1fr; }
+      section { padding-top: 64px; }
+      .demo-desktop { height: 300px; }
+      .flyout { width: 250px; }
+      .btn { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Capas de fondo: cada orbe se mueve a su velocidad (parallax) -->
+  <div class="backdrop" aria-hidden="true">
+    <div class="orb orb-a" data-speed="0.45" data-mouse="34"></div>
+    <div class="orb orb-b" data-speed="0.26" data-mouse="52"></div>
+    <div class="orb orb-c" data-speed="0.14" data-mouse="20"></div>
+  </div>
+
+  <div class="hero-wrap">
+  <nav class="fade-up" style="--i:0">
+    <!-- "./" y no "#": recarga la página de verdad y deja la URL limpia,
+         sin la almohadilla colgando detrás. -->
+    <a class="brand" href="./">
+      <img src="assets/logo.png" alt="Taskbar Groups Fluent">
+      <span>Taskbar Groups</span>
+    </a>
+    <div class="nav-right">
+      <button type="button" class="lang" id="lang"></button>
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <h1>
+      <span class="line"><span style="--i:0" data-en="Ten icons on your taskbar.">Diez iconos en la barra.</span></span>
+      <span class="line"><span class="accent" style="--i:1" data-en="Now just one.">Ahora solo uno.</span></span>
+    </h1>
+    <p class="sub fade-up" style="--i:1"
+       data-en="Taskbar Groups packs your shortcuts into a single taskbar button. Click it and a flyout pops up with every app in the group. &lt;b&gt;Free, open source and it looks like Windows 11.&lt;/b&gt;">
+      Taskbar Groups mete tus accesos directos en un solo botón de la barra de tareas.
+      Lo pulsas y se abre un panel con todas las apps del grupo.
+      <b>Gratis, open source y con el aspecto de Windows 11.</b>
+    </p>
+    <div class="cta fade-up" style="--i:2">
+      <a class="btn primary" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
+        <span data-en="Download for Windows">Descargar para Windows</span>
+      </a>
+      <a class="btn ghost" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.5l-.01-1.73c-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9l-.01 2.82c0 .28.18.6.69.5A10.03 10.03 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
+        <span data-en="View the code">Ver el código</span>
+      </a>
+    </div>
+    <p class="os-note fade-up" style="--i:3"
+       data-en="Windows 10/11 · one-click installer · updates itself · &lt;a class=&quot;inline-link&quot; href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;MIT licence&lt;/a&gt;">
+      Windows 10/11 · instalador de un clic · se actualiza solo ·
+      <a class="inline-link" href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" target="_blank" rel="noopener">licencia MIT</a>
+    </p>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span data-en="Scroll">Baja</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 5v14m0 0l-6-6m6 6l6-6"/>
+      </svg>
+    </div>
+  </header>
+  </div>
+
+  <!-- La lámina: todo esto sube y tapa el hero al scrollear -->
+  <main class="sheet">
+
+  <section id="demo" data-rise>
+    <p class="kicker" data-reveal data-en="Try it right here">Pruébalo aquí mismo</p>
+    <h2 data-reveal style="--i:1" data-en="One button, the whole group">Un botón, el grupo entero</h2>
+    <p class="section-sub" data-reveal style="--i:2"
+       data-en="This is a recreation of your taskbar. Click the highlighted group and see what happens.">
+      Esto es una recreación de tu barra de tareas. Pulsa el grupo señalado y mira qué pasa.
+    </p>
+
+    <div class="demo-shell" data-reveal style="--i:3">
+      <div class="demo-desktop" id="demo-desktop">
+        <div class="demo-hint" id="demo-hint">
+          <span data-en="Click the group on the taskbar">Pulsa el grupo de la barra de tareas</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 5v14m0 0l-6-6m6 6l6-6"/>
+          </svg>
+        </div>
+
+        <!-- El panel del grupo. Los nombres son genéricos a propósito: ninguna
+             marca ajena en el escaparate. -->
+        <div class="flyout" id="flyout" role="group" aria-label="Grupo Diseño" data-en-aria="Design group">
+          <p class="flyout-title" data-en="Design">Diseño</p>
+          <div class="flyout-grid">
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#4CC2FF,#0067C0)">P</span><span data-en="Photos">Fotos</span></span>
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#FFC83D,#E8890B)">V</span><span data-en="Video">Vídeo</span></span>
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#7B61FF,#4A2FD0)">D</span><span data-en="Draw">Dibujo</span></span>
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#22C55E,#12833B)">A</span><span data-en="Audio">Audio</span></span>
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#F472B6,#BE1D63)">3</span><span>3D</span></span>
+            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#94A3B8,#4B5563)">📁</span><span data-en="Files">Archivos</span></span>
+          </div>
+        </div>
+
+        <div class="taskbar">
+          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
+          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
+          <button type="button" class="tb-btn tb-group" id="demo-btn"
+                  aria-label="Abrir el grupo" data-en-aria="Open the group" aria-expanded="false">
+            <img src="assets/logo.png" alt="">
+          </button>
+          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
+          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" data-rise>
+    <p class="kicker" data-reveal data-en="Why you will like it">Por qué te va a gustar</p>
+    <h2 data-reveal style="--i:1" data-en="Tidy, and it looks the part">Ordenada, y con buena pinta</h2>
+    <p class="section-sub" data-reveal style="--i:2"
+       data-en="A WPF / .NET 8 rewrite of the classic Taskbar Groups, with a Fluent interface.">
+      Una reescritura en WPF / .NET 8 del clásico Taskbar Groups, con interfaz Fluent.
+    </p>
+
+    <div class="points">
+      <article class="point" data-reveal style="--i:3">
+        <div class="ic" aria-hidden="true">🧩</div>
+        <h3 data-en="Every installed app">Todas tus apps</h3>
+        <p data-en="One searchable list with everything you have installed, desktop and Microsoft Store alike. Nothing to hunt for.">
+          Una lista con buscador donde está todo lo que tienes instalado, de escritorio y de la
+          Microsoft Store. Sin buscar el ejecutable a mano.
+        </p>
+      </article>
+      <article class="point" data-reveal style="--i:4">
+        <div class="ic" aria-hidden="true">🖼️</div>
+        <h3 data-en="Icons that look right">Iconos como deben</h3>
+        <p data-en="They come from the same place the Start Menu takes them: sharp, transparent and the right one for each app.">
+          Salen del mismo sitio que los coge el menú Inicio: nítidos, transparentes y el que le
+          toca a cada app.
+        </p>
+      </article>
+      <article class="point" data-reveal style="--i:5">
+        <div class="ic" aria-hidden="true">😀</div>
+        <h3 data-en="Your icon, your call">El icono, a tu gusto</h3>
+        <p data-en="Crop and zoom any image, or just pick a colour emoji. No design skills needed.">
+          Recorta y amplía cualquier imagen, o elige directamente un emoji a color. Sin saber de
+          diseño.
+        </p>
+      </article>
+      <article class="point" data-reveal style="--i:6">
+        <div class="ic" aria-hidden="true">🌍</div>
+        <h3 data-en="It follows your Windows">Sigue a tu Windows</h3>
+        <p data-en="Light or dark theme, your accent colour and the language (English or Spanish) come straight from your system.">
+          El tema claro u oscuro, tu color de acento y el idioma (español o inglés) los coge de tu
+          sistema.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section id="shots" data-rise>
+    <p class="kicker" data-reveal data-en="The real thing">La app de verdad</p>
+    <h2 data-reveal style="--i:1" data-en="This is how it actually looks">Así se ve de verdad</h2>
+    <p class="section-sub" data-reveal style="--i:2"
+       data-en="Real screenshots, not mockups. Click any of them to zoom in.">
+      Capturas reales, no maquetas. Pulsa cualquiera para ampliarla.
+    </p>
+
+    <div class="shots">
+      <article class="shot-card" style="--stack:1">
+        <div class="shot-head">
+          <span class="shot-num">01</span>
+          <h3 data-en="Your groups">Tus grupos</h3>
+        </div>
+        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
+          <img src="assets/shot-main-es.png" data-en-src="assets/shot-main-en.png"
+               alt="Ventana principal con las tarjetas de cada grupo" loading="lazy" width="1000" height="700">
+        </div>
+        <p class="shot-cap" data-en="Each card is a group you can pin, edit or delete.">
+          Cada tarjeta es un grupo que puedes anclar, editar o borrar.
+        </p>
+      </article>
+
+      <article class="shot-card" style="--stack:2">
+        <div class="shot-head">
+          <span class="shot-num">02</span>
+          <h3 data-en="Group editor">El editor de grupos</h3>
+        </div>
+        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
+          <img src="assets/shot-editor-es.png" data-en-src="assets/shot-editor-en.png"
+               alt="Editor de grupo con nombre, icono y lista de accesos" loading="lazy" width="1000" height="700">
+        </div>
+        <p class="shot-cap" data-en="Name it, give it an icon, and add apps or folders.">
+          Le pones nombre, le pones icono y añades apps o carpetas.
+        </p>
+      </article>
+
+      <article class="shot-card" style="--stack:3">
+        <div class="shot-head">
+          <span class="shot-num">03</span>
+          <h3 data-en="App picker">El selector de apps</h3>
+        </div>
+        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
+          <img src="assets/shot-app-picker-es.png" data-en-src="assets/shot-app-picker-en.png"
+               alt="Lista de aplicaciones instaladas con buscador" loading="lazy" width="1000" height="700">
+        </div>
+        <p class="shot-cap" data-en="Everything installed, searchable, each with its own icon.">
+          Todo lo instalado, con buscador y con su icono correcto.
+        </p>
+      </article>
+
+      <article class="shot-card" style="--stack:4">
+        <div class="shot-head">
+          <span class="shot-num">04</span>
+          <h3 data-en="Emoji picker">El selector de emojis</h3>
+        </div>
+        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
+          <img src="assets/shot-emoji-picker-es.png" data-en-src="assets/shot-emoji-picker-en.png"
+               alt="Selector de emojis a color para el icono del grupo" loading="lazy" width="1000" height="700">
+        </div>
+        <p class="shot-cap" data-en="No image at hand? A colour emoji works as the group icon.">
+          ¿No tienes imagen? Un emoji a color te vale de icono del grupo.
+        </p>
+      </article>
+
+      <article class="shot-card" style="--stack:5">
+        <div class="shot-head">
+          <span class="shot-num">05</span>
+          <h3 data-en="The flyout">El panel</h3>
+        </div>
+        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
+          <img src="assets/shot-flyout-es.png" data-en-src="assets/shot-flyout-en.png"
+               alt="Panel del grupo abierto sobre la barra de tareas" loading="lazy" width="880" height="600">
+        </div>
+        <p class="shot-cap" data-en="Click the pinned group and its apps appear above the taskbar.">
+          Pulsas el grupo anclado y sus apps aparecen sobre la barra de tareas.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Zoom de capturas: <dialog> nativo, Escape y clic fuera cierran solos. -->
+  <dialog id="lightbox">
+    <button type="button" id="lightbox-close" aria-label="Cerrar" data-en-aria="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+           stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+    <img id="lightbox-img" src="" alt="">
+  </dialog>
+
+  <section data-rise>
+    <p class="kicker" data-reveal data-en="That short">Así de corto</p>
+    <div class="steps">
+      <b data-reveal style="--i:1" data-en="Create the group">Crea el grupo</b>
+      <svg data-reveal style="--i:2" class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
+      <b data-reveal style="--i:3" data-en="Add your apps">Añade tus apps</b>
+      <svg data-reveal style="--i:4" class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
+      <b data-reveal style="--i:5" data-en="Pin it to the taskbar">Ánclalo a la barra</b>
+    </div>
+  </section>
+
+  <section id="credits" data-rise>
+    <p class="kicker" data-reveal data-en="Standing on shoulders">A hombros de gigantes</p>
+    <h2 data-reveal style="--i:1" data-en="Built on other people's work">Construido sobre el trabajo de otros</h2>
+    <p class="section-sub" data-reveal style="--i:2"
+       data-en="This is a rewrite, not an original idea. Credit where it is due.">
+      Esto es una reescritura, no una idea original. A cada cual lo suyo.
+    </p>
+
+    <div class="credits">
+      <article class="credit" data-reveal style="--i:3">
+        <h3><a href="https://github.com/tjackenpacken/taskbar-groups" target="_blank" rel="noopener">taskbar-groups</a></h3>
+        <p data-en="The original app by tjackenpacken, and the idea behind all of this.">
+          La app original de tjackenpacken, y la idea detrás de todo esto.
+        </p>
+      </article>
+      <article class="credit" data-reveal style="--i:4">
+        <h3><a href="https://github.com/PikeNote/taskbar-groups-pike-beta" target="_blank" rel="noopener">pike-beta</a></h3>
+        <p data-en="The community fork this rewrite started from.">
+          El fork de la comunidad del que arrancó esta reescritura.
+        </p>
+      </article>
+      <article class="credit" data-reveal style="--i:5">
+        <h3><a href="https://github.com/lepoco/wpfui" target="_blank" rel="noopener">WPF-UI</a></h3>
+        <p data-en="The Fluent control library that gives the app its Windows 11 look.">
+          La librería de controles Fluent que le da a la app su aspecto de Windows 11.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="final" data-rise>
+    <h2 data-reveal data-en="Tidy up your taskbar">Ordena tu barra de tareas</h2>
+    <p class="section-sub" data-reveal style="--i:1"
+       data-en="Free and open source. No sign-ups, no accounts, no ads.">
+      Gratis y open source. Sin registros, sin cuentas, sin anuncios.
+    </p>
+    <div class="cta" data-reveal style="--i:2">
+      <a class="btn primary" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
+        <span data-en="Download for Windows">Descargar para Windows</span>
+      </a>
+      <a class="btn ghost" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest" target="_blank" rel="noopener">
+        <span data-en="All versions">Todas las versiones</span>
+      </a>
+    </div>
+    <p class="os-note" data-reveal style="--i:3"
+       data-en="Installs per user, no admin rights needed. Windows may warn about an &quot;unknown publisher&quot;: click More info → Run anyway.">
+      Se instala en tu usuario, sin permisos de administrador. Windows puede avisar de
+      «editor desconocido»: pulsa Más información → Ejecutar de todas formas.
+    </p>
+  </section>
+
+  <footer>
+    <p data-en="Taskbar Groups Fluent · Made by &lt;a href=&quot;https://munito.dev&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Munir Torres&lt;/a&gt; · MIT License">Taskbar Groups Fluent · Hecho por <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a> · Licencia MIT</p>
+    <p class="legal"
+       data-en="Not affiliated with Microsoft. Windows is a trademark of its owner. &lt;a href=&quot;#credits&quot;&gt;Credits&lt;/a&gt;">
+      Sin vínculo con Microsoft. Windows es marca de su propietario.
+      <a href="#credits">Créditos</a>
+    </p>
+  </footer>
+  </main>
+
+  <script>
+    (function () {
+      // El script del <head> ya decidió: .motion presente = animaciones permitidas
+      // (siempre, salvo que la URL traiga ?motion=off).
+      const reduced = !document.documentElement.classList.contains("motion");
+
+      // 1) Entrada del hero: dos frames después de pintar, body.ready dispara las
+      //    transiciones de las líneas del titular y los fade-up (todo en CSS).
+      //    Cinturón de seguridad: si rAF no dispara (pestaña en segundo plano),
+      //    el setTimeout garantiza que el contenido nunca se queda oculto.
+      const ready = () => document.body.classList.add("ready");
+      requestAnimationFrame(() => requestAnimationFrame(ready));
+      setTimeout(ready, 700);
+
+      // La flecha de "baja" solo tiene sentido antes de bajar
+      const cue = () => document.body.classList.toggle("scrolled", window.scrollY > 40);
+      addEventListener("scroll", cue, { passive: true });
+      cue();
+
+      // 2) MOTOR DE PARALLAX: cada capa de fondo [data-speed] baja a SU velocidad
+      //    con el scroll y además deriva hacia el ratón según su profundidad.
+      if (!reduced) {
+        const hero = document.querySelector(".hero");
+        const layers = [...document.querySelectorAll("[data-speed]")].map((el) => ({
+          el, speed: parseFloat(el.dataset.speed), depth: parseFloat(el.dataset.mouse || 0)
+        }));
+        let mx = 0, my = 0, cmx = 0, cmy = 0, lastY = -1;
+        addEventListener("mousemove", (e) => {
+          mx = (e.clientX / innerWidth - 0.5) * 2;    // normalizado a -1 … 1
+          my = (e.clientY / innerHeight - 0.5) * 2;
+        }, { passive: true });
+        const paint = () => {
+          const y = window.scrollY;
+          const drifting = Math.abs(mx - cmx) + Math.abs(my - cmy) > 0.002;
+          if (y !== lastY || drifting) {              // solo escribe si algo cambió
+            cmx += (mx - cmx) * 0.06;                 // lerp: la deriva llega con retardo suave
+            cmy += (my - cmy) * 0.06;
+            for (const l of layers) {
+              l.el.style.transform = "translate3d(" + (cmx * l.depth).toFixed(1) + "px," +
+                (y * l.speed + cmy * l.depth).toFixed(1) + "px,0)";
+            }
+            // El hero se queda pegado DETRÁS mientras la lámina sube y lo tapa.
+            // Se atenúa y se aleja un poco: así la atención pasa a lo que entra
+            // encima en vez de competir con un hero a plena intensidad.
+            if (hero) {
+              const p = Math.min(1, y / innerHeight);
+              hero.style.opacity = (1 - p * 0.72).toFixed(3);
+              hero.style.transform = "scale(" + (1 - p * 0.055).toFixed(4) + ")";
+            }
+            lastY = y;
+          }
+          requestAnimationFrame(paint);
+        };
+        requestAnimationFrame(paint);
+        // La entrada del hero dura ~1,5s; después, el parallax toma el mando.
+        setTimeout(() => { document.body.classList.add("settled"); lastY = -1; }, 1600);
+      }
+
+      // 3) Reveal + stagger: el observer añade .in al asomar; los tiempos de la
+      //    cascada los pone el CSS con --i. Una vez visto, se des-observa.
+      // Al asomar un bloque [data-rise] se enciende ÉL y, de una vez, todo lo que
+      // lleva dentro. Si cada hijo se observara por su cuenta, la tarjeta subiría
+      // con sus textos entrando a destiempo y se perdería la sensación de pieza única.
+      const show = (el) => {
+        el.classList.add("in");
+        el.querySelectorAll("[data-reveal]").forEach((kid) => kid.classList.add("in"));
+      };
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) { show(e.target); io.unobserve(e.target); }
+        }
+      }, { threshold: 0.05, rootMargin: "0px 0px -10% 0px" });
+      document.querySelectorAll("[data-rise], .shot").forEach((el) => io.observe(el));
+      // Los [data-reveal] que viven fuera de un bloque que sube se observan solos
+      document.querySelectorAll("[data-reveal]").forEach((el) => {
+        if (!el.closest("[data-rise]")) io.observe(el);
+      });
+
+      // Red de seguridad: si el navegador tarda en entregar las observaciones
+      // (pestaña en segundo plano, webviews incrustados), revela lo que ya está
+      // a la vista tras cargar. Nunca dejes contenido invisible por un observer mudo.
+      addEventListener("load", () => setTimeout(() => {
+        document.querySelectorAll("[data-rise]:not(.in), [data-reveal]:not(.in), .shot:not(.in)").forEach((el) => {
+          const r = el.getBoundingClientRect();
+          if (r.top < innerHeight && r.bottom > 0) show(el);
+        });
+      }, 400));
+
+      // Enlaces de ancla (los "Créditos" del pie): encendemos el destino ANTES de
+      // saltar. Si no, se salta a una sección que todavía está en opacidad 0
+      // esperando al observer, y parece que el enlace no hace nada.
+      const wake = (hash) => {
+        if (!hash || hash.length < 2) return;
+        const target = document.getElementById(hash.slice(1));
+        if (target) show(target);
+      };
+      for (const a of document.querySelectorAll('a[href^="#"]')) {
+        a.addEventListener("click", () => wake(a.getAttribute("href")));
+      }
+      wake(location.hash);          // y si se entra con la URL ya apuntando ahí
+
+      // 4) Botones magnéticos: el botón se inclina hacia el cursor con un lerp
+      //    suave. Solo en dispositivos con ratón de verdad. Usa la propiedad CSS
+      //    `translate` para no pisar el transform del hover.
+      if (!reduced && matchMedia("(hover: hover) and (pointer: fine)").matches) {
+        document.querySelectorAll("[data-magnetic]").forEach((el) => {
+          let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+          const tick = () => {
+            cx += (tx - cx) * 0.18;   // lerp: acércate un 18% al objetivo en cada frame
+            cy += (ty - cy) * 0.18;
+            el.style.translate = cx.toFixed(2) + "px " + cy.toFixed(2) + "px";
+            if (Math.abs(tx - cx) > 0.15 || Math.abs(ty - cy) > 0.15) {
+              raf = requestAnimationFrame(tick);
+            } else { raf = null; }
+          };
+          const wakeMag = () => { if (!raf) raf = requestAnimationFrame(tick); };
+          el.addEventListener("mousemove", (e) => {
+            const r = el.getBoundingClientRect();
+            tx = (e.clientX - r.left - r.width / 2) * 0.35;   // 35% de la distancia al centro
+            ty = (e.clientY - r.top - r.height / 2) * 0.35;
+            wakeMag();
+          });
+          el.addEventListener("mouseleave", () => { tx = 0; ty = 0; wakeMag(); });
+        });
+      }
+    })();
+
+    /* ==========================================================================
+       DEMO — abrir y cerrar el grupo. Se comporta como el de verdad: se abre al
+       pulsar y se cierra al pulsar fuera o con Escape.
+       ========================================================================== */
+    (function () {
+      const desktop = document.getElementById("demo-desktop");
+      const btn = document.getElementById("demo-btn");
+      if (!desktop || !btn) return;
+      const setOpen = (open) => {
+        desktop.classList.toggle("open", open);
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setOpen(!desktop.classList.contains("open"));
+      });
+      // Clic en cualquier otro sitio del escritorio recreado: se cierra, igual
+      // que el panel real pierde el foco y desaparece.
+      addEventListener("click", (e) => {
+        if (!desktop.contains(e.target)) setOpen(false);
+      });
+      addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
+    })();
+
+    /* ==========================================================================
+       ZOOM DE CAPTURAS — clic (o Enter/Espacio) en una captura abre un <dialog>
+       nativo a pantalla completa con la MISMA imagen que se ve en ese momento
+       (respeta el idioma activo). Escape y el propio <dialog> lo cierran solos.
+       ========================================================================== */
+    (function () {
+      const lightbox = document.getElementById("lightbox");
+      if (!lightbox) return;
+      const lbImg = document.getElementById("lightbox-img");
+      const open = (shot) => {
+        const img = shot.querySelector("img");
+        if (!img) return;
+        lbImg.src = img.currentSrc || img.src;
+        lbImg.alt = img.alt;
+        lightbox.showModal();
+      };
+      document.querySelectorAll(".shot.zoomable").forEach((shot) => {
+        shot.addEventListener("click", () => open(shot));
+        shot.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(shot); }
+        });
+      });
+      document.getElementById("lightbox-close").addEventListener("click", () => lightbox.close());
+      // Clic en el fondo (fuera de la imagen) también cierra: el <dialog> ocupa
+      // toda la pantalla, así que basta con comprobar que el clic fue en él y
+      // no en un descendiente (la imagen o el botón de cerrar).
+      lightbox.addEventListener("click", (e) => { if (e.target === lightbox) lightbox.close(); });
+    })();
+
+    /* ==========================================================================
+       IDIOMA (es / en) — el español vive en el HTML y la traducción viaja al
+       lado, en data-en. Así el texto y su traducción se editan juntos y no hay
+       forma de que se desincronicen. El idioma inicial ya lo fijó el script del
+       <head> antes de pintar, para que nadie vea el texto cambiar de golpe.
+       ========================================================================== */
+    (function () {
+      const META = {
+        es: {
+          title: "Taskbar Groups Fluent - Una barra de tareas ordenada",
+          desc: "Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows. Lo pulsas y se abre un panel con todas tus apps. Gratis, open source y con el aspecto de Windows 11.",
+          label: "English",
+        },
+        en: {
+          title: "Taskbar Groups Fluent - A taskbar with room to breathe",
+          desc: "Group your shortcuts into a single Windows taskbar button. Click it and a flyout pops up with all your apps. Free, open source and it looks like Windows 11.",
+          label: "Español",
+        },
+      };
+
+      let lang = document.documentElement.lang === "en" ? "en" : "es";
+      const nodes = [...document.querySelectorAll("[data-en]")];
+      // El español de partida se toma del propio HTML, no se duplica a mano
+      nodes.forEach((n) => { n.dataset.es = n.innerHTML.trim(); });
+      // Imágenes con versión por idioma (las capturas de la app)
+      const imgs = [...document.querySelectorAll("[data-en-src]")];
+      imgs.forEach((n) => { n.dataset.esSrc = n.getAttribute("src"); });
+      // Elementos sin texto visible (el zoom, el cerrar, el botón del grupo):
+      // su traducción viaja en el aria-label, mismo patrón que data-en.
+      const ariaEls = [...document.querySelectorAll("[data-en-aria]")];
+      ariaEls.forEach((n) => { n.dataset.esAria = n.getAttribute("aria-label") || ""; });
+      const btn = document.getElementById("lang");
+
+      function apply() {
+        document.documentElement.lang = lang;
+        for (const n of nodes) {
+          // innerHTML aquí es seguro: la cadena está escrita en este archivo
+          // (lleva <b> y <a>), nunca viene de fuera.
+          n.innerHTML = lang === "en" ? n.dataset.en : n.dataset.es;
+        }
+        for (const n of imgs) {
+          n.setAttribute("src", lang === "en" ? n.dataset.enSrc : n.dataset.esSrc);
+        }
+        for (const n of ariaEls) {
+          n.setAttribute("aria-label", lang === "en" ? n.dataset.enAria : n.dataset.esAria);
+        }
+        const meta = META[lang];
+        document.title = meta.title;
+        const desc = document.querySelector('meta[name="description"]');
+        if (desc) desc.setAttribute("content", meta.desc);
+        // El botón ofrece SIEMPRE el otro idioma, que es lo que se va a pulsar.
+        if (btn) btn.textContent = meta.label;
+      }
+
+      if (btn) {
+        btn.addEventListener("click", () => {
+          lang = lang === "es" ? "en" : "es";
+          try { localStorage.setItem("tbgf-lang", lang); } catch (e) {}
+          apply();
+        });
+      }
+      apply();
+    })();
+  </script>
+</body>
+</html>
