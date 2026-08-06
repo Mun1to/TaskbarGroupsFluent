@@ -39,7 +39,7 @@ namespace TaskbarGroups.Core
         private static extern bool DeleteObject(IntPtr hObject);
 
         [DllImport("gdi32.dll")]
-        private static extern int GetObject(IntPtr hgdiobj, int cbBuffer, ref BITMAP lpvObject);
+        private static extern int GetObject(IntPtr hgdiobj, int cbBuffer, ref DIBSECTION lpvObject);
 
         // Extracts an icon straight from a PE file's resources at a requested size —
         // bypasses the (sometimes stale/generic) system image list.
@@ -56,6 +56,29 @@ namespace TaskbarGroups.Core
             public int bmType, bmWidth, bmHeight, bmWidthBytes;
             public ushort bmPlanes, bmBitsPixel;
             public IntPtr bmBits;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct BITMAPINFOHEADER
+        {
+            public uint biSize;
+            public int biWidth, biHeight; // biHeight < 0 = top-down, > 0 = bottom-up
+            public ushort biPlanes, biBitCount;
+            public uint biCompression, biSizeImage;
+            public int biXPelsPerMeter, biYPelsPerMeter;
+            public uint biClrUsed, biClrImportant;
+        }
+
+        // BITMAP alone can't tell us the row order: bmHeight is always positive.
+        // Only the DIB header carries the sign we need.
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DIBSECTION
+        {
+            public BITMAP dsBm;
+            public BITMAPINFOHEADER dsBmih;
+            public uint dsBitfield0, dsBitfield1, dsBitfield2;
+            public IntPtr dshSection;
+            public uint dsOffset;
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -310,17 +333,20 @@ namespace TaskbarGroups.Core
             finally { if (h[0] != IntPtr.Zero) DestroyIcon(h[0]); }
         }
 
-        // The shell returns a top-down 32-bit premultiplied-alpha DIB section.
-        // Image.FromHbitmap drops the alpha (black background), so read the DIB
-        // pixels directly and clone them into an owned bitmap.
+        // The shell returns a 32-bit premultiplied-alpha DIB section. Image.FromHbitmap
+        // drops the alpha (black background), so read the DIB pixels directly and clone
+        // them into an owned bitmap.
         private static Bitmap? BitmapFromHBitmap(IntPtr hbitmap)
         {
-            BITMAP bm = default;
-            if (GetObject(hbitmap, Marshal.SizeOf<BITMAP>(), ref bm) == 0) return null;
-            if (bm.bmWidth <= 0 || bm.bmHeight <= 0) return null;
+            int dibSize = Marshal.SizeOf<DIBSECTION>();
+            DIBSECTION ds = default;
+            int read = GetObject(hbitmap, dibSize, ref ds);
+            BITMAP bm = ds.dsBm;
+            if (read == 0 || bm.bmWidth <= 0 || bm.bmHeight <= 0) return null;
 
-            // Non-DIB or non-32bpp: no usable alpha, return an opaque copy.
-            if (bm.bmBits == IntPtr.Zero || bm.bmBitsPixel != 32)
+            // Non-DIB or non-32bpp: no usable alpha, and GDI+ sorts out the row order
+            // itself. GetObject only fills the DIB header for real DIB sections.
+            if (read < dibSize || bm.bmBits == IntPtr.Zero || bm.bmBitsPixel != 32)
             {
                 using var opaque = Image.FromHbitmap(hbitmap);
                 return new Bitmap(opaque);
@@ -330,7 +356,15 @@ namespace TaskbarGroups.Core
             // that owns its memory; cloning a PArgb bitmap yields correct alpha.
             using var wrapped = new Bitmap(bm.bmWidth, bm.bmHeight, bm.bmWidthBytes,
                 PixelFormat.Format32bppPArgb, bm.bmBits);
-            return new Bitmap(wrapped);
+            var copy = new Bitmap(wrapped);
+
+            // Wrapping reads rows top-down, but the shell hands back a bottom-up DIB
+            // (biHeight > 0) on current Windows builds, which flipped every icon
+            // upside down. The header is the only reliable source for the row order,
+            // so read it instead of assuming either one.
+            if (ds.dsBmih.biHeight > 0)
+                copy.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            return copy;
         }
     }
 }

@@ -13,7 +13,8 @@ namespace TaskbarGroups.Core
     {
         // Bump this whenever icon resolution changes (AppCatalog, ResolveShortcutImage…).
         //  v2: shell-generic fallback to the executable's PE icon (Obsidian/Brave fix).
-        private const int CurrentVersion = 2;
+        //  v3: shell icons were read as top-down, so every one was cached upside down.
+        private const int CurrentVersion = 3;
 
         private static string MarkerPath => Path.Combine(Paths.ConfigPath, ".iconcache-version");
 
