@@ -364,3 +364,8 @@ FodyWeavers.xsd
 
 # Build output
 dist/
+CLAUDE.md
+GEMINI.md
+.github/copilot-instructions.md
+.cursor/rules/contexto.mdc
+AGENTS.md
