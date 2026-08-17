@@ -48,6 +48,28 @@ public partial class App : Application
             return;
         }
 
+        // Only once we know we have a flyout to show, so a bad group name never
+        // dismisses the one already on screen.
+        CloseOtherFlyouts();
+
         new PopupWindow(category).Show();
+    }
+
+    // Only one flyout should ever be on screen. Opening a second group used to
+    // stack another panel on top of the first, and any flyout that had gone stale
+    // stayed there for good. Killing the previous instances is safe: the process
+    // owns nothing but the panel, and whatever it launched is already its own
+    // process by then.
+    private static void CloseOtherFlyouts()
+    {
+        int self = Environment.ProcessId;
+        foreach (var p in System.Diagnostics.Process.GetProcessesByName("TaskbarGroups.Background"))
+        {
+            using (p)
+            {
+                if (p.Id == self) continue;
+                try { p.Kill(); } catch { /* already gone, or not ours to kill */ }
+            }
+        }
     }
 }

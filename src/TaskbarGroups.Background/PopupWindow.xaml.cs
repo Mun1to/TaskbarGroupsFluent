@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Threading;
 using TaskbarGroups.Background.Helpers;
 using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
@@ -21,6 +22,10 @@ public partial class PopupWindow : Window
     private readonly Category _category;
     private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
     private bool _isDark = true;
+    private DispatcherTimer? _guard;
+    private bool _hadFocus;
+    private bool _mouseWentUp;
+    private bool _closing;
 
     public PopupWindow(Category category)
     {
@@ -32,8 +37,13 @@ public partial class PopupWindow : Window
         LoadItems();
 
         Loaded += OnLoadedPosition;
-        Deactivated += (_, _) => Close();
-        Closed += (_, _) => Application.Current.Shutdown();
+        Deactivated += (_, _) => CloseOnce();
+        PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Escape) CloseOnce(); };
+        Closed += (_, _) =>
+        {
+            _guard?.Stop();
+            Application.Current.Shutdown();
+        };
     }
 
     // Follow the Windows light/dark setting: a light panel with dark text under a
@@ -194,14 +204,110 @@ public partial class PopupWindow : Window
 
         Left = left;
         Top = top;
-        Activate();
+        TakeFocus();
+        StartDismissGuard();
     }
+
+    // Activate() alone is not enough. Windows only lets the process that already
+    // owns the foreground hand it to someone else, and a flyout launched from a
+    // pinned shortcut does not always inherit that right, so Activate() silently
+    // does nothing. Attaching our input queue to the thread that does own the
+    // foreground makes Windows treat us as that same thread and accept the swap.
+    private void TakeFocus()
+    {
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        if (hwnd == IntPtr.Zero) return;
+
+        Activate();
+        if (GetForegroundWindow() == hwnd) return;
+
+        uint theirs = GetWindowThreadProcessId(GetForegroundWindow(), IntPtr.Zero);
+        uint ours = GetCurrentThreadId();
+        bool attached = theirs != 0 && theirs != ours && AttachThreadInput(ours, theirs, true);
+        try
+        {
+            SetForegroundWindow(hwnd);
+            Activate();
+        }
+        finally
+        {
+            if (attached) AttachThreadInput(ours, theirs, false);
+        }
+    }
+
+    // The flyout used to close on Deactivated alone, which never fires if the
+    // window never got the focus in the first place. When that happened the panel
+    // stayed pinned on top of everything (it is Topmost) and the only way out was
+    // launching something from it. This poll is the safety net:
+    //
+    //  * once we have held the focus, losing the foreground closes us, even if the
+    //    Deactivated event gets lost;
+    //  * if we never got it, we cannot see clicks going elsewhere, so we watch the
+    //    mouse buttons directly and close on the first press outside our bounds.
+    //
+    // It never closes the flyout on its own, so a focus we could not take just
+    // degrades to "click anywhere to dismiss" instead of a stuck window.
+    private void StartDismissGuard()
+    {
+        _guard = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
+        _guard.Tick += (_, _) =>
+        {
+            IntPtr hwnd = new WindowInteropHelper(this).Handle;
+            if (hwnd == IntPtr.Zero) return;
+
+            if (GetForegroundWindow() == hwnd) { _hadFocus = true; return; }
+            if (_hadFocus) { CloseOnce(); return; }
+
+            bool pressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
+                        || (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
+
+            // The click that opened the flyout can still be down when we get here,
+            // and it landed on the taskbar, which is outside us. Wait for the mouse
+            // to come up once so we never dismiss on the press that opened us.
+            if (!pressed) { _mouseWentUp = true; return; }
+            if (_mouseWentUp && !CursorIsOver(hwnd)) CloseOnce();
+        };
+        _guard.Start();
+    }
+
+    private static bool CursorIsOver(IntPtr hwnd)
+    {
+        // Both are physical screen pixels, so they compare without DPI scaling.
+        if (!GetCursorPos(out POINT p) || !GetWindowRect(hwnd, out RECT r)) return true;
+        return p.X >= r.Left && p.X < r.Right && p.Y >= r.Top && p.Y < r.Bottom;
+    }
+
+    private void CloseOnce()
+    {
+        if (_closing) return;
+        _closing = true;
+        _guard?.Stop();
+        Close();
+    }
+
+    private const int VK_LBUTTON = 0x01;
+    private const int VK_RBUTTON = 0x02;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct POINT { public int X; public int Y; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct RECT { public int Left; public int Top; public int Right; public int Bottom; }
+
+    [DllImport("user32.dll")] private static extern IntPtr GetForegroundWindow();
+    [DllImport("user32.dll")] private static extern bool SetForegroundWindow(IntPtr hWnd);
+    [DllImport("user32.dll")] private static extern bool AttachThreadInput(uint attach, uint attachTo, bool join);
+    [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr hWnd, IntPtr pid);
+    [DllImport("user32.dll")] private static extern short GetAsyncKeyState(int vKey);
+    [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT p);
+    [DllImport("user32.dll")] private static extern bool GetWindowRect(IntPtr hWnd, out RECT r);
+    [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
 
     private void Item_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.Tag is PopupItem item)
             Launch(item.Shortcut);
-        Close();
+        CloseOnce();
     }
 
     private static void Launch(ProgramShortcut ps)
