@@ -37,7 +37,7 @@
     <ApplicationIcon>..\assets\Icon.ico</ApplicationIcon>
     <AssemblyTitle>Taskbar Groups</AssemblyTitle>
     <Product>Taskbar Groups Fluent</Product>
-    <Version>1.4.4</Version>
+    <Version>1.4.5</Version>
   </PropertyGroup>
 
 </Project>
