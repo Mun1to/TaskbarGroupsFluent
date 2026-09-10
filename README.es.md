@@ -134,6 +134,8 @@ La app despliega el popup de fondo junto a sí misma; un acceso directo anclado 
 
 Lo del cursor no es algo que Windows ofrezca: un botón de la barra no avisa de nada cuando el cursor pasa por encima, así que el vigilante lee los botones de la barra con UI Automation y compara la posición del cursor con ellos. Solo lo hace mientras el cursor está de verdad sobre la barra, y guarda en caché lo que lee, que es lo que lo mantiene en una fracción de un uno por ciento de un núcleo cuando no pasa nada.
 
+Que abra rápido pide un truco más. Arrancar un popup en frío significa cargar .NET, luego WPF, y luego pintar una ventana por primera vez: casi un segundo, por poco que haga el popup. Así que cuando el cursor se acerca a la barra, el vigilante carga uno por adelantado y lo deja escondido, listo para salir en unos cincuenta milisegundos; un popup cargado ocupa memoria de verdad, así que se suelta en cuanto el cursor lleva un rato lejos. El vigilante en sí se mantiene pequeño todo el tiempo.
+
 ## 🙏 Créditos
 
 Construido sobre el trabajo de:

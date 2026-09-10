@@ -46,6 +46,7 @@ internal sealed class TaskbarWatcher : IDisposable
 
     private readonly System.Windows.Forms.Timer _timer;
     private readonly SettingsListener _settings = new();
+    private readonly WarmFlyout _warm = new();
 
     /// <summary>Raised when the user has switched the feature off while we ran.</summary>
     public event Action? TurnedOff;
@@ -73,6 +74,7 @@ internal sealed class TaskbarWatcher : IDisposable
         _timer.Stop();
         _timer.Dispose();
         _settings.Dispose();
+        _warm.Dispose();
     }
 
     private void Tick()
@@ -107,16 +109,28 @@ internal sealed class TaskbarWatcher : IDisposable
             _hovered = null;
             _opened = null;
 
-            // Not on the taskbar, but close enough to be heading for it. Refreshing
-            // now takes the cost off the critical path: icons shift while the cursor
-            // is away, so the rectangles do have to be re-read, and doing it on
-            // arrival would add its own delay to the one thing that has to feel
-            // immediate. Approaching and turning away costs one reading a second.
-            if (NearAnyTaskbar(cursor, bars) && DateTime.UtcNow - _cachedAt > ApproachRefresh)
-                RefreshButtons(bars.Count > 0 ? bars[0] : 0);
+            if (NearAnyTaskbar(cursor, bars))
+            {
+                // Heading for the taskbar. Two things are got out of the way now, so
+                // that neither is paid for once the cursor is resting on an icon and
+                // everything has to feel immediate: the button rectangles, which go
+                // stale while the cursor is away because icons shift as windows come
+                // and go, and the flyout itself, which takes the best part of a
+                // second to load from cold. Approaching and turning away costs one
+                // reading a second, and a loaded flyout that is let go shortly after.
+                if (DateTime.UtcNow - _cachedAt > ApproachRefresh)
+                    RefreshButtons(bars.Count > 0 ? bars[0] : 0);
+                _warm.KeepReady();
+            }
+            else
+            {
+                _warm.ReleaseIfIdle();
+            }
 
             return;
         }
+
+        _warm.KeepReady();
 
         // Only the taskbar under the cursor is read. Windows leaves a
         // Shell_SecondaryTrayWnd behind for monitors that are no longer attached,
@@ -157,7 +171,17 @@ internal sealed class TaskbarWatcher : IDisposable
         // two at the same time is most of the wait the user actually feels; done in
         // sequence they simply add up. The flyout checks the cursor is still on the
         // icon before it shows, so nothing appears that should not have.
-        if (waited < Math.Min(delay, PrelaunchMs)) return;
+        // With a warm flyout waiting there is nothing to overlap, so the dwell is
+        // honoured in full: it is the only thing between resting on an icon and the
+        // panel appearing, and showing costs about fifty milliseconds.
+        bool warm = _warm.IsReady;
+        if (waited < (warm ? delay : Math.Min(delay, PrelaunchMs))) return;
+
+        if (warm && _warm.Show(hit.Group, hit.Rect))
+        {
+            _opened = hit.Group;
+            return;
+        }
 
         Open(hit, delay);
         _opened = hit.Group;

@@ -19,8 +19,10 @@ namespace TaskbarGroups.Background;
 /// </summary>
 public partial class PopupWindow : Window
 {
-    private readonly Category _category;
-    private readonly HoverAnchor? _anchor;
+    // Not readonly: a warm flyout is reused, and each showing brings a new group
+    // and a new icon to sit above.
+    private Category _category;
+    private HoverAnchor? _anchor;
     private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
     private bool _isDark = true;
     private DispatcherTimer? _guard;
@@ -38,6 +40,22 @@ public partial class PopupWindow : Window
 
     /// <summary>Slack around the panel and the icon, so their edges are forgiving.</summary>
     private const int HoverMargin = 16;
+
+    /// <summary>
+    /// Somewhere off every screen. A warm flyout is rendered here first so that all
+    /// the slow parts, laying out and painting for the first time, are already paid
+    /// for by the time the user rests on an icon.
+    /// </summary>
+    private const double OffScreen = -32000;
+
+    /// <summary>Marks the warm flyout's window so other processes can spot it.</summary>
+    public const string WarmWindowTitle = "TaskbarGroupsFluent.WarmFlyout";
+
+    /// <summary>
+    /// True while this window is being kept warm for reuse. Dismissing it then
+    /// hides it and leaves the process listening, rather than shutting down.
+    /// </summary>
+    public bool Reusable { get; set; }
 
     public PopupWindow(Category category, HoverAnchor? anchor = null)
     {
@@ -58,7 +76,7 @@ public partial class PopupWindow : Window
         LoadItems();
 
         Loaded += OnLoadedPosition;
-        Deactivated += (_, _) => CloseOnce();
+        Deactivated += (_, _) => { if (!Reusable || Left > OffScreen / 2) CloseOnce(); };
         PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Escape) CloseOnce(); };
         Closed += (_, _) =>
         {
@@ -188,7 +206,80 @@ public partial class PopupWindow : Window
         catch { return ps.FilePath; }
     }
 
+    /// <summary>
+    /// Renders this window off screen so it is ready to appear instantly. Called on
+    /// the warm instance before anything is asked of it.
+    /// </summary>
+    public void Prewarm()
+    {
+        Reusable = true;
+        // A title nobody sees, so the process can be recognised from outside without
+        // reading command lines: a flyout started by a click must not kill the warm
+        // one on its way in.
+        Title = WarmWindowTitle;
+        ShowActivated = false;
+        Left = OffScreen;
+        Top = OffScreen;
+        Show();
+        UpdateLayout();
+    }
+
+    /// <summary>Parks a warm flyout off screen without unloading it.</summary>
+    public void HideForReuse()
+    {
+        if (!Reusable) return;
+        _guard?.Stop();
+        _closing = false;
+        _hadFocus = false;
+        _mouseWentUp = false;
+        _cursorLeftAt = null;
+        _anchor = null;
+        Left = OffScreen;
+        Top = OffScreen;
+    }
+
+    /// <summary>
+    /// Puts an already warm flyout on screen showing <paramref name="category"/>,
+    /// positioned over <paramref name="anchor"/>. Measured at about fifty
+    /// milliseconds, against roughly nine hundred to start a fresh process.
+    /// </summary>
+    public void ShowFor(Category category, HoverAnchor anchor)
+    {
+        _category = category;
+        _anchor = anchor;
+        _closing = false;
+        _hadFocus = false;
+        _mouseWentUp = false;
+        _cursorLeftAt = null;
+
+        ApplyAppearance();
+        LoadItems();
+        InvalidateMeasure();
+        UpdateLayout();
+
+        PositionOverTaskbar();
+        StartDismissGuard();
+    }
+
     private void OnLoadedPosition(object sender, RoutedEventArgs e)
+    {
+        // A warm flyout positions itself when it is asked to show, not when it is
+        // first loaded; at that point it is parked off screen with nothing to say.
+        if (Reusable) return;
+
+        PositionOverTaskbar();
+
+        // A hover-opened flyout must not steal the keyboard. The cursor only brushed
+        // past the taskbar, and the user may well be typing somewhere else; yanking
+        // the focus away mid-sentence would make the feature unusable. It still
+        // takes the focus the moment it is clicked, which is when the user meant it.
+        if (_anchor is null) TakeFocus();
+
+        StartDismissGuard();
+    }
+
+    /// <summary>Places the panel against the taskbar, above the icon it belongs to.</summary>
+    private void PositionOverTaskbar()
     {
         var tb = TaskbarHelper.GetTaskbar();
         var (cursorX, cursorY) = TaskbarHelper.GetCursor();
@@ -234,14 +325,6 @@ public partial class PopupWindow : Window
 
         Left = left;
         Top = top;
-
-        // A hover-opened flyout must not steal the keyboard. The cursor only brushed
-        // past the taskbar, and the user may well be typing somewhere else; yanking
-        // the focus away mid-sentence would make the feature unusable. It still
-        // takes the focus the moment it is clicked, which is when the user meant it.
-        if (_anchor is null) TakeFocus();
-
-        StartDismissGuard();
     }
 
     // Activate() alone is not enough. Windows only lets the process that already
@@ -290,11 +373,19 @@ public partial class PopupWindow : Window
     // once the cursor has been away from both the panel and its icon for a moment.
     private void StartDismissGuard()
     {
+        // A reused flyout would otherwise stack a fresh timer on every showing, and
+        // the old ones keep firing against state that has moved on.
+        _guard?.Stop();
+
         _guard = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
         _guard.Tick += (_, _) =>
         {
             IntPtr hwnd = new WindowInteropHelper(this).Handle;
             if (hwnd == IntPtr.Zero) return;
+
+            // Parked off screen: nothing to dismiss, and the checks below would read
+            // a position that means nothing.
+            if (Reusable && Left <= OffScreen / 2) { _guard?.Stop(); return; }
 
             if (GetForegroundWindow() == hwnd) { _hadFocus = true; _cursorLeftAt = null; return; }
             if (_hadFocus) { CloseOnce(); return; }
@@ -350,6 +441,22 @@ public partial class PopupWindow : Window
         if (_closing) return;
         _closing = true;
         _guard?.Stop();
+
+        // Kept warm: park it off screen instead of closing, so the next showing is
+        // the fifty milliseconds it takes to swap the contents rather than the near
+        // second it takes to start a process and paint a window for the first time.
+        if (Reusable)
+        {
+            _closing = false;
+            _hadFocus = false;
+            _mouseWentUp = false;
+            _cursorLeftAt = null;
+            _anchor = null;
+            Left = OffScreen;
+            Top = OffScreen;
+            return;
+        }
+
         Close();
     }
 

@@ -134,6 +134,8 @@ The app deploys the background flyout next to itself; a pinned shortcut launches
 
 Hovering is not something Windows offers: a taskbar button reports nothing when the cursor is over it, so the watcher reads the taskbar's buttons through UI Automation and polls the cursor against them. It only does that while the cursor is actually on the taskbar, and caches what it reads, which is what keeps it at a fraction of a percent of one core while idle.
 
+Opening quickly takes one more trick. Starting a flyout from cold means loading .NET, then WPF, then painting a window for the first time, and that is most of a second no matter how little work the flyout itself does. So as the cursor comes near the taskbar the watcher loads one in advance and keeps it hidden, ready to be shown in about fifty milliseconds; a loaded flyout holds real memory, so it is let go again once the cursor has been away for a while. The watcher itself stays small throughout.
+
 ## 🙏 Credits
 
 Built on the work of:
