@@ -34,6 +34,8 @@ internal static class Program
         ApplicationConfiguration.Initialize();
 
         using var watcher = new TaskbarWatcher();
+        watcher.TurnedOff += Application.Exit;
+
         using var tray = new NotifyIcon
         {
             Icon = LoadIcon(),

@@ -89,13 +89,13 @@ public partial class SettingsWindow : FluentWindow
         Settings.settingInfo.hoverDelayMs = Delays[index];
         Settings.writeXML();
 
-        // The watcher reads the delay from its own copy of the settings, loaded at
-        // startup, so a running one has to be restarted to notice the change.
-        if (Settings.settingInfo.hoverToOpen)
-        {
-            HoverService.Stop();
-            HoverService.Start();
-        }
+        // A running watcher sees the file change and picks the new delay up itself,
+        // so nothing is stopped here. This used to stop and start it, and losing
+        // that race left the setting switched on with nothing watching: a killed
+        // process is still listed for a few milliseconds, long enough for the start
+        // to decide one was already running. Start() alone is a no-op when it is,
+        // and revives it if it somehow died.
+        if (Settings.settingInfo.hoverToOpen) HoverService.Start();
     }
 
     private void UpdateHoverUi()

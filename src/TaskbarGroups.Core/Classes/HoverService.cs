@@ -64,7 +64,15 @@ namespace TaskbarGroups.Core
             catch { return false; }
         }
 
-        /// <summary>Stops every watcher process. Safe to call when none is running.</summary>
+        /// <summary>
+        /// Stops every watcher process and waits for them to actually be gone.
+        ///
+        /// The waiting is the whole point. Kill only asks; for a few milliseconds
+        /// afterwards the process is still listed and still holds the single-instance
+        /// mutex. A Stop() followed straight away by a Start() would therefore find
+        /// "one is already running", launch nothing, and leave the setting switched on
+        /// with nothing watching — which is exactly what changing the delay used to do.
+        /// </summary>
         public static void Stop()
         {
             try
@@ -72,11 +80,22 @@ namespace TaskbarGroups.Core
                 foreach (var p in Process.GetProcessesByName(ProcessName))
                     using (p)
                     {
-                        try { p.Kill(); } catch { /* already gone, or not ours to kill */ }
+                        try
+                        {
+                            p.Kill();
+                            p.WaitForExit(ExitWaitMs);
+                        }
+                        catch { /* already gone, or not ours to kill */ }
                     }
             }
             catch { /* never let stopping the watcher take the app down with it */ }
         }
+
+        /// <summary>
+        /// Long enough for a process that has been killed to disappear; measured at
+        /// about 15ms, so this is generous rather than tight.
+        /// </summary>
+        private const int ExitWaitMs = 3000;
 
         /// <summary>
         /// Adds or removes the HKCU startup entry. Per-user only: the installer runs

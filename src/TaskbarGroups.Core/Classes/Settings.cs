@@ -46,6 +46,28 @@ namespace TaskbarGroups.Core
             
         }
 
+        /// <summary>
+        /// Re-reads the settings file into <see cref="settingInfo"/>. The static
+        /// constructor only runs once per process, so a long-lived process such as
+        /// the hover watcher would otherwise never notice a change the app made.
+        /// Failures are ignored on purpose: the file can be caught half-written, and
+        /// keeping the previous values is better than throwing.
+        /// </summary>
+        public static void Reload()
+        {
+            try
+            {
+                if (!File.Exists(settingsPath)) return;
+
+                var reader = new XmlSerializer(typeof(Setting));
+                using (StreamReader file = new StreamReader(settingsPath))
+                {
+                    if (reader.Deserialize(file) is Setting fresh) settingInfo = fresh;
+                }
+            }
+            catch { /* a partial read just means we keep what we had */ }
+        }
+
         public static void writeXML()
         {
             try

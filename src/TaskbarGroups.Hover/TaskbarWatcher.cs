@@ -42,6 +42,11 @@ internal sealed class TaskbarWatcher : IDisposable
     private static readonly TimeSpan PinCacheLife = TimeSpan.FromSeconds(30);
 
     private readonly System.Windows.Forms.Timer _timer;
+    private readonly SettingsListener _settings = new();
+
+    /// <summary>Raised when the user has switched the feature off while we ran.</summary>
+    public event Action? TurnedOff;
+
     private List<GroupButton> _buttons = new();
     private DateTime _cachedAt = DateTime.MinValue;
     private nint _cachedBar;
@@ -64,6 +69,7 @@ internal sealed class TaskbarWatcher : IDisposable
     {
         _timer.Stop();
         _timer.Dispose();
+        _settings.Dispose();
     }
 
     private void Tick()
@@ -74,6 +80,14 @@ internal sealed class TaskbarWatcher : IDisposable
 
     private void Poll()
     {
+        // Picks up a changed dwell time without anyone restarting us, and lets us
+        // bow out if the feature was switched off behind our back.
+        if (_settings.TakeChange() && !Settings.settingInfo.hoverToOpen)
+        {
+            TurnedOff?.Invoke();
+            return;
+        }
+
         if (!Native.GetCursorPos(out POINT cursor)) return;
 
         // The cheap gate. Nothing else runs unless the cursor is on a taskbar, so
