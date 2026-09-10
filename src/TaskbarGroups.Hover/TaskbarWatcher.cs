@@ -24,8 +24,11 @@ internal sealed class TaskbarWatcher : IDisposable
 {
     private sealed record GroupButton(string Group, RECT Rect);
 
-    /// <summary>How often the cursor is checked. Cheap on all but a few ticks.</summary>
-    private const int TickMs = 100;
+    /// <summary>
+    /// How often the cursor is checked. Two P/Invoke calls on all but a few ticks,
+    /// so this is set by how much delay it adds to noticing, not by its cost.
+    /// </summary>
+    private const int TickMs = 60;
 
     /// <summary>
     /// How long the cached button rectangles stay valid while the cursor is on the
@@ -101,10 +104,17 @@ internal sealed class TaskbarWatcher : IDisposable
 
         if (bar == 0)
         {
-            // Off the taskbar entirely: forget what was hovered so coming back to
-            // the same icon starts its dwell over instead of firing immediately.
             _hovered = null;
             _opened = null;
+
+            // Not on the taskbar, but close enough to be heading for it. Refreshing
+            // now takes the cost off the critical path: icons shift while the cursor
+            // is away, so the rectangles do have to be re-read, and doing it on
+            // arrival would add its own delay to the one thing that has to feel
+            // immediate. Approaching and turning away costs one reading a second.
+            if (NearAnyTaskbar(cursor, bars) && DateTime.UtcNow - _cachedAt > ApproachRefresh)
+                RefreshButtons(bars.Count > 0 ? bars[0] : 0);
+
             return;
         }
 
@@ -140,10 +150,48 @@ internal sealed class TaskbarWatcher : IDisposable
         if (_opened == hit.Group) return;
 
         int delay = Math.Max(0, Settings.settingInfo.hoverDelayMs);
-        if ((DateTime.UtcNow - _hoverStart).TotalMilliseconds < delay) return;
+        double waited = (DateTime.UtcNow - _hoverStart).TotalMilliseconds;
 
-        Open(hit);
+        // The flyout is launched well before the dwell is up, and waits out the rest
+        // itself. Starting it takes far longer than the dwell does, so running the
+        // two at the same time is most of the wait the user actually feels; done in
+        // sequence they simply add up. The flyout checks the cursor is still on the
+        // icon before it shows, so nothing appears that should not have.
+        if (waited < Math.Min(delay, PrelaunchMs)) return;
+
+        Open(hit, delay);
         _opened = hit.Group;
+    }
+
+    /// <summary>
+    /// How long the cursor has to rest before the flyout is started in the
+    /// background. Long enough that sweeping across the taskbar does not spawn a
+    /// process per icon, short enough to leave most of the startup overlapping the
+    /// dwell rather than following it.
+    /// </summary>
+    private const int PrelaunchMs = 120;
+
+
+    /// <summary>
+    /// How close to the taskbar counts as heading for it, in pixels. Wide enough to
+    /// give the reading time to finish before the cursor arrives.
+    /// </summary>
+    private const int ApproachMargin = 140;
+
+    /// <summary>How often an approach may trigger a reading.</summary>
+    private static readonly TimeSpan ApproachRefresh = TimeSpan.FromMilliseconds(900);
+
+    /// <summary>True if the cursor is just outside one of the taskbars.</summary>
+    private static bool NearAnyTaskbar(POINT cursor, List<nint> bars)
+    {
+        foreach (nint h in bars)
+        {
+            if (!Native.GetWindowRect(h, out RECT r)) continue;
+            if (cursor.X >= r.Left - ApproachMargin && cursor.X < r.Right + ApproachMargin
+             && cursor.Y >= r.Top - ApproachMargin && cursor.Y < r.Bottom + ApproachMargin)
+                return true;
+        }
+        return false;
     }
 
     /// <summary>
@@ -267,13 +315,16 @@ internal sealed class TaskbarWatcher : IDisposable
     /// can treat the icon as part of itself and not vanish the moment the cursor
     /// crosses the gap between the two.
     /// </summary>
-    private static void Open(GroupButton button)
+    private static void Open(GroupButton button, int delayMs)
     {
         try
         {
             var psi = new ProcessStartInfo(Paths.BackgroundApplication) { UseShellExecute = false };
             psi.ArgumentList.Add(
                 $"--hover={button.Rect.Left},{button.Rect.Top},{button.Rect.Right},{button.Rect.Bottom}");
+            // What is left of the dwell once the head start is subtracted. The flyout
+            // sees it through, so the wait happens while it loads instead of before.
+            psi.ArgumentList.Add($"--dwell={Math.Max(0, delayMs - PrelaunchMs)}");
             psi.ArgumentList.Add(button.Group);
             Process.Start(psi);
         }

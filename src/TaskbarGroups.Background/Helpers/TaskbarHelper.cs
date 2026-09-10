@@ -51,6 +51,36 @@ public static class TaskbarHelper
         return r.Left <= 0 ? Edge.Left : Edge.Right;
     }
 
+    /// <summary>
+    /// True if the cursor is anywhere on the taskbar. A hover-opened flyout checks
+    /// this before showing, rather than checking the icon it came from: the icon's
+    /// rectangle can be a moment out of date, and refusing to appear over a rounding
+    /// error is worse than appearing once when the user has already moved along the
+    /// taskbar. Leaving the taskbar altogether is the clear signal they are gone.
+    /// </summary>
+    public static bool CursorOnTaskbar(int margin = 0)
+    {
+        if (!GetCursorPos(out POINT p)) return true;
+
+        IntPtr handle = FindWindow("Shell_TrayWnd", null);
+        if (handle != IntPtr.Zero && GetWindowRect(handle, out RECT r) && Inside(r, p, margin))
+            return true;
+
+        IntPtr secondary = IntPtr.Zero;
+        while ((secondary = FindWindowEx(IntPtr.Zero, secondary, "Shell_SecondaryTrayWnd", null)) != IntPtr.Zero)
+        {
+            if (GetWindowRect(secondary, out RECT s) && Inside(s, p, margin)) return true;
+        }
+        return false;
+    }
+
+    private static bool Inside(RECT r, POINT p, int margin)
+        => p.X >= r.Left - margin && p.X < r.Right + margin
+        && p.Y >= r.Top - margin && p.Y < r.Bottom + margin;
+
+    [DllImport("user32.dll")]
+    private static extern IntPtr FindWindowEx(IntPtr parent, IntPtr after, string lpClassName, string? lpWindowName);
+
     public static (int X, int Y) GetCursor()
     {
         GetCursorPos(out POINT p);

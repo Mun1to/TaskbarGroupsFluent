@@ -4,7 +4,6 @@ using System.IO;
 using System.Windows;
 using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
-using Wpf.Ui.Appearance;
 
 namespace TaskbarGroups.Background;
 
@@ -15,12 +14,19 @@ namespace TaskbarGroups.Background;
 /// </summary>
 public partial class App : Application
 {
+    /// <summary>Milliseconds since Windows created this process.</summary>
+    private static double SinceStart()
+    {
+        try { return (DateTime.Now - System.Diagnostics.Process.GetCurrentProcess().StartTime).TotalMilliseconds; }
+        catch { return 0; }
+    }
+
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
-        // Match the system light/dark theme instead of the fixed "Dark" in App.xaml.
-        ApplicationThemeManager.ApplySystemTheme();
+        // No theme to apply: the flyout paints itself from IsLightTheme(), and the
+        // WPF-UI dictionaries it used to need are gone.
 
         if (e.Args.Length == 0)
         {
@@ -33,10 +39,13 @@ public partial class App : Application
         // any "--" switch (the hover watcher adds one) out of the name.
         var words = new List<string>();
         HoverAnchor? anchor = null;
+        int dwellMs = 0;
         foreach (string arg in e.Args)
         {
             if (!arg.StartsWith("--", StringComparison.Ordinal)) { words.Add(arg); continue; }
             anchor ??= HoverAnchor.Parse(arg);
+            if (arg.StartsWith("--dwell=", StringComparison.OrdinalIgnoreCase)
+                && int.TryParse(arg["--dwell=".Length..], out int d)) dwellMs = d;
         }
 
         string groupName = string.Join(" ", words);
@@ -63,7 +72,31 @@ public partial class App : Application
         // dismisses the one already on screen.
         CloseOtherFlyouts();
 
-        new PopupWindow(category, anchor).Show();
+        var w = new PopupWindow(category, anchor);
+
+        // The watcher starts us before the dwell is up so that loading and waiting
+        // happen at the same time; whatever is left of the wait is seen out here.
+        // Loading almost always takes longer, so this usually sleeps for nothing.
+        if (anchor is not null && dwellMs > 0)
+        {
+            int left = dwellMs - (int)SinceStart();
+            if (left > 0) System.Threading.Thread.Sleep(Math.Min(left, dwellMs));
+
+            // The cursor moved on while we were loading, so this panel is no longer
+            // wanted. Leaving without showing anything is the whole point of being
+            // allowed to start early.
+            // Checked against the taskbar rather than the icon. The icon rectangle
+            // comes from the watcher's cache and can be a moment stale, and a panel
+            // that refuses to appear is far more annoying than one that appears and
+            // dismisses itself. Off the taskbar entirely, though, is unambiguous.
+            if (!Helpers.TaskbarHelper.CursorOnTaskbar())
+            {
+                Shutdown();
+                return;
+            }
+        }
+
+        w.Show();
     }
 
     // Only one flyout should ever be on screen. Opening a second group used to

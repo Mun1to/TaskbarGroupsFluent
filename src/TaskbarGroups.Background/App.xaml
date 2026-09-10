@@ -1,14 +1,12 @@
-<Application x:Class="TaskbarGroups.Background.App"
+﻿<Application x:Class="TaskbarGroups.Background.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:local="clr-namespace:TaskbarGroups.Background">
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ui:ThemesDictionary Theme="Dark" />
-                <ui:ControlsDictionary />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
+    <!-- No WPF-UI dictionaries here on purpose. The flyout is a plain Window that
+         styles its own single button template and defines its own brushes, so it
+         uses no WPF-UI control at all; the one thing it borrows from that library
+         is WindowBackdrop, which is interop and needs no styles. Merging the full
+         themes and controls dictionaries was pure startup cost on a window that
+         has to appear the moment the cursor rests on an icon. -->
+    <Application.Resources />
 </Application>
