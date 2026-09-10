@@ -6,6 +6,78 @@ namespace TaskbarGroups.Core
 {
     static class ShellLink
     {
+        /// <summary>
+        /// Reads back what <see cref="InstallShortcut"/> wrote: where the shortcut
+        /// points, what it passes on the command line, and the AppUserModelID filed
+        /// with it. Reading the argument is how a pinned group's real name is
+        /// recovered, since the ID can be an older name the group no longer uses.
+        /// </summary>
+        public static void ReadShortcut(string linkPath, out string target, out string arguments, out string appId)
+        {
+            target = string.Empty;
+            arguments = string.Empty;
+            appId = string.Empty;
+
+            IShellLinkW link = (IShellLinkW)new CShellLink();
+            ((IPersistFile)link).Load(linkPath, 0 /* STGM_READ */);
+
+            var buffer = new StringBuilder(1024);
+            link.GetPath(buffer, buffer.Capacity, IntPtr.Zero, 0);
+            target = buffer.ToString();
+
+            buffer.Clear();
+            link.GetArguments(buffer, buffer.Capacity);
+            arguments = buffer.ToString();
+
+            appId = ReadAppUserModelId(linkPath);
+        }
+
+        /// <summary>
+        /// The AppUserModelID filed with a shortcut, or an empty string if it has
+        /// none.
+        ///
+        /// It is read through the shell rather than off the IShellLinkW just loaded:
+        /// that object does expose IPropertyStore, but after IPersistFile::Load every
+        /// property comes back VT_EMPTY, because that store is only populated for a
+        /// link being written. SHGetPropertyStoreFromParsingName asks the shell for
+        /// the file's own store, which is where the saved value actually lives.
+        /// </summary>
+        private static string ReadAppUserModelId(string linkPath)
+        {
+            Guid iid = typeof(IPropertyStore).GUID;
+            IPropertyStore store;
+            try
+            {
+                SHGetPropertyStoreFromParsingName(linkPath, IntPtr.Zero, GPS_DEFAULT, ref iid, out store);
+            }
+            catch { return string.Empty; }
+            if (store == null) return string.Empty;
+
+            try
+            {
+                PROPERTYKEY key = PROPERTYKEY.AppUserModel_ID;
+                store.GetValue(ref key, out PROPVARIANT value);
+                try
+                {
+                    // Anything but a string means no ID was filed with this shortcut.
+                    if (value.vt == (ushort)VarEnum.VT_LPWSTR && value.unionmember != IntPtr.Zero)
+                        return Marshal.PtrToStringUni(value.unionmember) ?? string.Empty;
+                }
+                finally { PropVariantHelper.Clear(ref value); }
+            }
+            catch { /* a shortcut without the property is not an error */ }
+            finally { Marshal.ReleaseComObject(store); }
+
+            return string.Empty;
+        }
+
+        private const uint GPS_DEFAULT = 0;
+
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
+        private static extern void SHGetPropertyStoreFromParsingName(
+            [MarshalAs(UnmanagedType.LPWStr)] string path, IntPtr bindContext, uint flags,
+            ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IPropertyStore store);
+
         public static void InstallShortcut(string exePath, string appId, string desc, string wkDirec, string iconLocation, string saveLocation, string arguments)
         {
             // Use passed parameters as to construct the shortcut
@@ -59,12 +131,23 @@ namespace TaskbarGroups.Core
         {
             void GetCurFile([Out(), MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile);
             void IsDirty();
-            void Load([MarshalAs(UnmanagedType.LPWStr)] string pszFileName, [MarshalAs(UnmanagedType.U4)] long dwMode);
+            // dwMode is a DWORD. It was declared as a long marshalled as U4, which
+            // .NET rejects outright ("Int64/UInt64 must be paired with I8 or U8"), so
+            // any call to Load threw before it reached COM. Nothing called it until
+            // now, which is why the mismatch went unnoticed.
+            void Load([MarshalAs(UnmanagedType.LPWStr)] string pszFileName, uint dwMode);
             void Save([MarshalAs(UnmanagedType.LPWStr)] string pszFileName, bool fRemember);
             void SaveCompleted([MarshalAs(UnmanagedType.LPWStr)] string pszFileName);
         }
 
-        [StructLayout(LayoutKind.Explicit)]
+        // A native PROPVARIANT is 24 bytes on x64: an 8-byte header, then a union
+        // wide enough for a DECIMAL. This was declared 16 bytes wide, which was
+        // harmless while the only use was SetValue (COM reads it and never writes
+        // back), but GetValue writes the full 24 into whatever it is handed, and a
+        // short struct means it writes past the end and reads back as VT_EMPTY. The
+        // trailing padding is never touched by hand; it is here to make the struct
+        // the size the callee expects.
+        [StructLayout(LayoutKind.Explicit, Size = 24)]
         public struct PROPVARIANT
         {
             [FieldOffset(0)]
@@ -80,7 +163,12 @@ namespace TaskbarGroups.Core
         {
             void GetCount([Out] out uint propertyCount);
             void GetAt([In] uint propertyIndex, [Out, MarshalAs(UnmanagedType.Struct)] out PROPERTYKEY key);
-            void GetValue([In, MarshalAs(UnmanagedType.Struct)] ref PROPERTYKEY key, [Out, MarshalAs(UnmanagedType.Struct)] out PROPVARIANT pv);
+            // Neither argument is marshalled as UnmanagedType.Struct, which means
+            // "VARIANT" and is a different layout entirely. Declaring the key that
+            // way sent the store a mangled key, so every read came back VT_EMPTY
+            // even for shortcuts that plainly had the property. Both structs already
+            // match their native shape, so they pass straight through.
+            void GetValue(ref PROPERTYKEY key, out PROPVARIANT pv);
             void SetValue([In, MarshalAs(UnmanagedType.Struct)] ref PROPERTYKEY key, [In, MarshalAs(UnmanagedType.Struct)] ref PROPVARIANT pv);
             void Commit();
         }
@@ -114,6 +202,9 @@ namespace TaskbarGroups.Core
 
             private PROPVARIANT variant;
             public PROPVARIANT Propvariant => variant;
+
+            /// <summary>Frees a PROPVARIANT handed back by IPropertyStore.GetValue.</summary>
+            public static void Clear(ref PROPVARIANT value) => NativeMethods.PropVariantClear(ref value);
 
             public void SetValue(string val)
             {
