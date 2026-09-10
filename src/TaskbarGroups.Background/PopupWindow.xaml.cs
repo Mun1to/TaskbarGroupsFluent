@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -20,17 +20,38 @@ namespace TaskbarGroups.Background;
 public partial class PopupWindow : Window
 {
     private readonly Category _category;
+    private readonly HoverAnchor? _anchor;
     private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
     private bool _isDark = true;
     private DispatcherTimer? _guard;
     private bool _hadFocus;
     private bool _mouseWentUp;
     private bool _closing;
+    private DateTime? _cursorLeftAt;
 
-    public PopupWindow(Category category)
+    /// <summary>
+    /// How long the cursor may wander off a hover-opened flyout before it closes.
+    /// Long enough to cross the gap between the icon and the panel, or to overshoot
+    /// it slightly, and short enough that it never feels left behind.
+    /// </summary>
+    private static readonly TimeSpan HoverGrace = TimeSpan.FromMilliseconds(600);
+
+    /// <summary>Slack around the panel and the icon, so their edges are forgiving.</summary>
+    private const int HoverMargin = 16;
+
+    public PopupWindow(Category category, HoverAnchor? anchor = null)
     {
         InitializeComponent();
         _category = category;
+        _anchor = anchor;
+
+        // Opened by hover, so it must appear without taking the keyboard. Not
+        // calling Activate() is not enough: Show() activates by default, and it was
+        // measured doing exactly that, which both stole the focus from whatever the
+        // user was typing in and left the panel unable to close, since its only way
+        // out was losing a focus that moving the mouse never takes away. A click
+        // inside still activates it, which is when the user does mean it.
+        if (_anchor is not null) ShowActivated = false;
 
         ApplyTheme();
         ApplyAppearance();
@@ -174,6 +195,15 @@ public partial class PopupWindow : Window
         double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
         if (scale <= 0) scale = 1;
 
+        // Opened by hover: line the panel up with the icon rather than the cursor,
+        // so it lands in the same place whether the cursor stopped at the edge of
+        // the icon or dead centre.
+        if (_anchor is not null)
+        {
+            cursorX = _anchor.CenterX;
+            cursorY = _anchor.CenterY;
+        }
+
         const double gap = 8;
         double w = ActualWidth, h = ActualHeight;
         double left, top;
@@ -204,7 +234,13 @@ public partial class PopupWindow : Window
 
         Left = left;
         Top = top;
-        TakeFocus();
+
+        // A hover-opened flyout must not steal the keyboard. The cursor only brushed
+        // past the taskbar, and the user may well be typing somewhere else; yanking
+        // the focus away mid-sentence would make the feature unusable. It still
+        // takes the focus the moment it is clicked, which is when the user meant it.
+        if (_anchor is null) TakeFocus();
+
         StartDismissGuard();
     }
 
@@ -247,6 +283,11 @@ public partial class PopupWindow : Window
     //
     // It never closes the flyout on its own, so a focus we could not take just
     // degrades to "click anywhere to dismiss" instead of a stuck window.
+    //
+    // A flyout opened by hover has a third way out. It deliberately holds no focus,
+    // so neither of the above would ever fire, and waiting for a click to dismiss
+    // something the user opened without clicking is the wrong bargain: it closes
+    // once the cursor has been away from both the panel and its icon for a moment.
     private void StartDismissGuard()
     {
         _guard = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(50) };
@@ -255,17 +296,29 @@ public partial class PopupWindow : Window
             IntPtr hwnd = new WindowInteropHelper(this).Handle;
             if (hwnd == IntPtr.Zero) return;
 
-            if (GetForegroundWindow() == hwnd) { _hadFocus = true; return; }
+            if (GetForegroundWindow() == hwnd) { _hadFocus = true; _cursorLeftAt = null; return; }
             if (_hadFocus) { CloseOnce(); return; }
 
             bool pressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
                         || (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
 
-            // The click that opened the flyout can still be down when we get here,
-            // and it landed on the taskbar, which is outside us. Wait for the mouse
-            // to come up once so we never dismiss on the press that opened us.
-            if (!pressed) { _mouseWentUp = true; return; }
-            if (_mouseWentUp && !CursorIsOver(hwnd)) CloseOnce();
+            if (pressed)
+            {
+                // The click that opened the flyout can still be down when we get
+                // here, and it landed on the taskbar, which is outside us. Wait for
+                // the mouse to come up once so we never dismiss on the press that
+                // opened us.
+                if (_mouseWentUp && !CursorIsOver(hwnd)) CloseOnce();
+                return;
+            }
+
+            _mouseWentUp = true;
+
+            if (_anchor is null) return;
+
+            if (CursorIsInHoverZone(hwnd)) { _cursorLeftAt = null; return; }
+            _cursorLeftAt ??= DateTime.UtcNow;
+            if (DateTime.UtcNow - _cursorLeftAt >= HoverGrace) CloseOnce();
         };
         _guard.Start();
     }
@@ -275,6 +328,21 @@ public partial class PopupWindow : Window
         // Both are physical screen pixels, so they compare without DPI scaling.
         if (!GetCursorPos(out POINT p) || !GetWindowRect(hwnd, out RECT r)) return true;
         return p.X >= r.Left && p.X < r.Right && p.Y >= r.Top && p.Y < r.Bottom;
+    }
+
+    // The panel and the icon that opened it count as one region, with slack around
+    // both: the panel sits a few pixels clear of the taskbar, and without the slack
+    // that gap would read as "the cursor left" every time it travelled between them.
+    private bool CursorIsInHoverZone(IntPtr hwnd)
+    {
+        // Cannot tell where the cursor is: assume it is still here. Erring the other
+        // way would close the flyout under the user's hand.
+        if (!GetCursorPos(out POINT p)) return true;
+        if (_anchor is not null && _anchor.Contains(p.X, p.Y, HoverMargin)) return true;
+        if (!GetWindowRect(hwnd, out RECT r)) return true;
+
+        return p.X >= r.Left - HoverMargin && p.X < r.Right + HoverMargin
+            && p.Y >= r.Top - HoverMargin && p.Y < r.Bottom + HoverMargin;
     }
 
     private void CloseOnce()

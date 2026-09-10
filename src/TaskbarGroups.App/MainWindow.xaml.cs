@@ -89,6 +89,9 @@ public partial class MainWindow : FluentWindow
             RefreshGroups();
     }
 
+    private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        => new SettingsWindow { Owner = this }.ShowDialog();
+
     private void EditGroup_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: GroupItem group }) return;

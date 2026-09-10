@@ -72,6 +72,22 @@ namespace TaskbarGroups.Core
     {
         [XmlElement]
         public bool portableMode { get; set; } = false;
+
+        /// <summary>
+        /// Open a group by resting the cursor on its taskbar icon, no click needed.
+        /// Off by default: it needs a resident watcher process, and nobody should
+        /// end up with a background process they never asked for.
+        /// </summary>
+        [XmlElement]
+        public bool hoverToOpen { get; set; } = false;
+
+        /// <summary>
+        /// How long the cursor must rest on the icon before the group opens.
+        /// Without a delay, merely crossing the taskbar on the way to the clock
+        /// would fire groups the user never meant to open.
+        /// </summary>
+        [XmlElement]
+        public int hoverDelayMs { get; set; } = 400;
     }
 }
 

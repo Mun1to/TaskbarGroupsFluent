@@ -1,6 +1,8 @@
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
+using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
 using Wpf.Ui.Appearance;
 
@@ -27,8 +29,17 @@ public partial class App : Application
         }
 
         // The pinned shortcut passes the group name unquoted, so a name with
-        // spaces arrives split across several args. Rejoin to rebuild it.
-        string groupName = string.Join(" ", e.Args);
+        // spaces arrives split across several args. Rejoin to rebuild it, keeping
+        // any "--" switch (the hover watcher adds one) out of the name.
+        var words = new List<string>();
+        HoverAnchor? anchor = null;
+        foreach (string arg in e.Args)
+        {
+            if (!arg.StartsWith("--", StringComparison.Ordinal)) { words.Add(arg); continue; }
+            anchor ??= HoverAnchor.Parse(arg);
+        }
+
+        string groupName = string.Join(" ", words);
         string groupDir = Path.Combine(Paths.ConfigPath, groupName);
 
         if (!File.Exists(Path.Combine(groupDir, "ObjectData.xml")))
@@ -52,7 +63,7 @@ public partial class App : Application
         // dismisses the one already on screen.
         CloseOtherFlyouts();
 
-        new PopupWindow(category).Show();
+        new PopupWindow(category, anchor).Show();
     }
 
     // Only one flyout should ever be on screen. Opening a second group used to

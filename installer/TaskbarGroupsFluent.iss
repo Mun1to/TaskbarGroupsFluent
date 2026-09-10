@@ -65,6 +65,35 @@ Filename: "{app}\{#AppExe}"; Description: "{cm:LaunchProgram,{#AppName}}"; Flags
 var
   DownloadPage: TDownloadWizardPage;
 
+// The hover watcher is a resident process with no window, so CloseApplications
+// never sees it and its files stay locked mid-install. Stopping it here is safe:
+// the app starts it again on launch whenever the setting is on.
+procedure StopHoverWatcher();
+var
+  ResultCode: Integer;
+begin
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM TaskbarGroups.Hover.exe',
+       '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssInstall then
+    StopHoverWatcher();
+end;
+
+// On the way out, take the startup entry with us. Leaving it behind would have
+// Windows try to launch a watcher that is no longer on disk at every sign-in.
+procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+begin
+  if CurUninstallStep = usUninstall then
+  begin
+    StopHoverWatcher();
+    RegDeleteValue(HKEY_CURRENT_USER,
+      'Software\Microsoft\Windows\CurrentVersion\Run', 'TaskbarGroupsFluentHover');
+  end;
+end;
+
 // True if any Microsoft.WindowsDesktop.App 8.x shared framework folder exists.
 function IsDotNet8DesktopInstalled(): Boolean;
 var

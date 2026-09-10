@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 
@@ -46,6 +46,14 @@ namespace TaskbarGroups.Core
         /// </summary>
         public static string BackgroundApplication =
             Path.Combine(exeFolder, "Background", "TaskbarGroups.Background.exe");
+
+        /// <summary>
+        /// Path to the resident hover watcher, deployed alongside the main app.
+        /// It is the only part of the product that keeps running on its own, and
+        /// only while the hover-to-open setting is on.
+        /// </summary>
+        public static string HoverApplication =
+            Path.Combine(exeFolder, "TaskbarGroups.Hover.exe");
 
         private static string setupConfigPath()
         {

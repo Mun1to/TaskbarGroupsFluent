@@ -41,6 +41,7 @@ Taskbar Groups convierte una carpeta llena de apps en **un solo botón de la bar
 - 🎨 **Iconos de grupo personalizados** — sube cualquier imagen y **recórtala y haz zoom** en el editor integrado, o…
 - 😀 **…elige un emoji a color** — pulsa **Emoji** y elígelo como icono del grupo, renderizado nítido y centrado. Sin subir ninguna imagen.
 - 📌 **Ancla a la barra de tareas** — cada grupo se convierte en un botón anclado; al pulsarlo se abre el popup con tus apps.
+- 🖱️ **Abrir al pasar el cursor** — actívalo en **Ajustes** y un grupo se abre con solo dejar el cursor encima de su icono, sin hacer clic. Espera un momento antes de abrir, así cruzar la barra no abre nada sin querer; nunca te quita el teclado de donde estabas escribiendo; y se cierra solo en cuanto alejas el cursor. Viene apagado: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde Ajustes.
 - 🔄 **Actualización del icono en vivo** — cambia el icono de un grupo anclado y el botón de la barra se refresca solo, con un reinicio limpio del shell que no molesta a tus otros iconos anclados.
 - 📁 **Apps *y* carpetas** en el mismo grupo.
 - 🌍 **Se adapta a tu Windows** — el tema claro/oscuro **y** el color de acento, además del idioma de la interfaz (**español o inglés**), se toman de tu sistema automáticamente. Puedes forzar el idioma con la variable `TBG_LANG`.
@@ -127,8 +128,11 @@ El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a pa
 | `TaskbarGroups.Core` | Lógica sin UI: modelo de datos, catálogo `AppsFolder` del shell + pipeline de iconos, interop del shell, rutas |
 | `TaskbarGroups.App` | Editor Fluent — ventana principal, editor de grupo, selectores de app y emoji, editor de recorte, updater |
 | `TaskbarGroups.Background` | El popup sin bordes que se muestra sobre la barra de tareas |
+| `TaskbarGroups.Hover` | Vigilante residente opcional para abrir al pasar el cursor, vive en la bandeja del sistema |
 
 La app despliega el popup de fondo junto a sí misma; un acceso directo anclado lo lanza con el nombre del grupo como argumento.
+
+Lo del cursor no es algo que Windows ofrezca: un botón de la barra no avisa de nada cuando el cursor pasa por encima, así que el vigilante lee los botones de la barra con UI Automation y compara la posición del cursor con ellos. Solo lo hace mientras el cursor está de verdad sobre la barra, y guarda en caché lo que lee, que es lo que lo mantiene en una fracción de un uno por ciento de un núcleo cuando no pasa nada.
 
 ## 🙏 Créditos
 

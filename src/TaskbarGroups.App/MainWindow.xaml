@@ -41,12 +41,19 @@
                                FontSize="13" Margin="0,2,0,0"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 </StackPanel>
-                <ui:Button x:Name="AddGroupButton"
-                           Content="{DynamicResource Loc_Main_AddGroup}"
-                           Icon="{ui:SymbolIcon Add24}"
-                           Appearance="Primary"
-                           HorizontalAlignment="Right" VerticalAlignment="Center"
-                           Click="AddGroupButton_Click" />
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <ui:Button Icon="{ui:SymbolIcon Settings24}"
+                               ToolTip="{DynamicResource Loc_Settings_Title}"
+                               AutomationProperties.Name="{DynamicResource Loc_Settings_Title}"
+                               Margin="0,0,8,0"
+                               Click="SettingsButton_Click" />
+                    <ui:Button x:Name="AddGroupButton"
+                               Content="{DynamicResource Loc_Main_AddGroup}"
+                               Icon="{ui:SymbolIcon Add24}"
+                               Appearance="Primary"
+                               Click="AddGroupButton_Click" />
+                </StackPanel>
             </Grid>
 
             <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">

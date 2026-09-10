@@ -30,6 +30,12 @@ public partial class App : Application
         // pinned flyouts don't keep showing icons rendered by the previous build.
         // Off the UI thread — it re-resolves every shortcut's icon.
         Task.Run(IconCacheMaintenance.RefreshIfStale);
+
+        // Bring the hover watcher back if the user wants it and nothing is running:
+        // an update stops it to unlock its files, and the startup entry only fires at
+        // sign-in, so without this the feature would look switched on and do nothing
+        // until the next reboot.
+        if (Settings.settingInfo.hoverToOpen) Task.Run(() => HoverService.Start());
     }
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

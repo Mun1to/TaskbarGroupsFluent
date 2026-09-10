@@ -20,6 +20,14 @@ namespace TaskbarGroups.Core
         public int Width; // not used aon
         public double Opacity = 10;
         public String HoverColor;
+
+        /// <summary>
+        /// Prefix of the AppUserModelID stamped on every pinned group shortcut.
+        /// It is what tells a group's taskbar button apart from any other pinned
+        /// icon, so the hover watcher reads it back to know which group to open.
+        /// Changing it orphans every shortcut already pinned by a user.
+        /// </summary>
+        public const string AppIdPrefix = "tjackenpacken.taskbarGroup.menu.";
         public int IconSize = 30;
         public int Separation = 8;
 
@@ -126,7 +134,7 @@ namespace TaskbarGroups.Core
                 // group from stacking with the main app on the taskbar.
                 ShellLink.InstallShortcut(
                     Paths.BackgroundApplication,
-                    "tjackenpacken.taskbarGroup.menu." + this.Name,
+                    AppIdPrefix + this.Name,
                     "\"" + this.Name + "\"",
                     path,
                     Path.Combine(path, "GroupIcon.ico"),

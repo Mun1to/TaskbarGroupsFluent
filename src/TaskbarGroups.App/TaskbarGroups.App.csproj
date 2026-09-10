@@ -6,6 +6,10 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <Private>false</Private>
     </ProjectReference>
+    <ProjectReference Include="..\TaskbarGroups.Hover\TaskbarGroups.Hover.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <Private>false</Private>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +28,17 @@
     </ItemGroup>
     <Copy SourceFiles="@(BackgroundFiles)"
           DestinationFiles="@(BackgroundFiles->'$(OutDir)Background\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <!-- Deploy the hover watcher next to the app, in the same folder, since that is
+       where Paths.HoverApplication looks for it. -->
+  <Target Name="CopyHoverWatcher" AfterTargets="Build">
+    <ItemGroup>
+      <HoverFiles Include="$(MSBuildProjectDirectory)\..\TaskbarGroups.Hover\bin\$(Configuration)\$(TargetFramework)\**\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(HoverFiles)"
+          DestinationFiles="@(HoverFiles->'$(OutDir)%(RecursiveDir)%(Filename)%(Extension)')"
           SkipUnchangedFiles="true" />
   </Target>
 

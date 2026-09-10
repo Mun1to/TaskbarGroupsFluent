@@ -41,6 +41,7 @@ Taskbar Groups turns a folder-worth of apps into **one taskbar button**. Click i
 - 🎨 **Custom group icons** — upload any image and **crop & zoom** it in the built-in editor, or…
 - 😀 **…pick a colour emoji** — hit **Emoji** and choose one as the group icon, rendered crisp and centred. No image needed.
 - 📌 **Pin to the taskbar** — each group becomes a pinned button; clicking it opens the flyout with your apps.
+- 🖱️ **Open on hover** — turn it on in **Settings** and a group opens by resting the cursor on its icon, no click at all. It waits a moment first so crossing the taskbar never opens anything by accident, it never takes the keyboard away from what you were typing in, and it closes itself as soon as the cursor leaves. Off by default: it runs a small watcher in the notification area, which you can switch off from there or from Settings.
 - 🔄 **Live taskbar updates** — change a pinned group's icon and the taskbar button refreshes itself, with a clean shell restart that won't disturb your other pinned icons.
 - 📁 **Apps *and* folders** in the same group.
 - 🌍 **Follows your Windows look** — light/dark theme **and** accent colour, plus the interface language (**English or Spanish**) are picked up from your system automatically. Override the language with the `TBG_LANG` variable.
@@ -127,8 +128,11 @@ The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from
 | `TaskbarGroups.Core` | UI-agnostic logic: data model, shell `AppsFolder` catalog + icon pipeline, shell interop, paths |
 | `TaskbarGroups.App` | Fluent editor — main window, group editor, app & emoji pickers, icon crop editor, updater |
 | `TaskbarGroups.Background` | The borderless flyout shown above the taskbar |
+| `TaskbarGroups.Hover` | Optional resident watcher for open-on-hover, living in the notification area |
 
 The app deploys the background flyout next to itself; a pinned shortcut launches it with the group name as its argument.
+
+Hovering is not something Windows offers: a taskbar button reports nothing when the cursor is over it, so the watcher reads the taskbar's buttons through UI Automation and polls the cursor against them. It only does that while the cursor is actually on the taskbar, and caches what it reads, which is what keeps it at a fraction of a percent of one core while idle.
 
 ## 🙏 Credits
 
