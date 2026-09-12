@@ -75,6 +75,7 @@ internal sealed class TaskbarWatcher : IDisposable
         _timer.Dispose();
         _settings.Dispose();
         _warm.Dispose();
+        TaskbarTooltip.Stop();
     }
 
     private void Tick()
@@ -99,15 +100,16 @@ internal sealed class TaskbarWatcher : IDisposable
         // the common case costs two P/Invoke calls and nothing else.
         var bars = TaskbarWindows();
         nint bar = 0;
+        RECT barRect = default;
         foreach (nint h in bars)
         {
-            if (Native.GetWindowRect(h, out RECT r) && r.Contains(cursor)) { bar = h; break; }
+            if (Native.GetWindowRect(h, out RECT r) && r.Contains(cursor)) { bar = h; barRect = r; break; }
         }
 
         if (bar == 0)
         {
             _hovered = null;
-            _opened = null;
+            Forget();
 
             if (NearAnyTaskbar(cursor, bars))
             {
@@ -147,7 +149,7 @@ internal sealed class TaskbarWatcher : IDisposable
         if (hit is null)
         {
             _hovered = null;
-            _opened = null;
+            Forget();
             return;
         }
 
@@ -155,7 +157,7 @@ internal sealed class TaskbarWatcher : IDisposable
         {
             _hovered = hit.Group;
             _hoverStart = DateTime.UtcNow;
-            _opened = null;
+            Forget();
             return;
         }
 
@@ -177,6 +179,11 @@ internal sealed class TaskbarWatcher : IDisposable
         bool warm = _warm.IsReady;
         if (waited < (warm ? delay : Math.Min(delay, PrelaunchMs))) return;
 
+        // Resting on the icon is also what summons the taskbar's own tooltip, and
+        // it is due a good half second after the panel, so it would arrive on top
+        // of it. It cannot be declined, only put away as it appears.
+        TaskbarTooltip.Watch(bar, barRect);
+
         if (warm && _warm.Show(hit.Group, hit.Rect))
         {
             _opened = hit.Group;
@@ -185,6 +192,16 @@ internal sealed class TaskbarWatcher : IDisposable
 
         Open(hit, delay);
         _opened = hit.Group;
+    }
+
+    /// <summary>
+    /// Forgets the open panel, and with it the reason to keep hiding the
+    /// taskbar's tooltips.
+    /// </summary>
+    private void Forget()
+    {
+        _opened = null;
+        TaskbarTooltip.Stop();
     }
 
     /// <summary>
