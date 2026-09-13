@@ -68,11 +68,18 @@ var
 // The hover watcher is a resident process with no window, so CloseApplications
 // never sees it and its files stay locked mid-install. Stopping it here is safe:
 // the app starts it again on launch whenever the setting is on.
+//
+// The flyout it keeps loaded near the taskbar has to go too. It outlives the
+// watcher by a few seconds, holding the Background files open, and an uninstall
+// that ran in that window left the Background folder behind. Killing it is safe
+// for the same reason the app kills stale flyouts: it owns nothing but the panel.
 procedure StopHoverWatcher();
 var
   ResultCode: Integer;
 begin
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM TaskbarGroups.Hover.exe',
+       '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM TaskbarGroups.Background.exe',
        '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
 end;
 
