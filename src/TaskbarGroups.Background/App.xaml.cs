@@ -44,6 +44,23 @@ public partial class App : Application
             if (a.Equals("--warm", StringComparison.OrdinalIgnoreCase)) { RunWarm(); return; }
         }
 
+        // "Edit group" from a pinned group's right-click menu, in the Store package.
+        // There the flyout's alias is the only way in from outside (the Store allows
+        // one alias per app), so the menu comes here and the editor is handed on to
+        // the main app, which this process can start by its real path.
+        if (Array.Exists(e.Args, a => a.Equals("--edit", StringComparison.OrdinalIgnoreCase)))
+        {
+            try
+            {
+                var psi = new ProcessStartInfo(Paths.MainApplication) { UseShellExecute = false };
+                foreach (string a in e.Args) psi.ArgumentList.Add(a);
+                Process.Start(psi);
+            }
+            catch { /* nothing to open the editor with; leave quietly */ }
+            Shutdown();
+            return;
+        }
+
         // The pinned shortcut passes the group name unquoted, so a name with
         // spaces arrives split across several args. Rejoin to rebuild it, keeping
         // any "--" switch (the hover watcher adds one) out of the name.

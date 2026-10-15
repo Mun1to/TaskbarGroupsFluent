@@ -84,9 +84,13 @@ namespace TaskbarGroups.Core
         public static string PanelLauncher =>
             AppPackage.IsPackaged ? AppPackage.PanelAlias : BackgroundApplication;
 
-        /// <summary>The same for the main app, which "Edit group" starts.</summary>
+        /// <summary>
+        /// What "Edit group" starts with "--edit": the main app, or inside the Store
+        /// package the flyout's alias again, because the Store allows a single alias
+        /// per app; the flyout hands "--edit" on to the main app.
+        /// </summary>
         public static string AppLauncher =>
-            AppPackage.IsPackaged ? AppPackage.AppAlias : MainApplication;
+            AppPackage.IsPackaged ? AppPackage.PanelAlias : MainApplication;
 
         private static string setupConfigPath()
         {

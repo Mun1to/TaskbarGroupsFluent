@@ -47,10 +47,10 @@ namespace TaskbarGroups.Core
             ? Path.Combine(LocalAppData, "Packages", FamilyName, "LocalState")
             : ClassicDataRoot;
 
-        /// <summary>Alias of the main app, as declared in AppxManifest.xml.</summary>
-        public static string AppAlias => Path.Combine(AliasFolder, "TaskbarGroupsFluent.exe");
-
-        /// <summary>Alias of the flyout, as declared in AppxManifest.xml.</summary>
+        /// <summary>
+        /// Alias of the flyout, as declared in AppxManifest.xml, and the package's
+        /// only one: the Store allows one per app and rejects a second, hidden app.
+        /// </summary>
         public static string PanelAlias => Path.Combine(AliasFolder, "TaskbarGroupsFluentPanel.exe");
 
         /// <summary>TaskId of the hover watcher's StartupTask in AppxManifest.xml.</summary>

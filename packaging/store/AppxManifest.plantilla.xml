@@ -6,13 +6,17 @@
 
   Lo que no se ve a simple vista:
 
-  - Hay DOS aplicaciones en el paquete. "App" es la ventana de los grupos, la que sale en
-    el menu Inicio. "Panel" es el desplegable que abre cada grupo anclado; no sale en Inicio
-    (AppListEntry="none") y existe para tener su propio alias de ejecucion.
-  - Los alias (`TaskbarGroupsFluent.exe` y `TaskbarGroupsFluentPanel.exe`) aparecen en
-    %LOCALAPPDATA%\Microsoft\WindowsApps y son la unica ruta estable hacia los ejecutables:
-    la carpeta real dentro de WindowsApps cambia con cada actualizacion. Los accesos directos
-    de los grupos y su menu del clic derecho apuntan a esos alias, nunca a la carpeta real.
+  - Hay UNA sola aplicacion y UN solo alias, `TaskbarGroupsFluentPanel.exe`, que apunta al
+    panel y no al ejecutable de la aplicacion. Las dos cosas las impone la Store: una segunda
+    aplicacion oculta de Inicio (AppListEntry="none") la rechaza al subirla, por «aplicacion
+    desatendida» que pide una exencion (HeadlessAppBypass), y un segundo alias en la misma
+    aplicacion no pasa la validacion del manifiesto («windows.appExecutionAlias solo se debe
+    declarar una vez»).
+  - El alias aparece en %LOCALAPPDATA%\Microsoft\WindowsApps y es la unica ruta estable: la
+    carpeta real dentro de WindowsApps cambia con cada actualizacion. Los accesos directos de
+    los grupos apuntan a el, y tambien «Editar grupo» del clic derecho, con la opcion edit: el
+    panel se la pasa a la aplicacion y se cierra. (Ojo: en un comentario XML no puede haber
+    dos guiones seguidos, y el manifiesto deja de ser valido.)
   - Los tres programas van en la misma carpeta, sin la subcarpeta Background del
     instalador: cada uno lleva .NET dentro y juntos lo comparten en vez de duplicarlo.
   - El vigilante de "abrir al pasar el cursor" arranca con Windows por `StartupTask`, no por
@@ -57,31 +61,14 @@
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png" />
       <Extensions>
-        <uap3:Extension Category="windows.appExecutionAlias" Executable="TaskbarGroups.App.exe" EntryPoint="Windows.FullTrustApplication">
-          <uap3:AppExecutionAlias>
-            <desktop:ExecutionAlias Alias="TaskbarGroupsFluent.exe" />
-          </uap3:AppExecutionAlias>
-        </uap3:Extension>
-        <desktop:Extension Category="windows.startupTask" Executable="TaskbarGroups.Hover.exe" EntryPoint="Windows.FullTrustApplication">
-          <desktop:StartupTask TaskId="TaskbarGroupsFluentHover" Enabled="false" DisplayName="Taskbar Groups Fluent" />
-        </desktop:Extension>
-      </Extensions>
-    </Application>
-
-    <Application Id="Panel" Executable="TaskbarGroups.Background.exe" EntryPoint="Windows.FullTrustApplication">
-      <uap:VisualElements
-        DisplayName="Taskbar Groups Fluent"
-        Description="The flyout a pinned group opens."
-        BackgroundColor="transparent"
-        Square150x150Logo="Assets\Square150x150Logo.png"
-        Square44x44Logo="Assets\Square44x44Logo.png"
-        AppListEntry="none" />
-      <Extensions>
         <uap3:Extension Category="windows.appExecutionAlias" Executable="TaskbarGroups.Background.exe" EntryPoint="Windows.FullTrustApplication">
           <uap3:AppExecutionAlias>
             <desktop:ExecutionAlias Alias="TaskbarGroupsFluentPanel.exe" />
           </uap3:AppExecutionAlias>
         </uap3:Extension>
+        <desktop:Extension Category="windows.startupTask" Executable="TaskbarGroups.Hover.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="TaskbarGroupsFluentHover" Enabled="false" DisplayName="Taskbar Groups Fluent" />
+        </desktop:Extension>
       </Extensions>
     </Application>
   </Applications>
