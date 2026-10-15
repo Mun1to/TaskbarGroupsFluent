@@ -21,6 +21,8 @@
     <s:String x:Key="Loc_Main_EmptyTitle">You don't have any groups yet</s:String>
     <s:String x:Key="Loc_Main_EmptySubtitle">Create your first group to start organising your taskbar</s:String>
     <s:String x:Key="Loc_Main_CreateFirst">Create first group</s:String>
+    <s:String x:Key="Loc_Jump_OpenAll">Open all</s:String>
+    <s:String x:Key="Loc_Jump_Edit">Edit group</s:String>
     <s:String x:Key="Loc_Main_Import">Import</s:String>
     <s:String x:Key="Loc_Main_ImportFile">From a group file…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">From Taskbar Groups…</s:String>
@@ -149,9 +151,25 @@
     <!-- Automatic updates -->
     <s:String x:Key="Loc_Update_Title">Update available</s:String>
     <s:String x:Key="Loc_Update_Message">A new version ({0}) is available. Update now? The app will close while it installs and reopen afterwards.</s:String>
+    <s:String x:Key="Loc_Update_StoreMessage">A new version ({0}) is available. Update now? The Microsoft Store will install it, and the app will close while it does.</s:String>
     <s:String x:Key="Loc_Update_Now">Update now</s:String>
     <s:String x:Key="Loc_Update_Later">Later</s:String>
     <s:String x:Key="Loc_Update_Failed">Couldn't download the update. Please try again later.</s:String>
+    <s:String x:Key="Loc_Update_Checking">Checking for a new version…</s:String>
+    <s:String x:Key="Loc_Update_UpToDate">You're on the latest version ({0}). Click to check again.</s:String>
+    <s:String x:Key="Loc_Update_CheckNow">Check for updates</s:String>
+    <s:String x:Key="Loc_Update_AvailableShort">{0} is available</s:String>
+    <s:String x:Key="Loc_Update_Downloading">Downloading {0}…</s:String>
+    <s:String x:Key="Loc_Update_CheckFailed">Couldn't check. Are you online?</s:String>
+
+    <!-- Quick bar -->
+    <s:String x:Key="Loc_Quick_Theme">Theme</s:String>
+    <s:String x:Key="Loc_Quick_ThemeSystem">Automatic: same as Windows</s:String>
+    <s:String x:Key="Loc_Quick_ThemeLight">Light</s:String>
+    <s:String x:Key="Loc_Quick_ThemeDark">Dark</s:String>
+    <s:String x:Key="Loc_Quick_Language">Language</s:String>
+    <s:String x:Key="Loc_Quick_LangSystem">Automatic: same as Windows</s:String>
+    <s:String x:Key="Loc_Quick_Hover">Open on hover</s:String>
 
     <!-- Errors -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">An unexpected error occurred:&#10;&#10;{0}</s:String>

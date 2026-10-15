@@ -3,6 +3,10 @@
 ; Runtime is present (downloading it silently if missing). Pass the published
 ; app folder, output folder and version on the command line, e.g.:
 ;   ISCC /DSourceDir="...\stage\TaskbarGroupsFluent" /DOutputDir="...\dist" /DAppVersion=1.4.0 TaskbarGroupsFluent.iss
+;
+; Add /DRuntimeInstaller="...\windowsdesktop-runtime-10.x.y-win-x64.exe" for the offline
+; build: the runtime travels inside the setup, which then downloads nothing. The
+; Microsoft Store requires that, and it suits PCs without internet access.
 
 #ifndef AppVersion
   #define AppVersion "1.4.0"
@@ -12,6 +16,11 @@
 #endif
 #ifndef OutputDir
   #define OutputDir "..\dist"
+#endif
+#ifdef RuntimeInstaller
+  #define SetupName "TaskbarGroupsFluent-Setup-Offline"
+#else
+  #define SetupName "TaskbarGroupsFluent-Setup"
 #endif
 
 #define AppName "Taskbar Groups Fluent"
@@ -35,7 +44,7 @@ PrivilegesRequired=lowest
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir={#OutputDir}
-OutputBaseFilename=TaskbarGroupsFluent-Setup
+OutputBaseFilename={#SetupName}
 SetupIconFile=..\src\assets\Icon.ico
 UninstallDisplayIcon={app}\{#AppExe}
 Compression=lzma2/max
@@ -52,6 +61,10 @@ Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
+#ifdef RuntimeInstaller
+; Unpacked on demand by PrepareToInstall, and only when the runtime is missing.
+Source: "{#RuntimeInstaller}"; DestName: "windowsdesktop-runtime-10-x64.exe"; Flags: dontcopy
+#endif
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
@@ -150,6 +163,15 @@ begin
   Result := '';
   if IsDotNetDesktopInstalled() then
     Exit;
+
+#ifdef RuntimeInstaller
+  // Offline build: the runtime is inside this setup.
+  ExtractTemporaryFile('windowsdesktop-runtime-10-x64.exe');
+  if not Exec(ExpandConstant('{tmp}\windowsdesktop-runtime-10-x64.exe'),
+             '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
+    Result := 'The .NET 10 Desktop Runtime installer could not be started.';
+  Exit;
+#endif
 
   DownloadPage.Clear;
   DownloadPage.Add(

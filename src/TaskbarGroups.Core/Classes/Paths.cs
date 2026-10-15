@@ -26,9 +26,6 @@ namespace TaskbarGroups.Core
         public static string defaultShortcutsPath;
         public static string defaultBackgroundPath;
 
-        private static string AppDataRelativePath =>
-            Path.Combine("Jack Schierbeck", "taskbar-groups");
-
         public static string ConfigPath = setupConfigPath();
         public static string ShortcutsPath = setupShortcutsPath();
 
@@ -41,11 +38,19 @@ namespace TaskbarGroups.Core
                 System.Text.RegularExpressions.Regex.Replace(groupName, @"(_)+", " ") + ".lnk");
 
         /// <summary>
-        /// Path to the background flyout executable, deployed alongside the main
-        /// app under a "Background" subfolder. Pinned shortcuts target this exe.
+        /// Path to the background flyout executable. The installer deploys it under
+        /// a "Background" subfolder; the Store package keeps all three programs in
+        /// one folder, because each carries its own copy of .NET and side by side
+        /// they share it instead of doubling the download.
         /// </summary>
-        public static string BackgroundApplication =
-            Path.Combine(exeFolder, "Background", "TaskbarGroups.Background.exe");
+        public static string BackgroundApplication = FindBackgroundApplication();
+
+        private static string FindBackgroundApplication()
+        {
+            string inSubfolder = Path.Combine(exeFolder, "Background", "TaskbarGroups.Background.exe");
+            string beside = Path.Combine(exeFolder, "TaskbarGroups.Background.exe");
+            return !File.Exists(inSubfolder) && File.Exists(beside) ? beside : inSubfolder;
+        }
 
         /// <summary>
         /// Path to the resident hover watcher, deployed alongside the main app.
@@ -71,11 +76,21 @@ namespace TaskbarGroups.Core
             }
         }
 
+        /// <summary>
+        /// What a pinned group's shortcut starts: the flyout itself, or inside the
+        /// Store package its execution alias, since the real path changes with
+        /// every update and would leave the pin pointing at nothing.
+        /// </summary>
+        public static string PanelLauncher =>
+            AppPackage.IsPackaged ? AppPackage.PanelAlias : BackgroundApplication;
+
+        /// <summary>The same for the main app, which "Edit group" starts.</summary>
+        public static string AppLauncher =>
+            AppPackage.IsPackaged ? AppPackage.AppAlias : MainApplication;
+
         private static string setupConfigPath()
         {
-            defaultConfigPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                AppDataRelativePath, "config");
+            defaultConfigPath = Path.Combine(AppPackage.DataRoot, "config");
 
             string directoryPath = Settings.settingInfo.portableMode
                 ? Path.Combine(exeFolder, "config")
@@ -87,9 +102,7 @@ namespace TaskbarGroups.Core
 
         private static string setupShortcutsPath()
         {
-            defaultShortcutsPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-                AppDataRelativePath, "Shortcuts");
+            defaultShortcutsPath = Path.Combine(AppPackage.DataRoot, "Shortcuts");
 
             string directoryPath = Settings.settingInfo.portableMode
                 ? Path.Combine(exeFolder, "Shortcuts")
@@ -105,7 +118,7 @@ namespace TaskbarGroups.Core
             {
                 string directoryPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                    AppDataRelativePath, "JITComp");
+                    "Jack Schierbeck", "taskbar-groups", "JITComp");
                 Directory.CreateDirectory(directoryPath);
                 return directoryPath;
             }

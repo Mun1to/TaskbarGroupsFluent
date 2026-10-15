@@ -159,7 +159,7 @@ namespace TaskbarGroups.Core
         }
 
         [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
-        interface IPropertyStore
+        internal interface IPropertyStore
         {
             void GetCount([Out] out uint propertyCount);
             void GetAt([In] uint propertyIndex, [Out, MarshalAs(UnmanagedType.Struct)] out PROPERTYKEY key);

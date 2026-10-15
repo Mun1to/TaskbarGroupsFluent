@@ -38,7 +38,7 @@ public partial class GroupEditorWindow : FluentWindow
     public GroupEditorWindow(Category? existing = null)
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        AppTheme.Watch(this);
 
         ShortcutsItemsControl.ItemsSource = _shortcuts;
         PreviewItems.ItemsSource = _shortcuts;
@@ -402,6 +402,9 @@ public partial class GroupEditorWindow : FluentWindow
             return;
         }
 
+        // The pinned button's right-click menu: "Open all" and "Edit group".
+        GroupJumpList.Register(name, Loc.Get("Loc_Jump_OpenAll"), Loc.Get("Loc_Jump_Edit"));
+
         if (_isEditing)
         {
             bool renamed = _originalName is not null
@@ -415,7 +418,10 @@ public partial class GroupEditorWindow : FluentWindow
             // A rename writes a new config folder + .lnk; delete the old ones so the
             // group isn't duplicated.
             if (renamed)
+            {
                 DeleteOldGroup(_originalName!);
+                GroupJumpList.Remove(_originalName!);
+            }
         }
 
         DialogResult = true;
@@ -443,7 +449,7 @@ public partial class GroupEditorWindow : FluentWindow
             // The pin was created under the original name; find it by that, then
             // overwrite it with the freshly built shortcut (carrying the new icon).
             string? pinnedLnk = TaskbarPin.FindPinnedShortcut(
-                _originalName ?? currentName, Paths.BackgroundApplication);
+                _originalName ?? currentName, Paths.PanelLauncher);
             if (pinnedLnk is null) return; // not pinned — nothing to refresh
 
             TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));

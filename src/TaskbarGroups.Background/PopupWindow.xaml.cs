@@ -135,16 +135,8 @@ public partial class PopupWindow : Window
     }
 
     // The flyout carries no string tables of its own for one tooltip, so it follows
-    // the same rule as the app: Spanish when Windows is in Spanish, unless TBG_LANG
-    // says otherwise.
-    private static bool SpanishUi()
-    {
-        string forced = Environment.GetEnvironmentVariable("TBG_LANG");
-        string lang = !string.IsNullOrWhiteSpace(forced)
-            ? forced
-            : System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-        return lang.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase);
-    }
+    // the same rule as the app (see UiPreferences).
+    private static bool SpanishUi() => UiPreferences.IsSpanish();
 
     // Opens every app in the group, for the times the whole set is wanted at once:
     // a work session, a game launcher and its chat, and so on.
@@ -294,21 +286,9 @@ public partial class PopupWindow : Window
     [DllImport("user32.dll")]
     private static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
-    // The Windows "apps" light/dark preference (true = light). TBG_THEME=light|dark
-    // forces it, mirroring the TBG_LANG language override.
-    private static bool IsLightTheme()
-    {
-        string forced = Environment.GetEnvironmentVariable("TBG_THEME");
-        if (!string.IsNullOrWhiteSpace(forced))
-            return forced.Trim().StartsWith("l", StringComparison.OrdinalIgnoreCase);
-        try
-        {
-            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
-            return key?.GetValue("AppsUseLightTheme") is int v && v != 0;
-        }
-        catch { return false; }
-    }
+    // Light or dark as the app is: the user's choice in its quick bar, or Windows'
+    // own "apps" mode. TBG_THEME=light|dark still forces it for testing.
+    private static bool IsLightTheme() => UiPreferences.IsLight();
 
     private const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
     private const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
@@ -626,7 +606,7 @@ public partial class PopupWindow : Window
         CloseOnce();
     }
 
-    private static void Launch(ProgramShortcut ps)
+    internal static void Launch(ProgramShortcut ps)
     {
         try
         {

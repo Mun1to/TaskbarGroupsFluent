@@ -17,15 +17,19 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         DispatcherUnhandledException += OnUnhandledException;
-        // Match the Windows display language (Spanish, else English) before any
-        // window is created, so the first paint is already localized.
-        Loc.ApplySystemLanguage(this);
-        // Follow the system's light/dark mode and accent colour instead of the
-        // fixed "Dark" theme declared in App.xaml. SystemThemeWatcher on each
-        // window then keeps it in sync if the user switches theme while open.
-        ApplicationThemeManager.ApplySystemTheme();
+        // The language and the light/dark look chosen in the quick bar, or Windows'
+        // own, before any window is created so the first paint is already right.
+        // AppTheme.Watch on each window then keeps it in sync with Windows while
+        // the choice is to follow it.
+        Loc.ApplyLanguage(this);
+        AppTheme.Apply();
 
         base.OnStartup(e);
+
+        // Coming from the classic installer to the Store package, the groups stay in
+        // the old folder; the first start brings them over. Before anything below
+        // lists the groups, so the main window and the menus already include them.
+        GroupTransfer.ImportClassicInstallOnce();
 
         // After an update that changes icon resolution, refresh group caches once so
         // pinned flyouts don't keep showing icons rendered by the previous build.
@@ -38,12 +42,38 @@ public partial class App : Application
         // until the next reboot.
         if (Settings.settingInfo.hoverToOpen) Task.Run(() => HoverService.Start());
 
+        // Groups pinned before 1.6.1 never had a right-click menu, and the list
+        // Windows keeps can be wiped by a cleanup tool, so every start registers
+        // them all again. It is a few COM calls per group, on a thread of its own
+        // because the shell's list object wants a single-threaded apartment.
+        RegisterJumpListsInBackground();
+
         // The pencil in a flyout's header asks for one group's editor, not the whole
         // app, which is why the main window is opened here rather than by a
         // StartupUri in App.xaml.
         string? editName = EditRequest(e.Args);
         if (editName is not null) EditOnly(editName);
         else new MainWindow().Show();
+    }
+
+    /// <summary>
+    /// Writes every group's right-click menu again, in the current language. Also
+    /// run when the user switches language, since the menus keep their titles.
+    /// </summary>
+    internal static void RegisterJumpListsInBackground()
+    {
+        string openAll = Loc.Get("Loc_Jump_OpenAll"), edit = Loc.Get("Loc_Jump_Edit");
+        var thread = new System.Threading.Thread(() =>
+        {
+            try
+            {
+                foreach (var group in Services.GroupService.LoadAll())
+                    GroupJumpList.Register(group.Name, openAll, edit);
+            }
+            catch { /* best effort: the menus only add convenience */ }
+        }) { IsBackground = true };
+        thread.SetApartmentState(System.Threading.ApartmentState.STA);
+        thread.Start();
     }
 
     /// <summary>The group named after "--edit", or null for a normal start.</summary>

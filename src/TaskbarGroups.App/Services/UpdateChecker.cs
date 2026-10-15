@@ -21,27 +21,45 @@ public static class UpdateChecker
     public record UpdateInfo(Version Version, string Tag, string DownloadUrl);
 
     /// <summary>Returns the newer release if one exists, otherwise null.</summary>
-    public static async Task<UpdateInfo?> CheckAsync()
+    public static async Task<UpdateInfo?> CheckAsync() => (await TryCheckAsync()).Update;
+
+    /// <summary>
+    /// The same check, telling "you're up to date" apart from "couldn't ask":
+    /// Ok is false when GitHub could not be reached or answered something
+    /// unreadable, so the quick bar never shows a tick it doesn't know is true.
+    /// </summary>
+    public static async Task<(bool Ok, UpdateInfo? Update)> TryCheckAsync()
     {
         try
         {
             using var http = NewClient();
             using var resp = await http.GetAsync(LatestApi);
-            if (!resp.IsSuccessStatusCode) return null;
+            if (!resp.IsSuccessStatusCode) return (false, null);
 
             using var doc = JsonDocument.Parse(await resp.Content.ReadAsStringAsync());
             var root = doc.RootElement;
 
             Version? latest = ParseVersion(root.GetProperty("tag_name").GetString());
-            if (latest is null) return null;
-            if (Normalize(latest) <= Normalize(CurrentVersion)) return null;
+            if (latest is null) return (false, null);
+            if (Normalize(latest) <= Normalize(CurrentVersion)) return (true, null);
 
+            // A release whose installer isn't uploaded yet: nothing to offer for now.
             string? url = FindInstallerAsset(root);
-            if (url is null) return null;
+            if (url is null) return (true, null);
 
-            return new UpdateInfo(latest, "v" + latest, url);
+            return (true, new UpdateInfo(latest, "v" + latest, url));
         }
-        catch { return null; }
+        catch { return (false, null); }
+    }
+
+    /// <summary>The running version as "v1.2.3".</summary>
+    public static string CurrentTag
+    {
+        get
+        {
+            var v = Normalize(CurrentVersion);
+            return $"v{v.Major}.{v.Minor}.{v.Build}";
+        }
     }
 
     /// <summary>Downloads the installer to a temp file; returns its path or null.</summary>

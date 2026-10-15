@@ -50,9 +50,11 @@ public partial class App : Application
         var words = new List<string>();
         HoverAnchor? anchor = null;
         int dwellMs = 0;
+        bool openAll = false;
         foreach (string arg in e.Args)
         {
             if (!arg.StartsWith("--", StringComparison.Ordinal)) { words.Add(arg); continue; }
+            if (arg.Equals("--open-all", StringComparison.OrdinalIgnoreCase)) { openAll = true; continue; }
             anchor ??= HoverAnchor.Parse(arg);
             if (arg.StartsWith("--dwell=", StringComparison.OrdinalIgnoreCase)
                 && int.TryParse(arg["--dwell=".Length..], out int d)) dwellMs = d;
@@ -74,6 +76,17 @@ public partial class App : Application
         }
         catch
         {
+            Shutdown();
+            return;
+        }
+
+        // "Open all" from the pinned group's right-click menu: start every app and
+        // leave without showing a panel at all.
+        if (openAll)
+        {
+            if (category.ShortcutList is not null)
+                foreach (var ps in category.ShortcutList)
+                    PopupWindow.Launch(ps);
             Shutdown();
             return;
         }

@@ -32,7 +32,7 @@ public partial class ProgramPickerWindow : FluentWindow
     public ProgramPickerWindow()
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        AppTheme.Watch(this);
         UpdateCount();
         Loaded += async (_, _) => await LoadAppsAsync();
     }

@@ -1,16 +1,15 @@
-using System.Globalization;
-
 namespace TaskbarGroups.Hover;
 
 /// <summary>
 /// The four strings this process shows. The main app keeps its translations in
 /// XAML resource dictionaries, but loading WPF's resource machinery to read four
 /// menu labels would defeat the point of a small resident process, so they live
-/// here instead. TBG_LANG overrides the system language, mirroring the app.
+/// here instead. The language follows the same rule as the app and the flyout
+/// (UiPreferences), read each time so a change in the app reaches the menu.
 /// </summary>
 internal static class TrayText
 {
-    private static readonly bool Spanish = IsSpanish();
+    private static bool Spanish => TaskbarGroups.Core.UiPreferences.IsSpanish();
 
     internal static string Tooltip => Spanish
         ? "Taskbar Groups: abrir al pasar el cursor"
@@ -27,18 +26,4 @@ internal static class TrayText
     internal static string Quit => Spanish
         ? "Salir hasta el próximo inicio"
         : "Quit until next sign-in";
-
-    private static bool IsSpanish()
-    {
-        string? forced = Environment.GetEnvironmentVariable("TBG_LANG");
-        if (!string.IsNullOrWhiteSpace(forced))
-            return forced.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase);
-
-        try
-        {
-            return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-                .Equals("es", StringComparison.OrdinalIgnoreCase);
-        }
-        catch { return false; }
-    }
 }

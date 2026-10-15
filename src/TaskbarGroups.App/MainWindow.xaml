@@ -14,10 +14,52 @@
         ExtendsContentIntoTitleBar="True"
         WindowStartupLocation="CenterScreen">
 
+    <ui:FluentWindow.Resources>
+        <!-- One option of a quick-bar choice (theme, language): a flat chip that is
+             lit while chosen, like the segmented controls of winshotx. -->
+        <Style x:Key="QuickSegment" TargetType="RadioButton">
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Chip" CornerRadius="5" Padding="8,3" MinHeight="24"
+                                Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Chip" Property="Background"
+                                        Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Chip" Property="Background"
+                                        Value="{DynamicResource ControlFillColorDefaultBrush}" />
+                                <Setter Property="Foreground"
+                                        Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="QuickGroup" TargetType="Border">
+            <Setter Property="CornerRadius" Value="7" />
+            <Setter Property="Padding" Value="2" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+    </ui:FluentWindow.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <ui:TitleBar Grid.Row="0" Title="Taskbar Groups" Padding="12,6">
@@ -26,7 +68,7 @@
             </ui:TitleBar.Icon>
         </ui:TitleBar>
 
-        <Grid Grid.Row="1" Margin="28,8,28,24">
+        <Grid Grid.Row="1" Margin="28,8,28,12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -156,5 +198,100 @@
                 </Grid>
             </ScrollViewer>
         </Grid>
+
+        <!-- The quick bar: what gets changed often, at hand without opening the
+             settings, and whether this is the latest version, which used to be
+             invisible until an update popped up. The same settings keep their
+             full rows in the settings window; this is the shortcut. -->
+        <Border Grid.Row="2" MinHeight="44" Padding="16,6"
+                BorderBrush="{DynamicResource ControlElevationBorderBrush}"
+                BorderThickness="0,1,0,0">
+            <DockPanel LastChildFill="False">
+                <Border DockPanel.Dock="Left" Style="{StaticResource QuickGroup}"
+                        ToolTip="{DynamicResource Loc_Quick_Theme}">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="ThemeSystem" GroupName="Theme" Style="{StaticResource QuickSegment}"
+                                     ToolTip="{DynamicResource Loc_Quick_ThemeSystem}"
+                                     AutomationProperties.Name="{DynamicResource Loc_Quick_ThemeSystem}"
+                                     Checked="Theme_Checked">
+                            <ui:SymbolIcon Symbol="Desktop24" FontSize="14" />
+                        </RadioButton>
+                        <RadioButton x:Name="ThemeLight" GroupName="Theme" Style="{StaticResource QuickSegment}"
+                                     ToolTip="{DynamicResource Loc_Quick_ThemeLight}"
+                                     AutomationProperties.Name="{DynamicResource Loc_Quick_ThemeLight}"
+                                     Checked="Theme_Checked">
+                            <ui:SymbolIcon Symbol="WeatherSunny24" FontSize="14" />
+                        </RadioButton>
+                        <RadioButton x:Name="ThemeDark" GroupName="Theme" Style="{StaticResource QuickSegment}"
+                                     ToolTip="{DynamicResource Loc_Quick_ThemeDark}"
+                                     AutomationProperties.Name="{DynamicResource Loc_Quick_ThemeDark}"
+                                     Checked="Theme_Checked">
+                            <ui:SymbolIcon Symbol="WeatherMoon24" FontSize="14" />
+                        </RadioButton>
+                    </StackPanel>
+                </Border>
+
+                <Border DockPanel.Dock="Left" Style="{StaticResource QuickGroup}" Margin="10,0,0,0"
+                        ToolTip="{DynamicResource Loc_Quick_Language}">
+                    <StackPanel Orientation="Horizontal">
+                        <RadioButton x:Name="LangSystem" GroupName="Lang" Style="{StaticResource QuickSegment}"
+                                     Content="Auto"
+                                     ToolTip="{DynamicResource Loc_Quick_LangSystem}"
+                                     AutomationProperties.Name="{DynamicResource Loc_Quick_LangSystem}"
+                                     Checked="Lang_Checked" />
+                        <RadioButton x:Name="LangEs" GroupName="Lang" Style="{StaticResource QuickSegment}"
+                                     Content="ES" ToolTip="Español" AutomationProperties.Name="Español"
+                                     Checked="Lang_Checked" />
+                        <RadioButton x:Name="LangEn" GroupName="Lang" Style="{StaticResource QuickSegment}"
+                                     Content="EN" ToolTip="English" AutomationProperties.Name="English"
+                                     Checked="Lang_Checked" />
+                    </StackPanel>
+                </Border>
+
+                <Rectangle DockPanel.Dock="Left" Width="1" Height="20" Margin="14,0"
+                           Fill="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center"
+                            ToolTip="{DynamicResource Loc_Settings_HoverSubtitle}">
+                    <ui:SymbolIcon Symbol="Cursor24" FontSize="14" Margin="0,0,6,0"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <TextBlock Text="{DynamicResource Loc_Quick_Hover}" FontSize="12"
+                               VerticalAlignment="Center" Margin="0,0,8,0"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ui:ToggleSwitch x:Name="QuickHoverToggle" VerticalAlignment="Center"
+                                     AutomationProperties.Name="{DynamicResource Loc_Quick_Hover}"
+                                     Checked="QuickHover_Changed" Unchecked="QuickHover_Changed" />
+                </StackPanel>
+
+                <!-- Up to date, it is only the version and a green tick, which is
+                     also the button to look again. When there is something to say
+                     (a new version, a download, a failed check) the words and the
+                     button come back, because that is what must not go unnoticed. -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="UpdateText" FontSize="11.5" VerticalAlignment="Center"
+                               Margin="0,0,8,0" Visibility="Collapsed"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                    <ui:ProgressRing x:Name="UpdateRing" IsIndeterminate="True" Width="14" Height="14"
+                                     Margin="0,0,8,0" Visibility="Collapsed" />
+                    <ui:Button x:Name="UpdateNowButton" Content="{DynamicResource Loc_Update_Now}"
+                               Icon="{ui:SymbolIcon ArrowDownload24}" Appearance="Primary"
+                               FontSize="11" Padding="10,3" Margin="0,0,8,0" Visibility="Collapsed"
+                               Click="UpdateNow_Click" />
+                    <TextBlock x:Name="VersionText" FontSize="11" VerticalAlignment="Center"
+                               Margin="0,0,2,0"
+                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                    <ui:Button x:Name="UpdateStatusButton" Appearance="Transparent" Padding="6"
+                               BorderThickness="0" Background="Transparent"
+                               Click="UpdateStatus_Click">
+                        <Grid>
+                            <ui:SymbolIcon x:Name="UpdateTick" Symbol="CheckmarkCircle24" FontSize="16"
+                                           Foreground="#3FB950" Visibility="Collapsed" />
+                            <ui:SymbolIcon x:Name="UpdateSync" Symbol="ArrowSync24" FontSize="15"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Grid>
+                    </ui:Button>
+                </StackPanel>
+            </DockPanel>
+        </Border>
     </Grid>
 </ui:FluentWindow>

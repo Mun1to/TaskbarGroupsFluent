@@ -27,7 +27,7 @@ public partial class SettingsWindow : FluentWindow
     public SettingsWindow()
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        AppTheme.Watch(this);
 
         DelayBox.Items.Add(Loc.Get("Loc_Settings_DelayFast"));
         DelayBox.Items.Add(Loc.Get("Loc_Settings_DelayNormal"));

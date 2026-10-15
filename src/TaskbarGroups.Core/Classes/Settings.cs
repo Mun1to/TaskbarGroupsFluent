@@ -10,8 +10,7 @@ namespace TaskbarGroups.Core
 {
     public static class Settings
     {
-        private static string appDataRelative = System.IO.Path.Combine("Jack Schierbeck", "taskbar-groups");
-        public static string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appDataRelative, "Settings.xml");
+        public static string settingsPath = Path.Combine(AppPackage.DataRoot, "Settings.xml");
         public static string defaultSettingsPath;
         public static Setting settingInfo;
 
@@ -24,7 +23,7 @@ namespace TaskbarGroups.Core
             }
             else if (!File.Exists(settingsPath))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appDataRelative));
+                Directory.CreateDirectory(AppPackage.DataRoot);
                 settingInfo = new Setting();
                 writeXML();
                 return;
@@ -110,6 +109,14 @@ namespace TaskbarGroups.Core
         /// </summary>
         [XmlElement]
         public int hoverDelayMs { get; set; } = 400;
+
+        /// <summary>"system" to follow Windows' light or dark mode, or "light" / "dark".</summary>
+        [XmlElement]
+        public string theme { get; set; } = UiPreferences.System;
+
+        /// <summary>"system" to follow Windows' display language, or "es" / "en".</summary>
+        [XmlElement]
+        public string language { get; set; } = UiPreferences.System;
     }
 }
 

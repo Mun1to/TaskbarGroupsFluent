@@ -66,6 +66,26 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
+        /// The first time the Store package runs on a PC that had the classic
+        /// installer, brings that copy's groups over, so moving to the Store does not
+        /// mean starting again. Only once, marked by a file: deleting every group
+        /// later must not make them come back.
+        /// </summary>
+        public static void ImportClassicInstallOnce()
+        {
+            if (!AppPackage.IsPackaged) return;
+
+            string marker = Path.Combine(AppPackage.DataRoot, ".classic-imported");
+            if (File.Exists(marker)) return;
+
+            try { ImportTaskbarGroups(AppPackage.ClassicDataRoot); }
+            catch { /* nothing to import, or nothing readable: start empty */ }
+
+            try { File.WriteAllText(marker, DateTime.Now.ToString("o")); }
+            catch { /* worst case it tries again next start and finds the names taken */ }
+        }
+
+        /// <summary>
         /// Rebuilds the group stored in <paramref name="groupDir"/> into this PC's
         /// config, under <paramref name="preferredName"/> or its own name, made
         /// unique if a group with that name already exists.
