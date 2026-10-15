@@ -122,19 +122,22 @@ begin
   end;
 end;
 
-// True if any Microsoft.WindowsDesktop.App 10.x shared framework folder exists.
+// True if a Microsoft.WindowsDesktop.App 10.x shared framework folder exists. Mind the
+// backslash before the 10: once written through a tool that reads "\10" as an octal
+// escape, it became an invisible control character, the pattern never matched, and every
+// install downloaded the 60 MB runtime even with .NET 10 already there.
 function IsDotNetDesktopInstalled(): Boolean;
 var
   Fr: TFindRec;
 begin
   Result := False;
-  if FindFirst(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App.*'), Fr) then
+  if FindFirst(ExpandConstant('{commonpf64}\dotnet\shared\Microsoft.WindowsDesktop.App\10.*'), Fr) then
   begin
     Result := True;
     FindClose(Fr);
     Exit;
   end;
-  if FindFirst(ExpandConstant('{commonpf}\dotnet\shared\Microsoft.WindowsDesktop.App.*'), Fr) then
+  if FindFirst(ExpandConstant('{commonpf}\dotnet\shared\Microsoft.WindowsDesktop.App\10.*'), Fr) then
   begin
     Result := True;
     FindClose(Fr);
