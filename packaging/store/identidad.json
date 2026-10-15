@@ -1,0 +1,9 @@
+{
+  "_lee_esto": "Sale de Partner Center, en 'Identidad del producto' de Taskbar Groups Fluent (reservado el 2026-10-15). El publicador es el mismo para todas las apps de Munito. Si alguno de los tres primeros cambia, la Store rechaza el paquete sin decir cual. Hay que enviar la app antes de tres meses desde la reserva o se pierde el nombre.",
+  "identityName": "Munito.TaskbarGroupsFluent",
+  "publisher": "CN=AF5AFDE8-6E9C-4644-9F84-DC0C5CAF743A",
+  "publisherDisplayName": "Munito",
+  "packageFamilyName": "Munito.TaskbarGroupsFluent_jjqm03e3sjnve",
+  "storeId": "9PCZDXWFT6SN",
+  "ficha": "https://apps.microsoft.com/detail/9PCZDXWFT6SN"
+}
