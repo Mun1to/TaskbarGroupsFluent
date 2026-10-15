@@ -25,14 +25,41 @@ public partial class MainWindow : FluentWindow
         Loaded += (_, _) =>
         {
             RefreshGroups();
-            if (!AppPackage.IsPackaged) _ = CheckForUpdatesAsync();
+            _ = AppPackage.IsPackaged ? CheckForStoreUpdatesAsync() : CheckForUpdatesAsync();
         };
+    }
+
+    // The Store package asks the Store instead of GitHub: the installer that
+    // GitHub offers can't overwrite a package's read-only folder.
+    private async Task CheckForStoreUpdatesAsync()
+    {
+        var updates = await StoreUpdateChecker.CheckAsync(this);
+        if (updates is null) return;
+
+        var choice = await new MessageBox
+        {
+            Title = Loc.Get("Loc_Update_Title"),
+            Content = Loc.Format("Loc_Update_StoreMessage", StoreUpdateChecker.Tag(updates)),
+            PrimaryButtonText = Loc.Get("Loc_Update_Now"),
+            PrimaryButtonAppearance = ControlAppearance.Primary,
+            CloseButtonText = Loc.Get("Loc_Update_Later")
+        }.ShowDialogAsync();
+
+        if (choice != Wpf.Ui.Controls.MessageBoxResult.Primary) return;
+
+        if (!await StoreUpdateChecker.InstallAsync(this, updates))
+        {
+            await new MessageBox
+            {
+                Title = Loc.Get("Loc_Update_Title"),
+                Content = Loc.Get("Loc_Update_Failed"),
+                CloseButtonText = Loc.Get("Loc_Common_Close")
+            }.ShowDialogAsync();
+        }
     }
 
     // Offer to self-update when a newer release is on GitHub. Best-effort: any
     // failure (offline, no installer asset…) silently leaves the app as-is.
-    // Never in the Store package: the Store updates it, and the installer it
-    // would download can't overwrite a package's read-only folder anyway.
     private async Task CheckForUpdatesAsync()
     {
         var info = await UpdateChecker.CheckAsync();
