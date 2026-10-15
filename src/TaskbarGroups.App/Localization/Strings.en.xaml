@@ -94,6 +94,10 @@
     <s:String x:Key="Loc_Editor_HeaderTop">Top</s:String>
     <s:String x:Key="Loc_Editor_HeaderBottom">Bottom</s:String>
     <s:String x:Key="Loc_Editor_AppOptions">App options</s:String>
+    <s:String x:Key="Loc_Editor_Group">Group</s:String>
+    <s:String x:Key="Loc_Editor_GroupTip">Add another group, which opens in its own panel</s:String>
+    <s:String x:Key="Loc_Editor_NoOtherGroups">Create another group first: this button puts one group inside another.</s:String>
+    <s:String x:Key="Loc_Sub_Group">Group</s:String>
     <s:String x:Key="Loc_AppOpt_Title">App options</s:String>
     <s:String x:Key="Loc_AppOpt_Name">Name</s:String>
     <s:String x:Key="Loc_AppOpt_NameHint">What shows under the icon in the panel. Leave it empty to use the app's own name.</s:String>

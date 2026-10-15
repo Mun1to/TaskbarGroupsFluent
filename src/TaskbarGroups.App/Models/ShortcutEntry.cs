@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Windows.Media;
 using TaskbarGroups.App.Helpers;
 using TaskbarGroups.Core;
@@ -22,7 +22,8 @@ public class ShortcutEntry
                 : Path.GetFileNameWithoutExtension(Shortcut.FilePath));
 
     public string SubtitleText =>
-        Shortcut.isWindowsApp ? Loc.Get("Loc_Sub_StoreApp")
+        Shortcut.IsGroup ? Loc.Get("Loc_Sub_Group")
+        : Shortcut.isWindowsApp ? Loc.Get("Loc_Sub_StoreApp")
         : Directory.Exists(Shortcut.FilePath) ? Loc.Get("Loc_Sub_Folder")
         : Loc.Get("Loc_Sub_Program");
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
@@ -239,6 +239,38 @@ public partial class GroupEditorWindow : FluentWindow
 
         foreach (var path in dialog.FolderNames)
             AddShortcut(new ProgramShortcut { FilePath = path, isWindowsApp = false });
+    }
+
+    // A group inside this one. Offered from the groups that already exist, minus
+    // this one: a group that opens itself would just reopen the same panel.
+    private void AddGroup_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement button) return;
+
+        string self = _originalName ?? (NameTextBox.Text ?? "").Trim();
+        var others = Services.GroupService.LoadAll()
+            .Select(g => g.Name)
+            .Where(n => !string.Equals(n, self, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase)
+            .ToList();
+        if (others.Count == 0)
+        {
+            ShowError(Loc.Get("Loc_Editor_NoOtherGroups"));
+            return;
+        }
+
+        var menu = new System.Windows.Controls.ContextMenu
+        {
+            PlacementTarget = button,
+            Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom
+        };
+        foreach (string name in others)
+        {
+            var item = new System.Windows.Controls.MenuItem { Header = name };
+            item.Click += (_, _) => AddShortcut(ProgramShortcut.ForGroup(name));
+            menu.Items.Add(item);
+        }
+        menu.IsOpen = true;
     }
 
     private void AddShortcut(ProgramShortcut ps)

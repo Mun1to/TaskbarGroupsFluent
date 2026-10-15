@@ -630,7 +630,18 @@ public partial class PopupWindow : Window
     {
         try
         {
-            if (ps.isWindowsApp)
+            if (ps.IsGroup)
+            {
+                // A group inside a group: start another flyout for it, which closes
+                // this one on its way in, as any newly opened flyout does.
+                var sub = new ProcessStartInfo(Environment.ProcessPath ?? Paths.BackgroundApplication)
+                {
+                    UseShellExecute = false
+                };
+                sub.ArgumentList.Add(ps.GroupName);
+                Process.Start(sub);
+            }
+            else if (ps.isWindowsApp)
             {
                 Process.Start(new ProcessStartInfo("explorer.exe", $"shell:AppsFolder\\{ps.FilePath}")
                 {

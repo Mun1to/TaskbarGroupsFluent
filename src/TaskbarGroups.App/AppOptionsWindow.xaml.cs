@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using TaskbarGroups.Core;
@@ -31,7 +31,7 @@ public partial class AppOptionsWindow : FluentWindow
         // Store apps start through the shell and folders just open, so neither
         // takes arguments or an elevated start. Rather than offer switches that
         // would do nothing, say so.
-        bool program = !shortcut.isWindowsApp && !Directory.Exists(shortcut.FilePath);
+        bool program = !shortcut.isWindowsApp && !shortcut.IsGroup && !Directory.Exists(shortcut.FilePath);
         ProgramOnly.Visibility = program ? Visibility.Visible : Visibility.Collapsed;
         NotForThisKind.Visibility = program ? Visibility.Collapsed : Visibility.Visible;
         ArgsBox.Text = shortcut.Arguments ?? "";

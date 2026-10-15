@@ -287,6 +287,16 @@ namespace TaskbarGroups.Core
 
             try
             {
+                // Another group: it wears that group's own icon.
+                if (shortcutObject.IsGroup)
+                {
+                    string png = Path.Combine(Paths.ConfigPath, shortcutObject.GroupName, "GroupImage.png");
+                    if (!File.Exists(png)) return GetErrorImage();
+                    using var stream = new MemoryStream(File.ReadAllBytes(png));
+                    using var loaded = Image.FromStream(stream);
+                    return new Bitmap(loaded);
+                }
+
                 if (shortcutObject.isWindowsApp)
                 {
                     // AppsFolder id (UWP or Win32): resolve through the shell's own
@@ -340,7 +350,8 @@ namespace TaskbarGroups.Core
 
             String programPath = shortcutObject.FilePath;
 
-            if (System.IO.File.Exists(programPath) || Directory.Exists(programPath) || shortcutObject.isWindowsApp)
+            if (System.IO.File.Exists(programPath) || Directory.Exists(programPath) || shortcutObject.isWindowsApp
+                || shortcutObject.IsGroup)
             {
                 try
                 {
