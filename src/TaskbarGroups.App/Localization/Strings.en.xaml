@@ -93,6 +93,16 @@
     <s:String x:Key="Loc_Editor_HeaderPosition">Group name position</s:String>
     <s:String x:Key="Loc_Editor_HeaderTop">Top</s:String>
     <s:String x:Key="Loc_Editor_HeaderBottom">Bottom</s:String>
+    <s:String x:Key="Loc_Editor_AppOptions">App options</s:String>
+    <s:String x:Key="Loc_AppOpt_Title">App options</s:String>
+    <s:String x:Key="Loc_AppOpt_Name">Name</s:String>
+    <s:String x:Key="Loc_AppOpt_NameHint">What shows under the icon in the panel. Leave it empty to use the app's own name.</s:String>
+    <s:String x:Key="Loc_AppOpt_Args">Arguments</s:String>
+    <s:String x:Key="Loc_AppOpt_ArgsHint">Passed to the program when it opens, for example --incognito or a file to open.</s:String>
+    <s:String x:Key="Loc_AppOpt_Admin">Open as administrator</s:String>
+    <s:String x:Key="Loc_AppOpt_AdminHint">Windows will ask for permission every time it opens.</s:String>
+    <s:String x:Key="Loc_AppOpt_NotForStore">Store apps and folders open through Windows, so they don't take arguments or an administrator start.</s:String>
+    <s:String x:Key="Loc_AppOpt_Save">Save</s:String>
 
     <!-- Shortcut subtitles -->
     <s:String x:Key="Loc_Sub_StoreApp">App</s:String>

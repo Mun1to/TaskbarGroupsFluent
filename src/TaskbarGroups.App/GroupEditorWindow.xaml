@@ -159,10 +159,17 @@
                                         <TextBlock Text="{Binding SubtitleText}" FontSize="11"
                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                                     </StackPanel>
-                                    <ui:Button Grid.Column="2" Icon="{ui:SymbolIcon Delete24}"
-                                               Appearance="Transparent"
-                                               ToolTip="{DynamicResource Loc_Common_Remove}"
-                                               Tag="{Binding}" Click="RemoveShortcut_Click" />
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <ui:Button Icon="{ui:SymbolIcon Settings24}"
+                                                   Appearance="Transparent" Margin="0,0,4,0"
+                                                   ToolTip="{DynamicResource Loc_Editor_AppOptions}"
+                                                   AutomationProperties.Name="{DynamicResource Loc_Editor_AppOptions}"
+                                                   Tag="{Binding}" Click="AppOptions_Click" />
+                                        <ui:Button Icon="{ui:SymbolIcon Delete24}"
+                                                   Appearance="Transparent"
+                                                   ToolTip="{DynamicResource Loc_Common_Remove}"
+                                                   Tag="{Binding}" Click="RemoveShortcut_Click" />
+                                    </StackPanel>
                                 </Grid>
                             </Border>
                         </DataTemplate>

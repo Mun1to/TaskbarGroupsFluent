@@ -642,6 +642,10 @@ public partial class PopupWindow : Window
                 var psi = new ProcessStartInfo(ps.FilePath) { UseShellExecute = true };
                 if (!string.IsNullOrWhiteSpace(ps.Arguments))
                     psi.Arguments = ps.Arguments;
+                // "runas" is what asks Windows for the elevated start; declining
+                // the prompt throws, which the catch below already absorbs.
+                if (ps.RunAsAdmin)
+                    psi.Verb = "runas";
                 Process.Start(psi);
             }
         }

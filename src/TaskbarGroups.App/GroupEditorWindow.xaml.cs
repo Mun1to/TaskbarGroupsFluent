@@ -248,6 +248,25 @@ public partial class GroupEditorWindow : FluentWindow
         _shortcuts.Add(BuildEntry(ps));
     }
 
+    private void AppOptions_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: ShortcutEntry entry }) return;
+
+        // The name the app would have without a custom one, for the placeholder.
+        string saved = entry.Shortcut.name;
+        entry.Shortcut.name = "";
+        string defaultName = entry.DisplayName;
+        entry.Shortcut.name = saved;
+
+        var dialog = new AppOptionsWindow(entry.Shortcut, entry.Icon, defaultName) { Owner = this };
+        if (dialog.ShowDialog() != true) return;
+
+        // ShortcutEntry doesn't raise change notifications, so swap the item to
+        // redraw its row and the preview with the new name.
+        int i = _shortcuts.IndexOf(entry);
+        if (i >= 0) _shortcuts[i] = new ShortcutEntry { Shortcut = entry.Shortcut, Icon = entry.Icon };
+    }
+
     private void RemoveShortcut_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.Tag is ShortcutEntry entry)

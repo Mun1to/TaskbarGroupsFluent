@@ -93,6 +93,16 @@
     <s:String x:Key="Loc_Editor_HeaderPosition">Dónde va el nombre del grupo</s:String>
     <s:String x:Key="Loc_Editor_HeaderTop">Arriba</s:String>
     <s:String x:Key="Loc_Editor_HeaderBottom">Abajo</s:String>
+    <s:String x:Key="Loc_Editor_AppOptions">Opciones de la app</s:String>
+    <s:String x:Key="Loc_AppOpt_Title">Opciones de la app</s:String>
+    <s:String x:Key="Loc_AppOpt_Name">Nombre</s:String>
+    <s:String x:Key="Loc_AppOpt_NameHint">Lo que se ve debajo del icono en el panel. Déjalo vacío para usar el nombre de la app.</s:String>
+    <s:String x:Key="Loc_AppOpt_Args">Argumentos</s:String>
+    <s:String x:Key="Loc_AppOpt_ArgsHint">Se le pasan al programa al abrirlo, por ejemplo --incognito o un archivo que abrir.</s:String>
+    <s:String x:Key="Loc_AppOpt_Admin">Abrir como administrador</s:String>
+    <s:String x:Key="Loc_AppOpt_AdminHint">Windows te pedirá permiso cada vez que se abra.</s:String>
+    <s:String x:Key="Loc_AppOpt_NotForStore">Las apps de la Store y las carpetas se abren a través de Windows, así que no admiten argumentos ni abrirse como administrador.</s:String>
+    <s:String x:Key="Loc_AppOpt_Save">Guardar</s:String>
 
     <!-- Subtítulos de acceso directo -->
     <s:String x:Key="Loc_Sub_StoreApp">Aplicación</s:String>
