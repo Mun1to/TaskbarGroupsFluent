@@ -38,7 +38,7 @@ public partial class IconEditorWindow : FluentWindow
     public IconEditorWindow(BitmapSource source)
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        Helpers.AppTheme.Watch(this);
 
         EditImage.Source = source;
         _imgW = Math.Max(1, source.PixelWidth);

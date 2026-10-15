@@ -109,6 +109,14 @@ namespace TaskbarGroups.Core
         /// </summary>
         [XmlElement]
         public int hoverDelayMs { get; set; } = 400;
+
+        /// <summary>"system" to follow Windows' light or dark mode, or "light" / "dark".</summary>
+        [XmlElement]
+        public string theme { get; set; } = UiPreferences.System;
+
+        /// <summary>"system" to follow Windows' display language, or "es" / "en".</summary>
+        [XmlElement]
+        public string language { get; set; } = UiPreferences.System;
     }
 }
 

@@ -21,13 +21,17 @@ public static class StoreUpdateChecker
 {
     /// <summary>The pending updates, or null if there are none.</summary>
     public static async Task<IReadOnlyList<StorePackageUpdate>?> CheckAsync(Window owner)
+        => (await TryCheckAsync(owner)).Updates;
+
+    /// <summary>Like <see cref="UpdateChecker.TryCheckAsync"/>: Ok is false when the Store couldn't be asked.</summary>
+    public static async Task<(bool Ok, IReadOnlyList<StorePackageUpdate>? Updates)> TryCheckAsync(Window owner)
     {
         try
         {
             var updates = await ContextFor(owner).GetAppAndOptionalStorePackageUpdatesAsync();
-            return updates.Count > 0 ? updates : null;
+            return (true, updates.Count > 0 ? updates : null);
         }
-        catch { return null; }
+        catch { return (false, null); }
     }
 
     /// <summary>The version the first pending update brings, as "v1.2.3".</summary>
@@ -39,17 +43,18 @@ public static class StoreUpdateChecker
 
     /// <summary>
     /// Asks the Store to download and install the updates, with its own progress
-    /// window. Windows closes the app when its package is replaced, so a true here
-    /// is rarely seen; false means it failed or the user cancelled.
+    /// window, and returns how it ended (null if the request itself failed).
+    /// Windows closes the app when its package is replaced, so "Completed" is
+    /// rarely seen; "Canceled" is the user saying no, which is not an error.
     /// </summary>
-    public static async Task<bool> InstallAsync(Window owner, IReadOnlyList<StorePackageUpdate> updates)
+    public static async Task<StorePackageUpdateState?> InstallAsync(Window owner, IReadOnlyList<StorePackageUpdate> updates)
     {
         try
         {
             var result = await ContextFor(owner).RequestDownloadAndInstallStorePackageUpdatesAsync(updates);
-            return result.OverallState == StorePackageUpdateState.Completed;
+            return result.OverallState;
         }
-        catch { return false; }
+        catch { return null; }
     }
 
     // A desktop app has to tell the Store which window its dialogs belong to;

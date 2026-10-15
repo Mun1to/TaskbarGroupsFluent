@@ -28,7 +28,7 @@ public partial class EmojiPickerWindow : FluentWindow
     public EmojiPickerWindow()
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        AppTheme.Watch(this);
 
         var items = new List<EmojiItem>();
         foreach (string emoji in Emojis)

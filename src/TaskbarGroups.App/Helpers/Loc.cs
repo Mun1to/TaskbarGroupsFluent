@@ -1,13 +1,15 @@
 using System;
-using System.Globalization;
+using System.Linq;
 using System.Windows;
+using TaskbarGroups.Core;
 
 namespace TaskbarGroups.App.Helpers;
 
 /// <summary>
 /// Runtime access to localized strings for code-behind (XAML uses DynamicResource
 /// directly). Strings live in Localization/Strings.{es,en}.xaml; the matching
-/// dictionary is merged at startup based on the Windows display language.
+/// dictionary is merged at startup, and swapped when the user picks another
+/// language in the quick bar.
 /// </summary>
 public static class Loc
 {
@@ -20,26 +22,23 @@ public static class Loc
         => string.Format(Get(key), args);
 
     /// <summary>
-    /// Merges the language dictionary that matches the system UI culture. Spanish
+    /// Merges the dictionary of the language <see cref="UiPreferences"/> settles on:
+    /// TBG_LANG, then the user's choice, then Windows' own language. Spanish
     /// systems get Spanish; everything else falls back to English.
     /// </summary>
-    public static void ApplySystemLanguage(Application app)
+    public static void ApplyLanguage(Application app)
     {
-        // TBG_LANG ("es"/"en") forces a language; otherwise follow Windows.
-        string? forced = Environment.GetEnvironmentVariable("TBG_LANG");
-        string lang =
-            !string.IsNullOrWhiteSpace(forced)
-                ? (forced.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase) ? "es" : "en")
-                : (CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-                    .Equals("es", StringComparison.OrdinalIgnoreCase) ? "es" : "en");
-
         try
         {
-            var dict = new ResourceDictionary
+            var current = app.Resources.MergedDictionaries
+                .FirstOrDefault(d => d.Source?.OriginalString.Contains("/Localization/Strings.") == true);
+            if (current is not null) app.Resources.MergedDictionaries.Remove(current);
+
+            app.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
-                Source = new Uri($"pack://application:,,,/Localization/Strings.{lang}.xaml", UriKind.Absolute)
-            };
-            app.Resources.MergedDictionaries.Add(dict);
+                Source = new Uri($"pack://application:,,,/Localization/Strings.{UiPreferences.Language()}.xaml",
+                    UriKind.Absolute)
+            });
         }
         catch
         {

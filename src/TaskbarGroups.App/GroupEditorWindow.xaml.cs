@@ -38,7 +38,7 @@ public partial class GroupEditorWindow : FluentWindow
     public GroupEditorWindow(Category? existing = null)
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        AppTheme.Watch(this);
 
         ShortcutsItemsControl.ItemsSource = _shortcuts;
         PreviewItems.ItemsSource = _shortcuts;

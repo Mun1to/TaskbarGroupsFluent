@@ -17,13 +17,12 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         DispatcherUnhandledException += OnUnhandledException;
-        // Match the Windows display language (Spanish, else English) before any
-        // window is created, so the first paint is already localized.
-        Loc.ApplySystemLanguage(this);
-        // Follow the system's light/dark mode and accent colour instead of the
-        // fixed "Dark" theme declared in App.xaml. SystemThemeWatcher on each
-        // window then keeps it in sync if the user switches theme while open.
-        ApplicationThemeManager.ApplySystemTheme();
+        // The language and the light/dark look chosen in the quick bar, or Windows'
+        // own, before any window is created so the first paint is already right.
+        // AppTheme.Watch on each window then keeps it in sync with Windows while
+        // the choice is to follow it.
+        Loc.ApplyLanguage(this);
+        AppTheme.Apply();
 
         base.OnStartup(e);
 
@@ -57,7 +56,11 @@ public partial class App : Application
         else new MainWindow().Show();
     }
 
-    private static void RegisterJumpListsInBackground()
+    /// <summary>
+    /// Writes every group's right-click menu again, in the current language. Also
+    /// run when the user switches language, since the menus keep their titles.
+    /// </summary>
+    internal static void RegisterJumpListsInBackground()
     {
         string openAll = Loc.Get("Loc_Jump_OpenAll"), edit = Loc.Get("Loc_Jump_Edit");
         var thread = new System.Threading.Thread(() =>

@@ -20,7 +20,7 @@ public partial class AppOptionsWindow : FluentWindow
     public AppOptionsWindow(ProgramShortcut shortcut, ImageSource? icon, string defaultName)
     {
         InitializeComponent();
-        SystemThemeWatcher.Watch(this);
+        Helpers.AppTheme.Watch(this);
         _shortcut = shortcut;
 
         AppIcon.Source = icon;
