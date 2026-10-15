@@ -38,12 +38,34 @@ public partial class App : Application
         // until the next reboot.
         if (Settings.settingInfo.hoverToOpen) Task.Run(() => HoverService.Start());
 
+        // Groups pinned before 1.6.1 never had a right-click menu, and the list
+        // Windows keeps can be wiped by a cleanup tool, so every start registers
+        // them all again. It is a few COM calls per group, on a thread of its own
+        // because the shell's list object wants a single-threaded apartment.
+        RegisterJumpListsInBackground();
+
         // The pencil in a flyout's header asks for one group's editor, not the whole
         // app, which is why the main window is opened here rather than by a
         // StartupUri in App.xaml.
         string? editName = EditRequest(e.Args);
         if (editName is not null) EditOnly(editName);
         else new MainWindow().Show();
+    }
+
+    private static void RegisterJumpListsInBackground()
+    {
+        string openAll = Loc.Get("Loc_Jump_OpenAll"), edit = Loc.Get("Loc_Jump_Edit");
+        var thread = new System.Threading.Thread(() =>
+        {
+            try
+            {
+                foreach (var group in Services.GroupService.LoadAll())
+                    GroupJumpList.Register(group.Name, openAll, edit);
+            }
+            catch { /* best effort: the menus only add convenience */ }
+        }) { IsBackground = true };
+        thread.SetApartmentState(System.Threading.ApartmentState.STA);
+        thread.Start();
     }
 
     /// <summary>The group named after "--edit", or null for a normal start.</summary>

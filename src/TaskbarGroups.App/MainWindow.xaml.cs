@@ -121,6 +121,7 @@ public partial class MainWindow : FluentWindow
             string configDir = Path.Combine(Paths.ConfigPath, group.Name);
             if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
             if (File.Exists(group.ShortcutPath)) File.Delete(group.ShortcutPath);
+            GroupJumpList.Remove(group.Name);
         }
         catch (Exception ex)
         {

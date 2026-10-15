@@ -21,6 +21,8 @@
     <s:String x:Key="Loc_Main_EmptyTitle">Aún no tienes grupos</s:String>
     <s:String x:Key="Loc_Main_EmptySubtitle">Crea tu primer grupo para empezar a organizar la barra de tareas</s:String>
     <s:String x:Key="Loc_Main_CreateFirst">Crear primer grupo</s:String>
+    <s:String x:Key="Loc_Jump_OpenAll">Abrir todas</s:String>
+    <s:String x:Key="Loc_Jump_Edit">Editar grupo</s:String>
     <s:String x:Key="Loc_Main_Import">Importar</s:String>
     <s:String x:Key="Loc_Main_ImportFile">Desde un archivo de grupo…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">Desde Taskbar Groups…</s:String>

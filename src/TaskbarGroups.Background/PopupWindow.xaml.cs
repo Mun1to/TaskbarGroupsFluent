@@ -626,7 +626,7 @@ public partial class PopupWindow : Window
         CloseOnce();
     }
 
-    private static void Launch(ProgramShortcut ps)
+    internal static void Launch(ProgramShortcut ps)
     {
         try
         {
