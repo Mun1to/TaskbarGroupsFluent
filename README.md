@@ -6,9 +6,7 @@
 
 **Group your shortcuts into a single taskbar icon.** A modern **WPF / .NET 10** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
 
-🌍 [Español](README.es.md) · English
-
-Website: **[tbgf.munito.dev](https://tbgf.munito.dev)**
+🌍 [Español](README.es.md) · English · Website: **[tbgf.munito.dev](https://tbgf.munito.dev)**
 
 <p>
   <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest">
@@ -32,87 +30,42 @@ Website: **[tbgf.munito.dev](https://tbgf.munito.dev)**
 
 </div>
 
----
-
 ## ✨ What it does
 
-Taskbar Groups turns a folder's worth of apps into **one taskbar button**. Click it and a small panel opens above it with every app in the group, so your taskbar stays tidy and everything you need is one click away.
+Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
 
-- 🧩 **Add any installed app**: one searchable list of everything installed, desktop **and** Microsoft Store apps, read from Windows' own app catalog. A **Browse…** button covers anything that isn't listed.
-- 🖼️ **The right icons**: they come from the same place the Start menu takes them from, sharp and transparent. When Windows has none for an app (some Electron apps), the app's own executable icon is used instead of a blank square.
-- 🎨 **Your own group icon**: any image, cropped and zoomed in the built-in editor, or a **colour emoji**, or…
-- 🔲 **…an icon made of the group's apps**: one click builds the taskbar icon from the first four apps in the group, and it keeps up as you add or remove them.
-- 📌 **Pin to the taskbar**: each group becomes its own pinned button.
-- 🪟 **Windows 11 glass, laid out your way**: a group's panel opens as a grid, a horizontal row, a vertical column or a list, with or without app names, in three icon sizes, with the group's name above or below. The editor shows a live preview as you change it.
-- 🖱️ **Open on hover**: switch it on in the quick bar and a group opens when the cursor rests on its icon, no click needed. It waits a moment so crossing the taskbar never opens anything by accident, it never takes the keyboard away from what you were typing in, and it closes as soon as the cursor leaves. Off by default, because it keeps a small watcher in the notification area.
+- 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups.
+- 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
+- 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit.
+- 🖱️ **Open on hover**, no click needed (off by default).
 - 📋 **Right-click a pinned group** for **Open all** and **Edit group**.
-- 🚀 **Open them all at once**, from that menu or from the button in the panel's header.
-- 🗂️ **Groups inside groups**: add a group to another and it opens in its own panel.
-- ⚙️ **Per-app options**: rename an app inside a group, give it launch arguments or run it as administrator.
-- 📁 **Apps and folders** in the same group.
-- 💾 **Export, import and duplicate**: share a group as a single file, keep a backup, or start a new group from a copy.
-- 🔁 **Coming from Taskbar Groups or AppGroup?** Import your groups from either one and carry on.
-- 🔄 **The taskbar icon follows your changes**: change a pinned group's icon and its button updates. Windows caches those icons, so this restarts Explorer once; your other pinned icons stay where they are.
-- 🌗 **A quick bar at the bottom of the main window**: light or dark, English or Spanish (both follow Windows unless you pick one), open on hover, and the version you have.
-- ⬇️ **Installer and updates**: install with a double click, and the app tells you when there is a new version and updates itself when you say so.
-
----
+- ⚙️ **Per-app options**: rename, launch arguments, run as administrator.
+- 💾 **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
+- 🌗 **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
+- ⬇️ **Updates itself** when a new version is out, if you say so.
 
 ## 📸 Screenshots
 
-<div align="center">
-  <img src="docs/screenshots/en/main.png" width="820" alt="Main window with four groups and the quick bar at the bottom" />
-</div>
+| Your groups | Group editor |
+| :--: | :--: |
+| <img src="docs/screenshots/en/main.png" width="520" alt="Main window with four groups and the quick bar at the bottom" /> | <img src="docs/screenshots/en/editor.png" width="240" alt="Group editor with the group's apps and a live preview of its panel" /> |
 
-<p align="center"><em>Your groups at a glance. The quick bar at the bottom holds the theme, the language, open on hover and the version, with a green tick when you are up to date.</em></p>
+## ⬇️ Install
 
-<div align="center">
-  <img src="docs/screenshots/en/editor.png" width="420" alt="Group editor with the group's apps and a live preview of its panel" />
-</div>
+1. Download **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** and run it. It installs for your user only and downloads the **.NET 10 Desktop Runtime** if it is missing.
+2. Open **Taskbar Groups** from the Start menu.
 
-<p align="center"><em>The group editor: name, icon, apps, and a live preview of the panel as it will open.</em></p>
-
-> 💡 Images on GitHub are clickable: open any screenshot to see it full size.
-
----
-
-## ⬇️ Download & install
-
-1. Click the **Download** button above, or use this direct link: **[download the installer](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)**.
-2. Run `TaskbarGroupsFluent-Setup.exe`. It installs for your user only (no admin needed) and, if the **.NET 10 Desktop Runtime** is missing, downloads and installs it.
-3. Open **Taskbar Groups** from the Start menu.
-
-> Installing on a PC without internet? `TaskbarGroupsFluent-Setup-Offline.exe`, on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest), carries the .NET runtime inside.
-
-> Windows may warn about an *"unknown publisher"*, because the app isn't signed with a paid certificate. Click **More info → Run anyway**.
-
-## 🔄 Updates
-
-On launch, the app checks GitHub for a newer version. The bottom right corner of the main window shows the version you have, with a green tick when you are up to date (click it to check again). When there is a new one it says **Update now**: one click downloads it, installs it and reopens the app.
-
----
+> No internet on that PC? `TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info → Run anyway**: the app isn't signed with a paid certificate.
 
 ## 🚀 How to use it
 
-1. Click **Add group** and give it a **name** and an **icon** (an image, an emoji, or **Apps** to build it from the group's apps).
-2. Add shortcuts with **App** (any installed app from the searchable list, or *Browse…*), **Folder** or **Group**.
-3. Choose how its panel looks under **Panel**, and click **Save group**.
-4. On the group's card, click **Pin to taskbar**. The app opens the folder with the group's shortcut highlighted: right-click it, then *Show more options*, then *Pin to taskbar*. Windows 11 doesn't let apps pin themselves, so this last step is yours.
-5. Click the pinned button to open the panel with your apps, or right-click it for **Open all** and **Edit group**.
-
----
+1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**.
+2. Pick the panel's look under **Panel** and click **Save group**.
+3. Click **Pin to taskbar**: the app opens the folder with the shortcut highlighted, and you right-click it, then *Show more options*, then *Pin to taskbar*. Windows 11 doesn't let apps pin themselves.
 
 ## 🛠️ Building from source
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
-
-```bash
-git clone https://github.com/Mun1to/TaskbarGroupsFluent.git
-cd TaskbarGroupsFluent
-dotnet build TaskbarGroupsFluent.sln -c Release
-```
-
-Run the `TaskbarGroups.App` project. To produce the folder the installer packs:
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Run `dotnet build TaskbarGroupsFluent.sln -c Release` and start `TaskbarGroups.App`. The folder the installer packs comes from:
 
 ```bash
 dotnet publish src/TaskbarGroups.App -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
@@ -120,30 +73,11 @@ dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained fa
 dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
 ```
 
-The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss).
-
-### 🧱 How it works
-
-| Project | Role |
-| --- | --- |
-| `TaskbarGroups.Core` | UI-agnostic logic: data model, Windows' app catalog and icons, shell interop, paths |
-| `TaskbarGroups.App` | The Fluent app: main window, group editor, app and emoji pickers, icon crop editor, updater |
-| `TaskbarGroups.Background` | The borderless panel shown above the taskbar |
-| `TaskbarGroups.Hover` | Optional watcher for open on hover, living in the notification area |
-
-Each pinned group is a shortcut to the panel with the group's name as its argument, and its own AppUserModelID, which is what keeps every group as a separate taskbar button.
-
-Hovering is not something Windows offers: a taskbar button reports nothing when the cursor is over it, so the watcher reads the taskbar's buttons through UI Automation and checks the cursor against them. It only does that while the cursor is actually on the taskbar, and caches what it reads, which keeps it at a fraction of a percent of one core while idle.
-
-Opening quickly takes one more trick. Starting a panel from cold means loading .NET, then WPF, then painting a window for the first time, and that is most of a second however little the panel does. So as the cursor comes near the taskbar the watcher loads one in advance and keeps it hidden, ready to be shown in about fifty milliseconds; a loaded panel holds real memory, so it is let go once the cursor has been away for a while.
+The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional watcher for open on hover.
 
 ## 🙏 Credits
 
-Built on the work of:
-
-- [tjackenpacken/taskbar-groups](https://github.com/tjackenpacken/taskbar-groups), the original app.
-- [PikeNote/taskbar-groups-pike-beta](https://github.com/PikeNote/taskbar-groups-pike-beta), the community fork whose structure this rewrite started from.
-- [WPF-UI](https://github.com/lepoco/wpfui), the Fluent control library, and [SkiaSharp](https://github.com/mono/SkiaSharp), for colour emoji.
+Built on [tjackenpacken/taskbar-groups](https://github.com/tjackenpacken/taskbar-groups), the original app, and [PikeNote/taskbar-groups-pike-beta](https://github.com/PikeNote/taskbar-groups-pike-beta), the community fork this rewrite started from. Uses [WPF-UI](https://github.com/lepoco/wpfui) and [SkiaSharp](https://github.com/mono/SkiaSharp).
 
 ## 🔍 Don't trust it, check it
 
