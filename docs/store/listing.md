@@ -22,7 +22,7 @@ Everything Partner Center asks for, ready to paste. Screenshots are in `screensh
 | Website | https://tbgf.munito.dev |
 | Support contact | https://github.com/Mun1to/TaskbarGroupsFluent/issues |
 | Copyright | © 2026 Munir Torres. Includes code from taskbar-groups and taskbar-groups-pike-beta (MIT). |
-| System requirements | Windows 10 version 1809 or later, x64 |
+| System requirements | Windows 10 version 2004 or later, x64 (the package's minimum, 10.0.19041) |
 | Age rating (IARC) | No violence, no user interaction, no data sharing, no purchases: rated for everyone |
 
 ## English
@@ -48,11 +48,11 @@ Make each group your own:
 
 Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
 
-It follows your Windows theme, accent colour and language (English or Spanish), installs for your user only without administrator rights, and has no account, no telemetry and no ads. It is free and open source (MIT).
+It follows your Windows theme, accent colour and language (English or Spanish), or the ones you pick in its quick bar, installs for your user only without administrator rights, and has no account, no telemetry and no ads. It is free and open source (MIT).
 
 **What's new in this version**
 
-Real Windows 11 glass on the panel, four panel layouts with a live preview, an icon made of the group's apps, Open all, groups inside groups, per-app options, export and import, importing from Taskbar Groups and AppGroup, and a right-click menu on pinned groups. Now on .NET 10.
+First release in the Microsoft Store. New in 1.6.1: a quick bar at the bottom of the window for the theme, the language and opening on hover, the version at a glance with a tick when it is the latest, and a right-click menu on pinned groups with Open all and Edit group.
 
 **Product features** (one per line, up to 20)
 
@@ -68,7 +68,8 @@ Real Windows 11 glass on the panel, four panel layouts with a live preview, an i
 - Export, import and duplicate groups
 - Import from Taskbar Groups and AppGroup
 - Every installed app in one searchable list, Store apps included
-- Follows your theme, accent colour and language
+- Follows your theme, accent colour and language, or the ones you pick
+- A quick bar for theme, language and updates at a glance
 - No admin rights, no account, no telemetry
 - Free and open source
 
@@ -97,11 +98,11 @@ Haz cada grupo a tu manera:
 
 Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
 
-Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés), se instala solo para tu usuario sin permisos de administrador y no tiene cuentas, ni telemetría, ni anuncios. Es gratis y de código abierto (MIT).
+Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés), o los que elijas en su barra rápida, se instala solo para tu usuario sin permisos de administrador y no tiene cuentas, ni telemetría, ni anuncios. Es gratis y de código abierto (MIT).
 
 **Novedades de esta versión**
 
-El cristal de verdad de Windows 11 en el panel, cuatro formas de panel con vista previa, el icono hecho con las apps del grupo, abrir todas, grupos dentro de grupos, opciones por app, exportar e importar, importar desde Taskbar Groups y AppGroup, y un menú en el clic derecho de los grupos anclados. Ahora sobre .NET 10.
+Primera versión en la Microsoft Store. Novedades de la 1.6.1: una barra rápida abajo de la ventana para el tema, el idioma y abrir al pasar el cursor, la versión a la vista con un ✓ cuando es la última, y un menú en el clic derecho de los grupos anclados con «Abrir todas» y «Editar grupo».
 
 **Características** (una por línea, hasta 20)
 
@@ -117,7 +118,8 @@ El cristal de verdad de Windows 11 en el panel, cuatro formas de panel con vista
 - Exportar, importar y duplicar grupos
 - Importar desde Taskbar Groups y AppGroup
 - Todas tus apps en una lista con buscador, también las de la Store
-- Sigue tu tema, tu color de énfasis y tu idioma
+- Sigue tu tema, tu color de énfasis y tu idioma, o los que elijas
+- Una barra rápida para el tema, el idioma y las actualizaciones
 - Sin administrador, sin cuentas, sin telemetría
 - Gratis y de código abierto
 
