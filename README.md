@@ -4,7 +4,7 @@
 
 # Taskbar Groups — Fluent
 
-**Group your shortcuts into a single taskbar icon.** A modern **WPF / .NET 8** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
+**Group your shortcuts into a single taskbar icon.** A modern **WPF / .NET 10** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
 
 🌍 [Español](README.es.md) · English
 
@@ -41,6 +41,13 @@ Taskbar Groups turns a folder-worth of apps into **one taskbar button**. Click i
 - 🎨 **Custom group icons** — upload any image and **crop & zoom** it in the built-in editor, or…
 - 😀 **…pick a colour emoji** — hit **Emoji** and choose one as the group icon, rendered crisp and centred. No image needed.
 - 📌 **Pin to the taskbar** — each group becomes a pinned button; clicking it opens the flyout with your apps.
+- 🪟 **Windows 11 glass, laid out your way**: every group's panel has real Windows 11 glass and opens as a grid, a horizontal row, a vertical column or a list, with or without app names, in three icon sizes, and with the group's name above or below with a pencil to edit it. The group editor shows a live preview as you change it.
+- 🔲 **An icon made of the group's apps**: one click builds the taskbar icon from the first four apps in the group, and it keeps up as you add or remove them.
+- 🚀 **Open them all at once**: a button in the panel opens every app in the group.
+- 🗂️ **Groups inside groups**: add a group to another and it opens in its own panel.
+- ⚙️ **Per-app options**: rename an app inside a group, give it launch arguments or run it as administrator.
+- 💾 **Export, import and duplicate**: share a group as a single file, keep a backup, or copy one as the start of a new one.
+- 🔁 **Coming from Taskbar Groups or AppGroup?** Import your groups from either one and carry on.
 - 🖱️ **Open on hover** — turn it on in **Settings** and a group opens by resting the cursor on its icon, no click at all. It waits a moment first so crossing the taskbar never opens anything by accident, it never takes the keyboard away from what you were typing in, and it closes itself as soon as the cursor leaves. Off by default: it runs a small watcher in the notification area, which you can switch off from there or from Settings.
 - 🔄 **Live taskbar updates** — change a pinned group's icon and the taskbar button refreshes itself, with a clean shell restart that won't disturb your other pinned icons.
 - 📁 **Apps *and* folders** in the same group.
@@ -77,7 +84,7 @@ Taskbar Groups turns a folder-worth of apps into **one taskbar button**. Click i
 ## ⬇️ Download & install
 
 1. Click the **Download** button above — or this direct link: **[download the installer](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)**.
-2. Run the downloaded `TaskbarGroupsFluent-Setup.exe`. It installs per-user (no admin needed) and, if you don't already have the **.NET 8 Desktop Runtime**, downloads and installs it for you.
+2. Run the downloaded `TaskbarGroupsFluent-Setup.exe`. It installs per-user (no admin needed) and, if you don't already have the **.NET 10 Desktop Runtime**, downloads and installs it for you.
 3. Launch **Taskbar Groups** from the Start Menu. Done!
 
 > Prefer to see all versions and files? They're on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest).
@@ -104,7 +111,7 @@ On launch, Taskbar Groups checks GitHub for a newer version. If there is one, it
 
 ## 🛠️ Building from source
 
-Requires the [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 git clone https://github.com/Mun1to/TaskbarGroupsFluent.git

@@ -4,7 +4,7 @@
 
 # Taskbar Groups — Fluent
 
-**Agrupa tus accesos directos en un solo icono de la barra de tareas.** Una reescritura moderna en **WPF / .NET 8** de Taskbar Groups, con interfaz Fluent (estilo WinUI 3).
+**Agrupa tus accesos directos en un solo icono de la barra de tareas.** Una reescritura moderna en **WPF / .NET 10** de Taskbar Groups, con interfaz Fluent (estilo WinUI 3).
 
 🌍 Español · [English](README.md)
 
@@ -41,6 +41,13 @@ Taskbar Groups convierte una carpeta llena de apps en **un solo botón de la bar
 - 🎨 **Iconos de grupo personalizados** — sube cualquier imagen y **recórtala y haz zoom** en el editor integrado, o…
 - 😀 **…elige un emoji a color** — pulsa **Emoji** y elígelo como icono del grupo, renderizado nítido y centrado. Sin subir ninguna imagen.
 - 📌 **Ancla a la barra de tareas** — cada grupo se convierte en un botón anclado; al pulsarlo se abre el popup con tus apps.
+- 🪟 **Cristal de Windows 11, con la forma que quieras**: el panel de cada grupo tiene el cristal de verdad de Windows 11 y se abre en cuadrícula, en una fila horizontal, en una columna vertical o como lista, con o sin el nombre de las apps, en tres tamaños de icono y con el nombre del grupo arriba o abajo, con un lápiz para editarlo. El editor del grupo te enseña cómo queda mientras lo cambias.
+- 🔲 **Un icono hecho con las apps del grupo**: con un clic, el icono de la barra se hace con las cuatro primeras apps, y se actualiza solo cuando añades o quitas alguna.
+- 🚀 **Abrirlas todas de golpe**: un botón en el panel abre todas las apps del grupo.
+- 🗂️ **Grupos dentro de grupos**: mete un grupo en otro y se abre en su propio panel.
+- ⚙️ **Opciones por app**: cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
+- 💾 **Exportar, importar y duplicar**: comparte un grupo en un solo archivo, guarda una copia o duplica uno para empezar otro.
+- 🔁 **¿Vienes de Taskbar Groups o de AppGroup?** Importa tus grupos de cualquiera de los dos y sigue como estabas.
 - 🖱️ **Abrir al pasar el cursor** — actívalo en **Ajustes** y un grupo se abre con solo dejar el cursor encima de su icono, sin hacer clic. Espera un momento antes de abrir, así cruzar la barra no abre nada sin querer; nunca te quita el teclado de donde estabas escribiendo; y se cierra solo en cuanto alejas el cursor. Viene apagado: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde Ajustes.
 - 🔄 **Actualización del icono en vivo** — cambia el icono de un grupo anclado y el botón de la barra se refresca solo, con un reinicio limpio del shell que no molesta a tus otros iconos anclados.
 - 📁 **Apps *y* carpetas** en el mismo grupo.
@@ -77,7 +84,7 @@ Taskbar Groups convierte una carpeta llena de apps en **un solo botón de la bar
 ## ⬇️ Descarga e instalación
 
 1. Pulsa el botón **Descargar** de arriba — o este enlace directo: **[descargar el instalador](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)**.
-2. Ejecuta el `TaskbarGroupsFluent-Setup.exe` descargado. Se instala por usuario (sin admin) y, si no tienes el **.NET 8 Desktop Runtime**, lo descarga e instala por ti.
+2. Ejecuta el `TaskbarGroupsFluent-Setup.exe` descargado. Se instala por usuario (sin admin) y, si no tienes el **.NET 10 Desktop Runtime**, lo descarga e instala por ti.
 3. Abre **Taskbar Groups** desde el Menú Inicio. ¡Listo!
 
 > ¿Prefieres ver todas las versiones y archivos? Están en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest).
@@ -104,7 +111,7 @@ Al abrirse, Taskbar Groups comprueba en GitHub si hay una versión nueva. Si la 
 
 ## 🛠️ Compilar desde el código
 
-Requiere el [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0).
+Requiere el [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0).
 
 ```bash
 git clone https://github.com/Mun1to/TaskbarGroupsFluent.git
