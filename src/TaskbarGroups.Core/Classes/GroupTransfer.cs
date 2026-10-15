@@ -120,7 +120,8 @@ namespace TaskbarGroups.Core
             catch { return null; }
         }
 
-        private static string UniqueName(string name)
+        /// <summary>The name itself if free, else "name (2)", "name (3)" and so on.</summary>
+        internal static string UniqueName(string name)
         {
             name = (name ?? "").Trim();
             if (name.Length == 0) name = "Group";

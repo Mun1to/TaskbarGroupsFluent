@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -150,7 +150,8 @@ public partial class MainWindow : FluentWindow
         if (sender is not FrameworkElement button) return;
         ShowMenu(button,
             (Loc.Get("Loc_Main_ImportFile"), ImportGroupFile),
-            (Loc.Get("Loc_Main_ImportTbg"), ImportTaskbarGroups));
+            (Loc.Get("Loc_Main_ImportTbg"), ImportTaskbarGroups),
+            (Loc.Get("Loc_Main_ImportAppGroup"), ImportAppGroup));
     }
 
     private static void ShowMenu(FrameworkElement anchor, params (string Text, Action Run)[] items)
@@ -238,6 +239,40 @@ public partial class MainWindow : FluentWindow
         RefreshGroups();
         if (imported.Count == 0)
             ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), Loc.Get("Loc_Main_ImportNone"));
+        else
+            ReportImported(imported);
+    }
+
+    // AppGroup installed on this PC is read straight from its data folder; if it
+    // is not, the user points at one of its ".agz" backups instead.
+    private void ImportAppGroup()
+    {
+        var imported = new System.Collections.Generic.List<string>();
+        try
+        {
+            if (AppGroupImport.IsInstalled)
+            {
+                imported = AppGroupImport.ImportInstalled();
+            }
+            else
+            {
+                var dialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = Loc.Get("Loc_Main_AppGroupFilter") + "|*.agz"
+                };
+                if (dialog.ShowDialog(this) != true) return;
+                imported = AppGroupImport.ImportBackup(dialog.FileName);
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), ex.Message);
+            return;
+        }
+
+        RefreshGroups();
+        if (imported.Count == 0)
+            ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), Loc.Get("Loc_Main_AppGroupNone"));
         else
             ReportImported(imported);
     }

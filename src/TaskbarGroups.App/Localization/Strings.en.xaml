@@ -24,6 +24,9 @@
     <s:String x:Key="Loc_Main_Import">Import</s:String>
     <s:String x:Key="Loc_Main_ImportFile">From a group file…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">From Taskbar Groups…</s:String>
+    <s:String x:Key="Loc_Main_ImportAppGroup">From AppGroup…</s:String>
+    <s:String x:Key="Loc_Main_AppGroupFilter">AppGroup backup</s:String>
+    <s:String x:Key="Loc_Main_AppGroupNone">No AppGroup groups found to import.</s:String>
     <s:String x:Key="Loc_Main_ImportTbgPick">Pick the folder where Taskbar Groups was</s:String>
     <s:String x:Key="Loc_Main_GroupFileFilter">Taskbar Groups group</s:String>
     <s:String x:Key="Loc_Main_ImportedTitle">Groups imported</s:String>
