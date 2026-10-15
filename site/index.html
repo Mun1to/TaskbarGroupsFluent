@@ -4,877 +4,1238 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark">
-  <meta name="theme-color" content="#0A0E17">
-  <title>Taskbar Groups Fluent - Una barra de tareas ordenada</title>
-  <meta name="description" content="Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows. Lo pulsas y se abre un panel con todas tus apps. Gratis, open source y con el aspecto de Windows 11.">
+  <meta name="theme-color" content="#0b0b0d">
+  <title>Taskbar Groups Fluent · Agrupa tus apps en la barra de tareas</title>
+  <meta name="description" content="Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows 10 y 11. Lo pulsas y se abre un panel con todas tus apps, con el aspecto de Windows 11. Gratis y de código abierto.">
+  <link rel="canonical" href="https://tbgf.munito.dev/">
   <link rel="icon" type="image/png" href="assets/icon-256.png?v=1">
+  <link rel="apple-touch-icon" href="assets/icon-256.png?v=1">
   <!-- La tarjeta al compartir va SIEMPRE en inglés: el crawler no ejecuta el JS que
        traduce la página, así que solo hay una versión, y el enlace se pega sobre todo
        en sitios internacionales. La web sí se adapta al idioma de quien la abre. -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Taskbar Groups Fluent">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:locale:alternate" content="es_ES">
   <meta property="og:url" content="https://tbgf.munito.dev/">
   <meta property="og:title" content="Taskbar Groups Fluent - One icon, all your apps">
   <meta property="og:description" content="Group your shortcuts into a single taskbar button. Click it and a Fluent flyout pops up with every app in the group. Free and open source for Windows 10/11.">
   <meta property="og:image" content="https://tbgf.munito.dev/assets/og.png?v=1">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Taskbar Groups Fluent: one taskbar icon that opens a panel with all the apps in the group">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Taskbar Groups Fluent - One icon, all your apps">
   <meta name="twitter:description" content="Group your shortcuts into a single taskbar button. Free and open source for Windows 10/11.">
   <meta name="twitter:image" content="https://tbgf.munito.dev/assets/og.png?v=1">
-  <!-- Progressive enhancement + control central de movimiento:
-       .js     → hay JavaScript
-       .motion → las animaciones están activas. Decisión de diseño: se muestran a TODOS
-                 los visitantes, también a quien tiene "reducir movimiento" en su sistema.
-                 La URL ?motion=off las desactiva (válvula de escape para pruebas). -->
+
+  <!-- Arranque, antes de pintar nada:
+       1) El dial de movimiento de la casa (--motion-gain). Las animaciones se ven siempre;
+          lo que cambia es CUÁNTO se mueven las cosas:
+            1     por defecto
+            0.25  si el sistema pide reducir movimiento (mismo diseño, un cuarto de recorrido)
+            0     con ?motion=off (la válvula, también en el pie de la página)
+            1     forzado con ?motion=full (para revisar desde un equipo con reduce)
+          El dial multiplica recorridos, nunca opacidades: un fundido no marea a nadie.
+       2) El idioma: manda ?lang=, luego lo que eligió el visitante, y si no, su navegador. -->
   <script>
     (function () {
       var d = document.documentElement;
       d.classList.add("js");
-      var off = /[?&]motion=off/.test(location.search);
-      if (!off) d.classList.add("motion");
+      var s = location.search;
+      var m = /[?&]motion=(off|full)/.exec(s);
+      var reduce = false;
+      try { reduce = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+      var gain = m && m[1] === "off" ? 0 : m && m[1] === "full" ? 1 : reduce ? 0.25 : 1;
+      d.style.setProperty("--motion-gain", String(gain));
+      if (gain > 0) d.classList.add("motion");
+      if (gain === 1) d.classList.add("motion-full");
 
-      // Idioma decidido ANTES de pintar, para que nadie vea el texto cambiar:
-      // manda ?lang=, luego lo que eligió el visitante, y si no, su navegador.
-      var q = /[?&]lang=(es|en)/.exec(location.search);
+      var q = /[?&]lang=(es|en)/.exec(s);
       var saved = null;
       try { saved = localStorage.getItem("tbgf-lang"); } catch (e) {}
       var nav = (navigator.language || "es").toLowerCase();
       d.lang = (q && q[1]) || saved || (nav.indexOf("es") === 0 ? "es" : "en");
     })();
   </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Taskbar Groups Fluent",
+    "alternateName": "Taskbar Groups",
+    "description": "Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows. Lo pulsas y se abre un panel con todas las apps del grupo, con el aspecto de Windows 11.",
+    "url": "https://tbgf.munito.dev/",
+    "image": "https://tbgf.munito.dev/assets/og.png",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Windows 10, Windows 11",
+    "downloadUrl": "https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe",
+    "license": "https://opensource.org/licenses/MIT",
+    "isAccessibleForFree": true,
+    "inLanguage": ["es", "en"],
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+    "author": { "@type": "Person", "name": "Munir Torres", "url": "https://munito.dev" },
+    "sameAs": ["https://github.com/Mun1to/TaskbarGroupsFluent"]
+  }
+  </script>
+  <!-- Las preguntas, igual que se leen en la sección #preguntas (en español, que es el
+       idioma del HTML servido). Si cambias una respuesta allí, cámbiala aquí. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "¿Es gratis?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Sí, entera. Es código abierto con licencia MIT: sin versión de pago, sin cuentas y sin anuncios." } },
+      { "@type": "Question", "name": "¿En qué versiones de Windows funciona?",
+        "acceptedAnswer": { "@type": "Answer", "text": "En Windows 10 y Windows 11, de 64 bits." } },
+      { "@type": "Question", "name": "¿Hacen falta permisos de administrador?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No. Se instala en tu usuario, no en el sistema, con un instalador de un clic." } },
+      { "@type": "Question", "name": "¿Por qué Windows avisa de «editor desconocido»?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Porque la app todavía no está firmada con un certificado de pago. Pulsa Más información y luego Ejecutar de todas formas. Todo el código está en GitHub para quien quiera revisarlo." } },
+      { "@type": "Question", "name": "¿Se puede instalar con WinGet?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Muy pronto. El paquete Mun1to.TaskbarGroupsFluent está en revisión en el catálogo oficial de WinGet, y hasta que lo aprueben el comando no funciona. Mientras tanto, usa el instalador de esta página." } },
+      { "@type": "Question", "name": "¿Cómo hago que un grupo se abra al pasar el ratón?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Actívalo en Ajustes. Viene apagado de fábrica: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde los mismos Ajustes." } },
+      { "@type": "Question", "name": "¿Se actualiza sola?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app." } },
+      { "@type": "Question", "name": "¿Qué trae la versión 1.6?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Está en desarrollo. El panel podrá tener cuatro formas (cuadrícula, horizontal, vertical y lista) y una cabecera con el nombre del grupo y un lápiz que abre su editor. Es lo que enseña la demo de arriba." } },
+      { "@type": "Question", "name": "¿En qué idiomas está?",
+        "acceptedAnswer": { "@type": "Answer", "text": "En español y en inglés. Sigue solo el idioma de Windows, y puedes forzarlo con la variable de entorno TBG_LANG." } }
+    ]
+  }
+  </script>
+
   <style>
+    /* ==========================================================================
+       SISTEMA VISUAL: el de winshotx.com, adaptado a esta app.
+       De winshotx salen el fondo casi negro, las superficies #141418 con borde
+       blanco al 8%, el radio de 16, la barra de navegación ovalada que flota con
+       cristal, los titulares de 700 con tracking negativo, la fila de números sin
+       cajas, las pestañas segmentadas, el «marco» con barra falsa para enseñar la
+       app, la rejilla de tarjetas con icono en baldosa y las preguntas animadas.
+       El azul es el del logo de esta app (el mismo acento que usa Windows 11 en
+       oscuro) y el amarillo, el cuadrado amarillo del logo, solo para avisos.
+       ========================================================================== */
     :root {
-      /* Landing monotema oscura por diseño: se declara al navegador para que los
-         controles nativos (scrollbar, inputs) también rendericen en oscuro. */
       color-scheme: dark;
-      --bg: #0A0E17;
-      --surface: #141A28;
-      --border: #232C40;
-      --border-strong: #35415C;
-      --text: #E9EDF8;
-      --muted: #93A0C7;
-      /* Los azules salen del propio logo de la app (el degradado del panel). */
-      --primary: #0067C0;
-      --primary-strong: #4CC2FF;
-      --accent: #FFC83D;
-      --font: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
-      /* La curva premium (ease-out-quint): arranque rápido, aterrizaje suave */
+      --fondo: #0b0b0d;
+      --panel: #141418;
+      --panel-2: #17171c;
+      --borde: #ffffff14;
+      --borde-fuerte: #ffffff26;
+      --texto: #e9e9ee;
+      --suave: #8e8e9a;
+      --apagado: #84848f;
+      /* Acento sobre fondo oscuro: el azul claro del logo (9,5 de contraste). */
+      --azul: #4cc2ff;
+      /* Relleno con texto blanco encima: el azul fuerte del logo (5,7 de contraste). */
+      --azul-boton: #0067c0;
+      --amarillo: #ffc83d;
+      --verde: #34d399;
+      --radio: 16px;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --motion-gain: 1;
     }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    html.motion-full { scroll-behavior: smooth; }
     body {
-      font-family: var(--font);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      /* clip y no hidden: `hidden` convierte el body en contenedor de scroll y
-         eso rompe el position:sticky del hero. */
-      overflow-x: clip;
+      background: var(--fondo);
+      color: var(--texto);
+      font: 16px/1.6 ui-sans-serif, system-ui, "Segoe UI", sans-serif;
       -webkit-font-smoothing: antialiased;
+      /* clip y no hidden: hidden convierte el body en contenedor de scroll y la
+         barra de arriba dejaría de quedarse pegada. */
+      overflow-x: clip;
     }
-    a { color: inherit; text-decoration: none; }
-    ::selection { background: rgba(76, 194, 255, 0.4); }
+    a { color: var(--azul); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    button { font-family: inherit; }
+    ::selection { background: #4cc2ff55; }
+    :focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
 
-    /* ---------- Grano sutil (textura premium) ---------- */
-    .grain {
-      position: fixed; inset: 0;
-      z-index: 50;
-      pointer-events: none;
-      opacity: 0.05;
-      mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
-    }
+    /* 16 px de margen a cada lado en el móvil, 24 en pantallas medianas. */
+    .env { width: min(1120px, 100% - 32px); margin-inline: auto; }
+    @media (min-width: 700px) { .env { width: min(1120px, 100% - 48px); } }
+    .centrado { text-align: center; }
+    .centrado .entradilla { margin-inline: auto; }
 
-    /* ---------- Capas de fondo con parallax ---------- */
-    .backdrop { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
-    .orb { position: absolute; border-radius: 50%; filter: blur(90px); will-change: transform; }
-    .orb-a {
-      width: 660px; height: 660px;
-      top: -240px; left: 50%; margin-left: -330px;
-      background: radial-gradient(circle, rgba(76, 194, 255, 0.30), transparent 65%);
+    /* ---------- cabecera: una barra ovalada que flota sobre la página ---------- */
+    nav.arriba {
+      position: sticky; top: 0; z-index: 50; padding: 14px 0 12px;
+      background: linear-gradient(180deg, var(--fondo) 62%, transparent);
     }
-    .orb-b {
-      width: 460px; height: 460px;
-      top: 46vh; right: -160px;
-      background: radial-gradient(circle, rgba(255, 200, 61, 0.13), transparent 65%);
+    nav.arriba .env {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: 16px; height: 58px; padding: 0 8px 0 16px;
+      border-radius: 999px; border: 1px solid #ffffff1a;
+      background: #14141ccc; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      box-shadow: 0 14px 34px #00000059;
     }
-    .orb-c {
-      width: 520px; height: 520px;
-      top: 115vh; left: -200px;
-      background: radial-gradient(circle, rgba(0, 103, 192, 0.20), transparent 65%);
+    .marca {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--texto); font-weight: 650; letter-spacing: -0.01em;
     }
-
-    /* ---------- Nav ---------- */
-    nav {
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      display: flex; align-items: center; justify-content: space-between;
-      max-width: 1000px; margin: 0 auto;
-      padding: 26px 24px;
-      z-index: 5;
+    .marca:hover { text-decoration: none; }
+    .marca img { width: 28px; height: 28px; display: block; }
+    .marca .nombre-corto { font-size: 15px; }
+    nav .enlaces { justify-self: center; display: flex; align-items: center; gap: 2px; font-size: 14px; }
+    nav .enlaces a {
+      color: var(--suave); padding: 9px 15px; border-radius: 999px;
+      transition: background 0.14s, color 0.14s;
     }
-    .brand { display: flex; align-items: center; gap: 11px; }
-    .brand img { width: 36px; height: 36px; object-fit: contain; }
-    .brand span { font-size: 17.5px; font-weight: 650; letter-spacing: -0.3px; }
-    .nav-right { display: flex; align-items: center; gap: 4px; }
-
-    /* Botones del header sin recuadro fijo: al pasar el ratón aparece una píldora
-       suave bajo el texto. La zona clicable se ve, pero no ensucia en reposo. */
-    nav a.gh, .lang {
-      background: none; border: none;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-family: var(--font);
-      font-size: 14.5px; font-weight: 500;
-      color: var(--muted);
-      cursor: pointer;
-      transition: background-color 0.18s var(--ease), color 0.18s var(--ease);
+    nav .enlaces a:hover { color: var(--texto); background: #ffffff14; text-decoration: none; }
+    nav .acciones { justify-self: end; display: flex; align-items: center; gap: 8px; }
+    .idioma {
+      padding: 9px 18px; border-radius: 999px; border: 1px solid #ffffff1a;
+      background: #ffffff0d; color: var(--texto); font-size: 13.5px; font-weight: 600;
+      line-height: 1.6; cursor: pointer; transition: background 0.14s, border-color 0.14s;
     }
-    nav a.gh:hover, .lang:hover { background: rgba(233, 237, 248, 0.1); color: var(--text); }
-    nav a.gh:active, .lang:active { background: rgba(233, 237, 248, 0.16); }
+    .idioma:hover { background: #ffffff1f; border-color: #ffffff33; }
+    .gh {
+      display: grid; place-items: center; width: 41.6px; height: 41.6px;
+      border-radius: 999px; border: 1px solid #ffffff1a; background: #ffffff0d;
+      color: var(--texto); transition: background 0.14s, border-color 0.14s;
+    }
+    .gh:hover { background: #ffffff1f; border-color: #ffffff33; }
+    .gh svg { width: 21px; height: 21px; }
+    @media (max-width: 960px) {
+      nav.arriba .env { grid-template-columns: 1fr auto; padding-right: 8px; }
+      nav .enlaces { display: none; }
+    }
+    @media (max-width: 380px) { .marca .nombre-corto { display: none; } }
 
     /* ==========================================================================
-       HERO A PANTALLA COMPLETA + LÁMINA QUE LO TAPA
-       Al entrar solo se ve el hero: ocupa la pantalla entera y nada asoma por
-       abajo salvo la flecha que invita a bajar. El hero se queda PEGADO (sticky)
-       y el resto de la página es una lámina que sube por encima y lo cubre.
-       Por eso .sheet lleva fondo sólido: si fuese transparente, el hero se vería
-       a través y el efecto de tapar desaparecería.
+       PORTADA: texto a la izquierda y la demo a la derecha, para que lo primero
+       que se vea sea el panel abriéndose. En el móvil se apilan: primero qué es y
+       el botón de descarga, justo después la demo.
        ========================================================================== */
-    .hero-wrap { position: sticky; top: 0; height: 100svh; z-index: 0; }
-    .hero {
-      height: 100%;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      padding: 96px 24px 40px;
-      will-change: transform, opacity;
+    .portada { position: relative; padding: 46px 0 40px; }
+    .portada::before {
+      content: ""; position: absolute; inset: -160px 0 auto; height: 620px; z-index: -1;
+      background:
+        radial-gradient(ellipse 46% 50% at 72% 42%, #0067c03a, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 22% 30%, #4cc2ff14, transparent 70%);
+      pointer-events: none;
     }
-    .sheet {
-      position: relative;
-      z-index: 1;
-      background: var(--bg);
-      border-top: 1px solid var(--border);
-      border-radius: 30px 30px 0 0;
-      box-shadow: 0 -34px 80px rgba(0, 0, 0, 0.6);
+    .portada-rejilla {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+      gap: 56px; align-items: center;
     }
+    .firma { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+    .firma img { width: 46px; height: 46px; display: block; }
+    .firma .palabra { font-size: 21px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+    .firma .palabra small { display: block; font-size: 13px; font-weight: 500; color: var(--suave); letter-spacing: 0; }
 
-    /* Flecha de "sigue bajando": lo único que asoma en la primera pantalla */
-    .scroll-cue {
-      position: absolute;
-      left: 50%; bottom: 30px;
-      translate: -50% 0;
-      display: flex; flex-direction: column; align-items: center; gap: 7px;
-      color: var(--muted);
-      font-size: 11.5px; letter-spacing: 1.6px; text-transform: uppercase;
-      transition: opacity 0.4s ease;
+    /* Aviso de que el proyecto está vivo: punto verde y a dónde mirar. */
+    .estado {
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 6px 14px 6px 11px; margin-bottom: 18px;
+      border: 1px solid #34d39933; border-radius: 999px; background: #34d3990f;
+      color: #b7f0d6; font-size: 13px; font-weight: 550;
+      transition: background 0.14s, border-color 0.14s;
     }
-    .scroll-cue svg { animation: cue 1.9s ease-in-out infinite; }
-    @keyframes cue {
-      0%, 100% { transform: translateY(0); opacity: 0.55; }
-      50% { transform: translateY(7px); opacity: 1; }
+    .estado:hover { text-decoration: none; background: #34d3991a; border-color: #34d39955; }
+    .estado .punto {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--verde); flex: none;
+      box-shadow: 0 0 0 3px #34d39926;
     }
-    /* Entrada propia en vez de .fade-up: comparten especificidad y la regla de
-       fade-up ganaba, dejando la flecha visible para siempre al scrollear. */
-    html.motion .scroll-cue { opacity: 0; transition: opacity 0.6s var(--ease) 1100ms; }
-    html.motion body.ready .scroll-cue { opacity: 1; }
-    html.motion body.scrolled .scroll-cue,
-    body.scrolled .scroll-cue { opacity: 0; pointer-events: none; transition-delay: 0s; }
+    /* El punto late unas pocas veces al llegar y se queda quieto: un bucle infinito
+       pediría un botón de pausa (WCAG 2.2.2), y no aporta nada tras el primer vistazo. */
+    html.motion .estado .punto { animation: latido 1.8s var(--ease) 3; }
+    @keyframes latido {
+      0% { box-shadow: 0 0 0 0 #34d39966; }
+      100% { box-shadow: 0 0 0 calc(10px * var(--motion-gain)) #34d39900; }
+    }
 
     h1 {
-      font-size: clamp(42px, 7.6vw, 80px);
-      font-weight: 760;
-      letter-spacing: -2.2px;
-      line-height: 1.06;
-      margin-bottom: 24px;
+      font-size: clamp(36px, 5.3vw, 58px); line-height: 1.05;
+      letter-spacing: -0.035em; font-weight: 700; text-wrap: balance;
     }
-    /* Segunda línea del titular en el azul de marca, plano y sin degradado. */
-    h1 .accent { color: var(--primary-strong); }
-    .sub {
-      font-size: clamp(17px, 2.3vw, 20px);
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 36px;
-    }
-    .sub b { color: var(--text); font-weight: 600; }
-    .cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    h1 em { font-style: normal; color: var(--azul); display: block; }
+    .bajada { margin-top: 20px; max-width: 54ch; font-size: clamp(16px, 1.9vw, 18.5px); color: var(--suave); }
+    .bajada b { color: var(--texto); font-weight: 600; }
+    .botones { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .centrado .botones { justify-content: center; }
     .btn {
-      display: inline-flex; align-items: center; gap: 9px;
-      padding: 15px 30px;
-      border-radius: 13px;
-      font-size: 16px; font-weight: 600;
-      transition: box-shadow 0.2s, background 0.15s, border-color 0.15s;
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      padding: 13px 24px; border-radius: 12px;
+      font-weight: 600; font-size: 15px; border: 1px solid transparent;
+      transition: background 0.16s, transform 0.16s, box-shadow 0.16s, border-color 0.16s;
     }
-    .btn.primary {
-      background: var(--primary);
+    .btn svg { width: 17px; height: 17px; flex: none; }
+    .btn:hover { text-decoration: none; }
+    .btn.primario { background: var(--azul-boton); color: #fff; box-shadow: 0 8px 30px #0067c066; }
+    /* Se oscurece al pasar por encima (aclarar tumbaría el contraste del texto
+       blanco) y el movimiento lo marca la sombra. */
+    .btn.primario:hover { background: #005aa8; transform: translateY(-1px); box-shadow: 0 10px 34px #4cc2ff40; }
+    .btn.fantasma { border-color: var(--borde); color: var(--texto); background: #ffffff08; }
+    .btn.fantasma:hover { background: #ffffff12; border-color: var(--borde-fuerte); }
+    .letra-chica { margin-top: 14px; font-size: 13px; color: var(--apagado); }
+    /* Un enlace dentro de una frase gris no se distingue solo por el color: subrayado. */
+    .letra-chica a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    .letra-chica a:hover { color: var(--texto); }
+
+    /* La otra forma de instalarlo, con su cartel de «muy pronto». */
+    .por-terminal { margin-top: 10px; font-size: 12.5px; color: var(--apagado); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+    code, .comando {
+      font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    }
+    .por-terminal code {
+      padding: 3px 8px; border: 1px solid var(--borde); border-radius: 7px;
+      background: #ffffff0a; color: var(--suave); font-size: 12px; line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+    .etq {
+      display: inline-flex; align-items: center; gap: 5px; flex: none;
+      padding: 2px 9px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 650; letter-spacing: 0.01em; line-height: 1.6; white-space: nowrap;
+    }
+    .etq.pronto { background: #ffc83d1a; color: #ffd66e; border: 1px solid #ffc83d40; }
+    .etq.nueva { background: #4cc2ff17; color: #8fd8ff; border: 1px solid #4cc2ff38; }
+    .etq.recomendado { background: #34d39914; color: #8eeac3; border: 1px solid #34d39938; }
+
+    /* ---------- números: sin cajas, solo el dato y una línea que los separa ---------- */
+    .numeros { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 60px; }
+    .dato { display: grid; align-content: start; gap: 3px; padding: 4px 22px; border-left: 1px solid var(--borde); }
+    .dato:first-child { border-left: 0; padding-left: 0; }
+    .dato .valor {
+      font-size: clamp(30px, 3.4vw, 40px); font-weight: 700; letter-spacing: -0.035em;
+      line-height: 1.1; color: var(--azul); font-variant-numeric: tabular-nums;
+    }
+    .dato .que { font-size: 14px; color: var(--texto); }
+    .dato .contra { font-size: 12.5px; color: var(--apagado); }
+    .dato .contra a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    .dato .contra a:hover { color: var(--texto); }
+    .fuente-datos { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
+    .fuente-datos .punto { width: 7px; height: 7px; border-radius: 50%; background: #ffffff33; flex: none; }
+    .fuente-datos.vivo .punto { background: var(--verde); box-shadow: 0 0 0 3px #34d39926; }
+    @media (max-width: 760px) {
+      .numeros { grid-template-columns: 1fr 1fr; row-gap: 26px; }
+      .dato:nth-child(3) { border-left: 0; padding-left: 0; }
+      .dato { padding-inline: 16px 0; }
+    }
+
+    /* ==========================================================================
+       LA DEMO: una barra de tareas de mentira con cuatro grupos. Al pasar el
+       ratón (o al tocar) sale su panel con cristal translúcido, como en
+       Windows 11. Medidas copiadas del panel de la app (PopupWindow.xaml):
+       radio 8, relleno 10, baldosa de 80 con icono de 44, línea de 44 de alto,
+       celda de lista de 200, y la cabecera con el nombre y el lápiz de 32.
+       Los iconos de las apps son dibujos propios: ninguna marca ajena.
+       ========================================================================== */
+    .demo { position: relative; scroll-margin-top: 96px; }
+    .marco {
+      position: relative; border: 1px solid var(--borde); border-radius: var(--radio);
+      overflow: hidden; background: #161618; box-shadow: 0 30px 80px #0008;
+    }
+    .barra-falsa {
+      display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 14px;
+      background: #101014; border-bottom: 1px solid var(--borde);
+      font-size: 12.5px; color: var(--suave); white-space: nowrap; overflow: hidden;
+    }
+    .barra-falsa .texto { overflow: hidden; text-overflow: ellipsis; }
+    .semaforo { display: flex; gap: 6px; flex: none; }
+    .semaforo i { width: 10px; height: 10px; border-radius: 50%; background: #ffffff1f; display: block; }
+
+    .escritorio {
+      position: relative; height: 430px; overflow: hidden; isolation: isolate;
+      /* Un fondo de escritorio propio, a base de manchas de color: es lo que el
+         cristal del panel y de la barra deja ver desenfocado. */
+      background:
+        radial-gradient(42% 52% at 28% 34%, #4cc2ff8c, transparent 70%),
+        radial-gradient(38% 48% at 74% 26%, #7c5cff70, transparent 70%),
+        radial-gradient(60% 50% at 58% 92%, #0067c0b3, transparent 72%),
+        radial-gradient(26% 30% at 92% 74%, #ffc83d33, transparent 70%),
+        radial-gradient(30% 34% at 8% 86%, #13b5a54d, transparent 70%),
+        linear-gradient(160deg, #0b1a36 0%, #0a1024 58%, #150d2c 100%);
+      touch-action: manipulation;
+    }
+    /* Pista que se ve mientras no hay ningún panel abierto */
+    .pista {
+      position: absolute; left: 50%; bottom: 92px; translate: -50% 0;
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 0 16px; width: max-content; max-width: 100%;
+      color: #e9eefbcc; font-size: 13.5px; text-align: center;
+      text-shadow: 0 1px 8px #0009;
+      transition: opacity 0.3s var(--ease);
+      pointer-events: none;
+    }
+    .escritorio.con-panel .pista { opacity: 0; }
+    .pista svg { width: 20px; height: 20px; }
+    /* Unas pocas veces y quieta: un bucle sin fin pediría botón de pausa (WCAG 2.2.2). */
+    html.motion .pista svg { animation: baja 1.9s ease-in-out 5; }
+    @keyframes baja {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(calc(6px * var(--motion-gain))); }
+    }
+
+    /* Aviso flotante dentro del escritorio («esto abriría Fotos») */
+    .aviso-demo {
+      position: absolute; top: 14px; left: 50%; translate: -50% 0; z-index: 6;
+      max-width: calc(100% - 24px); padding: 8px 14px; border-radius: 999px;
+      background: #202024c4; border: 1px solid #ffffff1c;
+      backdrop-filter: blur(24px) saturate(160%); -webkit-backdrop-filter: blur(24px) saturate(160%);
+      box-shadow: 0 10px 30px #0007;
+      font-size: 12.5px; color: #f2f2f5; text-align: center;
+      opacity: 0; transform: translateY(calc(-8px * var(--motion-gain)));
+      transition: opacity 0.22s var(--ease), transform 0.3s var(--ease);
+      pointer-events: none;
+    }
+    .aviso-demo.visible { opacity: 1; transform: none; }
+
+    /* El panel del grupo: acrílico de Windows 11 (desenfoque, saturación y un
+       grano finísimo encima). Sale desde la barra hacia arriba. */
+    .panel {
+      --dy: 16px;
+      --tile-w: 80px; --tile-h: 86px; --ico: 42px;
+      --line-h: 44px; --ico-linea: 28px; --lista-w: 200px; --linea-min: 190px;
+      position: absolute; left: 0; bottom: 56px; z-index: 4;
+      padding: 10px; border-radius: 8px;
+      background: #26262bb8;
+      backdrop-filter: blur(34px) saturate(170%); -webkit-backdrop-filter: blur(34px) saturate(170%);
+      border: 1px solid #ffffff1a;
+      box-shadow: 0 18px 50px #00000080, 0 0 0 1px #00000040;
       color: #fff;
-      box-shadow: 0 8px 34px rgba(0, 103, 192, 0.5);
+      transform-origin: 0 100%;
+      transform: translate3d(0, calc(var(--dy) * var(--motion-gain)), 0) scale(var(--fit, 1));
+      opacity: 0; visibility: hidden;
+      transition: opacity 0.16s ease, transform 0.24s var(--ease), visibility 0s linear 0.24s;
     }
-    .btn.primary:hover { background: #0a7ad8; box-shadow: 0 10px 44px rgba(76, 194, 255, 0.45); }
-    .btn.ghost {
-      background: rgba(20, 26, 40, 0.7);
-      border: 1px solid var(--border-strong);
-      color: var(--text);
+    .panel::before {
+      content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+      opacity: 0.05; mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     }
-    .btn.ghost:hover { border-color: var(--primary-strong); }
-    .os-note { margin-top: 16px; font-size: 13px; color: var(--muted); }
-    .inline-link { text-decoration: underline; text-underline-offset: 2px; transition: color 0.15s; }
-    .inline-link:hover { color: var(--text); }
+    .panel.visible {
+      --dy: 0px; opacity: 1; visibility: visible;
+      transition: opacity 0.2s ease, transform 0.36s var(--ease), visibility 0s;
+    }
+    .panel.sin-trans { transition: none !important; }
+
+    .panel-cab {
+      position: relative; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      height: 32px; margin: 0 0 4px 8px;
+    }
+    .panel-nombre {
+      font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .lapiz {
+      display: grid; place-items: center; width: 32px; height: 32px; flex: none;
+      border: 0; border-radius: 4px; background: transparent; color: #fff; cursor: pointer;
+      transition: background 0.1s;
+    }
+    .lapiz:hover { background: #ffffff12; }
+    .lapiz:active { background: #ffffff0a; }
+    .lapiz svg { width: 15px; height: 15px; }
+
+    .panel-apps { position: relative; display: grid; gap: 0; }
+    .app {
+      display: flex; align-items: center; border: 0; background: transparent; color: #fff;
+      font: inherit; cursor: pointer; border-radius: 4px; text-align: left;
+      transition: background 0.1s;
+    }
+    .app:hover { background: #ffffff12; }
+    .app:active { background: #ffffff0a; }
+    .ico-app {
+      display: grid; place-items: center; flex: none;
+      width: var(--ico); height: var(--ico); border-radius: 23%;
+      background: linear-gradient(145deg, var(--a), var(--b));
+      box-shadow: inset 0 1px 0 #ffffff40, 0 2px 6px #0000004d;
+      color: #fff;
+    }
+    .ico-app svg { width: 56%; height: 56%; }
+    .app-nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Cuadrícula y horizontal: baldosa con el nombre debajo */
+    .forma-cuadricula, .forma-horizontal { grid-auto-rows: var(--tile-h); }
+    .forma-cuadricula { grid-template-columns: repeat(var(--cols, 3), var(--tile-w)); }
+    .forma-horizontal { grid-auto-flow: column; grid-auto-columns: var(--tile-w); }
+    .forma-cuadricula .app, .forma-horizontal .app {
+      flex-direction: column; justify-content: center; gap: 7px; padding: 6px 4px;
+      font-size: 11px; text-align: center;
+    }
+    .forma-cuadricula .app-nombre, .forma-horizontal .app-nombre { max-width: calc(var(--tile-w) - 10px); }
+    /* Vertical y lista: icono pequeño y el nombre al lado */
+    .forma-vertical, .forma-lista { grid-auto-rows: var(--line-h); }
+    .forma-vertical { grid-template-columns: minmax(var(--linea-min), auto); }
+    .forma-lista { grid-template-columns: repeat(var(--cols, 1), var(--lista-w)); column-gap: 2px; }
+    .forma-vertical .app, .forma-lista .app { gap: 12px; padding: 0 12px 0 8px; font-size: 13px; }
+    .forma-vertical .ico-app, .forma-lista .ico-app { width: var(--ico-linea); height: var(--ico-linea); border-radius: 24%; }
+
+    /* La barra de tareas, centrada como la de Windows 11 */
+    .barra-tareas {
+      position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; height: 48px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+      background: #1c1c20cc;
+      backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%);
+      border-top: 1px solid #ffffff12;
+    }
+    .zona-grupos { display: contents; }
+    .bt {
+      position: relative; display: grid; place-items: center;
+      width: 40px; height: 40px; border: 0; border-radius: 4px; background: transparent;
+      color: #fff; transition: background 0.1s;
+    }
+    .bt.normal svg { width: 22px; height: 22px; }
+    .bt::after {
+      content: ""; position: absolute; left: 50%; bottom: 2px; translate: -50% 0;
+      width: 6px; height: 3px; border-radius: 3px; background: #ffffff80;
+      transition: width 0.25s var(--ease), background 0.2s;
+    }
+    .bt.grupo { cursor: pointer; }
+    .bt.grupo::after { width: 0; }
+    .bt.grupo:hover { background: #ffffff12; }
+    .bt.grupo.activo { background: #ffffff17; }
+    .bt.grupo.activo::after { width: 16px; background: var(--azul); }
+    /* El icono del grupo: los cuatro primeros iconos de sus apps, dos por dos */
+    .mini { display: grid; grid-template-columns: repeat(2, 10px); grid-auto-rows: 10px; gap: 2px; pointer-events: none; }
+    .mini i { display: block; border-radius: 3px; background: linear-gradient(145deg, var(--a), var(--b)); }
+    .reloj {
+      position: absolute; right: 12px; top: 50%; translate: 0 -50%;
+      font-size: 11px; line-height: 1.35; text-align: right; color: #f2f2f5;
+      font-variant-numeric: tabular-nums;
+    }
+    @media (max-width: 520px) { .bt.prescindible { display: none; } .reloj { right: 8px; } }
+
+    /* Selector de forma, debajo del marco */
+    .formas-fila {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px 16px;
+      flex-wrap: wrap; margin-top: 14px;
+    }
+    .formas-rotulo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--suave); }
+    .pestanas {
+      display: flex; gap: 4px; padding: 4px; border-radius: 12px;
+      background: #ffffff08; border: 1px solid var(--borde);
+    }
+    .pestana {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 8px 13px; border-radius: 9px;
+      font-size: 13.5px; font-weight: 550; cursor: pointer; white-space: nowrap;
+      background: transparent; border: 0; color: var(--suave);
+      transition: background 0.14s, color 0.14s;
+    }
+    .pestana svg { width: 15px; height: 15px; opacity: 0.85; flex: none; }
+    .pestana:hover { color: var(--texto); }
+    .pestana[aria-pressed="true"], .pestana[aria-selected="true"] {
+      background: var(--azul-boton); color: #fff; box-shadow: 0 4px 14px #0067c066;
+    }
+    @media (max-width: 1060px) and (min-width: 961px) { .formas .pestana svg { display: none; } }
+    @media (max-width: 560px) {
+      .formas-fila .pestanas { width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); }
+      .formas .pestana { flex-direction: column; gap: 4px; padding: 8px 4px; font-size: 12px; }
+    }
+
+    /* ---------- secciones ---------- */
+    main > section { padding: 76px 0; scroll-margin-top: 84px; }
+    h2 { font-size: clamp(27px, 4vw, 38px); line-height: 1.15; letter-spacing: -0.03em; margin: 0 0 12px; font-weight: 700; }
+    .entradilla { color: var(--suave); max-width: 64ch; }
+    .etiqueta { color: var(--azul); font-size: 13px; font-weight: 650; letter-spacing: 0.02em; margin-bottom: 8px; }
+
+    /* ---------- qué hace: rejilla de tarjetas ---------- */
+    .rejilla { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 30px; }
+    .caja {
+      background: var(--panel); border: 1px solid var(--borde); border-radius: var(--radio);
+      padding: 24px; transition: border-color 0.18s, transform 0.18s, background 0.18s, box-shadow 0.18s;
+    }
+    .caja:hover { border-color: #4cc2ff52; background: var(--panel-2); transform: translateY(-3px); box-shadow: 0 16px 32px -20px #0006; }
+    .caja .ico {
+      width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+      background: linear-gradient(155deg, #4cc2ff38, #4cc2ff12); color: var(--azul);
+      border: 1px solid #4cc2ff26; margin-bottom: 16px;
+    }
+    .caja .ico svg { width: 22px; height: 22px; }
+    .caja:hover .ico { background: linear-gradient(155deg, #4cc2ff57, #4cc2ff1f); border-color: #4cc2ff45; }
+    .caja h3 { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; font-size: 16.5px; margin-bottom: 7px; letter-spacing: -0.015em; }
+    .caja p { font-size: 14px; line-height: 1.62; color: var(--suave); text-wrap: pretty; }
+    @media (max-width: 1000px) { .rejilla { grid-template-columns: repeat(2, 1fr); } }
+    /* En una columna, el icono pasa al lado del título: apilado, cada tarjeta gastaba
+       medio pantallazo para decir tres líneas. */
+    @media (max-width: 680px) {
+      .rejilla { grid-template-columns: 1fr; gap: 12px; }
+      .caja { display: grid; grid-template-columns: 40px 1fr; column-gap: 14px; row-gap: 4px; align-items: center; padding: 18px; }
+      .caja .ico { width: 40px; height: 40px; margin: 0; }
+      .caja .ico svg { width: 20px; height: 20px; }
+      .caja h3 { margin: 0; }
+      .caja p { grid-column: 1 / -1; }
+    }
+
+    /* ---------- capturas: pestañas + marco, como las demos de winshotx ---------- */
+    .cabecera-seccion {
+      display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin: 0 0 18px;
+    }
+    .cabecera-seccion .entradilla { margin-bottom: 2px; }
+    @media (max-width: 960px) { .cabecera-seccion { flex-direction: column; align-items: stretch; gap: 16px; } }
+    .galeria .pestanas { overflow-x: auto; scrollbar-width: thin; scrollbar-color: #ffffff1f transparent; flex: none; max-width: 100%; }
+    .vitrina {
+      display: grid; place-items: center; height: 500px; padding: 28px;
+      background:
+        radial-gradient(70% 70% at 50% 0%, #4cc2ff12, transparent 65%),
+        repeating-conic-gradient(#121215 0% 25%, #151519 0% 50%) 0 0 / 22px 22px;
+    }
+    .zoom {
+      display: block; border: 0; padding: 0; background: none; cursor: zoom-in;
+      border-radius: 10px; max-width: 100%; max-height: 100%;
+    }
+    .zoom img {
+      display: block; max-width: 100%; max-height: 444px; width: auto; height: auto;
+      border-radius: 10px; box-shadow: 0 18px 50px #000a, 0 0 0 1px #ffffff14;
+    }
+    .zoom:hover img { box-shadow: 0 18px 50px #000a, 0 0 0 2px var(--azul); }
+    .captura figcaption {
+      padding: 14px 18px; border-top: 1px solid var(--borde); background: #101014;
+      font-size: 14px; color: var(--suave); text-align: center;
+    }
+    /* Sin JavaScript se ven todas, una debajo de otra; con él, solo la elegida. */
+    .js .captura:not(.activa) { display: none; }
+    /* En el móvil la captura ocupa el ancho entero: así su hueco se reserva antes de
+       cargar (con width y height del HTML) y la página no salta al llegar la imagen. */
+    @media (max-width: 640px) {
+      .vitrina { height: auto; padding: 16px; }
+      .zoom { width: 100%; }
+      .zoom img { width: 100%; max-height: none; }
+    }
+
+    #lightbox {
+      border: none; padding: 0; max-width: 100vw; max-height: 100vh; width: 100vw; height: 100vh;
+      background: #050507eb; align-items: center; justify-content: center;
+    }
+    #lightbox[open] { display: flex; }
+    #lightbox::backdrop { background: transparent; }
+    #lightbox img { max-width: 92vw; max-height: 90vh; width: auto; border-radius: 10px; box-shadow: 0 30px 90px #0009; }
+    #lightbox-cerrar {
+      position: fixed; top: 18px; right: 18px; width: 42px; height: 42px;
+      display: grid; place-items: center; border-radius: 50%;
+      background: #18181ce6; border: 1px solid var(--borde-fuerte); color: var(--texto); cursor: pointer;
+    }
+    #lightbox-cerrar:hover { background: #2a2a30; }
+    #lightbox-cerrar svg { width: 18px; height: 18px; }
+
+    /* ---------- instalar ---------- */
+    .vias { display: grid; grid-template-columns: 1.1fr 1fr; gap: 16px; margin-top: 30px; }
+    .via {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+      background: var(--panel); border: 1px solid var(--borde); border-radius: var(--radio); padding: 26px;
+    }
+    .via.principal { border-color: #4cc2ff3d; background: linear-gradient(160deg, #4cc2ff0d, transparent 55%), var(--panel); }
+    .via-cab { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .via-cab .ico {
+      width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; flex: none;
+      background: linear-gradient(155deg, #4cc2ff38, #4cc2ff12); color: var(--azul); border: 1px solid #4cc2ff26;
+    }
+    .via-cab .ico svg { width: 20px; height: 20px; }
+    .via h3 { font-size: 18px; letter-spacing: -0.015em; }
+    .via p { font-size: 14.5px; color: var(--suave); }
+    .via .letra-chica { margin-top: -4px; }
+    .comando {
+      display: block; width: 100%; padding: 13px 16px; border-radius: 10px;
+      background: #0b0b0d; border: 1px dashed #ffc83d4d; color: #c9c9d2;
+      font-size: 13.5px; line-height: 1.5; overflow-wrap: anywhere; white-space: pre-wrap;
+    }
+    .comando .prompt { color: var(--apagado); user-select: none; }
+    .pasos { list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; }
+    .paso { display: grid; grid-template-columns: auto 1fr; column-gap: 14px; align-items: start; padding: 20px 22px; border: 1px solid var(--borde); border-radius: var(--radio); }
+    .paso .num {
+      grid-row: span 2; width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center;
+      background: #ffffff0d; border: 1px solid var(--borde); color: var(--azul); font-size: 14px; font-weight: 700;
+    }
+    .paso h3 { font-size: 15.5px; letter-spacing: -0.01em; }
+    .paso p { font-size: 13.5px; color: var(--suave); margin-top: 3px; }
+    .nota {
+      margin-top: 16px; padding: 14px 16px; border-radius: 12px;
+      border: 1px solid #ffc83d33; background: #ffc83d0d; color: #e8d39f; font-size: 14px;
+    }
+    .nota b { color: #fff0c4; font-weight: 650; }
+    @media (max-width: 860px) {
+      .vias, .pasos { grid-template-columns: 1fr; }
+    }
+
+    /* ---------- preguntas (mismo acordeón que winshotx) ---------- */
+    .faq-grid { display: grid; grid-template-columns: 280px 1fr; gap: 48px; align-items: start; }
+    .faq-lateral { position: sticky; top: 100px; }
+    .faq-lateral img { width: 40px; height: 40px; margin-bottom: 16px; display: block; }
+    .faq-lateral h2 { font-size: 26px; margin-bottom: 10px; }
+    .faq-lateral .entradilla { font-size: 14px; margin-bottom: 20px; }
+    .faq { --faq-ms: 380ms; display: flex; flex-direction: column; gap: 10px; }
+    .faq details {
+      background: var(--panel); border: 1px solid var(--borde); border-radius: var(--radio);
+      padding: 18px 22px; transition: border-color 0.18s, background 0.18s;
+    }
+    .faq details:hover { border-color: #4cc2ff52; }
+    .faq details[data-abierta], .faq details[open] { background: var(--panel-2); border-color: #4cc2ff3d; }
+    .faq summary {
+      cursor: pointer; font-size: 15px; font-weight: 600; letter-spacing: -0.01em;
+      list-style: none; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary h3 { font-size: inherit; font-weight: inherit; letter-spacing: inherit; }
+    .faq-chevron { width: 18px; height: 18px; color: var(--azul); flex: none; transition: transform var(--faq-ms) cubic-bezier(0.4, 0, 0.2, 1); }
+    .faq details[data-abierta] .faq-chevron { transform: rotate(180deg); }
+    .faq-cajon {
+      display: grid; grid-template-rows: 0fr; opacity: 0;
+      transition: grid-template-rows var(--faq-ms) ease-in-out, opacity calc(var(--faq-ms) * 0.75) ease-in-out, margin-top var(--faq-ms) ease-in-out;
+    }
+    .faq details[data-abierta] .faq-cajon { grid-template-rows: 1fr; opacity: 1; margin-top: 12px; }
+    .faq-cajon > p { overflow: hidden; font-size: 14px; color: var(--suave); max-width: 62ch; }
+    .faq code { background: #ffffff14; padding: 2px 6px; border-radius: 6px; font-size: 12.5px; overflow-wrap: anywhere; }
+    @media (scripting: none) {
+      .faq details[open] .faq-cajon { grid-template-rows: 1fr; opacity: 1; margin-top: 12px; }
+      .faq details[open] .faq-chevron { transform: rotate(180deg); }
+    }
+    @media (max-width: 760px) {
+      .faq-grid { grid-template-columns: 1fr; gap: 24px; }
+      .faq-lateral { position: static; }
+    }
+
+    /* ---------- la historia: texto para leer, sin cajas ---------- */
+    .historia { max-width: 680px; margin-inline: auto; text-align: center; }
+    .historia h2 { margin-bottom: 22px; }
+    .story { font-size: clamp(16.5px, 2.1vw, 19px); color: var(--suave); }
+    .story b { color: var(--texto); font-weight: 600; }
+    .story + .story { margin-top: 18px; }
+    .story-credits {
+      margin-top: 44px; padding-top: 20px; border-top: 1px solid var(--borde);
+      font-size: 13px; color: var(--apagado);
+    }
+    .story-credits a { white-space: nowrap; color: var(--suave); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    .story-credits a:hover { color: var(--texto); }
+
+    /* ---------- cierre y pie ---------- */
+    .cierre {
+      padding: 56px 24px; border: 1px solid var(--borde); border-radius: 24px;
+      background:
+        radial-gradient(60% 90% at 50% 0%, #0067c033, transparent 70%),
+        var(--panel);
+    }
+    .cierre .letra-chica { margin-top: 18px; }
+    footer { border-top: 1px solid var(--borde); padding: 34px 0 54px; color: var(--apagado); font-size: 13.5px; }
+    footer .env { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; justify-content: space-between; }
+    footer .marca { font-size: 14px; }
+    footer .marca img { width: 20px; height: 20px; }
+    footer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+    footer a:hover { color: var(--texto); }
+    footer .marca:hover { color: var(--texto); }
+    footer .marca { text-decoration: none; color: var(--texto); }
+    .pie-legal { flex-basis: 100%; font-size: 12.5px; display: flex; flex-wrap: wrap; gap: 6px 16px; }
+    .valvula {
+      padding: 6px 12px; border-radius: 999px; border: 1px solid var(--borde); background: transparent;
+      color: var(--suave); font-size: 12.5px; cursor: pointer; transition: border-color 0.15s, color 0.15s;
+    }
+    .valvula:hover { border-color: var(--azul); color: var(--texto); }
 
     /* ==========================================================================
-       ENTRADA DEL HERO — "line mask reveal": cada línea del titular vive dentro
-       de una caja con overflow:hidden y sube desde abajo, en cascada. Solo
-       transform → GPU.
+       ENTRADAS AL APARECER: el bloque sube un poco y se enciende. La subida va
+       multiplicada por el dial (--motion-gain); la opacidad no.
        ========================================================================== */
-    /* El overflow que hace la máscara recorta al borde de la caja, y con un
-       interlineado tan apretado eso se comía las colas de la "y" y la "j" y los
-       acentos. El padding agranda esa caja (el recorte pasa a ser el borde
-       exterior del padding) y el margen negativo devuelve el hueco, así que las
-       letras salen enteras sin mover nada de sitio. */
-    .line { display: block; overflow: hidden; padding: 0.1em 0.06em 0.16em; margin: -0.1em -0.06em -0.16em; }
-    .line > span { display: block; }
-    html.motion .line > span {
-      transform: translateY(112%);
-      transition: transform 1s var(--ease);
-      transition-delay: calc(var(--i, 0) * 110ms);
-    }
-    html.motion body.ready .line > span { transform: none; }
-
-    /* El resto del hero (sub, cta, nota) hace fade-up escalonado tras el titular */
-    html.motion .fade-up {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
-      transition-delay: calc(var(--i, 0) * 110ms + 300ms);
-    }
-    html.motion body.ready .fade-up { opacity: 1; transform: none; }
-
-    /* Cuando la entrada del hero termina (body.settled), se apagan sus transiciones
-       para que el motor de parallax pueda mover esos elementos frame a frame. */
-    html.motion body.settled .fade-up,
-    html.motion body.settled .line > span { transition: none; }
-
-    /* ---------- Secciones ---------- */
-    /* scroll-margin-top: al saltar desde un enlace de ancla, deja aire arriba en
-       vez de pegar el título al borde y comerse parte de la sección. */
-    section { max-width: 1000px; margin: 0 auto; padding: 82px 24px 0; scroll-margin-top: 24px; }
-
-    /* ==========================================================================
-       MOVIMIENTO AL SCROLLEAR — la sección entera SUBE como una tarjeta.
-       El movimiento lo lleva el bloque completo ([data-rise]), no cada texto por
-       su cuenta: así se lee como una pieza que entra desde abajo en vez de como
-       un montón de trozos descoordinados. Dentro, los hijos solo se encienden en
-       cascada corta (opacidad, sin desplazarse), que es lo que da el remate.
-       ========================================================================== */
-    html.motion [data-rise] {
-      opacity: 0;
-      transform: translateY(70px);
-      transition: opacity 0.75s var(--ease), transform 0.9s var(--ease);
-      will-change: transform;
-    }
-    html.motion [data-rise].in { opacity: 1; transform: none; }
-
     html.motion [data-reveal] {
       opacity: 0;
-      transition: opacity 0.55s var(--ease);
-      transition-delay: calc(var(--i, 0) * 55ms + 120ms);
+      transform: translate3d(0, calc(26px * var(--motion-gain)), 0);
+      transition: opacity 0.7s var(--ease), transform 0.85s var(--ease);
+      transition-delay: calc(var(--i, 0) * 70ms);
     }
-    html.motion [data-reveal].in { opacity: 1; }
+    html.motion [data-reveal].in { opacity: 1; transform: none; }
 
-    .kicker {
-      text-align: center;
-      font-size: 12px; font-weight: 650;
-      text-transform: uppercase; letter-spacing: 0.14em;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
-    h2 {
-      text-align: center;
-      font-size: clamp(28px, 4.4vw, 40px);
-      font-weight: 720;
-      letter-spacing: -1px;
-      margin-bottom: 18px;
-    }
-    .section-sub { text-align: center; color: var(--muted); max-width: 540px; margin: 0 auto 52px; }
-
-    /* ==========================================================================
-       DEMO — una barra de tareas de mentira con un grupo anclado de verdad.
-       Es LO que hace la app, así que enseñarlo vale más que describirlo: se pulsa
-       el botón del grupo y sale el panel, igual que en Windows. Todo con CSS y un
-       puñado de líneas de JS; la landing no carga ni una librería.
-       ========================================================================== */
-    #demo { padding-top: 76px; }
-    .demo-shell {
-      max-width: 760px;
-      margin: 0 auto;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-    }
-    /* Un escritorio recreado: degradado de fondo, el panel y la barra abajo. */
-    .demo-desktop {
-      position: relative;
-      height: 340px;
-      background:
-        radial-gradient(120% 90% at 50% 8%, rgba(76, 194, 255, 0.16), transparent 60%),
-        linear-gradient(160deg, #10182B 0%, #0C1220 55%, #131B2E 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
-    .demo-hint {
-      position: absolute;
-      left: 50%; top: 40%;
-      translate: -50% -50%;
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      color: var(--muted);
-      font-size: 13.5px;
-      text-align: center;
-      transition: opacity 0.35s var(--ease);
-      pointer-events: none;
-    }
-    .demo-desktop.open .demo-hint { opacity: 0; }
-    .demo-hint svg { animation: cue 1.9s ease-in-out infinite; }
-
-    /* El panel: nace pegado a la barra y crece hacia arriba, como el de verdad. */
-    .flyout {
-      position: absolute;
-      left: 50%;
-      bottom: 74px;
-      translate: -50% 0;
-      width: 292px;
-      padding: 14px;
-      background: rgba(32, 38, 54, 0.82);
-      /* El desenfoque de fondo es lo que hace que se lea como Windows 11 y no
-         como una caja gris: se ve el escritorio a través del panel. */
-      backdrop-filter: blur(26px) saturate(150%);
-      -webkit-backdrop-filter: blur(26px) saturate(150%);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-      opacity: 0;
-      transform: translateY(14px) scale(0.96);
-      transform-origin: 50% 100%;
-      transition: opacity 0.28s var(--ease), transform 0.38s var(--ease);
-      pointer-events: none;
-    }
-    .demo-desktop.open .flyout { opacity: 1; transform: none; pointer-events: auto; }
-    .flyout-title {
-      font-size: 12px; font-weight: 650;
-      letter-spacing: 0.06em; text-transform: uppercase;
-      color: var(--muted);
-      margin: 2px 4px 12px;
-    }
-    .flyout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .fly-app {
-      display: flex; flex-direction: column; align-items: center; gap: 7px;
-      padding: 11px 4px 9px;
-      border-radius: 9px;
-      font-size: 11.5px;
-      color: var(--text);
-      transition: background-color 0.14s;
-    }
-    .fly-app:hover { background: rgba(255, 255, 255, 0.09); }
-    /* Cada "app" es un cuadrado con degradado y su inicial: sin imágenes de
-       terceros, sin logos ajenos y sin una sola petición de red. */
-    .app-ic {
-      width: 34px; height: 34px;
-      border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 700; color: #fff;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-    }
-
-    /* La barra de tareas, centrada como en Windows 11 */
-    .taskbar {
-      display: flex; align-items: center; justify-content: center; gap: 6px;
-      height: 56px;
-      background: rgba(24, 30, 44, 0.86);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255, 255, 255, 0.07);
-      z-index: 2;
-    }
-    .tb-btn {
-      width: 42px; height: 42px;
-      border: none; background: none;
-      border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      cursor: default;
-      transition: background-color 0.15s;
-    }
-    .tb-btn .app-ic { width: 26px; height: 26px; border-radius: 7px; font-size: 12px; }
-    /* El botón del grupo: el único pulsable, y se nota (cursor, aro y el
-       subrayado de "app abierta" que pinta Windows bajo el icono activo). */
-    .tb-group { cursor: pointer; position: relative; }
-    .tb-group:hover { background: rgba(255, 255, 255, 0.1); }
-    .tb-group img { width: 28px; height: 28px; object-fit: contain; }
-    .tb-group::after {
-      content: "";
-      position: absolute;
-      left: 50%; bottom: 3px;
-      translate: -50% 0;
-      width: 5px; height: 3px;
-      border-radius: 2px;
-      background: var(--primary-strong);
-      transition: width 0.3s var(--ease);
-    }
-    .demo-desktop.open .tb-group::after { width: 17px; }
-    /* Anillo que late para señalar dónde hay que pulsar; se apaga al abrir. */
-    html.motion .tb-group::before {
-      content: "";
-      position: absolute; inset: -2px;
-      border-radius: 10px;
-      border: 2px solid var(--primary-strong);
-      animation: ping 2.4s var(--ease) infinite;
-    }
-    html.motion .demo-desktop.open .tb-group::before { display: none; }
-    @keyframes ping {
-      0% { opacity: 0.9; transform: scale(1); }
-      70%, 100% { opacity: 0; transform: scale(1.35); }
-    }
-
-    /* ---------- Puntos fuertes ----------
-       Dos columnas y no cuatro: a cuatro, cada tarjeta queda tan estrecha que el
-       texto sale en renglones de tres palabras y se lee apretado. En horizontal
-       (icono al lado, texto alineado a la izquierda) las líneas respiran y la
-       vista baja por la columna en vez de saltar de caja en caja. */
-    .points {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    /* Rejilla y no flex: el icono ocupa las dos filas de la izquierda y el título
-       y el texto se apilan a su derecha. Con flex, el título era un hermano más y
-       se quedaba en una columna estrecha, partido palabra a palabra. */
-    .point {
-      display: grid;
-      grid-template-columns: 48px 1fr;
-      column-gap: 20px;
-      row-gap: 6px;
-      align-items: start;
-      background: rgba(20, 26, 40, 0.5);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 28px 30px;
-      transition: border-color 0.15s, background-color 0.2s, translate 0.25s var(--ease);
-    }
-    .point:hover { border-color: var(--border-strong); background: rgba(20, 26, 40, 0.8); translate: 0 -3px; }
-    .point .ic {
-      grid-row: span 2;   /* el icono cubre el alto del título y del texto */
-      width: 48px; height: 48px;
-      display: grid; place-items: center;
-      font-size: 24px;
-      background: rgba(76, 194, 255, 0.09);
-      border: 1px solid rgba(76, 194, 255, 0.16);
-      border-radius: 14px;
-    }
-    .point h3 { font-size: 17px; font-weight: 650; align-self: center; }
-    .point p { font-size: 14.5px; color: var(--muted); line-height: 1.6; }
-
-    /* ---------- Capturas reales ---------- */
-    .shot { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-    .shot img { display: block; width: 100%; height: auto; }
-
-    /* ==========================================================================
-       PILA DE CAPTURAS — misma receta que .hero-wrap/.sheet (sticky + tarjeta
-       sólida que sube y tapa la anterior), aplicada a escala de tarjeta. Cada
-       .shot-card se pega un poco más abajo que la de antes (--stack creciente),
-       así al scrollear la cabecera de la anterior se queda asomando arriba.
-       ========================================================================== */
-    .shots { position: relative; }
-    .shot-card {
-      max-width: 760px;
-      margin: 0 auto 30px;
-      padding: 18px 18px 20px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
-      position: sticky;
-      /* El asomo (46px) es justo el alto de la cabecera: así de la tarjeta de
-         atrás se lee su número y su título enteros. Con menos, el texto sale
-         cortado por la mitad y parece un fallo, no un apilado. */
-      top: calc(20px + (var(--stack) - 1) * 46px);
-      z-index: var(--stack);
-    }
-    .shot-head { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
-    .shot-num { font-size: 15px; font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
-    .shot-head h3 { flex: 1; font-size: 16.5px; font-weight: 650; }
-    .shot-cap { text-align: center; color: var(--muted); font-size: 13px; margin-top: 14px; }
-
-    /* Zoom al clic: el cursor y un aro sutil al enfocar avisan de que se puede
-       ampliar (el teclado también funciona, es tabindex+role=button). */
-    .shot.zoomable { cursor: zoom-in; transition: outline-color 0.15s; outline: 2px solid transparent; outline-offset: 3px; }
-    .shot.zoomable:hover, .shot.zoomable:focus-visible { outline-color: var(--primary-strong); }
-
-    /* El apilado se desactiva en dos casos, y en ambos las tarjetas vuelven al
-       flujo normal, una debajo de otra:
-       - Pantallas estrechas: poco recorrido de scroll para apreciarlo.
-       - Ventanas bajas: una tarjeta pegada más alta que el hueco disponible
-         nunca deja ver su parte de abajo, así que el pie se quedaría cortado. */
-    @media (max-width: 720px), (max-height: 800px) {
-      .shot-card { position: static; }
-    }
-
-    /* Zoom de capturas: <dialog> nativo a pantalla completa, imagen centrada. */
-    #lightbox {
-      border: none; padding: 0;
-      max-width: 100vw; max-height: 100vh;
-      width: 100vw; height: 100vh;
-      background: rgba(5, 7, 16, 0.92);
-      align-items: center; justify-content: center;
-    }
-    /* display solo cuando está abierto: si no, pisaría la regla nativa del
-       navegador que oculta el <dialog> cerrado y seguiría bloqueando clics. */
-    #lightbox[open] { display: flex; animation: lightbox-in 0.2s var(--ease); }
-    #lightbox::backdrop { background: transparent; }
-    @keyframes lightbox-in { from { opacity: 0; } to { opacity: 1; } }
-    #lightbox img {
-      max-width: 92vw; max-height: 92vh;
-      width: auto;
-      border-radius: 10px;
-      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
-    }
-    #lightbox-close {
-      position: fixed;
-      top: 22px; right: 22px;
-      width: 40px; height: 40px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(20, 26, 40, 0.85);
-      border: 1px solid var(--border-strong);
-      border-radius: 50%;
-      color: var(--text);
-      cursor: pointer;
-      transition: background-color 0.15s;
-    }
-    #lightbox-close:hover { background: rgba(233, 237, 248, 0.14); }
-
-    /* ---------- Los tres pasos ---------- */
-    .steps {
-      display: flex; align-items: center; justify-content: center;
-      gap: 18px; flex-wrap: wrap;
-      font-size: clamp(16px, 2.4vw, 21px);
-      font-weight: 600;
-      color: var(--muted);
-    }
-    .steps b { color: var(--text); font-weight: 650; }
-    .steps .arrow { color: var(--accent); font-weight: 700; }
-
-    /* ---------- La historia ----------
-       Sin cajas a propósito: es un texto para leer, no una rejilla de datos, y
-       meterlo en tarjetas lo dejaba pequeño y enjaulado. */
-    .story {
-      max-width: 660px;
-      margin: 0 auto;
-      text-align: center;
-      font-size: clamp(16.5px, 2.1vw, 19px);
-      color: var(--muted);
-    }
-    .story b { color: var(--text); font-weight: 600; }
-    .story + .story { margin-top: 20px; }
-    .story-credits {
-      max-width: 660px;
-      margin: 46px auto 0;
-      padding-top: 22px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .story-credits a { color: var(--primary-strong); }
-    .story-credits a:hover { text-decoration: underline; }
-
-    /* ---------- Cierre y pie ---------- */
-    .final { padding-bottom: 20px; }
-    footer {
-      max-width: 1000px;
-      margin: 84px auto 0;
-      padding: 30px 24px 40px;
-      border-top: 1px solid var(--border);
-      text-align: center;
-      font-size: 13.5px;
-      color: var(--muted);
-    }
-    footer a { color: var(--primary-strong); }
-    footer a:hover { text-decoration: underline; }
-    footer .legal { margin-top: 6px; font-size: 12.5px; opacity: 0.8; }
-
-    /* ---------- Responsive ---------- */
-    @media (max-width: 820px) {
-      .points { grid-template-columns: 1fr; }
+    /* ---------- responsive general ---------- */
+    @media (max-width: 960px) {
+      .portada { padding-top: 34px; }
+      .portada-rejilla { grid-template-columns: 1fr; gap: 40px; }
+      .escritorio { height: 400px; }
     }
     @media (max-width: 560px) {
-      .point { padding: 22px 22px; gap: 16px; }
-      section { padding-top: 64px; }
-      .demo-desktop { height: 300px; }
-      .flyout { width: 250px; }
-      .btn { width: 100%; justify-content: center; }
+      main > section { padding: 60px 0; }
+      .botones .btn { width: 100%; }
+      .escritorio { height: 380px; }
+      .panel { --tile-w: 64px; --tile-h: 76px; --ico: 36px; --lista-w: 158px; --linea-min: 168px; }
+      .cierre { padding: 40px 18px; }
     }
   </style>
 </head>
 <body>
-  <div class="grain" aria-hidden="true"></div>
 
-  <!-- Capas de fondo: cada orbe se mueve a su velocidad (parallax) -->
-  <div class="backdrop" aria-hidden="true">
-    <div class="orb orb-a" data-speed="0.45" data-mouse="34"></div>
-    <div class="orb orb-b" data-speed="0.26" data-mouse="52"></div>
-    <div class="orb orb-c" data-speed="0.14" data-mouse="20"></div>
-  </div>
+<!-- Iconos de la interfaz (g-*: los dibujos de las apps de la demo). Todos dibujados
+     a mano para esta página, salvo la marca de GitHub, que es su logo oficial. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+  <g>
+    <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+    <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="m14.5 5.5 3 3"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="i-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
+    <symbol id="i-row" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="5.5" height="8" rx="1.4"/><rect x="9.25" y="8" width="5.5" height="8" rx="1.4"/><rect x="16.5" y="8" width="5.5" height="8" rx="1.4"/></symbol>
+    <symbol id="i-col" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="5" rx="1.4"/><rect x="5" y="9.5" width="14" height="5" rx="1.4"/><rect x="5" y="16.5" width="14" height="5" rx="1.4"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><rect x="3.5" y="5" width="3" height="3" rx="0.8"/><rect x="3.5" y="10.5" width="3" height="3" rx="0.8"/><rect x="3.5" y="16" width="3" height="3" rx="0.8"/></symbol>
+    <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5 19 9.2l-6.2 2.1-2.1 6.2z"/><path d="m13.2 13.2 5.3 5.3"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="9.5" r="1.8"/><path d="m4 18 5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></symbol>
+    <symbol id="i-smile" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5a4.5 4.5 0 0 0 7 0"/><path d="M9 9.5h.01M15 9.5h.01" stroke-width="2.6"/></symbol>
+    <symbol id="i-contrast" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5A8 8 0 0 0 5.6 7.2L4 9"/><path d="M4 4.5V9h4.5"/><path d="M4 12.5a8 8 0 0 0 14.4 4.3L20 15"/><path d="M20 19.5V15h-4.5"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M9.5 9v12"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7.5 9.5 3 2.5-3 2.5M13 15h4"/></symbol>
+    <symbol id="i-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5M11 8v6M8 11h6"/></symbol>
 
-  <div class="hero-wrap">
-  <nav class="fade-up" style="--i:0">
-    <!-- "./" y no "#": recarga la página de verdad y deja la URL limpia,
-         sin la almohadilla colgando detrás. -->
-    <a class="brand" href="./">
-      <img src="assets/logo.png" alt="Taskbar Groups Fluent">
-      <span>Taskbar Groups</span>
+    <!-- Las apps de mentira de la demo -->
+    <symbol id="g-foto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="m4 18 5-5 3 3 3-3 5 5"/></symbol>
+    <symbol id="g-pincel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5 11 13"/><path d="M11 13c-2.5-.5-4.5 1-4.8 3.4-.2 1.4-1 2.2-2.2 2.6 2.6 1.4 6.8 1 7.8-1.8.6-1.6.2-3.3-.8-4.2z"/></symbol>
+    <symbol id="g-vector" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 6 13l6 8 6-8z"/><path d="M12 3v8"/><circle cx="12" cy="13" r="2"/></symbol>
+    <symbol id="g-paleta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.9 0-1.2-1-1.4-1-2.5 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1" fill="currentColor"/><circle cx="10" cy="7" r="1" fill="currentColor"/><circle cx="15" cy="7.5" r="1" fill="currentColor"/></symbol>
+    <symbol id="g-tipo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 19 5.5-14h1L17 19"/><path d="M7.5 14h7"/><path d="M19 15v4"/></symbol>
+    <symbol id="g-cubo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></symbol>
+    <symbol id="g-mando" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10.5" rx="5.25"/><path d="M7.5 10.5v3.5M5.75 12.25h3.5"/><circle cx="15.5" cy="11" r="0.9" fill="currentColor"/><circle cx="17.8" cy="13.4" r="0.9" fill="currentColor"/></symbol>
+    <symbol id="g-bandera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 21V3.5"/><path d="M5.5 4h12.5l-3 4.5 3 4.5H5.5"/></symbol>
+    <symbol id="g-peon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6.5" r="2.8"/><path d="M9.5 10.5h5l1.2 6.5H8.3z"/><path d="M6.5 20h11"/></symbol>
+    <symbol id="g-cartas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3.5" width="11" height="15" rx="2"/><path d="M6.8 6.6 4.1 7.3a1.5 1.5 0 0 0-1 1.8l2.9 10.6a1.5 1.5 0 0 0 1.8 1.1l6.3-1.7"/><path d="m14.5 8.5 1.5 2.5-1.5 2.5-1.5-2.5z"/></symbol>
+    <symbol id="g-trofeo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 3 4M16 6h2.5a2.5 2.5 0 0 1-3 4M12 13v4M8.5 20h7"/></symbol>
+    <symbol id="g-correo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></symbol>
+    <symbol id="g-agenda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01" stroke-width="2.6"/></symbol>
+    <symbol id="g-notas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></symbol>
+    <symbol id="g-hojas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M3 15h18M9.5 4v16"/></symbol>
+    <symbol id="g-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></symbol>
+    <symbol id="g-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></symbol>
+    <symbol id="g-codigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
+    <symbol id="g-musica" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+    <symbol id="g-micro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
+    <symbol id="g-cascos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></symbol>
+    <symbol id="g-onda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2.5-6 4 12 3-9 2 3H21"/></symbol>
+    <symbol id="g-carpeta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffc83d" stroke="#e8a317"/><path d="M3 10h18" stroke="#e8a317"/></symbol>
+    <symbol id="g-globo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" fill="#0067c0" stroke="#4cc2ff"/><path d="M3.5 12h17M12 3.2c2.6 2.6 2.6 15 0 17.6M12 3.2c-2.6 2.6-2.6 15 0 17.6" stroke="#bfe9ff"/></symbol>
+    <symbol id="g-consola" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5" fill="#26262c" stroke="#8e8e9a"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17" stroke="#e9e9ee"/></symbol>
+  </g>
+</svg>
+
+<nav class="arriba" aria-label="Principal" data-en-aria="Main">
+  <div class="env">
+    <a class="marca" href="./" aria-label="Taskbar Groups Fluent">
+      <img src="assets/logo.png?v=1" alt="" width="28" height="28">
+      <span class="nombre-corto">Taskbar Groups</span>
     </a>
-    <div class="nav-right">
-      <button type="button" class="lang" id="lang"></button>
-      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">GitHub</a>
-    </div>
-  </nav>
-
-  <header class="hero">
-    <h1>
-      <span class="line"><span style="--i:0" data-en="Ten icons on your taskbar.">Diez iconos en la barra.</span></span>
-      <span class="line"><span class="accent" style="--i:1" data-en="Now just one.">Ahora solo uno.</span></span>
-    </h1>
-    <p class="sub fade-up" style="--i:1"
-       data-en="Taskbar Groups packs your shortcuts into a single taskbar button. Click it and a flyout pops up with every app in the group. &lt;b&gt;Free, open source and it looks like Windows 11.&lt;/b&gt;">
-      Taskbar Groups mete tus accesos directos en un solo botón de la barra de tareas.
-      Lo pulsas y se abre un panel con todas las apps del grupo.
-      <b>Gratis, open source y con el aspecto de Windows 11.</b>
-    </p>
-    <div class="cta fade-up" style="--i:2">
-      <a class="btn primary" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
-        <span data-en="Download for Windows">Descargar para Windows</span>
+    <span class="enlaces">
+      <a href="#demo" data-en="Try it">Pruébalo</a>
+      <a href="#que-hace" data-en="Features">Qué hace</a>
+      <a href="#capturas" data-en="Screenshots">Capturas</a>
+      <a href="#instalar" data-en="Install">Instalar</a>
+      <a href="#preguntas" data-en="FAQ">Preguntas</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener" aria-label="GitHub">
+        <svg aria-hidden="true"><use href="#i-github"/></svg>
       </a>
-      <a class="btn ghost" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.5l-.01-1.73c-2.78.62-3.37-1.37-3.37-1.37-.46-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9l-.01 2.82c0 .28.18.6.69.5A10.03 10.03 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
-        <span data-en="View the code">Ver el código</span>
-      </a>
-    </div>
-    <p class="os-note fade-up" style="--i:3"
-       data-en="Windows 10/11 · one-click installer · updates itself · &lt;a class=&quot;inline-link&quot; href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;MIT licence&lt;/a&gt;">
-      Windows 10/11 · instalador de un clic · se actualiza solo ·
-      <a class="inline-link" href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" target="_blank" rel="noopener">licencia MIT</a>
-    </p>
-
-    <div class="scroll-cue" aria-hidden="true">
-      <span data-en="Scroll">Baja</span>
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-           stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 5v14m0 0l-6-6m6 6l6-6"/>
-      </svg>
-    </div>
-  </header>
+      <button type="button" class="idioma" id="lang">English</button>
+    </span>
   </div>
+</nav>
 
-  <!-- La lámina: todo esto sube y tapa el hero al scrollear -->
-  <main class="sheet">
-
-  <section id="demo" data-rise>
-    <p class="kicker" data-reveal data-en="Try it right here">Pruébalo aquí mismo</p>
-    <h2 data-reveal style="--i:1" data-en="One button, the whole group">Un botón, el grupo entero</h2>
-    <p class="section-sub" data-reveal style="--i:2"
-       data-en="This is a recreation of your taskbar. Click the highlighted group and see what happens.">
-      Esto es una recreación de tu barra de tareas. Pulsa el grupo señalado y mira qué pasa.
-    </p>
-
-    <div class="demo-shell" data-reveal style="--i:3">
-      <div class="demo-desktop" id="demo-desktop">
-        <div class="demo-hint" id="demo-hint">
-          <span data-en="Click the group on the taskbar">Pulsa el grupo de la barra de tareas</span>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-               stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 5v14m0 0l-6-6m6 6l6-6"/>
-          </svg>
+<main>
+<header class="portada">
+  <div class="env">
+    <div class="portada-rejilla">
+      <div class="portada-texto">
+        <div class="firma" data-reveal>
+          <img src="assets/logo.png?v=1" alt="" width="46" height="46">
+          <span class="palabra">Taskbar Groups Fluent<small data-en="for Windows 10 and 11">para Windows 10 y 11</small></span>
         </div>
+        <a class="estado" data-reveal style="--i:1" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases" target="_blank" rel="noopener">
+          <span class="punto" aria-hidden="true"></span>
+          <span data-en="In active development · version 1.6 is on its way">En desarrollo activo · la versión 1.6 está en camino</span>
+        </a>
+        <h1 data-reveal style="--i:2" data-en="Ten icons on your taskbar. &lt;em&gt;Now just one.&lt;/em&gt;">Diez iconos en la barra. <em>Ahora solo uno.</em></h1>
+        <p class="bajada" data-reveal style="--i:3"
+           data-en="Taskbar Groups Fluent packs your shortcuts into a single taskbar button. Click it (or, if you like, just hover) and a panel pops up with every app in the group. &lt;b&gt;Free, open source and it looks like Windows 11.&lt;/b&gt;">
+          Taskbar Groups Fluent mete tus accesos directos en un solo botón de la barra de tareas.
+          Lo pulsas (o, si quieres, solo pasas el ratón) y se abre un panel con todas las apps del grupo.
+          <b>Gratis, de código abierto y con el aspecto de Windows 11.</b>
+        </p>
+        <div class="botones" data-reveal style="--i:4">
+          <a class="btn primario" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
+            <svg aria-hidden="true"><use href="#i-download"/></svg>
+            <span data-en="Download for Windows">Descargar para Windows</span>
+          </a>
+          <a class="btn fantasma" href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">
+            <svg aria-hidden="true" viewBox="0 0 16 16"><use href="#i-github"/></svg>
+            <span data-en="View the code">Ver el código</span>
+          </a>
+        </div>
+        <p class="letra-chica" data-reveal style="--i:5"
+           data-en="Windows 10 and 11 · One-click installer · Updates itself · &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;MIT licence&lt;/a&gt;">
+          Windows 10 y 11 · Instalador de un clic · Se actualiza solo ·
+          <a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" target="_blank" rel="noopener">Licencia MIT</a>
+        </p>
+        <p class="por-terminal" data-reveal style="--i:6">
+          <span data-en="or from the terminal">o desde la terminal</span>
+          <a class="etq pronto" href="#instalar" data-en="very soon">muy pronto</a>
+          <code>winget install Mun1to.TaskbarGroupsFluent</code>
+        </p>
+      </div>
 
-        <!-- El panel del grupo. Los nombres son genéricos a propósito: ninguna
-             marca ajena en el escaparate. -->
-        <div class="flyout" id="flyout" role="group" aria-label="Grupo Diseño" data-en-aria="Design group">
-          <p class="flyout-title" data-en="Design">Diseño</p>
-          <div class="flyout-grid">
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#4CC2FF,#0067C0)">P</span><span data-en="Photos">Fotos</span></span>
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#FFC83D,#E8890B)">V</span><span data-en="Video">Vídeo</span></span>
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#7B61FF,#4A2FD0)">D</span><span data-en="Draw">Dibujo</span></span>
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#22C55E,#12833B)">A</span><span data-en="Audio">Audio</span></span>
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#F472B6,#BE1D63)">3</span><span>3D</span></span>
-            <span class="fly-app"><span class="app-ic" style="background:linear-gradient(150deg,#94A3B8,#4B5563)">📁</span><span data-en="Files">Archivos</span></span>
+      <!-- La demo: barra de tareas de mentira. Los botones de grupo y el panel los
+           monta el script de abajo a partir de la lista GRUPOS. -->
+      <div class="demo" id="demo" data-reveal style="--i:3">
+        <div class="marco">
+          <div class="barra-falsa">
+            <span class="semaforo" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span class="texto" data-en="Interactive demo · your taskbar, in miniature">Demo interactiva · tu barra de tareas, en pequeño</span>
+          </div>
+          <div class="escritorio" id="escritorio">
+            <div class="pista" id="pista" aria-hidden="true">
+              <span id="pista-texto">Pasa el ratón por un grupo de la barra</span>
+              <svg><use href="#i-arrow-down"/></svg>
+            </div>
+            <p class="aviso-demo" id="aviso-demo" role="status" aria-live="polite"></p>
+
+            <div class="panel" id="panel" role="group" aria-label="Grupo">
+              <div class="panel-cab">
+                <span class="panel-nombre" id="panel-nombre"></span>
+                <button type="button" class="lapiz" id="panel-lapiz" aria-label="Editar el grupo">
+                  <svg aria-hidden="true"><use href="#i-pencil"/></svg>
+                </button>
+              </div>
+              <div class="panel-apps" id="panel-apps"></div>
+            </div>
+
+            <div class="barra-tareas" id="barra-tareas">
+              <span class="bt normal" aria-hidden="true"><svg><use href="#g-carpeta"/></svg></span>
+              <span class="bt normal prescindible" aria-hidden="true"><svg><use href="#g-globo"/></svg></span>
+              <span class="zona-grupos" id="zona-grupos"></span>
+              <span class="bt normal prescindible" aria-hidden="true"><svg><use href="#g-consola"/></svg></span>
+              <span class="reloj" id="reloj" aria-hidden="true">12:00<br>15/10/2026</span>
+            </div>
           </div>
         </div>
 
-        <div class="taskbar">
-          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
-          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
-          <button type="button" class="tb-btn tb-group" id="demo-btn"
-                  aria-label="Abrir el grupo" data-en-aria="Open the group" aria-expanded="false">
-            <img src="assets/logo.png" alt="">
-          </button>
-          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
-          <span class="tb-btn" aria-hidden="true"><span class="app-ic" style="background:linear-gradient(150deg,#5B6478,#3A4152)"></span></span>
+        <div class="formas-fila">
+          <span class="formas-rotulo">
+            <span data-en="Panel shape">Forma del panel</span>
+            <span class="etq nueva" data-en="New in 1.6">Novedad de la 1.6</span>
+          </span>
+          <div class="pestanas formas" role="group" aria-label="Forma del panel" data-en-aria="Panel shape">
+            <button type="button" class="pestana" data-forma="cuadricula" aria-pressed="true"><svg aria-hidden="true"><use href="#i-grid"/></svg><span data-en="Grid">Cuadrícula</span></button>
+            <button type="button" class="pestana" data-forma="horizontal" aria-pressed="false"><svg aria-hidden="true"><use href="#i-row"/></svg><span>Horizontal</span></button>
+            <button type="button" class="pestana" data-forma="vertical" aria-pressed="false"><svg aria-hidden="true"><use href="#i-col"/></svg><span>Vertical</span></button>
+            <button type="button" class="pestana" data-forma="lista" aria-pressed="false"><svg aria-hidden="true"><use href="#i-list"/></svg><span data-en="List">Lista</span></button>
+          </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <section id="features" data-rise>
-    <p class="kicker" data-reveal data-en="Why you will like it">Por qué te va a gustar</p>
-    <h2 data-reveal style="--i:1" data-en="Tidy, and it looks the part">Ordenada, y con buena pinta</h2>
-    <p class="section-sub" data-reveal style="--i:2"
-       data-en="A WPF / .NET 8 rewrite of the classic Taskbar Groups, with a Fluent interface.">
-      Una reescritura en WPF / .NET 8 del clásico Taskbar Groups, con interfaz Fluent.
+    <!-- Los números salen de la API pública de GitHub al cargar la página. Lo que hay
+         escrito aquí es el respaldo (medido el 15/10/2026): es lo que ve un buscador
+         y lo que queda si GitHub no contesta. -->
+    <div class="numeros" id="numeros" data-reveal style="--i:2">
+      <div class="dato">
+        <span class="valor" id="n-versiones">16</span>
+        <span class="que" id="t-versiones">versiones publicadas desde junio de 2026</span>
+        <span class="contra" id="c-versiones">la última, v1.5.0, el 13 de septiembre de 2026</span>
+      </div>
+      <div class="dato">
+        <span class="valor" id="n-descargas">169</span>
+        <span class="que" data-en="downloads from GitHub">descargas desde GitHub</span>
+        <span class="contra" data-en="installer and automatic updates">instalador y actualizaciones automáticas</span>
+      </div>
+      <div class="dato">
+        <span class="valor" id="n-estrellas">9</span>
+        <span class="que" data-en="stars on GitHub">estrellas en GitHub</span>
+        <span class="contra" data-en="Find it useful? &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Add yours&lt;/a&gt;">¿Te sirve? <a href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">Dale la tuya</a></span>
+      </div>
+      <div class="dato">
+        <span class="valor">MIT</span>
+        <span class="que" data-en="free and open source">gratis y de código abierto</span>
+        <span class="contra" data-en="no accounts, no ads">sin cuentas ni anuncios</span>
+      </div>
+    </div>
+    <p class="letra-chica fuente-datos" id="fuente-datos">
+      <span class="punto" aria-hidden="true"></span>
+      <span id="fuente-texto">Cifras de GitHub.</span>
     </p>
+  </div>
+</header>
 
-    <div class="points">
-      <article class="point" data-reveal style="--i:3">
-        <div class="ic" aria-hidden="true">🧩</div>
+<section id="que-hace">
+  <div class="env">
+    <h2 data-reveal data-en="Everything you need, nothing in the way">Todo lo que hace falta, nada que estorbe</h2>
+    <p class="entradilla" data-reveal style="--i:1"
+       data-en="Everything a tidy taskbar needs, with the Windows 11 look and the small details that make you keep it.">
+      Lo que necesitas para tener la barra ordenada, con el aspecto de Windows 11 y los detalles que hacen que te lo quedes.
+    </p>
+    <div class="rejilla">
+      <article class="caja" data-reveal style="--i:1">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-grid"/></svg></div>
+        <h3 data-en="One button, the whole group">Un botón, el grupo entero</h3>
+        <p data-en="Put apps and folders together behind one pinned taskbar icon. Click it and a panel with all of them opens right above.">
+          Junta apps y carpetas detrás de un solo icono anclado a la barra. Lo pulsas y se abre un panel con todas, justo encima.
+        </p>
+      </article>
+      <article class="caja" data-reveal style="--i:2">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-pointer"/></svg></div>
+        <h3 data-en="It opens on hover">Se abre al pasar el ratón</h3>
+        <p data-en="Turn it on in Settings and a group opens when you rest the cursor on it, no click needed. It waits a moment, so sweeping across the taskbar opens nothing by accident.">
+          Actívalo en Ajustes y el grupo se abre con dejar el cursor encima, sin clic. Espera un instante, así cruzar la barra no abre nada sin querer.
+        </p>
+      </article>
+      <article class="caja" data-reveal style="--i:3">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-search"/></svg></div>
         <h3 data-en="Every installed app">Todas tus apps</h3>
-        <p data-en="One searchable list with everything you have installed, desktop and Microsoft Store alike. Nothing to hunt for.">
-          Una lista con buscador donde está todo lo que tienes instalado, de escritorio y de la
-          Microsoft Store. Sin buscar el ejecutable a mano.
+        <p data-en="One searchable list with everything you have installed, desktop and Microsoft Store alike, plus a Browse button for anything missing.">
+          Una lista con buscador donde está todo lo que tienes instalado, de escritorio y de la Microsoft Store, y un botón Examinar para lo que no salga.
         </p>
       </article>
-      <article class="point" data-reveal style="--i:4">
-        <div class="ic" aria-hidden="true">🖼️</div>
+      <article class="caja" data-reveal style="--i:1">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-image"/></svg></div>
         <h3 data-en="Icons that look right">Iconos como deben</h3>
-        <p data-en="They come from the same place the Start Menu takes them: sharp, transparent and the right one for each app.">
-          Salen del mismo sitio que los coge el menú Inicio: nítidos, transparentes y el que le
-          toca a cada app.
+        <p data-en="They come from the same place the Start menu takes them: sharp, transparent and the right one for each app.">
+          Salen del mismo sitio del que los coge el menú Inicio: nítidos, transparentes y el que le toca a cada app.
         </p>
       </article>
-      <article class="point" data-reveal style="--i:5">
-        <div class="ic" aria-hidden="true">😀</div>
+      <article class="caja" data-reveal style="--i:2">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-smile"/></svg></div>
         <h3 data-en="Your icon, your call">El icono, a tu gusto</h3>
-        <p data-en="Crop and zoom any image, or just pick a colour emoji. No design skills needed.">
-          Recorta y amplía cualquier imagen, o elige directamente un emoji a color. Sin saber de
-          diseño.
+        <p data-en="Crop and zoom any image for the group icon, or just pick a colour emoji. No design skills needed.">
+          Recorta y amplía cualquier imagen para el icono del grupo, o elige directamente un emoji a color. Sin saber de diseño.
         </p>
       </article>
-      <article class="point" data-reveal style="--i:6">
-        <div class="ic" aria-hidden="true">🌍</div>
+      <article class="caja" data-reveal style="--i:3">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-contrast"/></svg></div>
         <h3 data-en="It follows your Windows">Sigue a tu Windows</h3>
         <p data-en="Light or dark theme, your accent colour and the language (English or Spanish) come straight from your system.">
-          El tema claro u oscuro, tu color de acento y el idioma (español o inglés) los coge de tu
-          sistema.
+          El tema claro u oscuro, tu color de acento y el idioma (español o inglés) los coge de tu sistema.
+        </p>
+      </article>
+      <article class="caja" data-reveal style="--i:1">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-refresh"/></svg></div>
+        <h3 data-en="It updates itself">Se actualiza sola</h3>
+        <p data-en="When it opens it checks for a new version, and one click downloads it, installs it and reopens the app.">
+          Al abrirse mira si hay una versión nueva, y un clic la descarga, la instala y vuelve a abrir la app.
+        </p>
+      </article>
+      <article class="caja" data-reveal style="--i:2">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-user"/></svg></div>
+        <h3 data-en="No admin rights">Sin permisos de administrador</h3>
+        <p data-en="It installs for your user, not the whole system, with a one-click installer. No sign-ups, no accounts, no ads.">
+          Se instala en tu usuario, no en el sistema, con un instalador de un clic. Sin registros, sin cuentas y sin anuncios.
+        </p>
+      </article>
+      <article class="caja" data-reveal style="--i:3">
+        <div class="ico" aria-hidden="true"><svg><use href="#i-layout"/></svg></div>
+        <h3><span data-en="Four panel shapes">Cuatro formas de panel</span> <span class="etq nueva">1.6</span></h3>
+        <p data-en="Grid, horizontal, vertical or list, with the group's name on top and a pencil to edit it on the spot. Coming in 1.6, and you can already try it in the demo above.">
+          Cuadrícula, horizontal, vertical o lista, con el nombre del grupo arriba y un lápiz para editarlo al momento. Llega con la 1.6, y ya puedes probarla en la demo de arriba.
         </p>
       </article>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="shots" data-rise>
-    <p class="kicker" data-reveal data-en="The real thing">La app de verdad</p>
-    <h2 data-reveal style="--i:1" data-en="This is how it actually looks">Así se ve de verdad</h2>
-    <p class="section-sub" data-reveal style="--i:2"
-       data-en="Real screenshots, not mockups. Click any of them to zoom in.">
-      Capturas reales, no maquetas. Pulsa cualquiera para ampliarla.
+<section id="capturas">
+  <div class="env galeria">
+    <div class="cabecera-seccion">
+      <div>
+        <h2 data-reveal data-en="This is how it actually looks">Así se ve de verdad</h2>
+        <p class="entradilla" data-reveal style="--i:1"
+           data-en="Real screenshots of the published version, not mockups. Click one to see it full size.">
+          Capturas reales de la versión publicada, no maquetas. Pulsa una para verla en grande.
+        </p>
+      </div>
+      <div class="pestanas" role="tablist" aria-label="Capturas" data-en-aria="Screenshots" data-reveal style="--i:2">
+        <button type="button" class="pestana" role="tab" id="tab-1" aria-controls="cap-1" aria-selected="true" data-en="Your groups">Tus grupos</button>
+        <button type="button" class="pestana" role="tab" id="tab-2" aria-controls="cap-2" aria-selected="false" tabindex="-1" data-en="Editor">El editor</button>
+        <button type="button" class="pestana" role="tab" id="tab-3" aria-controls="cap-3" aria-selected="false" tabindex="-1" data-en="Apps">Las apps</button>
+        <button type="button" class="pestana" role="tab" id="tab-4" aria-controls="cap-4" aria-selected="false" tabindex="-1" data-en="Emoji">Emojis</button>
+        <button type="button" class="pestana" role="tab" id="tab-5" aria-controls="cap-5" aria-selected="false" tabindex="-1" data-en="The panel">El panel</button>
+      </div>
+    </div>
+
+    <div class="marco" data-reveal style="--i:2">
+      <div class="barra-falsa">
+        <span class="semaforo" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="texto">Taskbar Groups Fluent</span>
+      </div>
+      <figure class="captura activa" id="cap-1" role="tabpanel" aria-labelledby="tab-1">
+        <div class="vitrina">
+          <button type="button" class="zoom" aria-label="Ampliar captura" data-en-aria="Zoom in">
+            <img src="assets/shot-main-es.png" data-en-src="assets/shot-main-en.png" width="940" height="620"
+                 alt="Ventana principal con las tarjetas de cada grupo" loading="lazy">
+          </button>
+        </div>
+        <figcaption data-en="Each card is a group you can pin, edit or delete.">Cada tarjeta es un grupo que puedes anclar, editar o borrar.</figcaption>
+      </figure>
+      <figure class="captura" id="cap-2" role="tabpanel" aria-labelledby="tab-2">
+        <div class="vitrina">
+          <button type="button" class="zoom" aria-label="Ampliar captura" data-en-aria="Zoom in">
+            <img src="assets/shot-editor-es.png" data-en-src="assets/shot-editor-en.png" width="560" height="700"
+                 alt="Editor de grupo con nombre, icono y lista de accesos" loading="lazy">
+          </button>
+        </div>
+        <figcaption data-en="Name it, give it an icon, and add apps or folders.">Le pones nombre, le pones icono y añades apps o carpetas.</figcaption>
+      </figure>
+      <figure class="captura" id="cap-3" role="tabpanel" aria-labelledby="tab-3">
+        <div class="vitrina">
+          <button type="button" class="zoom" aria-label="Ampliar captura" data-en-aria="Zoom in">
+            <img src="assets/shot-app-picker-es.png" data-en-src="assets/shot-app-picker-en.png" width="875" height="1222"
+                 alt="Lista de aplicaciones instaladas con buscador" loading="lazy">
+          </button>
+        </div>
+        <figcaption data-en="Everything installed, searchable, each with its own icon.">Todo lo instalado, con buscador y con su icono correcto.</figcaption>
+      </figure>
+      <figure class="captura" id="cap-4" role="tabpanel" aria-labelledby="tab-4">
+        <div class="vitrina">
+          <button type="button" class="zoom" aria-label="Ampliar captura" data-en-aria="Zoom in">
+            <img src="assets/shot-emoji-picker-es.png" data-en-src="assets/shot-emoji-picker-en.png" width="460" height="560"
+                 alt="Selector de emojis a color para el icono del grupo" loading="lazy">
+          </button>
+        </div>
+        <figcaption data-en="No image at hand? A colour emoji works as the group icon.">¿No tienes imagen? Un emoji a color te vale de icono del grupo.</figcaption>
+      </figure>
+      <figure class="captura" id="cap-5" role="tabpanel" aria-labelledby="tab-5">
+        <div class="vitrina">
+          <button type="button" class="zoom" aria-label="Ampliar captura" data-en-aria="Zoom in">
+            <img src="assets/shot-flyout-es.png" data-en-src="assets/shot-flyout-en.png" width="442" height="206"
+                 alt="Panel del grupo abierto sobre la barra de tareas" loading="lazy">
+          </button>
+        </div>
+        <figcaption data-en="Click the pinned group and its apps appear above the taskbar.">Pulsas el grupo anclado y sus apps aparecen sobre la barra de tareas.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- Zoom de capturas: <dialog> nativo, Escape y clic fuera cierran solos. -->
+<dialog id="lightbox">
+  <button type="button" id="lightbox-cerrar" aria-label="Cerrar" data-en-aria="Close">
+    <svg aria-hidden="true"><use href="#i-x"/></svg>
+  </button>
+  <img id="lightbox-img" src="" alt="">
+</dialog>
+
+<section id="instalar">
+  <div class="env">
+    <h2 data-reveal data-en="Installing it takes a minute">Instalarlo es cosa de un minuto</h2>
+    <p class="entradilla" data-reveal style="--i:1"
+       data-en="One file, a double click and it is there. From then on it keeps itself up to date.">
+      Un archivo, un doble clic y ya está. A partir de ahí, se mantiene al día ella sola.
     </p>
 
-    <div class="shots">
-      <article class="shot-card" style="--stack:1">
-        <div class="shot-head">
-          <span class="shot-num">01</span>
-          <h3 data-en="Your groups">Tus grupos</h3>
+    <div class="vias">
+      <article class="via principal" data-reveal style="--i:1">
+        <div class="via-cab">
+          <div class="ico" aria-hidden="true"><svg><use href="#i-download"/></svg></div>
+          <h3 data-en="With the installer">Con el instalador</h3>
+          <span class="etq recomendado" data-en="Recommended">Recomendado</span>
         </div>
-        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
-          <img src="assets/shot-main-es.png" data-en-src="assets/shot-main-en.png"
-               alt="Ventana principal con las tarjetas de cada grupo" loading="lazy" width="1000" height="700">
-        </div>
-        <p class="shot-cap" data-en="Each card is a group you can pin, edit or delete.">
-          Cada tarjeta es un grupo que puedes anclar, editar o borrar.
+        <p data-en="Download it, double-click it and you are done. It installs for your user, without administrator rights, and adds itself to the Start menu.">
+          Lo descargas, le das doble clic y listo. Se instala en tu usuario, sin permisos de administrador, y aparece en el menú Inicio.
+        </p>
+        <a class="btn primario" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
+          <svg aria-hidden="true"><use href="#i-download"/></svg>
+          <span data-en="Download for Windows">Descargar para Windows</span>
+        </a>
+        <p class="letra-chica"
+           data-en="Windows 10 and 11, 64-bit · &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;All versions&lt;/a&gt;">
+          Windows 10 y 11, de 64 bits ·
+          <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases" target="_blank" rel="noopener">Todas las versiones</a>
         </p>
       </article>
 
-      <article class="shot-card" style="--stack:2">
-        <div class="shot-head">
-          <span class="shot-num">02</span>
-          <h3 data-en="Group editor">El editor de grupos</h3>
+      <article class="via" data-reveal style="--i:2">
+        <div class="via-cab">
+          <div class="ico" aria-hidden="true"><svg><use href="#i-terminal"/></svg></div>
+          <h3 data-en="With WinGet">Con WinGet</h3>
+          <span class="etq pronto" data-en="Very soon">Muy pronto</span>
         </div>
-        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
-          <img src="assets/shot-editor-es.png" data-en-src="assets/shot-editor-en.png"
-               alt="Editor de grupo con nombre, icono y lista de accesos" loading="lazy" width="1000" height="700">
-        </div>
-        <p class="shot-cap" data-en="Name it, give it an icon, and add apps or folders.">
-          Le pones nombre, le pones icono y añades apps o carpetas.
+        <p data-en="For those who live in the terminal. The package is under review in the official WinGet catalogue; once it is approved, this is all it will take:">
+          Para quien vive en la terminal. El paquete está en revisión en el catálogo oficial de WinGet; cuando lo aprueben, bastará con esto:
         </p>
-      </article>
-
-      <article class="shot-card" style="--stack:3">
-        <div class="shot-head">
-          <span class="shot-num">03</span>
-          <h3 data-en="App picker">El selector de apps</h3>
-        </div>
-        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
-          <img src="assets/shot-app-picker-es.png" data-en-src="assets/shot-app-picker-en.png"
-               alt="Lista de aplicaciones instaladas con buscador" loading="lazy" width="1000" height="700">
-        </div>
-        <p class="shot-cap" data-en="Everything installed, searchable, each with its own icon.">
-          Todo lo instalado, con buscador y con su icono correcto.
-        </p>
-      </article>
-
-      <article class="shot-card" style="--stack:4">
-        <div class="shot-head">
-          <span class="shot-num">04</span>
-          <h3 data-en="Emoji picker">El selector de emojis</h3>
-        </div>
-        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
-          <img src="assets/shot-emoji-picker-es.png" data-en-src="assets/shot-emoji-picker-en.png"
-               alt="Selector de emojis a color para el icono del grupo" loading="lazy" width="1000" height="700">
-        </div>
-        <p class="shot-cap" data-en="No image at hand? A colour emoji works as the group icon.">
-          ¿No tienes imagen? Un emoji a color te vale de icono del grupo.
-        </p>
-      </article>
-
-      <article class="shot-card" style="--stack:5">
-        <div class="shot-head">
-          <span class="shot-num">05</span>
-          <h3 data-en="The flyout">El panel</h3>
-        </div>
-        <div class="shot zoomable" tabindex="0" role="button" aria-label="Ampliar captura" data-en-aria="Zoom in">
-          <img src="assets/shot-flyout-es.png" data-en-src="assets/shot-flyout-en.png"
-               alt="Panel del grupo abierto sobre la barra de tareas" loading="lazy" width="880" height="600">
-        </div>
-        <p class="shot-cap" data-en="Click the pinned group and its apps appear above the taskbar.">
-          Pulsas el grupo anclado y sus apps aparecen sobre la barra de tareas.
-        </p>
+        <code class="comando"><span class="prompt">&gt; </span>winget install Mun1to.TaskbarGroupsFluent</code>
+        <p class="letra-chica" data-en="It does not work yet. Until then, use the installer.">Todavía no funciona. Mientras tanto, usa el instalador.</p>
       </article>
     </div>
-  </section>
 
-  <!-- Zoom de capturas: <dialog> nativo, Escape y clic fuera cierran solos. -->
-  <dialog id="lightbox">
-    <button type="button" id="lightbox-close" aria-label="Cerrar" data-en-aria="Close">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
-           stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
-    <img id="lightbox-img" src="" alt="">
-  </dialog>
+    <ol class="pasos">
+      <li class="paso" data-reveal style="--i:1">
+        <span class="num" aria-hidden="true">1</span>
+        <h3 data-en="Create the group">Crea el grupo</h3>
+        <p data-en="Give it a name and an icon: a cropped image or an emoji.">Ponle nombre y un icono: una imagen recortada o un emoji.</p>
+      </li>
+      <li class="paso" data-reveal style="--i:2">
+        <span class="num" aria-hidden="true">2</span>
+        <h3 data-en="Add your apps">Añade tus apps</h3>
+        <p data-en="Pick them from the list of everything installed, and add folders if you want.">Elígelas de la lista de todo lo instalado, y suma carpetas si quieres.</p>
+      </li>
+      <li class="paso" data-reveal style="--i:3">
+        <span class="num" aria-hidden="true">3</span>
+        <h3 data-en="Pin it to the taskbar">Ánclalo a la barra</h3>
+        <p data-en="The app walks you through it. Windows 11 asks you to give the last click yourself.">La app te guía. Windows 11 pide que el último clic lo des tú.</p>
+      </li>
+    </ol>
 
-  <section data-rise>
-    <p class="kicker" data-reveal data-en="That short">Así de corto</p>
-    <div class="steps">
-      <b data-reveal style="--i:1" data-en="Create the group">Crea el grupo</b>
-      <svg data-reveal style="--i:2" class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
-      <b data-reveal style="--i:3" data-en="Add your apps">Añade tus apps</b>
-      <svg data-reveal style="--i:4" class="arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m0 0l-6-6m6 6l-6 6"/></svg>
-      <b data-reveal style="--i:5" data-en="Pin it to the taskbar">Ánclalo a la barra</b>
+    <p class="nota" data-reveal
+       data-en="Windows may warn about an &lt;b&gt;unknown publisher&lt;/b&gt;: the app is not signed with a paid certificate yet. Click &lt;b&gt;More info → Run anyway&lt;/b&gt;.">
+      Windows puede avisar de <b>«editor desconocido»</b>: la app todavía no está firmada con un certificado de pago.
+      Pulsa <b>Más información → Ejecutar de todas formas</b>.
+    </p>
+  </div>
+</section>
+
+<section id="preguntas">
+  <div class="env">
+    <div class="faq-grid">
+      <div class="faq-lateral" data-reveal>
+        <img src="assets/logo.png?v=1" alt="" width="40" height="40" loading="lazy">
+        <p class="etiqueta" data-en="FAQ">Preguntas</p>
+        <h2 data-en="What people usually ask">Lo que suele preguntar la gente</h2>
+        <p class="entradilla" data-en="Not here? Open an issue on GitHub and it gets answered.">¿No está aquí? Abre un issue en GitHub y se contesta.</p>
+        <a class="btn fantasma" href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" target="_blank" rel="noopener" data-en="Ask on GitHub">Preguntar en GitHub</a>
+      </div>
+      <div class="faq" data-reveal style="--i:1">
+        <details>
+          <summary><h3 data-en="Is it free?">¿Es gratis?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Yes, all of it. It is open source under the MIT licence: no paid tier, no accounts and no ads.">Sí, entera. Es código abierto con licencia MIT: sin versión de pago, sin cuentas y sin anuncios.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Which versions of Windows does it run on?">¿En qué versiones de Windows funciona?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Windows 10 and Windows 11, 64-bit.">En Windows 10 y Windows 11, de 64 bits.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Does it need administrator rights?">¿Hacen falta permisos de administrador?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="No. It installs for your user, not the whole system, with a one-click installer.">No. Se instala en tu usuario, no en el sistema, con un instalador de un clic.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Why does Windows warn about an “unknown publisher”?">¿Por qué Windows avisa de «editor desconocido»?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Because the app is not signed with a paid certificate yet. Click More info, then Run anyway. All the code is on GitHub for anyone who wants to check it.">Porque la app todavía no está firmada con un certificado de pago. Pulsa Más información y luego Ejecutar de todas formas. Todo el código está en GitHub para quien quiera revisarlo.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Can I install it with WinGet?">¿Se puede instalar con WinGet?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Very soon. The &lt;code&gt;Mun1to.TaskbarGroupsFluent&lt;/code&gt; package is under review in the official WinGet catalogue, and the command will not work until it is approved. Until then, use the installer on this page.">Muy pronto. El paquete <code>Mun1to.TaskbarGroupsFluent</code> está en revisión en el catálogo oficial de WinGet, y hasta que lo aprueben el comando no funciona. Mientras tanto, usa el instalador de esta página.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="How do I make a group open on hover?">¿Cómo hago que un grupo se abra al pasar el ratón?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Turn it on in Settings. It ships switched off: it relies on a small watcher in the system tray, which you can turn off from there or from Settings.">Actívalo en Ajustes. Viene apagado de fábrica: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde los mismos Ajustes.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Does it update itself?">¿Se actualiza sola?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Yes. When it opens it checks GitHub for a new version and offers it to you: one click downloads it, installs it and reopens the app.">Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="What is coming in version 1.6?">¿Qué trae la versión 1.6?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="It is in development. The panel gets four shapes (grid, horizontal, vertical and list) and a header with the group's name and a pencil that opens its editor. That is what the demo at the top shows.">Está en desarrollo. El panel podrá tener cuatro formas (cuadrícula, horizontal, vertical y lista) y una cabecera con el nombre del grupo y un lápiz que abre su editor. Es lo que enseña la demo de arriba.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="Which languages does it speak?">¿En qué idiomas está?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Spanish and English. It follows your Windows language on its own, and you can force one with the &lt;code&gt;TBG_LANG&lt;/code&gt; environment variable.">En español y en inglés. Sigue solo el idioma de Windows, y puedes forzarlo con la variable de entorno <code>TBG_LANG</code>.</p></div>
+        </details>
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <section id="story" data-rise>
-    <p class="kicker" data-reveal data-en="Where it comes from">De dónde sale</p>
+<section id="historia">
+  <div class="env historia">
+    <p class="etiqueta" data-reveal data-en="Where it comes from">De dónde sale</p>
     <h2 data-reveal style="--i:1" data-en="I wanted this, and it wasn't done right">Quería esto, y no estaba bien hecho</h2>
 
     <p class="story" data-reveal style="--i:2"
@@ -895,283 +1256,540 @@
       y de su fork <a href="https://github.com/PikeNote/taskbar-groups-pike-beta" target="_blank" rel="noopener">pike-beta</a>,
       los dos con licencia MIT. Los controles Fluent son <a href="https://github.com/lepoco/wpfui" target="_blank" rel="noopener">WPF-UI</a>.
     </p>
-  </section>
+  </div>
+</section>
 
-  <section class="final" data-rise>
-    <h2 data-reveal data-en="Tidy up your taskbar">Ordena tu barra de tareas</h2>
-    <p class="section-sub" data-reveal style="--i:1"
-       data-en="Free and open source. No sign-ups, no accounts, no ads.">
-      Gratis y open source. Sin registros, sin cuentas, sin anuncios.
-    </p>
-    <div class="cta" data-reveal style="--i:2">
-      <a class="btn primary" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12m0 0l-5-5m5 5l5-5M5 20h14"/></svg>
-        <span data-en="Download for Windows">Descargar para Windows</span>
-      </a>
-      <a class="btn ghost" data-magnetic href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest" target="_blank" rel="noopener">
-        <span data-en="All versions">Todas las versiones</span>
-      </a>
+<section class="final">
+  <div class="env">
+    <div class="cierre centrado" data-reveal>
+      <h2 data-en="Tidy up your taskbar">Ordena tu barra de tareas</h2>
+      <p class="entradilla" data-en="Free and open source. No sign-ups, no accounts, no ads.">
+        Gratis y de código abierto. Sin registros, sin cuentas y sin anuncios.
+      </p>
+      <div class="botones">
+        <a class="btn primario" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
+          <svg aria-hidden="true"><use href="#i-download"/></svg>
+          <span data-en="Download for Windows">Descargar para Windows</span>
+        </a>
+        <a class="btn fantasma" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases" target="_blank" rel="noopener">
+          <span data-en="All versions">Todas las versiones</span>
+        </a>
+      </div>
+      <p class="letra-chica"
+         data-en="If it is useful to you, a &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;star on GitHub&lt;/a&gt; helps more people find it.">
+        Si te resulta útil, una <a href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">estrella en GitHub</a> ayuda a que más gente la encuentre.
+      </p>
     </div>
-    <p class="os-note" data-reveal style="--i:3"
-       data-en="Installs per user, no admin rights needed. Windows may warn about an &quot;unknown publisher&quot;: click More info → Run anyway.">
-      Se instala en tu usuario, sin permisos de administrador. Windows puede avisar de
-      «editor desconocido»: pulsa Más información → Ejecutar de todas formas.
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="env">
+    <a class="marca" href="./"><img src="assets/logo.png?v=1" alt="" width="20" height="20" loading="lazy"> Taskbar Groups Fluent · MIT</a>
+    <span data-en="Made by &lt;a href=&quot;https://munito.dev&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Munir Torres&lt;/a&gt;">Hecho por <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a></span>
+    <button type="button" class="valvula" id="valvula">Quitar animaciones</button>
+    <p class="pie-legal">
+      <span data-en="Not affiliated with Microsoft. Windows is a trademark of its owner.">Sin vínculo con Microsoft. Windows es marca de su propietario.</span>
+      <a href="#historia" data-en="Credits">Créditos</a>
     </p>
-  </section>
+  </div>
+</footer>
 
-  <footer>
-    <p data-en="Taskbar Groups Fluent · Made by &lt;a href=&quot;https://munito.dev&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Munir Torres&lt;/a&gt; · MIT License">Taskbar Groups Fluent · Hecho por <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a> · Licencia MIT</p>
-    <p class="legal"
-       data-en="Not affiliated with Microsoft. Windows is a trademark of its owner. &lt;a href=&quot;#story&quot;&gt;Credits&lt;/a&gt;">
-      Sin vínculo con Microsoft. Windows es marca de su propietario.
-      <a href="#story">Créditos</a>
-    </p>
-  </footer>
-  </main>
+<script>
+  /* ==========================================================================
+     ENTRADAS AL APARECER: el observer añade .in al asomar; la cascada la pone
+     el CSS con --i. Dos redes de seguridad: si no hay observer o el movimiento
+     está apagado, todo se ve desde el principio; y tras cargar, lo que ya esté a
+     la vista se enciende aunque el observer no haya dicho nada (pestañas en
+     segundo plano, vistas incrustadas). Nunca hay texto oculto esperando.
+     ========================================================================== */
+  (function () {
+    const items = [...document.querySelectorAll("[data-reveal]")];
+    const show = (el) => el.classList.add("in");
+    if (!document.documentElement.classList.contains("motion") || !("IntersectionObserver" in window)) {
+      items.forEach(show);
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { show(e.target); io.unobserve(e.target); }
+    }, { threshold: 0.06, rootMargin: "0px 0px -6% 0px" });
+    items.forEach((el) => io.observe(el));
+    const rescue = () => items.forEach((el) => {
+      if (el.classList.contains("in")) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) show(el);
+    });
+    addEventListener("load", () => setTimeout(rescue, 400));
+    setTimeout(rescue, 1500);
+    // Un enlace de ancla enciende su destino antes de saltar, para no aterrizar
+    // en una sección todavía transparente.
+    document.querySelectorAll('a[href^="#"]').forEach((a) => a.addEventListener("click", () => {
+      const t = document.getElementById(a.getAttribute("href").slice(1));
+      if (t) t.querySelectorAll("[data-reveal]").forEach(show);
+    }));
+  })();
 
-  <script>
-    (function () {
-      // El script del <head> ya decidió: .motion presente = animaciones permitidas
-      // (siempre, salvo que la URL traiga ?motion=off).
-      const reduced = !document.documentElement.classList.contains("motion");
+  /* ==========================================================================
+     DEMO DEL PANEL: cuatro grupos en una barra de tareas de mentira.
+     Con ratón: el grupo se abre al pasar por encima, como la opción «abrir al
+     pasar el cursor» de la app. Con el dedo o el teclado: al pulsar. El selector
+     cambia la forma del panel, con las mismas reglas que PanelLayouts.cs: la
+     lista se parte en dos columnas a partir de seis apps.
+     ========================================================================== */
+  (function () {
+    const esc = document.getElementById("escritorio");
+    if (!esc) return;
+    const panel = document.getElementById("panel");
+    const nombre = document.getElementById("panel-nombre");
+    const lista = document.getElementById("panel-apps");
+    const lapiz = document.getElementById("panel-lapiz");
+    const aviso = document.getElementById("aviso-demo");
+    const pistaTexto = document.getElementById("pista-texto");
+    const barra = document.getElementById("barra-tareas");
+    const zona = document.getElementById("zona-grupos");
+    const reloj = document.getElementById("reloj");
+    const conRaton = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const L = () => (document.documentElement.lang === "en" ? "en" : "es");
 
-      // 1) Entrada del hero: dos frames después de pintar, body.ready dispara las
-      //    transiciones de las líneas del titular y los fade-up (todo en CSS).
-      //    Cinturón de seguridad: si rAF no dispara (pestaña en segundo plano),
-      //    el setTimeout garantiza que el contenido nunca se queda oculto.
-      const ready = () => document.body.classList.add("ready");
-      requestAnimationFrame(() => requestAnimationFrame(ready));
-      setTimeout(ready, 700);
+    const TXT = {
+      es: {
+        abrir: "Abrir el grupo", grupo: "Grupo", editar: "Editar el grupo",
+        lanza: "En tu PC, esto abriría «{app}»",
+        lapiz: "El lápiz abre el editor de «{g}» sin pasar por la ventana principal",
+        pistaRaton: "Pasa el ratón por un grupo de la barra",
+        pistaToque: "Toca un grupo de la barra",
+      },
+      en: {
+        abrir: "Open the group", grupo: "Group", editar: "Edit the group",
+        lanza: "On your PC, this would open “{app}”",
+        lapiz: "The pencil opens the editor for “{g}” straight away",
+        pistaRaton: "Hover over a group on the taskbar",
+        pistaToque: "Tap a group on the taskbar",
+      },
+    };
 
-      // La flecha de "baja" solo tiene sentido antes de bajar
-      const cue = () => document.body.classList.toggle("scrolled", window.scrollY > 40);
-      addEventListener("scroll", cue, { passive: true });
-      cue();
+    // Apps de mentira con nombres genéricos: ninguna marca ajena en el escaparate.
+    const A = (ico, es, en, a, b) => ({ ico, es, en, a, b });
+    const GRUPOS = [
+      { id: "diseno", es: "Diseño", en: "Design", apps: [
+        A("foto", "Fotos", "Photos", "#5fd0ff", "#0067c0"),
+        A("pincel", "Dibujo", "Paint", "#ff9a76", "#d6452b"),
+        A("vector", "Vectores", "Vectors", "#b79bff", "#6a3de8"),
+        A("paleta", "Colores", "Colours", "#ffd866", "#f08c00"),
+        A("tipo", "Fuentes", "Fonts", "#7fe0d0", "#0c8f7f"),
+        A("cubo", "3D", "3D", "#ff9cc6", "#c2185b"),
+      ] },
+      { id: "juegos", es: "Juegos", en: "Games", apps: [
+        A("mando", "Biblioteca", "Library", "#8d9bff", "#3d4ed8"),
+        A("bandera", "Carreras", "Racing", "#ff7b7b", "#c92a2a"),
+        A("peon", "Ajedrez", "Chess", "#cfd8dc", "#546e7a"),
+        A("cartas", "Solitario", "Solitaire", "#7be38d", "#2b8a3e"),
+        A("trofeo", "Logros", "Trophies", "#ffdf5c", "#e67700"),
+      ] },
+      { id: "trabajo", es: "Trabajo", en: "Work", apps: [
+        A("correo", "Correo", "Mail", "#6ccaff", "#1565c0"),
+        A("agenda", "Agenda", "Calendar", "#ff8c8c", "#d32f2f"),
+        A("notas", "Notas", "Notes", "#ffe27a", "#f59f00"),
+        A("hojas", "Hojas", "Sheets", "#74e0a0", "#1e8e4e"),
+        A("chat", "Chat", "Chat", "#a99bff", "#5b3fd9"),
+        A("terminal", "Terminal", "Terminal", "#9aa3b2", "#323846"),
+        A("codigo", "Código", "Code", "#64d8f0", "#0b7a9c"),
+      ] },
+      { id: "musica", es: "Música", en: "Music", apps: [
+        A("musica", "Música", "Music", "#ff8fb1", "#d6336c"),
+        A("micro", "Podcasts", "Podcasts", "#c49bff", "#7b3fe4"),
+        A("cascos", "Radio", "Radio", "#77e0ff", "#0b84b8"),
+        A("onda", "Grabadora", "Recorder", "#ffb36b", "#e8590c"),
+      ] },
+    ];
 
-      // 2) MOTOR DE PARALLAX: cada capa de fondo [data-speed] baja a SU velocidad
-      //    con el scroll y además deriva hacia el ratón según su profundidad.
-      if (!reduced) {
-        const hero = document.querySelector(".hero");
-        const layers = [...document.querySelectorAll("[data-speed]")].map((el) => ({
-          el, speed: parseFloat(el.dataset.speed), depth: parseFloat(el.dataset.mouse || 0)
-        }));
-        let mx = 0, my = 0, cmx = 0, cmy = 0, lastY = -1;
-        addEventListener("mousemove", (e) => {
-          mx = (e.clientX / innerWidth - 0.5) * 2;    // normalizado a -1 … 1
-          my = (e.clientY / innerHeight - 0.5) * 2;
-        }, { passive: true });
-        const paint = () => {
-          const y = window.scrollY;
-          const drifting = Math.abs(mx - cmx) + Math.abs(my - cmy) > 0.002;
-          if (y !== lastY || drifting) {              // solo escribe si algo cambió
-            cmx += (mx - cmx) * 0.06;                 // lerp: la deriva llega con retardo suave
-            cmy += (my - cmy) * 0.06;
-            for (const l of layers) {
-              l.el.style.transform = "translate3d(" + (cmx * l.depth).toFixed(1) + "px," +
-                (y * l.speed + cmy * l.depth).toFixed(1) + "px,0)";
-            }
-            // El hero se queda pegado DETRÁS mientras la lámina sube y lo tapa.
-            // Se atenúa y se aleja un poco: así la atención pasa a lo que entra
-            // encima en vez de competir con un hero a plena intensidad.
-            if (hero) {
-              const p = Math.min(1, y / innerHeight);
-              hero.style.opacity = (1 - p * 0.72).toFixed(3);
-              hero.style.transform = "scale(" + (1 - p * 0.055).toFixed(4) + ")";
-            }
-            lastY = y;
-          }
-          requestAnimationFrame(paint);
-        };
-        requestAnimationFrame(paint);
-        // La entrada del hero dura ~1,5s; después, el parallax toma el mando.
-        setTimeout(() => { document.body.classList.add("settled"); lastY = -1; }, 1600);
-      }
+    let forma = "cuadricula", abierto = null, ultimo = GRUPOS[0], abiertoEn = 0, tocado = false;
+    let tHover = 0, tAviso = 0;
 
-      // 3) Reveal + stagger: el observer añade .in al asomar; los tiempos de la
-      //    cascada los pone el CSS con --i. Una vez visto, se des-observa.
-      // Al asomar un bloque [data-rise] se enciende ÉL y, de una vez, todo lo que
-      // lleva dentro. Si cada hijo se observara por su cuenta, la tarjeta subiría
-      // con sus textos entrando a destiempo y se perdería la sensación de pieza única.
-      const show = (el) => {
-        el.classList.add("in");
-        el.querySelectorAll("[data-reveal]").forEach((kid) => kid.classList.add("in"));
-      };
-      const io = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) { show(e.target); io.unobserve(e.target); }
-        }
-      }, { threshold: 0.05, rootMargin: "0px 0px -10% 0px" });
-      document.querySelectorAll("[data-rise], .shot").forEach((el) => io.observe(el));
-      // Los [data-reveal] que viven fuera de un bloque que sube se observan solos
-      document.querySelectorAll("[data-reveal]").forEach((el) => {
-        if (!el.closest("[data-rise]")) io.observe(el);
+    // Botones de grupo de la barra. El icono son los cuatro primeros iconos de
+    // sus apps, dos por dos.
+    GRUPOS.forEach((g) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "bt grupo";
+      b.setAttribute("aria-expanded", "false");
+      b.setAttribute("aria-controls", "panel");
+      const mini = document.createElement("span");
+      mini.className = "mini";
+      mini.setAttribute("aria-hidden", "true");
+      g.apps.slice(0, 4).forEach((a) => {
+        const c = document.createElement("i");
+        c.style.setProperty("--a", a.a);
+        c.style.setProperty("--b", a.b);
+        mini.appendChild(c);
       });
+      b.appendChild(mini);
+      zona.appendChild(b);
+      g.btn = b;
 
-      // Red de seguridad: si el navegador tarda en entregar las observaciones
-      // (pestaña en segundo plano, webviews incrustados), revela lo que ya está
-      // a la vista tras cargar. Nunca dejes contenido invisible por un observer mudo.
-      addEventListener("load", () => setTimeout(() => {
-        document.querySelectorAll("[data-rise]:not(.in), [data-reveal]:not(.in), .shot:not(.in)").forEach((el) => {
-          const r = el.getBoundingClientRect();
-          if (r.top < innerHeight && r.bottom > 0) show(el);
-        });
-      }, 400));
-
-      // Enlaces de ancla (los "Créditos" del pie): encendemos el destino ANTES de
-      // saltar. Si no, se salta a una sección que todavía está en opacidad 0
-      // esperando al observer, y parece que el enlace no hace nada.
-      const wake = (hash) => {
-        if (!hash || hash.length < 2) return;
-        const target = document.getElementById(hash.slice(1));
-        if (target) show(target);
-      };
-      for (const a of document.querySelectorAll('a[href^="#"]')) {
-        a.addEventListener("click", () => wake(a.getAttribute("href")));
-      }
-      wake(location.hash);          // y si se entra con la URL ya apuntando ahí
-
-      // 4) Botones magnéticos: el botón se inclina hacia el cursor con un lerp
-      //    suave. Solo en dispositivos con ratón de verdad. Usa la propiedad CSS
-      //    `translate` para no pisar el transform del hover.
-      if (!reduced && matchMedia("(hover: hover) and (pointer: fine)").matches) {
-        document.querySelectorAll("[data-magnetic]").forEach((el) => {
-          let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
-          const tick = () => {
-            cx += (tx - cx) * 0.18;   // lerp: acércate un 18% al objetivo en cada frame
-            cy += (ty - cy) * 0.18;
-            el.style.translate = cx.toFixed(2) + "px " + cy.toFixed(2) + "px";
-            if (Math.abs(tx - cx) > 0.15 || Math.abs(ty - cy) > 0.15) {
-              raf = requestAnimationFrame(tick);
-            } else { raf = null; }
-          };
-          const wakeMag = () => { if (!raf) raf = requestAnimationFrame(tick); };
-          el.addEventListener("mousemove", (e) => {
-            const r = el.getBoundingClientRect();
-            tx = (e.clientX - r.left - r.width / 2) * 0.35;   // 35% de la distancia al centro
-            ty = (e.clientY - r.top - r.height / 2) * 0.35;
-            wakeMag();
-          });
-          el.addEventListener("mouseleave", () => { tx = 0; ty = 0; wakeMag(); });
-        });
-      }
-    })();
-
-    /* ==========================================================================
-       DEMO — abrir y cerrar el grupo. Se comporta como el de verdad: se abre al
-       pulsar y se cierra al pulsar fuera o con Escape.
-       ========================================================================== */
-    (function () {
-      const desktop = document.getElementById("demo-desktop");
-      const btn = document.getElementById("demo-btn");
-      if (!desktop || !btn) return;
-      const setOpen = (open) => {
-        desktop.classList.toggle("open", open);
-        btn.setAttribute("aria-expanded", open ? "true" : "false");
-      };
-      btn.addEventListener("click", (e) => {
+      b.addEventListener("pointerenter", (e) => {
+        if (e.pointerType !== "mouse") return;
+        clearTimeout(tHover);
+        // Como la app: espera un instante antes de abrir, salvo que ya haya un
+        // panel abierto, en cuyo caso cambia de grupo al momento.
+        tHover = setTimeout(() => abrir(g), abierto ? 0 : 170);
+      });
+      b.addEventListener("pointerleave", () => clearTimeout(tHover));
+      b.addEventListener("click", (e) => {
         e.stopPropagation();
-        setOpen(!desktop.classList.contains("open"));
+        clearTimeout(tHover);
+        // Si se acaba de abrir al pasar el ratón, el clic no lo cierra de golpe.
+        if (abierto === g && performance.now() - abiertoEn > 450) cerrar();
+        else abrir(g);
       });
-      // Clic en cualquier otro sitio del escritorio recreado: se cierra, igual
-      // que el panel real pierde el foco y desaparece.
-      addEventListener("click", (e) => {
-        if (!desktop.contains(e.target)) setOpen(false);
-      });
-      addEventListener("keydown", (e) => { if (e.key === "Escape") setOpen(false); });
-    })();
+    });
 
-    /* ==========================================================================
-       ZOOM DE CAPTURAS — clic (o Enter/Espacio) en una captura abre un <dialog>
-       nativo a pantalla completa con la MISMA imagen que se ve en ese momento
-       (respeta el idioma activo). Escape y el propio <dialog> lo cierran solos.
-       ========================================================================== */
-    (function () {
-      const lightbox = document.getElementById("lightbox");
-      if (!lightbox) return;
-      const lbImg = document.getElementById("lightbox-img");
-      const open = (shot) => {
-        const img = shot.querySelector("img");
-        if (!img) return;
-        lbImg.src = img.currentSrc || img.src;
-        lbImg.alt = img.alt;
-        lightbox.showModal();
-      };
-      document.querySelectorAll(".shot.zoomable").forEach((shot) => {
-        shot.addEventListener("click", () => open(shot));
-        shot.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); open(shot); }
+    function columnas(n) {
+      if (forma === "lista") return n > 6 ? 2 : 1;
+      return n <= 4 ? 2 : n <= 6 ? 3 : 4;
+    }
+
+    function pintar(g) {
+      const l = L(), t = TXT[l];
+      nombre.textContent = g[l];
+      panel.setAttribute("aria-label", t.grupo + " " + g[l]);
+      lapiz.setAttribute("aria-label", t.editar + " " + g[l]);
+      lista.className = "panel-apps forma-" + forma;
+      lista.style.setProperty("--cols", columnas(g.apps.length));
+      lista.textContent = "";
+      g.apps.forEach((a) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "app";
+        b.innerHTML = '<span class="ico-app" style="--a:' + a.a + ";--b:" + a.b + '"><svg aria-hidden="true"><use href="#g-' + a.ico + '"/></svg></span><span class="app-nombre"></span>';
+        b.querySelector(".app-nombre").textContent = a[l];
+        b.addEventListener("click", (e) => {
+          e.stopPropagation();
+          avisar(TXT[L()].lanza.replace("{app}", a[L()]));
+          // El panel de verdad se cierra solo al lanzar una app.
+          cerrar(true);
         });
+        lista.appendChild(b);
       });
-      document.getElementById("lightbox-close").addEventListener("click", () => lightbox.close());
-      // Clic en el fondo (fuera de la imagen) también cierra: el <dialog> ocupa
-      // toda la pantalla, así que basta con comprobar que el clic fue en él y
-      // no en un descendiente (la imagen o el botón de cerrar).
-      lightbox.addEventListener("click", (e) => { if (e.target === lightbox) lightbox.close(); });
-    })();
+    }
 
-    /* ==========================================================================
-       IDIOMA (es / en) — el español vive en el HTML y la traducción viaja al
-       lado, en data-en. Así el texto y su traducción se editan juntos y no hay
-       forma de que se desincronicen. El idioma inicial ya lo fijó el script del
-       <head> antes de pintar, para que nadie vea el texto cambiar de golpe.
-       ========================================================================== */
-    (function () {
-      const META = {
-        es: {
-          title: "Taskbar Groups Fluent - Una barra de tareas ordenada",
-          desc: "Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows. Lo pulsas y se abre un panel con todas tus apps. Gratis, open source y con el aspecto de Windows 11.",
-          label: "English",
-        },
-        en: {
-          title: "Taskbar Groups Fluent - A taskbar with room to breathe",
-          desc: "Group your shortcuts into a single Windows taskbar button. Click it and a flyout pops up with all your apps. Free, open source and it looks like Windows 11.",
-          label: "Español",
-        },
-      };
+    // Coloca el panel encima de su botón y lo encoge si no cabe en el escritorio
+    // (en el móvil, una fila de siete apps no entra a tamaño real).
+    function colocar() {
+      if (!abierto) return;
+      const W = esc.clientWidth, H = esc.clientHeight, tb = barra.offsetHeight;
+      const pw = panel.offsetWidth, ph = panel.offsetHeight;
+      const fit = Math.min(1, (W - 16) / pw, (H - tb - 20) / ph);
+      const b = abierto.btn;
+      const cx = barra.offsetLeft + b.offsetLeft + b.offsetWidth / 2;
+      const w = pw * fit;
+      const left = Math.max(8, Math.min(W - w - 8, cx - w / 2));
+      panel.style.setProperty("--fit", fit.toFixed(4));
+      panel.style.left = left.toFixed(1) + "px";
+      panel.style.bottom = tb + 8 + "px";
+    }
 
-      let lang = document.documentElement.lang === "en" ? "en" : "es";
-      const nodes = [...document.querySelectorAll("[data-en]")];
-      // El español de partida se toma del propio HTML, no se duplica a mano
-      nodes.forEach((n) => { n.dataset.es = n.innerHTML.trim(); });
-      // Imágenes con versión por idioma (las capturas de la app)
-      const imgs = [...document.querySelectorAll("[data-en-src]")];
-      imgs.forEach((n) => { n.dataset.esSrc = n.getAttribute("src"); });
-      // Elementos sin texto visible (el zoom, el cerrar, el botón del grupo):
-      // su traducción viaja en el aria-label, mismo patrón que data-en.
-      const ariaEls = [...document.querySelectorAll("[data-en-aria]")];
-      ariaEls.forEach((n) => { n.dataset.esAria = n.getAttribute("aria-label") || ""; });
-      const btn = document.getElementById("lang");
-
-      function apply() {
-        document.documentElement.lang = lang;
-        for (const n of nodes) {
-          // innerHTML aquí es seguro: la cadena está escrita en este archivo
-          // (lleva <b> y <a>), nunca viene de fuera.
-          n.innerHTML = lang === "en" ? n.dataset.en : n.dataset.es;
-        }
-        for (const n of imgs) {
-          n.setAttribute("src", lang === "en" ? n.dataset.enSrc : n.dataset.esSrc);
-        }
-        for (const n of ariaEls) {
-          n.setAttribute("aria-label", lang === "en" ? n.dataset.enAria : n.dataset.esAria);
-        }
-        const meta = META[lang];
-        document.title = meta.title;
-        const desc = document.querySelector('meta[name="description"]');
-        if (desc) desc.setAttribute("content", meta.desc);
-        // El botón ofrece SIEMPRE el otro idioma, que es lo que se va a pulsar.
-        if (btn) btn.textContent = meta.label;
+    function abrir(g, forzar) {
+      if (abierto && abierto !== g) {
+        abierto.btn.classList.remove("activo");
+        abierto.btn.setAttribute("aria-expanded", "false");
       }
-
-      if (btn) {
-        btn.addEventListener("click", () => {
-          lang = lang === "es" ? "en" : "es";
-          try { localStorage.setItem("tbgf-lang", lang); } catch (e) {}
-          apply();
-        });
+      const cambia = forzar || abierto !== g || !panel.classList.contains("visible");
+      abierto = ultimo = g;
+      abiertoEn = performance.now();
+      tocado = true;
+      if (cambia) {
+        // Vuelve al estado cerrado sin transición, pinta, coloca y anima la
+        // entrada otra vez: cada grupo sale desde la barra, como en Windows.
+        panel.classList.add("sin-trans");
+        panel.classList.remove("visible");
+        pintar(g);
+        colocar();
+        void panel.offsetWidth;
+        panel.classList.remove("sin-trans");
+        void panel.offsetWidth;
+        panel.classList.add("visible");
       }
+      g.btn.classList.add("activo");
+      g.btn.setAttribute("aria-expanded", "true");
+      esc.classList.add("con-panel");
+    }
+
+    function cerrar(devolverFoco) {
+      if (!abierto) return;
+      const g = abierto;
+      g.btn.classList.remove("activo");
+      g.btn.setAttribute("aria-expanded", "false");
+      abierto = null;
+      panel.classList.remove("visible");
+      esc.classList.remove("con-panel");
+      if (devolverFoco && panel.contains(document.activeElement)) g.btn.focus({ preventScroll: true });
+    }
+
+    function avisar(msg) {
+      aviso.textContent = msg;
+      aviso.classList.add("visible");
+      clearTimeout(tAviso);
+      tAviso = setTimeout(() => aviso.classList.remove("visible"), 2600);
+    }
+
+    lapiz.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (abierto) avisar(TXT[L()].lapiz.replace("{g}", abierto[L()]));
+    });
+    panel.addEventListener("click", (e) => e.stopPropagation());
+    // Un clic en el escritorio vacío cierra, como el panel real al perder el foco.
+    esc.addEventListener("click", () => cerrar());
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrar(true); });
+
+    // Selector de forma
+    const formas = [...document.querySelectorAll("[data-forma]")];
+    formas.forEach((b) => b.addEventListener("click", () => {
+      forma = b.dataset.forma;
+      formas.forEach((o) => o.setAttribute("aria-pressed", o === b ? "true" : "false"));
+      abrir(abierto || ultimo, true);
+    }));
+
+    function textos() {
+      const l = L(), t = TXT[l];
+      pistaTexto.textContent = conRaton ? t.pistaRaton : t.pistaToque;
+      GRUPOS.forEach((g) => g.btn.setAttribute("aria-label", t.abrir + " " + g[l]));
+      if (abierto) { pintar(abierto); colocar(); }
+    }
+
+    function tic() {
+      const l = L() === "en" ? "en-GB" : "es-ES";
+      const d = new Date();
+      reloj.innerHTML = d.toLocaleTimeString(l, { hour: "2-digit", minute: "2-digit" }) + "<br>" +
+        d.toLocaleDateString(l, { day: "2-digit", month: "2-digit", year: "numeric" });
+    }
+
+    textos();
+    tic();
+    setInterval(tic, 30000);
+    document.addEventListener("tbgf:lang", () => { textos(); tic(); });
+    addEventListener("resize", colocar);
+    if ("ResizeObserver" in window) new ResizeObserver(colocar).observe(esc);
+
+    // Al llegar, el primer grupo se abre solo para que se vea qué hace la app.
+    setTimeout(() => { if (!tocado) abrir(GRUPOS[0]); }, 900);
+  })();
+
+  /* ==========================================================================
+     CONTADORES DE GITHUB: estrellas, descargas y versiones, leídos de la API
+     pública. Se guardan 15 minutos en este navegador para no gastar el cupo
+     (60 consultas por hora sin cuenta). Si GitHub no contesta, se quedan los
+     valores escritos en el HTML y la línea de debajo lo dice.
+     ========================================================================== */
+  (function () {
+    const REPO = "https://api.github.com/repos/Mun1to/TaskbarGroupsFluent";
+    const RESPALDO = {
+      stars: 9, downloads: 169, versions: 16,
+      first: "2026-06-29T13:22:33Z", tag: "v1.5.0", last: "2026-09-13T12:00:00Z",
+    };
+    const FECHA_RESPALDO = "2026-10-15T12:00:00Z";
+    let datos = RESPALDO, estado = "cargando";
+    const $ = (id) => document.getElementById(id);
+    const L = () => (document.documentElement.lang === "en" ? "en" : "es");
+
+    function pintar() {
+      const en = L() === "en";
+      const loc = en ? "en-GB" : "es-ES";
+      const nf = new Intl.NumberFormat(en ? "en-US" : "es-ES");
+      const mes = new Intl.DateTimeFormat(loc, { month: "long", year: "numeric", timeZone: "UTC" });
+      const dia = new Intl.DateTimeFormat(loc, { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" });
+      $("n-versiones").textContent = nf.format(datos.versions);
+      $("n-descargas").textContent = nf.format(datos.downloads);
+      $("n-estrellas").textContent = nf.format(datos.stars);
+      const desde = mes.format(new Date(datos.first));
+      const ultima = dia.format(new Date(datos.last));
+      $("t-versiones").textContent = en ? "releases published since " + desde : "versiones publicadas desde " + desde;
+      $("c-versiones").textContent = en ? "latest: " + datos.tag + ", " + ultima : "la última, " + datos.tag + ", el " + ultima;
+      const caja = $("fuente-datos");
+      caja.classList.toggle("vivo", estado === "vivo");
+      $("fuente-texto").textContent =
+        estado === "vivo" ? (en ? "Live figures from the GitHub API." : "Cifras en vivo de la API de GitHub.")
+        : estado === "respaldo" ? (en ? "GitHub figures as of " + dia.format(new Date(FECHA_RESPALDO)) + " (GitHub did not answer just now)."
+                                      : "Cifras de GitHub a " + dia.format(new Date(FECHA_RESPALDO)) + " (ahora mismo GitHub no ha contestado).")
+        : (en ? "Figures from GitHub." : "Cifras de GitHub.");
+    }
+
+    async function pedir() {
+      try {
+        const c = JSON.parse(localStorage.getItem("tbgf-gh") || "null");
+        if (c && Date.now() - c.t < 15 * 60 * 1000 && c.d && c.d.versions > 0) return c.d;
+      } catch (e) {}
+      const ctrl = "AbortController" in window ? new AbortController() : null;
+      const corte = setTimeout(() => ctrl && ctrl.abort(), 8000);
+      const opts = { headers: { Accept: "application/vnd.github+json" }, signal: ctrl ? ctrl.signal : undefined };
+      try {
+        const [r1, r2] = await Promise.all([fetch(REPO, opts), fetch(REPO + "/releases?per_page=100", opts)]);
+        if (!r1.ok || !r2.ok) throw new Error("GitHub " + r1.status + "/" + r2.status);
+        const repo = await r1.json();
+        const rels = (await r2.json()).filter((r) => !r.draft && r.published_at);
+        if (!rels.length || typeof repo.stargazers_count !== "number") throw new Error("datos raros");
+        let downloads = 0;
+        rels.forEach((r) => (r.assets || []).forEach((a) => { downloads += a.download_count || 0; }));
+        const fechas = rels.map((r) => r.published_at).sort();
+        const estables = rels.filter((r) => !r.prerelease).sort((a, b) => (a.published_at < b.published_at ? 1 : -1));
+        const ult = estables[0] || rels[0];
+        const d = {
+          stars: repo.stargazers_count, downloads, versions: rels.length,
+          first: fechas[0], tag: ult.tag_name, last: ult.published_at,
+        };
+        try { localStorage.setItem("tbgf-gh", JSON.stringify({ t: Date.now(), d })); } catch (e) {}
+        return d;
+      } finally {
+        clearTimeout(corte);
+      }
+    }
+
+    pintar();
+    document.addEventListener("tbgf:lang", pintar);
+    pedir().then((d) => { datos = d; estado = "vivo"; pintar(); })
+      .catch(() => { datos = RESPALDO; estado = "respaldo"; pintar(); });
+  })();
+
+  /* ==========================================================================
+     CAPTURAS: pestañas (con flechas del teclado) y zoom en un <dialog>.
+     ========================================================================== */
+  (function () {
+    const tabs = [...document.querySelectorAll('#capturas [role="tab"]')];
+    const elegir = (t, foco) => {
+      tabs.forEach((o) => {
+        const sel = o === t;
+        o.setAttribute("aria-selected", sel ? "true" : "false");
+        o.tabIndex = sel ? 0 : -1;
+        document.getElementById(o.getAttribute("aria-controls")).classList.toggle("activa", sel);
+      });
+      if (foco) t.focus();
+      t.scrollIntoView({ block: "nearest", inline: "nearest" });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener("click", () => elegir(t));
+      t.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowRight") { e.preventDefault(); elegir(tabs[(i + 1) % tabs.length], true); }
+        if (e.key === "ArrowLeft") { e.preventDefault(); elegir(tabs[(i - 1 + tabs.length) % tabs.length], true); }
+      });
+    });
+
+    const lb = document.getElementById("lightbox");
+    const lbImg = document.getElementById("lightbox-img");
+    if (!lb || typeof lb.showModal !== "function") return;
+    document.querySelectorAll(".zoom").forEach((z) => z.addEventListener("click", () => {
+      const img = z.querySelector("img");
+      lbImg.src = img.currentSrc || img.src;
+      lbImg.alt = img.alt;
+      lb.showModal();
+    }));
+    document.getElementById("lightbox-cerrar").addEventListener("click", () => lb.close());
+    lb.addEventListener("click", (e) => { if (e.target === lb) lb.close(); });
+  })();
+
+  /* ==========================================================================
+     PREGUNTAS: una abierta a la vez, con la salida animada. <details> no da
+     nada de esto solo: `data-abierta` manda en el CSS y `open` se queda un
+     ratito más mientras dura la transición de cierre (receta de winshotx).
+     ========================================================================== */
+  document.querySelectorAll(".faq").forEach((lista) => {
+    const items = [...lista.querySelectorAll("details")];
+    const ms = parseFloat(getComputedStyle(lista).getPropertyValue("--faq-ms")) || 380;
+    const pendientes = new Map();
+    const cerrar = (item) => {
+      if (!item.open) return;
+      item.removeAttribute("data-abierta");
+      clearTimeout(pendientes.get(item));
+      pendientes.set(item, setTimeout(() => {
+        if (!item.hasAttribute("data-abierta")) item.open = false;
+        pendientes.delete(item);
+      }, ms));
+    };
+    const abrir = (item) => {
+      clearTimeout(pendientes.get(item));
+      pendientes.delete(item);
+      item.open = true;
+      void item.offsetWidth;
+      item.setAttribute("data-abierta", "");
+    };
+    items.forEach((item) => item.querySelector("summary").addEventListener("click", (e) => {
+      e.preventDefault();
+      const estaba = item.hasAttribute("data-abierta");
+      items.forEach((o) => { if (o !== item) cerrar(o); });
+      if (estaba) cerrar(item); else abrir(item);
+    }));
+  });
+
+  /* ==========================================================================
+     VÁLVULA DE MOVIMIENTO: el botón del pie pone o quita ?motion=off. Una
+     válvula que solo vive en la URL no la encuentra quien la necesita.
+     ========================================================================== */
+  (function () {
+    const b = document.getElementById("valvula");
+    if (!b) return;
+    const off = /[?&]motion=off/.test(location.search);
+    const pintar = () => {
+      const en = document.documentElement.lang === "en";
+      b.textContent = off ? (en ? "Turn animations back on" : "Volver a poner animaciones")
+                          : (en ? "Turn off animations" : "Quitar animaciones");
+    };
+    b.addEventListener("click", () => {
+      const u = new URL(location.href);
+      if (off) u.searchParams.delete("motion"); else u.searchParams.set("motion", "off");
+      location.href = u.toString();
+    });
+    pintar();
+    document.addEventListener("tbgf:lang", pintar);
+  })();
+
+  /* ==========================================================================
+     IDIOMA (es / en): el español vive en el HTML y la traducción viaja al lado,
+     en data-en, así se editan juntos y no se desincronizan. El idioma inicial ya
+     lo fijó el script del <head>. Al cambiar, avisa con el evento tbgf:lang a
+     las piezas que pintan texto desde JavaScript (demo, contadores, válvula).
+     ========================================================================== */
+  (function () {
+    const META = {
+      es: {
+        title: "Taskbar Groups Fluent · Agrupa tus apps en la barra de tareas",
+        desc: "Agrupa tus accesos directos en un solo botón de la barra de tareas de Windows 10 y 11. Lo pulsas y se abre un panel con todas tus apps, con el aspecto de Windows 11. Gratis y de código abierto.",
+        label: "English",
+      },
+      en: {
+        title: "Taskbar Groups Fluent · Group your apps on the Windows taskbar",
+        desc: "Group your shortcuts into a single taskbar button on Windows 10 and 11. Click it and a panel opens with all your apps, with the Windows 11 look. Free and open source.",
+        label: "Español",
+      },
+    };
+    let lang = document.documentElement.lang === "en" ? "en" : "es";
+    const nodes = [...document.querySelectorAll("[data-en]")];
+    nodes.forEach((n) => { n.dataset.es = n.innerHTML.trim(); });
+    const imgs = [...document.querySelectorAll("[data-en-src]")];
+    imgs.forEach((n) => { n.dataset.esSrc = n.getAttribute("src"); });
+    const arias = [...document.querySelectorAll("[data-en-aria]")];
+    arias.forEach((n) => { n.dataset.esAria = n.getAttribute("aria-label") || ""; });
+    const btn = document.getElementById("lang");
+
+    function apply() {
+      document.documentElement.lang = lang;
+      // innerHTML es seguro aquí: las cadenas están escritas en este archivo.
+      for (const n of nodes) n.innerHTML = lang === "en" ? n.dataset.en : n.dataset.es;
+      for (const n of imgs) n.setAttribute("src", lang === "en" ? n.dataset.enSrc : n.dataset.esSrc);
+      for (const n of arias) n.setAttribute("aria-label", lang === "en" ? n.dataset.enAria : n.dataset.esAria);
+      const m = META[lang];
+      document.title = m.title;
+      const desc = document.querySelector('meta[name="description"]');
+      if (desc) desc.setAttribute("content", m.desc);
+      if (btn) { btn.textContent = m.label; btn.lang = lang === "en" ? "es" : "en"; }
+      document.dispatchEvent(new Event("tbgf:lang"));
+    }
+    if (btn) btn.addEventListener("click", () => {
+      lang = lang === "es" ? "en" : "es";
+      try { localStorage.setItem("tbgf-lang", lang); } catch (e) {}
       apply();
-    })();
-  </script>
+    });
+    apply();
+  })();
+</script>
 </body>
 </html>
