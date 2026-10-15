@@ -135,6 +135,129 @@ public partial class MainWindow : FluentWindow
         RefreshGroups();
     }
 
+    // The card's "…" button: the things a group needs now and then, kept off the
+    // card itself so the three everyday buttons stay as they were.
+    private void MoreGroup_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement { Tag: GroupItem group } button) return;
+        ShowMenu(button,
+            (Loc.Get("Loc_Group_Duplicate"), () => DuplicateGroup(group)),
+            (Loc.Get("Loc_Group_Export"), () => ExportGroup(group)));
+    }
+
+    private void ImportButton_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement button) return;
+        ShowMenu(button,
+            (Loc.Get("Loc_Main_ImportFile"), ImportGroupFile),
+            (Loc.Get("Loc_Main_ImportTbg"), ImportTaskbarGroups));
+    }
+
+    private static void ShowMenu(FrameworkElement anchor, params (string Text, Action Run)[] items)
+    {
+        var menu = new System.Windows.Controls.ContextMenu
+        {
+            PlacementTarget = anchor,
+            Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom
+        };
+        foreach (var (text, run) in items)
+        {
+            var item = new System.Windows.Controls.MenuItem { Header = text };
+            item.Click += (_, _) => run();
+            menu.Items.Add(item);
+        }
+        menu.IsOpen = true;
+    }
+
+    private void DuplicateGroup(GroupItem group)
+    {
+        try
+        {
+            GroupTransfer.Duplicate(group.Name, Loc.Get("Loc_Group_CopySuffix"));
+        }
+        catch (Exception ex)
+        {
+            ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), ex.Message);
+        }
+        RefreshGroups();
+    }
+
+    private void ExportGroup(GroupItem group)
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            FileName = group.Name + GroupTransfer.Extension,
+            Filter = Loc.Get("Loc_Main_GroupFileFilter") + "|*" + GroupTransfer.Extension,
+            DefaultExt = GroupTransfer.Extension
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        try
+        {
+            GroupTransfer.Export(group.Name, dialog.FileName);
+            ShellHelper.SelectInExplorer(dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage(Loc.Get("Loc_Group_ExportFailTitle"), ex.Message);
+        }
+    }
+
+    private void ImportGroupFile()
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Filter = Loc.Get("Loc_Main_GroupFileFilter") + "|*" + GroupTransfer.Extension,
+            Multiselect = true
+        };
+        if (dialog.ShowDialog(this) != true) return;
+
+        var imported = new System.Collections.Generic.List<string>();
+        try
+        {
+            foreach (string file in dialog.FileNames)
+                imported.Add(GroupTransfer.ImportFile(file));
+        }
+        catch (Exception ex)
+        {
+            ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), ex.Message);
+        }
+        RefreshGroups();
+        ReportImported(imported);
+    }
+
+    // Taskbar Groups kept its groups in a "config" folder next to the program,
+    // in the same format this app uses, so they come across whole: apps, names
+    // and icons.
+    private void ImportTaskbarGroups()
+    {
+        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = Loc.Get("Loc_Main_ImportTbgPick") };
+        if (dialog.ShowDialog(this) != true) return;
+
+        var imported = GroupTransfer.ImportTaskbarGroups(dialog.FolderName);
+        RefreshGroups();
+        if (imported.Count == 0)
+            ShowMessage(Loc.Get("Loc_Main_ImportFailTitle"), Loc.Get("Loc_Main_ImportNone"));
+        else
+            ReportImported(imported);
+    }
+
+    private void ReportImported(System.Collections.Generic.List<string> imported)
+    {
+        if (imported.Count == 0) return;
+        ShowMessage(Loc.Get("Loc_Main_ImportedTitle"), imported.Count == 1
+            ? Loc.Format("Loc_Main_ImportedOne", imported[0])
+            : Loc.Format("Loc_Main_ImportedMany", imported.Count));
+    }
+
+    private static void ShowMessage(string title, string message)
+        => _ = new MessageBox
+        {
+            Title = title,
+            Content = message,
+            CloseButtonText = Loc.Get("Loc_Common_Close")
+        }.ShowDialogAsync();
+
     private async void PinToTaskbar_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement { Tag: GroupItem group }) return;

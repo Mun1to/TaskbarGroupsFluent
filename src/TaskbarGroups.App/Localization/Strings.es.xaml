@@ -21,6 +21,21 @@
     <s:String x:Key="Loc_Main_EmptyTitle">Aún no tienes grupos</s:String>
     <s:String x:Key="Loc_Main_EmptySubtitle">Crea tu primer grupo para empezar a organizar la barra de tareas</s:String>
     <s:String x:Key="Loc_Main_CreateFirst">Crear primer grupo</s:String>
+    <s:String x:Key="Loc_Main_Import">Importar</s:String>
+    <s:String x:Key="Loc_Main_ImportFile">Desde un archivo de grupo…</s:String>
+    <s:String x:Key="Loc_Main_ImportTbg">Desde Taskbar Groups…</s:String>
+    <s:String x:Key="Loc_Main_ImportTbgPick">Elige la carpeta donde tenías Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Main_GroupFileFilter">Grupo de Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Main_ImportedTitle">Grupos importados</s:String>
+    <s:String x:Key="Loc_Main_ImportedOne">Se importó el grupo "{0}".</s:String>
+    <s:String x:Key="Loc_Main_ImportedMany">Se importaron {0} grupos.</s:String>
+    <s:String x:Key="Loc_Main_ImportNone">No encontré grupos ahí. Elige la carpeta donde estaba instalado Taskbar Groups, o su carpeta "config".</s:String>
+    <s:String x:Key="Loc_Main_ImportFailTitle">No se pudo importar</s:String>
+    <s:String x:Key="Loc_Group_More">Más opciones</s:String>
+    <s:String x:Key="Loc_Group_Duplicate">Duplicar</s:String>
+    <s:String x:Key="Loc_Group_Export">Exportar…</s:String>
+    <s:String x:Key="Loc_Group_ExportFailTitle">No se pudo exportar</s:String>
+    <s:String x:Key="Loc_Group_CopySuffix" xml:space="preserve"> (copia)</s:String>
 
     <!-- Tarjeta de grupo -->
     <s:String x:Key="Loc_Group_ShortcutOne">1 acceso directo</s:String>

@@ -43,6 +43,10 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal"
                             HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <ui:Button Content="{DynamicResource Loc_Main_Import}"
+                               Icon="{ui:SymbolIcon ArrowImport24}"
+                               Margin="0,0,8,0"
+                               Click="ImportButton_Click" />
                     <ui:Button Icon="{ui:SymbolIcon Settings24}"
                                ToolTip="{DynamicResource Loc_Settings_Title}"
                                AutomationProperties.Name="{DynamicResource Loc_Settings_Title}"
@@ -78,6 +82,7 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto" />
                                                 <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
                                             <Border Grid.Column="0" Width="52" Height="52" CornerRadius="11"
                                                     Background="{DynamicResource ControlFillColorSecondaryBrush}">
@@ -96,6 +101,14 @@
                                                 <TextBlock Text="{Binding ShortcutCountText}" FontSize="12" Margin="0,2,0,0"
                                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                                             </StackPanel>
+                                            <!-- Duplicate, export: the occasional things, kept off the
+                                                 everyday buttons below. -->
+                                            <ui:Button Grid.Column="2" Icon="{ui:SymbolIcon MoreHorizontal24}"
+                                                       Appearance="Transparent" Padding="6" Margin="4,0,-6,0"
+                                                       VerticalAlignment="Top"
+                                                       ToolTip="{DynamicResource Loc_Group_More}"
+                                                       AutomationProperties.Name="{DynamicResource Loc_Group_More}"
+                                                       Tag="{Binding}" Click="MoreGroup_Click" />
                                         </Grid>
 
                                         <ui:Button Grid.Row="1" Content="{DynamicResource Loc_Main_Pin}"
