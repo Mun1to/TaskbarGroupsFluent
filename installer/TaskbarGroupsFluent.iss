@@ -91,10 +91,18 @@ end;
 
 // On the way out, take the startup entry with us. Leaving it behind would have
 // Windows try to launch a watcher that is no longer on disk at every sign-in.
+//
+// The main window is closed too. Unlike setup, the uninstaller does not ask
+// Windows to close running apps, and uninstalling with the window open left the
+// install folder behind with the app's files still locked.
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
+var
+  ResultCode: Integer;
 begin
   if CurUninstallStep = usUninstall then
   begin
+    Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM TaskbarGroups.App.exe',
+         '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
     StopHoverWatcher();
     RegDeleteValue(HKEY_CURRENT_USER,
       'Software\Microsoft\Windows\CurrentVersion\Run', 'TaskbarGroupsFluentHover');
