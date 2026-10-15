@@ -202,6 +202,19 @@ public partial class PopupWindow : Window
         }
     }
 
+    // WPF sizes the window once while it is still creating it, and at that moment
+    // Windows holds it to the minimum width of a window with a title bar, 136 px at
+    // 100 %. A single column of icons is narrower than that, so the vertical panel
+    // came out with wide empty sides. Asking for the size again once the window
+    // exists lets it shrink to its content; done right before positioning, so the
+    // panel is centred on its icon at the width it really has.
+    private void FitToContent()
+    {
+        SizeToContent = SizeToContent.Manual;
+        SizeToContent = SizeToContent.WidthAndHeight;
+        UpdateLayout();
+    }
+
     // The system backdrop that WPF-UI applies (DWMWA_SYSTEMBACKDROP_TYPE) was
     // measured never painting on this window: a borderless popup gets no acrylic
     // from it, active or not, and the panel came out flat black over a striped
@@ -375,8 +388,7 @@ public partial class PopupWindow : Window
 
         ApplyAppearance();
         LoadItems();
-        InvalidateMeasure();
-        UpdateLayout();
+        FitToContent();
 
         PositionOverTaskbar();
         StartDismissGuard();
@@ -388,6 +400,7 @@ public partial class PopupWindow : Window
         // first loaded; at that point it is parked off screen with nothing to say.
         if (Reusable) return;
 
+        FitToContent();
         PositionOverTaskbar();
 
         // A hover-opened flyout must not steal the keyboard. The cursor only brushed
