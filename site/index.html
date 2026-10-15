@@ -101,7 +101,7 @@
       { "@type": "Question", "name": "¿Se actualiza sola?",
         "acceptedAnswer": { "@type": "Answer", "text": "Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app." } },
       { "@type": "Question", "name": "¿Qué trae la versión 1.6?",
-        "acceptedAnswer": { "@type": "Answer", "text": "Está en desarrollo. El panel podrá tener cuatro formas (cuadrícula, horizontal, vertical y lista) y una cabecera con el nombre del grupo y un lápiz que abre su editor. Es lo que enseña la demo de arriba." } },
+        "acceptedAnswer": { "@type": "Answer", "text": "El panel con el cristal de Windows 11 y cuatro formas (cuadrícula, horizontal, vertical y lista), el nombre del grupo con un lápiz que abre su editor, el icono hecho con las apps del grupo, abrir todas de golpe, grupos dentro de grupos, opciones por app, exportar e importar grupos, e importar desde Taskbar Groups y AppGroup." } },
       { "@type": "Question", "name": "¿En qué idiomas está?",
         "acceptedAnswer": { "@type": "Answer", "text": "En español y en inglés. Sigue solo el idioma de Windows, y puedes forzarlo con la variable de entorno TBG_LANG." } }
     ]
@@ -314,6 +314,9 @@
     .fuente-datos { display: flex; align-items: center; gap: 8px; margin-top: 18px; }
     .fuente-datos .punto { width: 7px; height: 7px; border-radius: 50%; background: #ffffff33; flex: none; }
     .fuente-datos.vivo .punto { background: var(--verde); box-shadow: 0 0 0 3px #34d39926; }
+    /* Con los números en vivo no hace falta decirlo; la línea solo sale para avisar
+       de que son los de respaldo, con su fecha. */
+    .fuente-datos.vivo { display: none; }
     @media (max-width: 760px) {
       .numeros { grid-template-columns: 1fr 1fr; row-gap: 26px; }
       .dato:nth-child(3) { border-left: 0; padding-left: 0; }
@@ -837,22 +840,12 @@
   <div class="env">
     <div class="portada-rejilla">
       <div class="portada-texto">
-        <div class="firma" data-reveal>
-          <img src="assets/logo.png?v=1" alt="" width="46" height="46">
-          <span class="palabra">Taskbar Groups Fluent<small data-en="for Windows 10 and 11">para Windows 10 y 11</small></span>
-        </div>
-        <a class="estado" data-reveal style="--i:1" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases" target="_blank" rel="noopener">
-          <span class="punto" aria-hidden="true"></span>
-          <span data-en="In active development · version 1.6 is on its way">En desarrollo activo · la versión 1.6 está en camino</span>
-        </a>
-        <h1 data-reveal style="--i:2" data-en="Ten icons on your taskbar. &lt;em&gt;Now just one.&lt;/em&gt;">Diez iconos en la barra. <em>Ahora solo uno.</em></h1>
-        <p class="bajada" data-reveal style="--i:3"
-           data-en="Taskbar Groups Fluent packs your shortcuts into a single taskbar button. Click it (or, if you like, just hover) and a panel pops up with every app in the group. &lt;b&gt;Free, open source and it looks like Windows 11.&lt;/b&gt;">
-          Taskbar Groups Fluent mete tus accesos directos en un solo botón de la barra de tareas.
-          Lo pulsas (o, si quieres, solo pasas el ratón) y se abre un panel con todas las apps del grupo.
-          <b>Gratis, de código abierto y con el aspecto de Windows 11.</b>
+        <h1 data-reveal data-en="Ten icons on your taskbar. &lt;em&gt;Now just one.&lt;/em&gt;">Diez iconos en la barra. <em>Ahora solo uno.</em></h1>
+        <p class="bajada" data-reveal style="--i:1"
+           data-en="Your shortcuts in a single taskbar button. Click it, or just hover, and a panel opens with every app in the group.">
+          Tus accesos directos en un solo botón de la barra de tareas. Lo pulsas, o pasas el ratón, y se abre un panel con todas las apps del grupo.
         </p>
-        <div class="botones" data-reveal style="--i:4">
+        <div class="botones" data-reveal style="--i:2">
           <a class="btn primario" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
             <svg aria-hidden="true"><use href="#i-download"/></svg>
             <span data-en="Download for Windows">Descargar para Windows</span>
@@ -862,15 +855,9 @@
             <span data-en="View the code">Ver el código</span>
           </a>
         </div>
-        <p class="letra-chica" data-reveal style="--i:5"
-           data-en="Windows 10 and 11 · One-click installer · Updates itself · &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;MIT licence&lt;/a&gt;">
-          Windows 10 y 11 · Instalador de un clic · Se actualiza solo ·
-          <a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" target="_blank" rel="noopener">Licencia MIT</a>
-        </p>
-        <p class="por-terminal" data-reveal style="--i:6">
-          <span data-en="or from the terminal">o desde la terminal</span>
-          <a class="etq pronto" href="#instalar" data-en="very soon">muy pronto</a>
-          <code>winget install Mun1to.TaskbarGroupsFluent</code>
+        <p class="letra-chica" data-reveal style="--i:3"
+           data-en="Free and open source · Windows 10 and 11 · Updates itself">
+          Gratis y de código abierto · Windows 10 y 11 · Se actualiza solo
         </p>
       </div>
 
@@ -880,7 +867,6 @@
         <div class="marco">
           <div class="barra-falsa">
             <span class="semaforo" aria-hidden="true"><i></i><i></i><i></i></span>
-            <span class="texto" data-en="Interactive demo · your taskbar, in miniature">Demo interactiva · tu barra de tareas, en pequeño</span>
           </div>
           <div class="escritorio" id="escritorio">
             <div class="pista" id="pista" aria-hidden="true">
@@ -910,10 +896,6 @@
         </div>
 
         <div class="formas-fila">
-          <span class="formas-rotulo">
-            <span data-en="Panel shape">Forma del panel</span>
-            <span class="etq nueva" data-en="New in 1.6">Novedad de la 1.6</span>
-          </span>
           <div class="pestanas formas" role="group" aria-label="Forma del panel" data-en-aria="Panel shape">
             <button type="button" class="pestana" data-forma="cuadricula" aria-pressed="true"><svg aria-hidden="true"><use href="#i-grid"/></svg><span data-en="Grid">Cuadrícula</span></button>
             <button type="button" class="pestana" data-forma="horizontal" aria-pressed="false"><svg aria-hidden="true"><use href="#i-row"/></svg><span>Horizontal</span></button>
@@ -929,9 +911,9 @@
          y lo que queda si GitHub no contesta. -->
     <div class="numeros" id="numeros" data-reveal style="--i:2">
       <div class="dato">
-        <span class="valor" id="n-versiones">16</span>
+        <span class="valor" id="n-versiones">17</span>
         <span class="que" id="t-versiones">versiones publicadas desde junio de 2026</span>
-        <span class="contra" id="c-versiones">la última, v1.5.0, el 13 de septiembre de 2026</span>
+        <span class="contra" id="c-versiones">la última, v1.6.0, el 15 de octubre de 2026</span>
       </div>
       <div class="dato">
         <span class="valor" id="n-descargas">169</span>
@@ -1022,9 +1004,9 @@
       </article>
       <article class="caja" data-reveal style="--i:3">
         <div class="ico" aria-hidden="true"><svg><use href="#i-layout"/></svg></div>
-        <h3><span data-en="Four panel shapes">Cuatro formas de panel</span> <span class="etq nueva">1.6</span></h3>
-        <p data-en="Grid, horizontal, vertical or list, with the group's name on top and a pencil to edit it on the spot. Coming in 1.6, and you can already try it in the demo above.">
-          Cuadrícula, horizontal, vertical o lista, con el nombre del grupo arriba y un lápiz para editarlo al momento. Llega con la 1.6, y ya puedes probarla en la demo de arriba.
+        <h3><span data-en="Four panel shapes">Cuatro formas de panel</span></h3>
+        <p data-en="Grid, horizontal, vertical or list, with the group's name on top and a pencil to edit it on the spot. Try them in the demo above.">
+          Cuadrícula, horizontal, vertical o lista, con el nombre del grupo arriba y un lápiz para editarlo al momento. Pruébalas en la demo de arriba.
         </p>
       </article>
     </div>
@@ -1221,8 +1203,8 @@
           <div class="faq-cajon"><p data-en="Yes. When it opens it checks GitHub for a new version and offers it to you: one click downloads it, installs it and reopens the app.">Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app.</p></div>
         </details>
         <details>
-          <summary><h3 data-en="What is coming in version 1.6?">¿Qué trae la versión 1.6?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-          <div class="faq-cajon"><p data-en="It is in development. The panel gets four shapes (grid, horizontal, vertical and list) and a header with the group's name and a pencil that opens its editor. That is what the demo at the top shows.">Está en desarrollo. El panel podrá tener cuatro formas (cuadrícula, horizontal, vertical y lista) y una cabecera con el nombre del grupo y un lápiz que abre su editor. Es lo que enseña la demo de arriba.</p></div>
+          <summary><h3 data-en="What is new in version 1.6?">¿Qué trae la versión 1.6?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="The panel gets Windows 11 glass and four shapes (grid, horizontal, vertical and list), the group's name with a pencil that opens its editor, an icon made of the group's apps, open all at once, groups inside groups, per-app options, export and import, and importing from Taskbar Groups and AppGroup.">El panel con el cristal de Windows 11 y cuatro formas (cuadrícula, horizontal, vertical y lista), el nombre del grupo con un lápiz que abre su editor, el icono hecho con las apps del grupo, abrir todas de golpe, grupos dentro de grupos, opciones por app, exportar e importar grupos, e importar desde Taskbar Groups y AppGroup.</p></div>
         </details>
         <details>
           <summary><h3 data-en="Which languages does it speak?">¿En qué idiomas está?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
@@ -1585,8 +1567,8 @@
   (function () {
     const REPO = "https://api.github.com/repos/Mun1to/TaskbarGroupsFluent";
     const RESPALDO = {
-      stars: 9, downloads: 169, versions: 16,
-      first: "2026-06-29T13:22:33Z", tag: "v1.5.0", last: "2026-09-13T12:00:00Z",
+      stars: 9, downloads: 169, versions: 17,
+      first: "2026-06-29T13:22:33Z", tag: "v1.6.0", last: "2026-10-15T12:00:00Z",
     };
     const FECHA_RESPALDO = "2026-10-15T12:00:00Z";
     let datos = RESPALDO, estado = "cargando";
