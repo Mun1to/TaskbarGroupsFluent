@@ -37,7 +37,6 @@
     <s:String x:Key="Loc_Main_ImportNone">No encontré grupos ahí. Elige la carpeta donde estaba instalado Taskbar Groups, o su carpeta "config".</s:String>
     <s:String x:Key="Loc_Main_ImportFailTitle">No se pudo importar</s:String>
     <s:String x:Key="Loc_Group_More">Más opciones</s:String>
-    <s:String x:Key="Loc_Group_DragHint">Arrástralo a la barra de tareas para anclarlo</s:String>
     <s:String x:Key="Loc_Group_Duplicate">Duplicar</s:String>
     <s:String x:Key="Loc_Group_Export">Exportar…</s:String>
     <s:String x:Key="Loc_Group_ExportFailTitle">No se pudo exportar</s:String>
@@ -56,7 +55,7 @@
     <s:String x:Key="Loc_Pin_NotFoundTitle">Acceso directo no encontrado</s:String>
     <s:String x:Key="Loc_Pin_NotFoundBody">No se encontró el acceso directo del grupo. Vuelve a guardarlo desde el editor.</s:String>
     <s:String x:Key="Loc_Pin_Title">Anclar a la barra de tareas</s:String>
-    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.&#10;&#10;Más rápido: arrastra el icono del grupo desde esta ventana hasta la barra.</s:String>
+    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
 
     <!-- Editor de grupo -->
     <s:String x:Key="Loc_Editor_TitleNew">Nuevo grupo</s:String>

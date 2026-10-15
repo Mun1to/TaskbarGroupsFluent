@@ -165,30 +165,6 @@ public partial class MainWindow : FluentWindow
         RefreshGroups();
     }
 
-    // Dragging a group's icon hands Windows its shortcut, the same .lnk the Pin
-    // button points at: dropped on the taskbar it pins the group, dropped on the
-    // desktop it leaves a shortcut there. The start point is kept so a plain click
-    // never turns into a drag.
-    private Point? _dragStart;
-
-    private void GroupIcon_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        => _dragStart = e.GetPosition(this);
-
-    private void GroupIcon_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
-    {
-        if (_dragStart is null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) { _dragStart = null; return; }
-        if (sender is not FrameworkElement { Tag: GroupItem group } element) return;
-
-        Vector moved = e.GetPosition(this) - _dragStart.Value;
-        if (Math.Abs(moved.X) < SystemParameters.MinimumHorizontalDragDistance
-            && Math.Abs(moved.Y) < SystemParameters.MinimumVerticalDragDistance) return;
-
-        _dragStart = null;
-        if (!File.Exists(group.ShortcutPath)) return;
-        var data = new DataObject(DataFormats.FileDrop, new[] { group.ShortcutPath });
-        DragDrop.DoDragDrop(element, data, DragDropEffects.Copy | DragDropEffects.Link);
-    }
-
     // The card's "…" button: the things a group needs now and then, kept off the
     // card itself so the three everyday buttons stay as they were.
     private void MoreGroup_Click(object sender, RoutedEventArgs e)

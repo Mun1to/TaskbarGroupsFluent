@@ -84,14 +84,8 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <!-- Drag the icon onto the taskbar to pin the group, or onto
-                                                 the desktop for a shortcut there. -->
                                             <Border Grid.Column="0" Width="52" Height="52" CornerRadius="11"
-                                                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                                                    Cursor="Hand" Tag="{Binding}"
-                                                    ToolTip="{DynamicResource Loc_Group_DragHint}"
-                                                    PreviewMouseLeftButtonDown="GroupIcon_MouseDown"
-                                                    PreviewMouseMove="GroupIcon_MouseMove">
+                                                    Background="{DynamicResource ControlFillColorSecondaryBrush}">
                                                 <Grid>
                                                     <ui:SymbolIcon Symbol="AppsList24" FontSize="26"
                                                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"

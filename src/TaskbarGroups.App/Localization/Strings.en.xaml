@@ -37,7 +37,6 @@
     <s:String x:Key="Loc_Main_ImportNone">No groups found there. Pick the folder where Taskbar Groups was installed, or its "config" folder.</s:String>
     <s:String x:Key="Loc_Main_ImportFailTitle">Couldn't import</s:String>
     <s:String x:Key="Loc_Group_More">More options</s:String>
-    <s:String x:Key="Loc_Group_DragHint">Drag onto the taskbar to pin it</s:String>
     <s:String x:Key="Loc_Group_Duplicate">Duplicate</s:String>
     <s:String x:Key="Loc_Group_Export">Export…</s:String>
     <s:String x:Key="Loc_Group_ExportFailTitle">Couldn't export</s:String>
@@ -56,7 +55,7 @@
     <s:String x:Key="Loc_Pin_NotFoundTitle">Shortcut not found</s:String>
     <s:String x:Key="Loc_Pin_NotFoundBody">The group's shortcut wasn't found. Save it again from the editor.</s:String>
     <s:String x:Key="Loc_Pin_Title">Pin to taskbar</s:String>
-    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.&#10;&#10;Quicker: drag the group's icon from this window onto the taskbar.</s:String>
+    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.</s:String>
 
     <!-- Group editor -->
     <s:String x:Key="Loc_Editor_TitleNew">New group</s:String>
