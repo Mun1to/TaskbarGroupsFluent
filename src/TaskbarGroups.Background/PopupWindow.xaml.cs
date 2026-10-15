@@ -131,6 +131,7 @@ public partial class PopupWindow : Window
         HeaderBar.Visibility = _category.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
         HeaderText.Text = _category.Name;
         EditButton.ToolTip = SpanishUi() ? "Editar grupo" : "Edit group";
+        OpenAllButton.ToolTip = SpanishUi() ? "Abrir todas" : "Open all";
     }
 
     // The flyout carries no string tables of its own for one tooltip, so it follows
@@ -143,6 +144,16 @@ public partial class PopupWindow : Window
             ? forced
             : System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
         return lang.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase);
+    }
+
+    // Opens every app in the group, for the times the whole set is wanted at once:
+    // a work session, a game launcher and its chat, and so on.
+    private void OpenAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (_category.ShortcutList is not null)
+            foreach (var ps in _category.ShortcutList)
+                Launch(ps);
+        CloseOnce();
     }
 
     // The pencil in the header: open this group's editor in the main app, and get

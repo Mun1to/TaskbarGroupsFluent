@@ -114,12 +114,19 @@
                 <TextBlock x:Name="HeaderText" Foreground="{DynamicResource FlyoutTextBrush}"
                            FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"
                            TextTrimming="CharacterEllipsis" MaxWidth="260" HorizontalAlignment="Left"
-                           Margin="0,0,40,0" />
-                <Button x:Name="EditButton" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
-                        Width="32" Height="32" Click="Edit_Click">
-                    <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
-                               FontSize="14" Foreground="{DynamicResource FlyoutTextBrush}" />
-                </Button>
+                           Margin="0,0,72,0" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="OpenAllButton" Style="{StaticResource IconButton}"
+                            Width="32" Height="32" Click="OpenAll_Click">
+                        <TextBlock Text="&#xE8A7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="14" Foreground="{DynamicResource FlyoutTextBrush}" />
+                    </Button>
+                    <Button x:Name="EditButton" Style="{StaticResource IconButton}"
+                            Width="32" Height="32" Click="Edit_Click">
+                        <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="14" Foreground="{DynamicResource FlyoutTextBrush}" />
+                    </Button>
+                </StackPanel>
             </Grid>
             <ItemsControl x:Name="ItemsHost" ItemTemplate="{StaticResource TileWithLabel}"
                           ItemsPanel="{StaticResource GridPanel}" />
