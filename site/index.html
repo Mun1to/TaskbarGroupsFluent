@@ -347,9 +347,12 @@
 
     .escritorio {
       position: relative; height: 430px; overflow: hidden; isolation: isolate;
-      /* Un fondo de escritorio propio, a base de manchas de color: es lo que el
-         cristal del panel y de la barra deja ver desenfocado. */
+      /* Fondo de escritorio: dos gallinas cocineras (foto CC0 de rawpixel,
+         https://www.rawpixel.com/image/5944844). Es lo que el cristal del panel y
+         de la barra deja ver desenfocado. Las manchas de color de debajo quedan de
+         respaldo mientras carga la foto. */
       background:
+        url("assets/fondo-demo.webp") center 62% / cover no-repeat,
         radial-gradient(42% 52% at 28% 34%, #4cc2ff8c, transparent 70%),
         radial-gradient(38% 48% at 74% 26%, #7c5cff70, transparent 70%),
         radial-gradient(60% 50% at 58% 92%, #0067c0b3, transparent 72%),
@@ -507,7 +510,7 @@
 
     /* Selector de forma, debajo del marco */
     .formas-fila {
-      display: flex; align-items: center; justify-content: space-between; gap: 12px 16px;
+      display: flex; align-items: center; justify-content: center; gap: 12px 16px;
       flex-wrap: wrap; margin-top: 14px;
     }
     .formas-rotulo { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 13px; color: var(--suave); }
@@ -865,9 +868,6 @@
            monta el script de abajo a partir de la lista GRUPOS. -->
       <div class="demo" id="demo" data-reveal style="--i:3">
         <div class="marco">
-          <div class="barra-falsa">
-            <span class="semaforo" aria-hidden="true"><i></i><i></i><i></i></span>
-          </div>
           <div class="escritorio" id="escritorio">
             <div class="pista" id="pista" aria-hidden="true">
               <span id="pista-texto">Pasa el ratón por un grupo de la barra</span>
