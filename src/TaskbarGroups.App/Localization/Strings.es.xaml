@@ -58,6 +58,26 @@
     <s:String x:Key="Loc_Editor_PickImage">Selecciona una imagen para el grupo</s:String>
     <s:String x:Key="Loc_Editor_ImagesFilter">Imágenes</s:String>
     <s:String x:Key="Loc_Editor_ImageLoadFail">No se pudo cargar la imagen seleccionada.</s:String>
+    <s:String x:Key="Loc_Editor_GridIcon">Apps</s:String>
+    <s:String x:Key="Loc_Editor_GridIconTip">Hacer el icono con las cuatro primeras apps del grupo</s:String>
+    <s:String x:Key="Loc_Editor_GridIconNeedsApps">Añade antes alguna app: el icono se hace con ellas.</s:String>
+    <s:String x:Key="Loc_Editor_PanelTitle">Panel</s:String>
+    <s:String x:Key="Loc_Editor_LayoutLabel">Cómo se abre</s:String>
+    <s:String x:Key="Loc_Editor_LayoutGrid">Cuadrícula</s:String>
+    <s:String x:Key="Loc_Editor_LayoutRow">Horizontal</s:String>
+    <s:String x:Key="Loc_Editor_LayoutColumn">Vertical</s:String>
+    <s:String x:Key="Loc_Editor_Columns">Columnas</s:String>
+    <s:String x:Key="Loc_Editor_ColumnsAuto">Automático</s:String>
+    <s:String x:Key="Loc_Editor_ShowLabels">Mostrar el nombre de las apps</s:String>
+    <s:String x:Key="Loc_Editor_ShowHeader">Mostrar el nombre del grupo, con un lápiz para editarlo</s:String>
+    <s:String x:Key="Loc_Editor_LayoutList">Lista</s:String>
+    <s:String x:Key="Loc_Editor_IconSize">Tamaño de los iconos</s:String>
+    <s:String x:Key="Loc_Editor_IconSmall">Pequeño</s:String>
+    <s:String x:Key="Loc_Editor_IconNormal">Normal</s:String>
+    <s:String x:Key="Loc_Editor_IconLarge">Grande</s:String>
+    <s:String x:Key="Loc_Editor_HeaderPosition">Dónde va el nombre del grupo</s:String>
+    <s:String x:Key="Loc_Editor_HeaderTop">Arriba</s:String>
+    <s:String x:Key="Loc_Editor_HeaderBottom">Abajo</s:String>
 
     <!-- Subtítulos de acceso directo -->
     <s:String x:Key="Loc_Sub_StoreApp">Aplicación</s:String>

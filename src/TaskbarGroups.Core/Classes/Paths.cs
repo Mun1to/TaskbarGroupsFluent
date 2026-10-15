@@ -55,6 +55,22 @@ namespace TaskbarGroups.Core
         public static string HoverApplication =
             Path.Combine(exeFolder, "TaskbarGroups.Hover.exe");
 
+        /// <summary>
+        /// Path to the main app, from whichever piece is asking: the app and the
+        /// watcher sit next to it, while the flyout lives one folder down in
+        /// "Background" and has to look in its parent.
+        /// </summary>
+        public static string MainApplication
+        {
+            get
+            {
+                string here = Path.Combine(exeFolder, "TaskbarGroups.App.exe");
+                return File.Exists(here)
+                    ? here
+                    : Path.GetFullPath(Path.Combine(exeFolder, "..", "TaskbarGroups.App.exe"));
+            }
+        }
+
         private static string setupConfigPath()
         {
             defaultConfigPath = Path.Combine(

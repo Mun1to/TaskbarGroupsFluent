@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +24,7 @@ public partial class App : Application
         // fixed "Dark" theme declared in App.xaml. SystemThemeWatcher on each
         // window then keeps it in sync if the user switches theme while open.
         ApplicationThemeManager.ApplySystemTheme();
+
         base.OnStartup(e);
 
         // After an update that changes icon resolution, refresh group caches once so
@@ -36,6 +37,38 @@ public partial class App : Application
         // sign-in, so without this the feature would look switched on and do nothing
         // until the next reboot.
         if (Settings.settingInfo.hoverToOpen) Task.Run(() => HoverService.Start());
+
+        // The pencil in a flyout's header asks for one group's editor, not the whole
+        // app, which is why the main window is opened here rather than by a
+        // StartupUri in App.xaml.
+        string? editName = EditRequest(e.Args);
+        if (editName is not null) EditOnly(editName);
+        else new MainWindow().Show();
+    }
+
+    /// <summary>The group named after "--edit", or null for a normal start.</summary>
+    private static string? EditRequest(string[] args)
+    {
+        int i = Array.FindIndex(args, a => a.Equals("--edit", StringComparison.OrdinalIgnoreCase));
+        return i >= 0 && i + 1 < args.Length && !string.IsNullOrWhiteSpace(args[i + 1]) ? args[i + 1] : null;
+    }
+
+    // Opens the editor on its own and leaves when it closes. A group that is gone
+    // (deleted since it was pinned) falls back to the main window, which is where
+    // the user would go next anyway.
+    private void EditOnly(string name)
+    {
+        var group = Services.GroupService.LoadAll()
+            .Find(g => string.Equals(g.Source.Name, name, StringComparison.OrdinalIgnoreCase));
+        if (group is null)
+        {
+            new MainWindow().Show();
+            return;
+        }
+
+        var editor = new GroupEditorWindow(group.Source) { WindowStartupLocation = WindowStartupLocation.CenterScreen };
+        editor.ShowDialog();
+        Shutdown();
     }
 
     private void OnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)

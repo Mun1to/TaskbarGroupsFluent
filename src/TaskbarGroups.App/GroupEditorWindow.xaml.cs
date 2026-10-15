@@ -27,14 +27,42 @@ public partial class GroupEditorWindow : FluentWindow
     private readonly string? _originalName;
     private bool _iconChanged;
 
+    // The taskbar icon is the group's own apps, two by two, and follows them: every
+    // add or remove rebuilds it until the user picks an image or an emoji instead.
+    private bool _gridIcon;
+
+    // Set while the panel controls are filled in from a saved group, so their change
+    // events don't redraw the preview a dozen times on the way.
+    private bool _loadingPanel = true;
+
     public GroupEditorWindow(Category? existing = null)
     {
         InitializeComponent();
         SystemThemeWatcher.Watch(this);
 
         ShortcutsItemsControl.ItemsSource = _shortcuts;
-        _shortcuts.CollectionChanged += (_, _) => UpdateEmptyHint();
+        PreviewItems.ItemsSource = _shortcuts;
+        _shortcuts.CollectionChanged += (_, _) =>
+        {
+            UpdateEmptyHint();
+            if (_gridIcon) RebuildGridIcon();
+            UpdatePreview();
+        };
+        NameTextBox.TextChanged += (_, _) => UpdatePreview();
 
+        ColumnsCombo.Items.Add(Loc.Get("Loc_Editor_ColumnsAuto"));
+        for (int n = 1; n <= 8; n++) ColumnsCombo.Items.Add(n.ToString());
+        // Same order as PanelLayouts.IconScales.
+        IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconSmall"));
+        IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconNormal"));
+        IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconLarge"));
+        HeaderPositionCombo.Items.Add(Loc.Get("Loc_Editor_HeaderTop"));
+        HeaderPositionCombo.Items.Add(Loc.Get("Loc_Editor_HeaderBottom"));
+
+        // A new group starts with its name and pencil showing, which is the look
+        // Munir picked for 1.6. Existing groups keep whatever they had: the field
+        // defaults to off, so a file saved before 1.6 opens exactly as it used to.
+        var panel = existing ?? new Category { ShowHeader = true };
         if (existing is not null)
         {
             _isEditing = true;
@@ -45,9 +73,117 @@ public partial class GroupEditorWindow : FluentWindow
             NameTextBox.Text = existing.Name;
             LoadExistingIcon(existing);
             LoadExistingShortcuts(existing);
+            _gridIcon = existing.GridIcon;
         }
+        LoadPanelOptions(panel);
 
         UpdateEmptyHint();
+        _loadingPanel = false;
+        UpdatePreview();
+    }
+
+    private void LoadPanelOptions(Category category)
+    {
+        if (PanelLayouts.IsRow(category.PanelLayout)) LayoutRowRadio.IsChecked = true;
+        else if (PanelLayouts.IsColumn(category.PanelLayout)) LayoutColumnRadio.IsChecked = true;
+        else if (PanelLayouts.IsList(category.PanelLayout)) LayoutListRadio.IsChecked = true;
+        else LayoutGridRadio.IsChecked = true;
+
+        ColumnsCombo.SelectedIndex = Math.Clamp(category.Width, 0, ColumnsCombo.Items.Count - 1);
+        int size = Array.IndexOf(PanelLayouts.IconScales, category.IconScale);
+        IconSizeCombo.SelectedIndex = size >= 0 ? size : 1;
+        LabelsToggle.IsChecked = category.ShowLabels;
+        HeaderToggle.IsChecked = category.ShowHeader;
+        HeaderPositionCombo.SelectedIndex = PanelLayouts.IsBottom(category.HeaderPosition) ? 1 : 0;
+    }
+
+    private string SelectedLayout()
+        => LayoutRowRadio.IsChecked == true ? PanelLayouts.Row
+         : LayoutColumnRadio.IsChecked == true ? PanelLayouts.Column
+         : LayoutListRadio.IsChecked == true ? PanelLayouts.List
+         : PanelLayouts.Grid;
+
+    private int SelectedIconScale()
+        => PanelLayouts.IconScales[Math.Clamp(IconSizeCombo.SelectedIndex, 0, PanelLayouts.IconScales.Length - 1)];
+
+    private string SelectedHeaderPosition()
+        => HeaderPositionCombo.SelectedIndex == 1 ? PanelLayouts.HeaderBottom : PanelLayouts.HeaderTop;
+
+    // Index 0 is "automatic"; after that the index is the column count itself.
+    private int SelectedColumns() => Math.Max(ColumnsCombo.SelectedIndex, 0);
+
+    private void PanelOption_Changed(object sender, RoutedEventArgs e) => UpdatePreview();
+
+    // Lays the preview out with exactly the rules the flyout uses, so what the user
+    // sees here is what opens from the taskbar.
+    private void UpdatePreview()
+    {
+        if (_loadingPanel) return;
+
+        var plan = PanelLayouts.Plan(SelectedLayout(), LabelsToggle.IsChecked == true,
+            SelectedColumns(), _shortcuts.Count);
+        PreviewItems.ItemsPanel = (System.Windows.Controls.ItemsPanelTemplate)Resources["Preview" + plan.Panel + "Panel"];
+        PreviewItems.ItemTemplate = (DataTemplate)Resources["Preview" + plan.Template];
+        PreviewItems.MaxWidth = plan.MaxWidth;
+        double scale = PanelLayouts.Scale(SelectedIconScale());
+        PreviewItems.LayoutTransform = scale == 1.0
+            ? System.Windows.Media.Transform.Identity
+            : new System.Windows.Media.ScaleTransform(scale, scale);
+
+        // Only the options that change something for this layout are shown.
+        ColumnsRow.Visibility = plan.UsesColumns ? Visibility.Visible : Visibility.Collapsed;
+        LabelsToggle.Visibility = plan.UsesLabels ? Visibility.Visible : Visibility.Collapsed;
+        bool header = HeaderToggle.IsChecked == true;
+        HeaderPositionRow.Visibility = header ? Visibility.Visible : Visibility.Collapsed;
+
+        bool bottom = SelectedHeaderPosition() == PanelLayouts.HeaderBottom;
+        System.Windows.Controls.DockPanel.SetDock(PreviewHeader,
+            bottom ? System.Windows.Controls.Dock.Bottom : System.Windows.Controls.Dock.Top);
+        PreviewHeader.Margin = bottom ? new Thickness(8, 4, 0, 0) : new Thickness(8, 0, 0, 4);
+
+        // Dark or light glass, following the app's theme the way the flyout follows
+        // the system's.
+        bool dark = ApplicationThemeManager.GetAppTheme() != ApplicationTheme.Light;
+        PreviewPanel.Background = new System.Windows.Media.SolidColorBrush(dark
+            ? System.Windows.Media.Color.FromArgb(0xB4, 0x20, 0x20, 0x20)
+            : System.Windows.Media.Color.FromArgb(0xC8, 0xF3, 0xF3, 0xF3));
+        PreviewPanel.BorderBrush = new System.Windows.Media.SolidColorBrush(dark
+            ? System.Windows.Media.Color.FromArgb(0x22, 0xFF, 0xFF, 0xFF)
+            : System.Windows.Media.Color.FromArgb(0x22, 0x00, 0x00, 0x00));
+        PreviewHeaderText.Foreground = new System.Windows.Media.SolidColorBrush(dark
+            ? System.Windows.Media.Colors.White
+            : System.Windows.Media.Color.FromRgb(0x1A, 0x1A, 0x1A));
+
+        PreviewHeader.Visibility = header ? Visibility.Visible : Visibility.Collapsed;
+        string name = (NameTextBox.Text ?? "").Trim();
+        PreviewHeaderText.Text = name.Length > 0 ? name : Loc.Get("Loc_Editor_NamePlaceholder");
+    }
+
+    private void GridIcon_Click(object sender, RoutedEventArgs e)
+    {
+        if (_shortcuts.Count == 0)
+        {
+            ShowError(Loc.Get("Loc_Editor_GridIconNeedsApps"));
+            return;
+        }
+        _gridIcon = true;
+        RebuildGridIcon();
+    }
+
+    private void RebuildGridIcon()
+    {
+        var icons = new List<DrawingImage>();
+        foreach (var entry in _shortcuts.Take(4))
+        {
+            try { icons.Add(Category.ResolveShortcutImage(entry.Shortcut)); }
+            catch { /* an app without an icon just leaves its cell to the others */ }
+        }
+        if (icons.Count == 0) return;
+
+        _groupImage = GroupIconGrid.Compose(icons);
+        _iconChanged = true;
+        GroupIconPreview.Source = _groupImage.ToImageSource();
+        GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
 
     private void LoadExistingIcon(Category category)
@@ -149,6 +285,7 @@ public partial class GroupEditorWindow : FluentWindow
 
         _groupImage = editor.Result;
         _iconChanged = true;
+        _gridIcon = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
@@ -160,6 +297,7 @@ public partial class GroupEditorWindow : FluentWindow
 
         _groupImage = picker.Result;
         _iconChanged = true;
+        _gridIcon = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
@@ -187,7 +325,14 @@ public partial class GroupEditorWindow : FluentWindow
         var category = new Category
         {
             Name = name,
-            ShortcutList = _shortcuts.Select(s => s.Shortcut).ToList()
+            ShortcutList = _shortcuts.Select(s => s.Shortcut).ToList(),
+            PanelLayout = SelectedLayout(),
+            Width = SelectedColumns(),
+            ShowLabels = LabelsToggle.IsChecked == true,
+            ShowHeader = HeaderToggle.IsChecked == true,
+            HeaderPosition = SelectedHeaderPosition(),
+            IconScale = SelectedIconScale(),
+            GridIcon = _gridIcon
         };
 
         DrawingImage groupImage = _groupImage ?? GenerateDefaultGroupImage(name);

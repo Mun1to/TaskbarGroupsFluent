@@ -9,7 +9,6 @@ using System.Windows.Threading;
 using TaskbarGroups.Background.Helpers;
 using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
-using Wpf.Ui.Controls;
 
 namespace TaskbarGroups.Background;
 
@@ -109,49 +108,180 @@ public partial class PopupWindow : Window
         return b;
     }
 
+    // A warm flyout is reused across groups, so every showing sets all of this
+    // again rather than trusting what the previous group left behind.
     private void ApplyAppearance()
     {
-        int count = _category.ShortcutList?.Count ?? 0;
-        int columns = _category.Width > 0 ? _category.Width : Math.Min(Math.Max(count, 1), 6);
-        ItemsHost.MaxWidth = columns * 80 + 20;
+        var plan = PanelLayouts.Plan(_category.PanelLayout, _category.ShowLabels,
+            _category.Width, _category.ShortcutList?.Count ?? 0);
+        ItemsHost.ItemsPanel = (System.Windows.Controls.ItemsPanelTemplate)Resources[plan.Panel + "Panel"];
+        ItemsHost.ItemTemplate = (DataTemplate)Resources[plan.Template];
+        ItemsHost.MaxWidth = plan.MaxWidth;
+
+        // Scaled as a whole, names included, so a bigger icon keeps its proportions
+        // with the text under it. MaxWidth is in the unscaled units, which is what
+        // keeps the column count the same at every size.
+        double scale = PanelLayouts.Scale(_category.IconScale);
+        ItemsHost.LayoutTransform = scale == 1.0 ? Transform.Identity : new ScaleTransform(scale, scale);
+
+        bool bottom = PanelLayouts.IsBottom(_category.HeaderPosition);
+        System.Windows.Controls.DockPanel.SetDock(HeaderBar,
+            bottom ? System.Windows.Controls.Dock.Bottom : System.Windows.Controls.Dock.Top);
+        HeaderBar.Margin = bottom ? new Thickness(8, 4, 0, 0) : new Thickness(8, 0, 0, 4);
+        HeaderBar.Visibility = _category.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
+        HeaderText.Text = _category.Name;
+        EditButton.ToolTip = SpanishUi() ? "Editar grupo" : "Edit group";
+    }
+
+    // The flyout carries no string tables of its own for one tooltip, so it follows
+    // the same rule as the app: Spanish when Windows is in Spanish, unless TBG_LANG
+    // says otherwise.
+    private static bool SpanishUi()
+    {
+        string forced = Environment.GetEnvironmentVariable("TBG_LANG");
+        string lang = !string.IsNullOrWhiteSpace(forced)
+            ? forced
+            : System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+        return lang.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase);
+    }
+
+    // The pencil in the header: open this group's editor in the main app, and get
+    // out of the way.
+    private void Edit_Click(object sender, RoutedEventArgs e)
+    {
+        try
+        {
+            var psi = new ProcessStartInfo(Paths.MainApplication) { UseShellExecute = false };
+            psi.ArgumentList.Add("--edit");
+            psi.ArgumentList.Add(_category.Name);
+            Process.Start(psi);
+        }
+        catch
+        {
+            // No app to open: the panel still closes, as any click in it does.
+        }
+        CloseOnce();
     }
 
     // A per-pixel transparent (AllowsTransparency) window is software-rendered and
     // can show a frozen frame until something forces a repaint. Instead this is a
-    // normal GPU-composited window: on Windows 11 it gets a translucent acrylic
-    // backdrop and rounded corners via DWM; elsewhere it falls back to an opaque
-    // rounded panel. Either way it never freezes, and it follows the system theme.
+    // normal GPU-composited window with the glass painted behind it by DWM, and
+    // rounded corners on Windows 11; elsewhere, or with transparency effects
+    // switched off in Windows, it is an opaque rounded panel. Either way it never
+    // freezes, and it follows the system theme.
     protected override void OnSourceInitialized(EventArgs e)
     {
         base.OnSourceInitialized(e);
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
-        bool acrylic = false;
+        bool glass = false;
 
         if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
         {
-            try { acrylic = WindowBackdrop.ApplyBackdrop(this, WindowBackdropType.Acrylic); }
-            catch { acrylic = false; }
-            // Set the acrylic tint (dark/light) after the backdrop so it sticks.
             int dark = _isDark ? 1 : 0;
             DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
             int round = DWMWCP_ROUND;
             DwmSetWindowAttribute(hwnd, DWMWA_WINDOW_CORNER_PREFERENCE, ref round, sizeof(int));
+            glass = TransparencyEffectsOn() && ApplyAcrylicBlur(hwnd);
         }
 
-        if (acrylic)
+        if (glass)
         {
-            // Let the acrylic show through a translucent tint.
+            // The tint lives in the blur itself, so nothing is painted over it.
             Background = Brushes.Transparent;
-            RootBorder.Background = new SolidColorBrush(Color.FromArgb(150, _tint.R, _tint.G, _tint.B));
+            RootBorder.Background = Brushes.Transparent;
         }
         else
         {
-            // No acrylic: opaque so nothing shows through (avoids a black backdrop).
+            // No glass: opaque so nothing shows through (avoids a black backdrop).
             var solid = new SolidColorBrush(Color.FromArgb(255, _tint.R, _tint.G, _tint.B));
             Background = solid;
             RootBorder.Background = solid;
         }
     }
+
+    // The system backdrop that WPF-UI applies (DWMWA_SYSTEMBACKDROP_TYPE) was
+    // measured never painting on this window: a borderless popup gets no acrylic
+    // from it, active or not, and the panel came out flat black over a striped
+    // test pattern. The accent policy is the route Windows' own taskbar flyouts
+    // and apps like EarTrumpet use for borderless glass, and it does not depend on
+    // the window being active, which a hover-opened flyout never is.
+    private bool ApplyAcrylicBlur(IntPtr hwnd)
+    {
+        var source = HwndSource.FromHwnd(hwnd);
+        if (source?.CompositionTarget is null) return false;
+        source.CompositionTarget.BackgroundColor = Colors.Transparent;
+
+        byte alpha = _isDark ? DarkTintAlpha : LightTintAlpha;
+        var accent = new AccentPolicy
+        {
+            AccentState = ACCENT_ENABLE_ACRYLICBLURBEHIND,
+            // AABBGGRR, the byte order the accent policy expects.
+            GradientColor = (uint)(alpha << 24 | _tint.B << 16 | _tint.G << 8 | _tint.R)
+        };
+
+        int size = Marshal.SizeOf<AccentPolicy>();
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(accent, ptr, false);
+            var data = new WindowCompositionAttributeData
+            {
+                Attribute = WCA_ACCENT_POLICY,
+                Data = ptr,
+                SizeOfData = size
+            };
+            return SetWindowCompositionAttribute(hwnd, ref data) != 0;
+        }
+        catch
+        {
+            return false;
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+    }
+
+    // Windows' own "Transparency effects" switch. With it off, every flyout in the
+    // system goes opaque, and this one should not be the exception.
+    private static bool TransparencyEffectsOn()
+    {
+        try
+        {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
+                @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize");
+            return key?.GetValue("EnableTransparency") is not int v || v != 0;
+        }
+        catch { return true; }
+    }
+
+    // How much of the theme colour covers the blur, out of 255. Light needs more,
+    // or dark wallpaper bleeds through and the black text loses contrast.
+    private const byte DarkTintAlpha = 0x99;
+    private const byte LightTintAlpha = 0xC0;
+
+    private const int WCA_ACCENT_POLICY = 19;
+    private const int ACCENT_ENABLE_ACRYLICBLURBEHIND = 4;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct AccentPolicy
+    {
+        public int AccentState;
+        public int AccentFlags;
+        public uint GradientColor;
+        public int AnimationId;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct WindowCompositionAttributeData
+    {
+        public int Attribute;
+        public IntPtr Data;
+        public int SizeOfData;
+    }
+
+    [DllImport("user32.dll")]
+    private static extern int SetWindowCompositionAttribute(IntPtr hwnd, ref WindowCompositionAttributeData data);
 
     // The Windows "apps" light/dark preference (true = light). TBG_THEME=light|dark
     // forces it, mirroring the TBG_LANG language override.

@@ -16,12 +16,14 @@
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Bd" Background="{TemplateBinding Background}"
                                 CornerRadius="8" Padding="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center" />
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -35,31 +37,92 @@
                 </Setter.Value>
             </Setter>
         </Style>
+
+        <!-- The icon with its name underneath: the look every group had before the
+             layouts existed, and still the default. -->
+        <DataTemplate x:Key="TileWithLabel">
+            <Button Style="{StaticResource IconButton}" Tag="{Binding}"
+                    Click="Item_Click" ToolTip="{Binding DisplayName}"
+                    Width="80" Height="88" Margin="2">
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="{Binding Icon}" Width="44" Height="44"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                               FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="68" />
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+
+        <!-- The icon alone, compact like the taskbar itself. The name is still
+             there as a tooltip. -->
+        <DataTemplate x:Key="TileIconOnly">
+            <Button Style="{StaticResource IconButton}" Tag="{Binding}"
+                    Click="Item_Click" ToolTip="{Binding DisplayName}"
+                    Width="52" Height="52" Margin="2">
+                <Image Source="{Binding Icon}" Width="32" Height="32"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+            </Button>
+        </DataTemplate>
+
+        <!-- The icon with its name beside it, for a column: reads like a menu. -->
+        <DataTemplate x:Key="LineWithLabel">
+            <Button Style="{StaticResource IconButton}" Tag="{Binding}"
+                    Click="Item_Click" HorizontalContentAlignment="Left"
+                    MinWidth="190" Height="44" Margin="1">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Icon}" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                               FontSize="13" VerticalAlignment="Center" Margin="12,0,8,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+
+        <!-- The same, at a fixed width, so a list can wrap into even columns. -->
+        <DataTemplate x:Key="ListCell">
+            <Button Style="{StaticResource IconButton}" Tag="{Binding}"
+                    Click="Item_Click" HorizontalContentAlignment="Left"
+                    Width="200" Height="44" Margin="1">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Icon}" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                               FontSize="13" VerticalAlignment="Center" Margin="12,0,0,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                </StackPanel>
+            </Button>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="GridPanel">
+            <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="RowPanel">
+            <StackPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="ColumnPanel">
+            <StackPanel Orientation="Vertical" />
+        </ItemsPanelTemplate>
     </Window.Resources>
 
     <Border x:Name="RootBorder" CornerRadius="8" Padding="10"
             Background="#F0202020" BorderBrush="{DynamicResource FlyoutBorderBrush}" BorderThickness="1">
-        <ItemsControl x:Name="ItemsHost">
-            <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel x:Name="Wrap" Orientation="Horizontal" />
-                </ItemsPanelTemplate>
-            </ItemsControl.ItemsPanel>
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <Button Style="{StaticResource IconButton}" Tag="{Binding}"
-                            Click="Item_Click" ToolTip="{Binding DisplayName}"
-                            Width="80" Height="88" Margin="2">
-                        <StackPanel VerticalAlignment="Center">
-                            <Image Source="{Binding Icon}" Width="44" Height="44"
-                                   RenderOptions.BitmapScalingMode="HighQuality" />
-                            <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
-                                       FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
-                                       TextTrimming="CharacterEllipsis" MaxWidth="68" />
-                        </StackPanel>
-                    </Button>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <DockPanel>
+            <!-- The group's name, with a pencil that opens its editor straight away. -->
+            <Grid x:Name="HeaderBar" DockPanel.Dock="Top" Margin="8,0,0,4" Visibility="Collapsed">
+                <TextBlock x:Name="HeaderText" Foreground="{DynamicResource FlyoutTextBrush}"
+                           FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" MaxWidth="260" HorizontalAlignment="Left"
+                           Margin="0,0,40,0" />
+                <Button x:Name="EditButton" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
+                        Width="32" Height="32" Click="Edit_Click">
+                    <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               FontSize="14" Foreground="{DynamicResource FlyoutTextBrush}" />
+                </Button>
+            </Grid>
+            <ItemsControl x:Name="ItemsHost" ItemTemplate="{StaticResource TileWithLabel}"
+                          ItemsPanel="{StaticResource GridPanel}" />
+        </DockPanel>
     </Border>
 </Window>

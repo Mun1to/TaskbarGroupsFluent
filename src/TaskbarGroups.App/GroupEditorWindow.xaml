@@ -14,6 +14,60 @@
         ExtendsContentIntoTitleBar="True"
         WindowStartupLocation="CenterOwner">
 
+    <ui:FluentWindow.Resources>
+        <!-- The same three looks the flyout has, so the preview is the real thing
+             in miniature rather than a drawing of it. Sizes match PopupWindow.xaml;
+             the Viewbox around the preview does the shrinking. -->
+        <DataTemplate x:Key="PreviewTileWithLabel">
+            <Border Width="80" Height="88" Margin="2" Padding="6">
+                <StackPanel VerticalAlignment="Center">
+                    <Image Source="{Binding Icon}" Width="44" Height="44"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Foreground, ElementName=PreviewHeaderText}"
+                               FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="68" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="PreviewTileIconOnly">
+            <Border Width="52" Height="52" Margin="2" Padding="6">
+                <Image Source="{Binding Icon}" Width="32" Height="32"
+                       RenderOptions.BitmapScalingMode="HighQuality" />
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="PreviewLineWithLabel">
+            <Border MinWidth="190" Height="44" Margin="1" Padding="6">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Icon}" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Foreground, ElementName=PreviewHeaderText}"
+                               FontSize="13" VerticalAlignment="Center" Margin="12,0,8,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <DataTemplate x:Key="PreviewListCell">
+            <Border Width="200" Height="44" Margin="1" Padding="6">
+                <StackPanel Orientation="Horizontal">
+                    <Image Source="{Binding Icon}" Width="28" Height="28"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Text="{Binding DisplayName}" Foreground="{Binding Foreground, ElementName=PreviewHeaderText}"
+                               FontSize="13" VerticalAlignment="Center" Margin="12,0,0,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="140" />
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <ItemsPanelTemplate x:Key="PreviewGridPanel">
+            <WrapPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="PreviewRowPanel">
+            <StackPanel Orientation="Horizontal" />
+        </ItemsPanelTemplate>
+        <ItemsPanelTemplate x:Key="PreviewColumnPanel">
+            <StackPanel Orientation="Vertical" />
+        </ItemsPanelTemplate>
+    </ui:FluentWindow.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -59,7 +113,12 @@
                                            Click="ChangeIcon_Click" />
                                 <ui:Button Content="{DynamicResource Loc_Editor_Emoji}"
                                            Icon="{ui:SymbolIcon Emoji24}"
+                                           Margin="0,0,8,0"
                                            Click="ChangeEmoji_Click" />
+                                <ui:Button Content="{DynamicResource Loc_Editor_GridIcon}"
+                                           Icon="{ui:SymbolIcon Grid24}"
+                                           ToolTip="{DynamicResource Loc_Editor_GridIconTip}"
+                                           Click="GridIcon_Click" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -114,6 +173,80 @@
                            Text="{DynamicResource Loc_Editor_EmptyHint}"
                            FontSize="13" Margin="0,4,0,16" TextAlignment="Center"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                <TextBlock Text="{DynamicResource Loc_Editor_PanelTitle}" FontSize="16" FontWeight="SemiBold"
+                           Margin="0,0,0,8" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+                <ui:Card Padding="16" Margin="0,0,0,16">
+                    <StackPanel>
+                        <!-- A wallpaper-like backdrop, so the glass of the panel reads
+                             the way it will over the desktop. -->
+                        <Border CornerRadius="8" Padding="16" Margin="0,0,0,16" MinHeight="140">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#2A5EA8" Offset="0" />
+                                    <GradientStop Color="#16305E" Offset="0.55" />
+                                    <GradientStop Color="#0B1530" Offset="1" />
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Viewbox Stretch="Uniform" StretchDirection="DownOnly" MaxHeight="300"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Border x:Name="PreviewPanel" CornerRadius="8" Padding="10" BorderThickness="1">
+                                    <DockPanel>
+                                        <Grid x:Name="PreviewHeader" DockPanel.Dock="Top" Margin="8,0,0,4">
+                                            <TextBlock x:Name="PreviewHeaderText" FontSize="14" FontWeight="SemiBold"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                       TextTrimming="CharacterEllipsis" MaxWidth="260" Margin="0,0,40,0" />
+                                            <TextBlock x:Name="PreviewPencil" Text="&#xE70F;" FontSize="14"
+                                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                       Foreground="{Binding Foreground, ElementName=PreviewHeaderText}"
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,9,0" />
+                                        </Grid>
+                                        <ItemsControl x:Name="PreviewItems" />
+                                    </DockPanel>
+                                </Border>
+                            </Viewbox>
+                        </Border>
+
+                        <TextBlock Text="{DynamicResource Loc_Editor_LayoutLabel}" FontSize="13" Margin="0,0,0,6"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        <WrapPanel Margin="0,0,0,12">
+                            <RadioButton x:Name="LayoutGridRadio" GroupName="PanelLayout" MinWidth="0" Margin="0,0,20,4"
+                                         Content="{DynamicResource Loc_Editor_LayoutGrid}" Checked="PanelOption_Changed" />
+                            <RadioButton x:Name="LayoutRowRadio" GroupName="PanelLayout" MinWidth="0" Margin="0,0,20,4"
+                                         Content="{DynamicResource Loc_Editor_LayoutRow}" Checked="PanelOption_Changed" />
+                            <RadioButton x:Name="LayoutColumnRadio" GroupName="PanelLayout" MinWidth="0" Margin="0,0,20,4"
+                                         Content="{DynamicResource Loc_Editor_LayoutColumn}" Checked="PanelOption_Changed" />
+                            <RadioButton x:Name="LayoutListRadio" GroupName="PanelLayout" MinWidth="0" Margin="0,0,0,4"
+                                         Content="{DynamicResource Loc_Editor_LayoutList}" Checked="PanelOption_Changed" />
+                        </WrapPanel>
+
+                        <Grid x:Name="ColumnsRow" Margin="0,0,0,10">
+                            <TextBlock Text="{DynamicResource Loc_Editor_Columns}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <ComboBox x:Name="ColumnsCombo" HorizontalAlignment="Right" MinWidth="150"
+                                      SelectionChanged="PanelOption_Changed" />
+                        </Grid>
+
+                        <Grid Margin="0,0,0,12">
+                            <TextBlock Text="{DynamicResource Loc_Editor_IconSize}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <ComboBox x:Name="IconSizeCombo" HorizontalAlignment="Right" MinWidth="150"
+                                      SelectionChanged="PanelOption_Changed" />
+                        </Grid>
+
+                        <ui:ToggleSwitch x:Name="LabelsToggle" Content="{DynamicResource Loc_Editor_ShowLabels}"
+                                         Margin="0,0,0,10" Checked="PanelOption_Changed" Unchecked="PanelOption_Changed" />
+                        <ui:ToggleSwitch x:Name="HeaderToggle" Content="{DynamicResource Loc_Editor_ShowHeader}"
+                                         Checked="PanelOption_Changed" Unchecked="PanelOption_Changed" />
+                        <Grid x:Name="HeaderPositionRow" Margin="0,10,0,0">
+                            <TextBlock Text="{DynamicResource Loc_Editor_HeaderPosition}" VerticalAlignment="Center"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <ComboBox x:Name="HeaderPositionCombo" HorizontalAlignment="Right" MinWidth="150"
+                                      SelectionChanged="PanelOption_Changed" />
+                        </Grid>
+                    </StackPanel>
+                </ui:Card>
             </StackPanel>
         </ScrollViewer>
 

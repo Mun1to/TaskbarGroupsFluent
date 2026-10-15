@@ -31,6 +31,33 @@ namespace TaskbarGroups.Core
         public int IconSize = 30;
         public int Separation = 8;
 
+        /// <summary>
+        /// How the flyout lays out its apps: <see cref="PanelLayouts.Grid"/> wraps
+        /// them into rows of <see cref="Width"/> columns, <see cref="PanelLayouts.Row"/>
+        /// puts them all side by side and <see cref="PanelLayouts.Column"/> stacks
+        /// them like a menu. Anything else reads as a grid, so a file written before
+        /// this existed opens exactly as it always did.
+        /// </summary>
+        public string PanelLayout = PanelLayouts.Grid;
+
+        /// <summary>Each app's name under its icon, or beside it in a column.</summary>
+        public bool ShowLabels = true;
+
+        /// <summary>The group's name across the flyout, with a pencil to edit it.</summary>
+        public bool ShowHeader = false;
+
+        /// <summary>Where that name sits: <see cref="PanelLayouts.HeaderTop"/> or <see cref="PanelLayouts.HeaderBottom"/>.</summary>
+        public string HeaderPosition = PanelLayouts.HeaderTop;
+
+        /// <summary>Size of the flyout's icons, as a percentage of the normal size.</summary>
+        public int IconScale = 100;
+
+        /// <summary>
+        /// The taskbar icon is built from the first apps in the group rather than
+        /// picked by the user, so it has to be rebuilt whenever those apps change.
+        /// </summary>
+        public bool GridIcon = false;
+
         Regex specialCharRegex = new Regex("[*'\",_&#^@]");
 
         private static int[] iconSizes = new int[] {16,32,64,128,256,512};
@@ -75,6 +102,12 @@ namespace TaskbarGroups.Core
                 this.HoverColor = category.HoverColor;
                 this.IconSize = category.IconSize;
                 this.Separation = category.Separation;
+                this.PanelLayout = category.PanelLayout;
+                this.ShowLabels = category.ShowLabels;
+                this.ShowHeader = category.ShowHeader;
+                this.HeaderPosition = category.HeaderPosition;
+                this.IconScale = category.IconScale;
+                this.GridIcon = category.GridIcon;
             }
 
         }

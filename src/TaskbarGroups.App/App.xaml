@@ -3,8 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:conv="clr-namespace:TaskbarGroups.App.Converters"
-             xmlns:local="clr-namespace:TaskbarGroups.App"
-             StartupUri="MainWindow.xaml">
+             xmlns:local="clr-namespace:TaskbarGroups.App">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
