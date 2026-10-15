@@ -146,7 +146,7 @@
     <!-- Emoji picker -->
     <s:String x:Key="Loc_Emoji_Title">Pick an emoji</s:String>
     <s:String x:Key="Loc_Emoji_Heading">Choose an emoji</s:String>
-    <s:String x:Key="Loc_Emoji_Subtitle">Use it as the group icon — no image upload needed.</s:String>
+    <s:String x:Key="Loc_Emoji_Subtitle">Use it as the group icon, no image upload needed.</s:String>
 
     <!-- Automatic updates -->
     <s:String x:Key="Loc_Update_Title">Update available</s:String>
