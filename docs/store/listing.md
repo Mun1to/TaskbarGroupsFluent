@@ -7,12 +7,11 @@ Everything Partner Center asks for, ready to paste. Screenshots are in `screensh
 
 | Field | Value |
 |---|---|
-| Package type | EXE |
-| Installer URL | `https://github.com/Mun1to/TaskbarGroupsFluent/releases/download/v<version>/TaskbarGroupsFluent-Setup-Offline.exe` (versioned; the offline build carries the .NET runtime and downloads nothing) |
+| Product type | MSIX app (Microsoft signs MSIX packages for free, as with winshotx and Vocript) |
+| Store ID | 9PCZDXWFT6SN (identity in `packaging/store/identidad.json`) |
 | Architecture | x64 |
 | Languages | English, Spanish |
-| Silent install parameters | `/VERYSILENT /SUPPRESSMSGBOXES /NORESTART` |
-| Code signing | Required for EXE packages (setup and every exe and dll inside), with a certificate from a CA in the Microsoft Trusted Root Program |
+| .NET | Self-contained inside the package: the Store does not install the .NET Desktop Runtime for an MSIX |
 
 ## Properties
 
