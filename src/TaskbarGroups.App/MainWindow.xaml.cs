@@ -25,12 +25,14 @@ public partial class MainWindow : FluentWindow
         Loaded += (_, _) =>
         {
             RefreshGroups();
-            _ = CheckForUpdatesAsync();
+            if (!AppPackage.IsPackaged) _ = CheckForUpdatesAsync();
         };
     }
 
     // Offer to self-update when a newer release is on GitHub. Best-effort: any
     // failure (offline, no installer asset…) silently leaves the app as-is.
+    // Never in the Store package: the Store updates it, and the installer it
+    // would download can't overwrite a package's read-only folder anyway.
     private async Task CheckForUpdatesAsync()
     {
         var info = await UpdateChecker.CheckAsync();

@@ -449,7 +449,7 @@ public partial class GroupEditorWindow : FluentWindow
             // The pin was created under the original name; find it by that, then
             // overwrite it with the freshly built shortcut (carrying the new icon).
             string? pinnedLnk = TaskbarPin.FindPinnedShortcut(
-                _originalName ?? currentName, Paths.BackgroundApplication);
+                _originalName ?? currentName, Paths.PanelLauncher);
             if (pinnedLnk is null) return; // not pinned — nothing to refresh
 
             TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));

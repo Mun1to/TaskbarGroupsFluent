@@ -129,8 +129,10 @@ namespace TaskbarGroups.Core
             if (string.IsNullOrEmpty(target)) return false;
             try
             {
-                return string.Equals(Path.GetFileName(target),
-                    "TaskbarGroups.Background.exe", StringComparison.OrdinalIgnoreCase);
+                // The Store package's shortcuts point at the flyout's alias instead.
+                string file = Path.GetFileName(target);
+                return string.Equals(file, "TaskbarGroups.Background.exe", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(file, Path.GetFileName(AppPackage.PanelAlias), StringComparison.OrdinalIgnoreCase);
             }
             catch { return false; }
         }

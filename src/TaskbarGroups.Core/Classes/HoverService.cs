@@ -100,9 +100,16 @@ namespace TaskbarGroups.Core
         /// <summary>
         /// Adds or removes the HKCU startup entry. Per-user only: the installer runs
         /// without elevation, so the machine-wide key is not ours to write.
+        /// The Store package uses its StartupTask instead, see <see cref="AppPackage"/>.
         /// </summary>
         public static void RegisterStartup(bool enabled)
         {
+            if (AppPackage.IsPackaged)
+            {
+                SetStartupTask(enabled);
+                return;
+            }
+
             try
             {
                 using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(RunKey, writable: true);
@@ -114,6 +121,27 @@ namespace TaskbarGroups.Core
                     key.DeleteValue(RunValue, throwOnMissingValue: false);
             }
             catch { /* a locked-down registry must not break the setting */ }
+        }
+
+        /// <summary>
+        /// Switches the package's StartupTask. It runs on the thread pool because the
+        /// WinRT calls are asynchronous and the settings window waits for them on the
+        /// UI thread. If the user turned the task off in Task Manager, Windows keeps
+        /// it off and only they can turn it back on there; the watcher still starts
+        /// now, it just won't come back after a restart.
+        /// </summary>
+        private static void SetStartupTask(bool enabled)
+        {
+            try
+            {
+                System.Threading.Tasks.Task.Run(async () =>
+                {
+                    var task = await Windows.ApplicationModel.StartupTask.GetAsync(AppPackage.HoverStartupTaskId);
+                    if (enabled) await task.RequestEnableAsync();
+                    else task.Disable();
+                }).Wait(ExitWaitMs);
+            }
+            catch { /* same as the registry: never let this break the setting */ }
         }
     }
 }

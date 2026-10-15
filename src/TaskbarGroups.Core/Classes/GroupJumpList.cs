@@ -30,8 +30,8 @@ namespace TaskbarGroups.Core
                 string icon = File.Exists(groupIcon) ? groupIcon : Paths.BackgroundApplication;
 
                 var tasks = (IObjectCollection)new CEnumerableObjectCollection();
-                tasks.AddObject(Task(Paths.BackgroundApplication, quoted + " --open-all", openAllTitle, icon));
-                tasks.AddObject(Task(Paths.MainApplication, "--edit " + quoted, editTitle, Paths.MainApplication));
+                tasks.AddObject(Task(Paths.PanelLauncher, quoted + " --open-all", openAllTitle, icon));
+                tasks.AddObject(Task(Paths.AppLauncher, "--edit " + quoted, editTitle, Paths.MainApplication));
                 list.AddUserTasks((IObjectArray)tasks);
                 list.CommitList();
                 return true;

@@ -166,7 +166,7 @@ namespace TaskbarGroups.Core
                 // name as its argument. A unique AppUserModelID keeps each pinned
                 // group from stacking with the main app on the taskbar.
                 ShellLink.InstallShortcut(
-                    Paths.BackgroundApplication,
+                    Paths.PanelLauncher,
                     AppIdPrefix + this.Name,
                     "\"" + this.Name + "\"",
                     path,

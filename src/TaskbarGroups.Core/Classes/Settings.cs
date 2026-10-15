@@ -10,8 +10,7 @@ namespace TaskbarGroups.Core
 {
     public static class Settings
     {
-        private static string appDataRelative = System.IO.Path.Combine("Jack Schierbeck", "taskbar-groups");
-        public static string settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appDataRelative, "Settings.xml");
+        public static string settingsPath = Path.Combine(AppPackage.DataRoot, "Settings.xml");
         public static string defaultSettingsPath;
         public static Setting settingInfo;
 
@@ -24,7 +23,7 @@ namespace TaskbarGroups.Core
             }
             else if (!File.Exists(settingsPath))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), appDataRelative));
+                Directory.CreateDirectory(AppPackage.DataRoot);
                 settingInfo = new Setting();
                 writeXML();
                 return;

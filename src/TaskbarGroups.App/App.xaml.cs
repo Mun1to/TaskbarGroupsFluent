@@ -27,6 +27,11 @@ public partial class App : Application
 
         base.OnStartup(e);
 
+        // Coming from the classic installer to the Store package, the groups stay in
+        // the old folder; the first start brings them over. Before anything below
+        // lists the groups, so the main window and the menus already include them.
+        GroupTransfer.ImportClassicInstallOnce();
+
         // After an update that changes icon resolution, refresh group caches once so
         // pinned flyouts don't keep showing icons rendered by the previous build.
         // Off the UI thread — it re-resolves every shortcut's icon.
