@@ -26,7 +26,7 @@
   </a>
 </p>
 
-<img src="docs/screenshots/en/main.png" width="820" alt="Taskbar Groups Fluent — main window" />
+<img src="docs/screenshots/en/panel-layouts.gif" width="800" alt="A group's panel with Windows 11 glass, switching between grid, horizontal, vertical and list layouts" />
 
 </div>
 
