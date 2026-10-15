@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacidad · Taskbar Groups Fluent</title>
+<meta name="description" content="Qué datos usa Taskbar Groups Fluent: ninguno personal. Sin cuentas, sin telemetría; solo comprueba en GitHub si hay una versión nueva.">
+<link rel="canonical" href="https://tbgf.munito.dev/privacy.html">
+<link rel="icon" href="assets/logo.png">
+<meta name="color-scheme" content="dark">
+<style>
+  :root {
+    --fondo: #0b0b0d; --tarjeta: #141418; --borde: #ffffff14; --texto: #ededf0;
+    --suave: #a1a1aa; --azul: #4cc2ff; --radio: 16px;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--fondo); }
+  body {
+    margin: 0; color: var(--texto); background: var(--fondo);
+    font: 16px/1.65 ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--azul); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .env { max-width: 760px; margin: 0 auto; padding: 0 16px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 24px 0 8px; }
+  .marca { display: flex; align-items: center; gap: 10px; color: var(--texto); font-weight: 650; }
+  .marca img { width: 28px; height: 28px; }
+  .idioma {
+    font: inherit; font-size: 14px; font-weight: 600; color: var(--texto); cursor: pointer;
+    background: transparent; border: 1px solid var(--borde); border-radius: 999px; padding: 6px 14px;
+  }
+  .idioma:hover { background: #ffffff0d; }
+  h1 { font-size: clamp(30px, 6vw, 42px); line-height: 1.1; letter-spacing: -0.03em; margin: 40px 0 8px; }
+  .fecha { color: var(--suave); font-size: 14px; margin: 0 0 28px; }
+  .resumen {
+    background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio);
+    padding: 20px 22px; margin-bottom: 32px; font-size: 17px;
+  }
+  h2 { font-size: 20px; letter-spacing: -0.015em; margin: 32px 0 8px; }
+  p, li { color: #d4d4d8; }
+  ul { padding-left: 20px; }
+  li { margin: 6px 0; }
+  code { font: 14px "Cascadia Mono", Consolas, monospace; background: #ffffff0f; padding: 1px 6px; border-radius: 6px; }
+  footer { color: var(--suave); font-size: 14px; border-top: 1px solid var(--borde); margin-top: 48px; padding: 20px 0 40px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="env">
+  <header>
+    <a class="marca" href="./"><img src="assets/logo.png" alt="">Taskbar Groups Fluent</a>
+    <button type="button" class="idioma" id="idioma">English</button>
+  </header>
+
+  <main>
+    <article lang="es" id="es">
+      <h1>Privacidad</h1>
+      <p class="fecha">Actualizada el 15 de octubre de 2026</p>
+      <p class="resumen">Taskbar Groups Fluent no recoge datos personales. No tiene cuentas, ni telemetría, ni anuncios. Lo único que hace por internet es preguntar a GitHub si hay una versión nueva.</p>
+
+      <h2>Lo que se queda en tu PC</h2>
+      <p>Tus grupos, sus iconos y tus ajustes se guardan en tu equipo, en <code>%APPDATA%\Jack Schierbeck\taskbar-groups</code>, y los accesos directos de los grupos en la misma carpeta. No salen de ahí. Si exportas un grupo, el archivo <code>.tbgroup</code> se crea donde tú elijas y solo tú decides con quién compartirlo.</p>
+      <p>La función de abrir un grupo al pasar el cursor lee en tu equipo la posición de los botones de la barra de tareas, para saber qué grupo hay debajo del ratón. No guarda ni envía nada de eso.</p>
+
+      <h2>Lo que sale a internet</h2>
+      <ul>
+        <li><b>Comprobar actualizaciones.</b> Al abrirse, la app consulta la API pública de GitHub (<code>api.github.com</code>) para ver cuál es la última versión. Si aceptas actualizar, descarga el instalador desde GitHub. GitHub recibe lo que recibe cualquier petición web, como tu dirección IP, y lo trata según su <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">declaración de privacidad</a>.</li>
+        <li><b>El runtime de .NET.</b> Si a tu equipo le falta el .NET Desktop Runtime, el instalador lo descarga de Microsoft, que lo trata según su <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener">declaración de privacidad</a>.</li>
+      </ul>
+      <p>Nada más: la app no envía tus grupos, tus apps ni ningún identificador a ningún sitio.</p>
+
+      <h2>Esta web</h2>
+      <p>tbgf.munito.dev se sirve con GitHub Pages a través de Cloudflare, que pueden registrar datos técnicos de la visita, como la dirección IP, para servirla y protegerla. La web no usa cookies ni herramientas de analítica. Tu navegador guarda dos cosas en su almacenamiento local: el idioma que elijas y, durante 15 minutos, las cifras públicas de GitHub (descargas y estrellas) que la página muestra.</p>
+
+      <h2>Contacto</h2>
+      <p>La app la hace <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a>. Para cualquier duda sobre privacidad, abre una incidencia en <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" target="_blank" rel="noopener">GitHub</a>. El código es abierto (licencia MIT), así que todo lo que dice esta página se puede comprobar en él.</p>
+    </article>
+
+    <article lang="en" id="en" hidden>
+      <h1>Privacy</h1>
+      <p class="fecha">Last updated on 15 October 2026</p>
+      <p class="resumen">Taskbar Groups Fluent does not collect personal data. It has no accounts, no telemetry and no ads. The only thing it does online is ask GitHub whether there is a new version.</p>
+
+      <h2>What stays on your PC</h2>
+      <p>Your groups, their icons and your settings are stored on your computer, in <code>%APPDATA%\Jack Schierbeck\taskbar-groups</code>, and the groups' shortcuts in that same folder. They never leave it. If you export a group, the <code>.tbgroup</code> file is created wherever you choose, and only you decide who to share it with.</p>
+      <p>The open-on-hover feature reads, on your computer, where the taskbar buttons are, to know which group is under the mouse. It neither stores nor sends any of it.</p>
+
+      <h2>What goes online</h2>
+      <ul>
+        <li><b>Checking for updates.</b> When it opens, the app queries GitHub's public API (<code>api.github.com</code>) for the latest version. If you accept an update, it downloads the installer from GitHub. GitHub receives what any web request carries, such as your IP address, and handles it under its <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">privacy statement</a>.</li>
+        <li><b>The .NET runtime.</b> If your computer is missing the .NET Desktop Runtime, the installer downloads it from Microsoft, which handles it under its <a href="https://privacy.microsoft.com/privacystatement" target="_blank" rel="noopener">privacy statement</a>.</li>
+      </ul>
+      <p>Nothing else: the app does not send your groups, your apps or any identifier anywhere.</p>
+
+      <h2>This website</h2>
+      <p>tbgf.munito.dev is served by GitHub Pages through Cloudflare, which may log technical data about the visit, such as the IP address, to serve and protect it. The site uses no cookies and no analytics tools. Your browser keeps two things in its local storage: the language you pick and, for 15 minutes, the public GitHub figures (downloads and stars) the page shows.</p>
+
+      <h2>Contact</h2>
+      <p>The app is made by <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a>. For any privacy question, open an issue on <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" target="_blank" rel="noopener">GitHub</a>. The code is open source (MIT licence), so everything on this page can be checked against it.</p>
+    </article>
+  </main>
+
+  <footer>Taskbar Groups Fluent · MIT · <a href="./">tbgf.munito.dev</a></footer>
+</div>
+<script>
+  // Same language key as the home page, so the choice carries over between them.
+  (function () {
+    const es = document.getElementById("es"), en = document.getElementById("en");
+    const btn = document.getElementById("idioma");
+    let lang = "es";
+    try {
+      const saved = localStorage.getItem("tbgf-lang");
+      if (saved === "en" || saved === "es") lang = saved;
+      else if (!(navigator.language || "").toLowerCase().startsWith("es")) lang = "en";
+    } catch { /* storage blocked: fall back to the browser language below */ }
+    function apply() {
+      es.hidden = lang !== "es"; en.hidden = lang !== "en";
+      document.documentElement.lang = lang;
+      document.title = lang === "es" ? "Privacidad · Taskbar Groups Fluent" : "Privacy · Taskbar Groups Fluent";
+      btn.textContent = lang === "es" ? "English" : "Español";
+    }
+    btn.addEventListener("click", () => {
+      lang = lang === "es" ? "en" : "es";
+      try { localStorage.setItem("tbgf-lang", lang); } catch { }
+      apply();
+    });
+    apply();
+  })();
+</script>
+</body>
+</html>
