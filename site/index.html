@@ -323,7 +323,7 @@
     }
 
     /* ==========================================================================
-       LA DEMO: una pantalla de portátil de 1366 x 768 dibujada a tamaño real y
+       LA DEMO: una pantalla de portátil de 1280 x 720 dibujada a tamaño real y
        reducida entera con transform, así el panel y la barra de tareas guardan
        la proporción que tienen de verdad. En pantallas estrechas se acerca a la
        parte de abajo, donde viven la barra y el panel, para que se pueda leer.
@@ -331,10 +331,10 @@
        borde 1; baldosa con nombre de 80 x 88 e icono de 44; solo icono de 52 con
        icono de 32; línea de 44 con icono de 28; celda de lista de 200; cabecera
        de 32 con «abrir todas» y el lápiz. El panel queda 8 px por encima de la
-       barra, que mide 48. Los iconos de las apps son dibujos propios: ninguna
-       marca ajena.
+       barra, que mide 48. Las apps son de verdad, con el icono que les saca
+       Windows, como en la grabación del README.
        ========================================================================== */
-    .demo { position: relative; scroll-margin-top: 96px; margin-top: 46px; }
+    .demo { position: relative; scroll-margin-top: 96px; margin: 46px auto 0; max-width: 880px; }
     .marco {
       position: relative; border: 1px solid var(--borde); border-radius: var(--radio);
       overflow: hidden; background: #161618; box-shadow: 0 30px 80px #0008;
@@ -350,17 +350,18 @@
       height: 56vw; max-height: 620px; background: #0a1024;
     }
     .escritorio {
-      position: absolute; left: 50%; bottom: 0; width: 1366px; height: 768px; margin-left: -683px;
+      position: absolute; left: 50%; bottom: 0; width: 1280px; height: 720px; margin-left: -640px;
       transform-origin: 50% 100%; transform: scale(var(--escala, 0.5));
       overflow: hidden; isolation: isolate;
       font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
       color: #fff; user-select: none; -webkit-user-select: none;
-      /* Fondo de escritorio: dos gallinas cocineras (foto CC0 de rawpixel,
-         https://www.rawpixel.com/image/5944844). Es lo que el cristal del panel y
-         de la barra deja ver desenfocado. Las manchas de color de debajo quedan de
-         respaldo mientras carga la foto. */
+      /* Fondo de escritorio: un gato que te juzga, con la baba azul del meme de
+         los gatos babeando dibujada encima. La foto es CC0, del directorio de fotos
+         de WordPress.org (https://wordpress.org/photos/photo/64668a7494/), y la
+         baba es nuestra. Las manchas de color de debajo quedan de respaldo
+         mientras carga la foto. */
       background:
-        url("assets/fondo-demo.webp") center 62% / cover no-repeat,
+        url("assets/fondo-gato.webp") center / cover no-repeat,
         radial-gradient(42% 52% at 28% 34%, #4cc2ff8c, transparent 70%),
         radial-gradient(38% 48% at 74% 26%, #7c5cff70, transparent 70%),
         radial-gradient(60% 50% at 58% 92%, #0067c0b3, transparent 72%),
@@ -450,7 +451,8 @@
     .panel-apps { display: grid; zoom: var(--k); }
     .p-cuadricula { grid-template-columns: repeat(var(--cols, 3), auto); }
     .p-fila { grid-auto-flow: column; }
-    .p-columna { grid-template-columns: auto; }
+    .p-columna { grid-template-columns: auto; justify-items: center; }
+    .p-columna.t-linea { justify-items: stretch; }
     .app {
       display: flex; align-items: center; margin: 2px; padding: 6px;
       border: 0; border-radius: 8px; background: transparent; color: inherit;
@@ -460,12 +462,7 @@
     .pb:active, .app:active { background: #ffffff11; }
     .panel.claro .pb:hover, .panel.claro .app:hover { background: #00000014; }
     .panel.claro .pb:active, .panel.claro .app:active { background: #00000022; }
-    .ico-app {
-      display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: 23%;
-      background: linear-gradient(145deg, var(--a), var(--b));
-      box-shadow: inset 0 1px 0 #ffffff40, 0 2px 6px #0000004d; color: #fff;
-    }
-    .ico-app svg { width: 56%; height: 56%; }
+    .ico-app { display: block; flex: none; width: 44px; height: 44px; object-fit: contain; }
     .app-nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     /* Baldosa con el nombre debajo: cuadrícula y horizontal */
     .t-nombre .app { flex-direction: column; justify-content: center; width: 80px; height: 88px; gap: 6px; padding: 6px 4px; }
@@ -478,7 +475,7 @@
     .t-linea .app, .t-celda .app { height: 44px; margin: 1px; gap: 12px; }
     .t-linea .app { min-width: 190px; }
     .t-celda .app { width: 200px; }
-    .t-linea .ico-app, .t-celda .ico-app { width: 28px; height: 28px; border-radius: 24%; }
+    .t-linea .ico-app, .t-celda .ico-app { width: 28px; height: 28px; }
     .t-linea .app-nombre, .t-celda .app-nombre { font-size: 13px; }
     .t-linea .app-nombre { max-width: 220px; margin-right: 8px; }
     .t-celda .app-nombre { max-width: 140px; }
@@ -519,7 +516,7 @@
       border: 0; border-radius: 4px; background: transparent; color: #fff;
       transition: background 0.1s;
     }
-    .bt svg { width: 24px; height: 24px; }
+    .bt svg, .bt img { width: 24px; height: 24px; }
     .bt.inicio svg { width: 22px; height: 22px; color: #4cc2ff; }
     .bt::after {
       content: ""; position: absolute; left: 50%; bottom: 1px; translate: -50% 0;
@@ -533,9 +530,9 @@
     .bt.grupo.activo::after { width: 16px; background: var(--azul); }
     /* El icono del grupo: un emoji, o los cuatro primeros iconos de sus apps */
     .mini { display: grid; grid-template-columns: repeat(2, 11px); grid-auto-rows: 11px; gap: 2px; pointer-events: none; }
-    .mini i { display: block; border-radius: 3px; background: linear-gradient(145deg, var(--a), var(--b)); }
+    .mini img { display: block; width: 11px; height: 11px; object-fit: contain; }
     .mini.peq { grid-template-columns: repeat(2, 7px); grid-auto-rows: 7px; gap: 1px; }
-    .mini.peq i { border-radius: 2px; }
+    .mini.peq img { width: 7px; height: 7px; }
     .emoji { font-size: 23px; line-height: 1; pointer-events: none; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
     .emoji.peq { font-size: 15px; width: 16px; text-align: center; }
     .bandeja { position: absolute; right: 6px; top: 0; height: 48px; display: flex; align-items: center; color: #fff; }
@@ -795,8 +792,9 @@
 </head>
 <body>
 
-<!-- Iconos de la interfaz (g-*: los dibujos de las apps de la demo). Todos dibujados
-     a mano para esta página, salvo la marca de GitHub, que es su logo oficial. -->
+<!-- Iconos de la interfaz, dibujados a mano para esta página salvo la marca de
+     GitHub, que es su logo oficial. Las apps de la demo usan sus iconos de verdad
+     (assets/apps), sacados de Windows como los saca la app. -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
   <g>
@@ -821,31 +819,7 @@
     <symbol id="i-zoom" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5M11 8v6M8 11h6"/></symbol>
 
     <!-- Las apps de mentira de la demo -->
-    <symbol id="g-foto" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="9" cy="10" r="1.7"/><path d="m4 18 5-5 3 3 3-3 5 5"/></symbol>
-    <symbol id="g-pincel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19.5 4.5 11 13"/><path d="M11 13c-2.5-.5-4.5 1-4.8 3.4-.2 1.4-1 2.2-2.2 2.6 2.6 1.4 6.8 1 7.8-1.8.6-1.6.2-3.3-.8-4.2z"/></symbol>
-    <symbol id="g-vector" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 6 13l6 8 6-8z"/><path d="M12 3v8"/><circle cx="12" cy="13" r="2"/></symbol>
-    <symbol id="g-paleta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.4 0 2-.9 2-1.9 0-1.2-1-1.4-1-2.5 0-1 .8-1.6 1.8-1.6H17a4 4 0 0 0 4-4C21 6.6 17 3 12 3z"/><circle cx="7.5" cy="11" r="1" fill="currentColor"/><circle cx="10" cy="7" r="1" fill="currentColor"/><circle cx="15" cy="7.5" r="1" fill="currentColor"/></symbol>
-    <symbol id="g-tipo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 19 5.5-14h1L17 19"/><path d="M7.5 14h7"/><path d="M19 15v4"/></symbol>
-    <symbol id="g-cubo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 20 7.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></symbol>
-    <symbol id="g-mando" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="19" height="10.5" rx="5.25"/><path d="M7.5 10.5v3.5M5.75 12.25h3.5"/><circle cx="15.5" cy="11" r="0.9" fill="currentColor"/><circle cx="17.8" cy="13.4" r="0.9" fill="currentColor"/></symbol>
-    <symbol id="g-bandera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 21V3.5"/><path d="M5.5 4h12.5l-3 4.5 3 4.5H5.5"/></symbol>
-    <symbol id="g-peon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6.5" r="2.8"/><path d="M9.5 10.5h5l1.2 6.5H8.3z"/><path d="M6.5 20h11"/></symbol>
-    <symbol id="g-cartas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3.5" width="11" height="15" rx="2"/><path d="M6.8 6.6 4.1 7.3a1.5 1.5 0 0 0-1 1.8l2.9 10.6a1.5 1.5 0 0 0 1.8 1.1l6.3-1.7"/><path d="m14.5 8.5 1.5 2.5-1.5 2.5-1.5-2.5z"/></symbol>
-    <symbol id="g-trofeo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5.5a2.5 2.5 0 0 0 3 4M16 6h2.5a2.5 2.5 0 0 1-3 4M12 13v4M8.5 20h7"/></symbol>
-    <symbol id="g-correo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3.5 6.5 8.5 6.5 8.5-6.5"/></symbol>
-    <symbol id="g-agenda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01" stroke-width="2.6"/></symbol>
-    <symbol id="g-notas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></symbol>
-    <symbol id="g-hojas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M3 15h18M9.5 4v16"/></symbol>
-    <symbol id="g-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v9a1.5 1.5 0 0 1-1.5 1.5H9l-5 4z"/><path d="M8 9h8M8 12.5h5"/></symbol>
-    <symbol id="g-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m7 9 3 3-3 3M13 15h4"/></symbol>
-    <symbol id="g-codigo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m8 7-5 5 5 5M16 7l5 5-5 5M13.5 4.5l-3 15"/></symbol>
-    <symbol id="g-musica" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
-    <symbol id="g-micro" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></symbol>
-    <symbol id="g-cascos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="6.5" rx="1.6"/><rect x="16.5" y="14" width="4.5" height="6.5" rx="1.6"/></symbol>
-    <symbol id="g-onda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l2.5-6 4 12 3-9 2 3H21"/></symbol>
     <symbol id="g-carpeta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffc83d" stroke="#e8a317"/><path d="M3 10h18" stroke="#e8a317"/></symbol>
-    <symbol id="g-globo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" fill="#0067c0" stroke="#4cc2ff"/><path d="M3.5 12h17M12 3.2c2.6 2.6 2.6 15 0 17.6M12 3.2c-2.6 2.6-2.6 15 0 17.6" stroke="#bfe9ff"/></symbol>
-    <symbol id="g-consola" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="15" rx="2.5" fill="#26262c" stroke="#8e8e9a"/><path d="m7 9.5 3 2.5-3 2.5M12.5 15H17" stroke="#e9e9ee"/></symbol>
     <symbol id="w-inicio" viewBox="0 0 24 24"><rect x="3" y="3" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="12.6" y="3" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="3" y="12.6" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="12.6" y="12.6" width="8.4" height="8.4" rx="1.2" fill="currentColor"/></symbol>
     <symbol id="w-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></symbol>
     <symbol id="w-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
@@ -948,9 +922,9 @@
                   <span class="bt inicio" aria-hidden="true"><svg><use href="#w-inicio"/></svg></span>
                   <span class="bt" aria-hidden="true"><svg><use href="#i-search"/></svg></span>
                   <span class="bt abierta" aria-hidden="true"><svg><use href="#g-carpeta"/></svg></span>
-                  <span class="bt abierta" aria-hidden="true"><svg><use href="#g-globo"/></svg></span>
+                  <span class="bt abierta" aria-hidden="true"><img src="assets/apps/edge.webp" alt=""></span>
                   <span class="zona-grupos" id="zona-grupos"></span>
-                  <span class="bt abierta" aria-hidden="true"><svg><use href="#g-consola"/></svg></span>
+                  <span class="bt abierta" aria-hidden="true"><img src="assets/apps/terminal.webp" alt=""></span>
                 </div>
                 <div class="bandeja" aria-hidden="true">
                   <span class="ic"><svg><use href="#w-chevron"/></svg></span>
@@ -1010,7 +984,7 @@
             </div>
           </div>
         </div>
-        <p class="demo-nota" data-en="Right-click a group on the taskbar for its menu. These are the same options the app has; the apps here are drawings, on your PC they are yours.">Haz clic derecho en un grupo de la barra para ver su menú. Son las mismas opciones que tiene la app; las apps de aquí son dibujos, en tu PC son las tuyas.</p>
+        <p class="demo-nota" data-en="Right-click a group on the taskbar for its menu. These are the same options the app has; the apps are examples, on your PC you pick your own.">Haz clic derecho en un grupo de la barra para ver su menú. Son las mismas opciones que tiene la app; las apps son de ejemplo, en tu PC eliges las tuyas.</p>
       </div>
     </div>
 
@@ -1439,7 +1413,7 @@
   })();
 
   /* ==========================================================================
-     DEMO: una pantalla de 1366 x 768 con cuatro grupos anclados en la barra.
+     DEMO: una pantalla de 1280 x 720 con cuatro grupos anclados en la barra.
      Con ratón se abren al pasar por encima (la opción «abrir al pasar el
      cursor») o con un clic, según lo que se elija; con el dedo, al tocar. El
      clic derecho saca su menú, como el de Windows. Las opciones de debajo son
@@ -1465,7 +1439,7 @@
     const L = () => (document.documentElement.lang === "en" ? "en" : "es");
     // Tamaños de verdad: la pantalla, la barra, el hueco que deja el panel y el
     // margen con el borde de la pantalla, como en PositionOverTaskbar.
-    const W = 1366, H = 768, BARRA = 48, HUECO = 8, MARGEN = 4;
+    const W = 1280, H = 720, BARRA = 48, HUECO = 8, MARGEN = 4;
 
     const TXT = {
       es: {
@@ -1496,39 +1470,26 @@
       },
     };
 
-    // Apps de mentira con nombres genéricos: ninguna marca ajena en el escaparate.
-    // cols es la columna que se le pone al grupo en el editor (0, automático).
-    const A = (ico, es, en, a, b) => ({ ico, es, en, a, b });
+    // Los mismos cuatro grupos de la grabación del README, con apps de verdad y
+    // el icono que les saca Windows. cols es la columna que se le pone al grupo
+    // en el editor (0, automático).
+    const A = (ico, nombre) => ({ ico, es: nombre, en: nombre });
     const GRUPOS = [
-      { id: "diseno", es: "Diseño", en: "Design", cols: 3, apps: [
-        A("foto", "Fotos", "Photos", "#5fd0ff", "#0067c0"),
-        A("pincel", "Dibujo", "Paint", "#ff9a76", "#d6452b"),
-        A("vector", "Vectores", "Vectors", "#b79bff", "#6a3de8"),
-        A("paleta", "Colores", "Colours", "#ffd866", "#f08c00"),
-        A("tipo", "Fuentes", "Fonts", "#7fe0d0", "#0c8f7f"),
-        A("cubo", "3D", "3D", "#ff9cc6", "#c2185b"),
+      { id: "juegos", es: "Juegos", en: "Gaming", cols: 3, emoji: "🎮", apps: [
+        A("steam", "Steam"), A("xbox", "Xbox"), A("minecraft", "Minecraft"),
+        A("valorant", "VALORANT"), A("discord", "Discord"), A("solitaire", "Solitaire"),
       ] },
-      { id: "juegos", es: "Juegos", en: "Games", cols: 3, emoji: "🎮", apps: [
-        A("mando", "Biblioteca", "Library", "#8d9bff", "#3d4ed8"),
-        A("bandera", "Carreras", "Racing", "#ff7b7b", "#c92a2a"),
-        A("peon", "Ajedrez", "Chess", "#cfd8dc", "#546e7a"),
-        A("cartas", "Solitario", "Solitaire", "#7be38d", "#2b8a3e"),
-        A("trofeo", "Logros", "Trophies", "#ffdf5c", "#e67700"),
+      { id: "dev", es: "Dev", en: "Dev", cols: 3, emoji: "💻", apps: [
+        A("vscode", "Visual Studio Code"), A("terminal", "Terminal"), A("cursor", "Cursor"),
+        A("docker", "Docker Desktop"), A("python", "Python"),
       ] },
-      { id: "trabajo", es: "Trabajo", en: "Work", cols: 4, apps: [
-        A("correo", "Correo", "Mail", "#6ccaff", "#1565c0"),
-        A("agenda", "Agenda", "Calendar", "#ff8c8c", "#d32f2f"),
-        A("notas", "Notas", "Notes", "#ffe27a", "#f59f00"),
-        A("hojas", "Hojas", "Sheets", "#74e0a0", "#1e8e4e"),
-        A("chat", "Chat", "Chat", "#a99bff", "#5b3fd9"),
-        A("terminal", "Terminal", "Terminal", "#9aa3b2", "#323846"),
-        A("codigo", "Código", "Code", "#64d8f0", "#0b7a9c"),
+      { id: "diseno", es: "Diseño", en: "Creative", cols: 3, apps: [
+        A("davinci", "DaVinci Resolve"), A("obs", "OBS Studio"), A("gimp", "GIMP"),
+        A("inkscape", "Inkscape"), A("paint", "Paint"), A("clipchamp", "Clipchamp"),
       ] },
-      { id: "musica", es: "Música", en: "Music", cols: 0, emoji: "🎧", apps: [
-        A("musica", "Música", "Music", "#ff8fb1", "#d6336c"),
-        A("micro", "Podcasts", "Podcasts", "#c49bff", "#7b3fe4"),
-        A("cascos", "Radio", "Radio", "#77e0ff", "#0b84b8"),
-        A("onda", "Grabadora", "Recorder", "#ffb36b", "#e8590c"),
+      { id: "oficina", es: "Oficina", en: "Office", cols: 3, apps: [
+        A("word", "Word"), A("excel", "Excel"), A("powerpoint", "PowerPoint"),
+        A("outlook", "Outlook"), A("onenote", "OneNote"), A("teams", "Teams"),
       ] },
     ];
 
@@ -1547,9 +1508,9 @@
       }
       s.className = "mini" + (peq ? " peq" : "");
       g.apps.slice(0, 4).forEach((a) => {
-        const c = document.createElement("i");
-        c.style.setProperty("--a", a.a);
-        c.style.setProperty("--b", a.b);
+        const c = document.createElement("img");
+        c.src = "assets/apps/" + a.ico + ".webp";
+        c.alt = "";
         s.appendChild(c);
       });
       return s;
@@ -1633,7 +1594,7 @@
         b.type = "button";
         b.className = "app";
         b.title = a[l];
-        b.innerHTML = '<span class="ico-app" style="--a:' + a.a + ";--b:" + a.b + '"><svg aria-hidden="true"><use href="#g-' + a.ico + '"/></svg></span><span class="app-nombre"></span>';
+        b.innerHTML = '<img class="ico-app" src="assets/apps/' + a.ico + '.webp" alt=""><span class="app-nombre"></span>';
         b.querySelector(".app-nombre").textContent = a[l];
         b.addEventListener("click", (e) => {
           e.stopPropagation();
@@ -1801,13 +1762,13 @@
       if (menuDe) menu(menuDe);
     }
 
-    // Escala la pantalla al ancho que hay. Por debajo de unos 0,72 el texto del
-    // panel ya no se lee, así que en vez de encoger más se recortan los lados
-    // y, en el móvil, también la parte de arriba.
+    // Escala la pantalla entera al ancho que hay. En el móvil eso dejaría el
+    // texto del panel ilegible, así que ahí se acerca a la parte de abajo,
+    // donde viven la barra y el panel.
     function medir() {
       const cw = pantalla.clientWidth;
       if (!cw) return;
-      const vw = Math.round(Math.min(W, Math.max(480, cw / 0.72)));
+      const vw = cw >= 640 ? W : Math.round(Math.max(480, cw / 0.69));
       vista = { w: vw, h: vw >= W ? H : Math.min(H, Math.round(vw * 0.9)) };
       const k = cw / vista.w;
       pantalla.style.setProperty("--escala", k.toFixed(5));
