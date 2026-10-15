@@ -2,13 +2,13 @@
 
 <img src="brand/logo.png" width="128" height="128" alt="Logo de Taskbar Groups Fluent" />
 
-# Taskbar Groups — Fluent
+# Taskbar Groups Fluent
 
 **Agrupa tus accesos directos en un solo icono de la barra de tareas.** Una reescritura moderna en **WPF / .NET 10** de Taskbar Groups, con interfaz Fluent (estilo WinUI 3).
 
 🌍 Español · [English](README.md)
 
-**[tbgf.munito.dev](https://tbgf.munito.dev)** — míralo funcionando
+Web: **[tbgf.munito.dev](https://tbgf.munito.dev)**
 
 <p>
   <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest">
@@ -26,7 +26,9 @@
   </a>
 </p>
 
-<img src="docs/screenshots/es/panel-layouts.gif" width="800" alt="El panel de un grupo con el cristal de Windows 11, cambiando entre cuadrícula, horizontal, vertical y lista" />
+<img src="docs/screenshots/panel-demo.gif" width="732" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11, abriéndose uno tras otro: cuadrícula, lista, columna vertical y fila" />
+
+<sub>Grabado en una barra de tareas real de Windows 11: cuatro grupos, cada uno con su forma de panel.</sub>
 
 </div>
 
@@ -34,78 +36,69 @@
 
 ## ✨ Qué hace
 
-Taskbar Groups convierte una carpeta llena de apps en **un solo botón de la barra de tareas**. Al pulsarlo se abre un pequeño popup con todas las apps del grupo — así tu barra queda ordenada y tienes todo a un clic.
+Taskbar Groups convierte una carpeta llena de apps en **un solo botón de la barra de tareas**. Al pulsarlo se abre encima un pequeño panel con todas las apps del grupo, así tu barra queda ordenada y tienes todo a un clic.
 
-- 🧩 **Añade cualquier app instalada** — una lista buscable de *todo* lo instalado (apps de escritorio **y** de Microsoft Store), leída directamente del catálogo de apps del shell de Windows. Sin buscar el `.exe` correcto; un botón **Examinar…** cubre lo que no aparezca.
-- 🖼️ **Iconos correctos, siempre** — los iconos vienen del mismo pipeline del shell que usa el Menú Inicio (alta resolución, transparentes, UWP y escritorio por igual). Cuando Windows no puede resolver uno —algunas apps Squirrel/Electron como Obsidian o Brave— tira del icono del propio ejecutable, así nunca te queda un icono en blanco.
-- 🎨 **Iconos de grupo personalizados** — sube cualquier imagen y **recórtala y haz zoom** en el editor integrado, o…
-- 😀 **…elige un emoji a color** — pulsa **Emoji** y elígelo como icono del grupo, renderizado nítido y centrado. Sin subir ninguna imagen.
-- 📌 **Ancla a la barra de tareas** — cada grupo se convierte en un botón anclado; al pulsarlo se abre el popup con tus apps.
-- 🪟 **Cristal de Windows 11, con la forma que quieras**: el panel de cada grupo tiene el cristal de verdad de Windows 11 y se abre en cuadrícula, en una fila horizontal, en una columna vertical o como lista, con o sin el nombre de las apps, en tres tamaños de icono y con el nombre del grupo arriba o abajo, con un lápiz para editarlo. El editor del grupo te enseña cómo queda mientras lo cambias.
-- 🔲 **Un icono hecho con las apps del grupo**: con un clic, el icono de la barra se hace con las cuatro primeras apps, y se actualiza solo cuando añades o quitas alguna.
-- 🚀 **Abrirlas todas de golpe**: un botón en el panel abre todas las apps del grupo.
+- 🧩 **Añade cualquier app instalada**: una lista buscable con todo lo instalado, apps de escritorio **y** de Microsoft Store, leída del propio catálogo de apps de Windows. Un botón **Examinar…** cubre lo que no aparezca.
+- 🖼️ **Los iconos buenos**: salen del mismo sitio del que los saca el menú Inicio, nítidos y transparentes. Cuando Windows no tiene icono para una app (algunas apps Electron), se usa el del propio ejecutable en vez de un cuadro en blanco.
+- 🎨 **Tu propio icono de grupo**: cualquier imagen, recortada y con zoom en el editor integrado, o un **emoji a color**, o…
+- 🔲 **…un icono hecho con las apps del grupo**: con un clic, el icono de la barra se hace con las cuatro primeras apps, y se actualiza solo cuando añades o quitas alguna.
+- 📌 **Ancla a la barra de tareas**: cada grupo se convierte en su propio botón anclado.
+- 🪟 **Cristal de Windows 11, con la forma que quieras**: el panel de un grupo se abre en cuadrícula, en una fila horizontal, en una columna vertical o como lista, con o sin el nombre de las apps, en tres tamaños de icono y con el nombre del grupo arriba o abajo. El editor te enseña cómo queda mientras lo cambias.
+- 🖱️ **Abrir al pasar el cursor**: actívalo en la barra rápida y un grupo se abre con solo dejar el cursor encima de su icono, sin hacer clic. Espera un momento antes de abrir, así cruzar la barra no abre nada sin querer; nunca te quita el teclado de donde estabas escribiendo; y se cierra en cuanto alejas el cursor. Viene apagado, porque deja un pequeño vigilante en la bandeja del sistema.
+- 📋 **Clic derecho en un grupo anclado** para **Abrir todas** y **Editar grupo**.
+- 🚀 **Abrirlas todas de golpe**, desde ese menú o desde el botón de la cabecera del panel.
 - 🗂️ **Grupos dentro de grupos**: mete un grupo en otro y se abre en su propio panel.
 - ⚙️ **Opciones por app**: cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
-- 💾 **Exportar, importar y duplicar**: comparte un grupo en un solo archivo, guarda una copia o duplica uno para empezar otro.
+- 📁 **Apps y carpetas** en el mismo grupo.
+- 💾 **Exportar, importar y duplicar**: comparte un grupo en un solo archivo, guarda una copia o empieza un grupo nuevo a partir de otro.
 - 🔁 **¿Vienes de Taskbar Groups o de AppGroup?** Importa tus grupos de cualquiera de los dos y sigue como estabas.
-- 🖱️ **Abrir al pasar el cursor** — actívalo en **Ajustes** y un grupo se abre con solo dejar el cursor encima de su icono, sin hacer clic. Espera un momento antes de abrir, así cruzar la barra no abre nada sin querer; nunca te quita el teclado de donde estabas escribiendo; y se cierra solo en cuanto alejas el cursor. Viene apagado: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde Ajustes.
-- 🔄 **Actualización del icono en vivo** — cambia el icono de un grupo anclado y el botón de la barra se refresca solo, con un reinicio limpio del shell que no molesta a tus otros iconos anclados.
-- 📁 **Apps *y* carpetas** en el mismo grupo.
-- 🌍 **Se adapta a tu Windows** — el tema claro/oscuro **y** el color de acento, además del idioma de la interfaz (**español o inglés**), se toman de tu sistema automáticamente. Puedes forzar el idioma con la variable `TBG_LANG`.
-- ⬇️ **Instalador de un clic + actualizaciones automáticas** — instala con doble clic; la app comprueba si hay versiones nuevas al abrir y se actualiza sola cuando tú quieras.
+- 🔄 **El icono de la barra sigue tus cambios**: cambia el icono de un grupo anclado y su botón se actualiza. Windows guarda esos iconos en caché, así que el Explorador se reinicia una vez; tus otros iconos anclados se quedan donde estaban.
+- 🌗 **Una barra rápida abajo en la ventana principal**: claro u oscuro, español o inglés (los dos siguen a Windows si no eliges), abrir al pasar el cursor y la versión que tienes.
+- ⬇️ **Instalador y actualizaciones**: se instala con doble clic, y la app te avisa cuando hay una versión nueva y se actualiza cuando tú digas.
 
 ---
 
 ## 📸 Capturas
 
 <div align="center">
-  <img src="docs/screenshots/es/main.png" width="820" alt="Ventana principal — tus grupos" />
+  <img src="docs/screenshots/es/main.png" width="820" alt="Ventana principal con cuatro grupos y la barra rápida abajo" />
 </div>
 
-<p align="center"><em>Tus grupos de un vistazo. Cada tarjeta es un grupo que puedes anclar, editar o eliminar; el icono puede ser una imagen o un emoji.</em></p>
-
-| Editor de grupo | Selector de apps | Selector de emojis |
-| :--: | :--: | :--: |
-| <img src="docs/screenshots/es/editor.png" alt="Editor de grupo" /> | <img src="docs/screenshots/es/app-picker.png" alt="Selector de apps" /> | <img src="docs/screenshots/es/emoji-picker.png" alt="Selector de emojis" /> |
-| Ponle nombre, un icono, y añade apps o carpetas. | Todas tus apps instaladas, buscables y con su icono. | Elige un emoji a color como icono del grupo. |
-
-<br />
+<p align="center"><em>Tus grupos de un vistazo. La barra rápida de abajo tiene el tema, el idioma, abrir al pasar el cursor y la versión, con un ✓ verde cuando estás al día.</em></p>
 
 <div align="center">
-  <img src="docs/screenshots/es/flyout.png" width="440" alt="Popup en la barra de tareas" />
+  <img src="docs/screenshots/es/editor.png" width="420" alt="Editor de grupo con sus apps y la vista previa del panel" />
 </div>
 
-<p align="center"><em>Pulsa el grupo anclado en tu barra de tareas y sus apps aparecen en un popup.</em></p>
+<p align="center"><em>El editor de grupo: nombre, icono, apps y la vista previa del panel tal y como se va a abrir.</em></p>
 
-> 💡 Las imágenes en GitHub son clicables — abre cualquier captura para ampliarla.
+> 💡 Las imágenes en GitHub se pueden pulsar: abre cualquier captura para verla a tamaño completo.
 
 ---
 
 ## ⬇️ Descarga e instalación
 
-1. Pulsa el botón **Descargar** de arriba — o este enlace directo: **[descargar el instalador](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)**.
-2. Ejecuta el `TaskbarGroupsFluent-Setup.exe` descargado. Se instala por usuario (sin admin) y, si no tienes el **.NET 10 Desktop Runtime**, lo descarga e instala por ti.
-3. Abre **Taskbar Groups** desde el Menú Inicio. ¡Listo!
+1. Pulsa el botón **Descargar** de arriba, o usa este enlace directo: **[descargar el instalador](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)**.
+2. Ejecuta `TaskbarGroupsFluent-Setup.exe`. Se instala solo para tu usuario (sin permisos de administrador) y, si falta el **.NET 10 Desktop Runtime**, lo descarga e instala.
+3. Abre **Taskbar Groups** desde el menú Inicio.
 
-> ¿Prefieres ver todas las versiones y archivos? Están en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest).
+> ¿Vas a instalarlo en un PC sin internet? `TaskbarGroupsFluent-Setup-Offline.exe`, en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest), lleva .NET dentro.
 
-> Windows puede mostrar un aviso de *"editor desconocido"* (la app aún no está firmada con un certificado de pago). Pulsa **Más información → Ejecutar de todas formas**.
+> Windows puede avisar de un *"editor desconocido"*, porque la app no está firmada con un certificado de pago. Pulsa **Más información → Ejecutar de todas formas**.
 
-## 🔄 Actualizaciones automáticas
+## 🔄 Actualizaciones
 
-Al abrirse, Taskbar Groups comprueba en GitHub si hay una versión nueva. Si la hay, te ofrece actualizar — un clic **la descarga, la instala y vuelve a abrir la app**. Sin descargar nada a mano.
+Al abrirse, la app mira en GitHub si hay una versión nueva. Abajo a la derecha de la ventana principal sale la versión que tienes, con un ✓ verde si estás al día (púlsalo para volver a mirar). Si hay una nueva pone **Actualizar ahora**: un clic la descarga, la instala y vuelve a abrir la app.
 
 ---
 
 ## 🚀 Cómo se usa
 
-1. Pulsa **Añadir grupo** y dale un **nombre** y un **icono** (sube y recorta una imagen, o pulsa **Emoji**).
-2. Añade accesos con **Aplicación** (elige cualquier app instalada de la lista buscable, o *Examinar…*) o **Carpeta**.
-3. Pulsa **Guardar grupo**.
-4. En la tarjeta del grupo, pulsa **Anclar a la barra de tareas** y sigue los 3 pasos (clic derecho en el acceso resaltado → *Mostrar más opciones* → *Anclar a la barra de tareas*). Windows 11 bloquea el anclado totalmente automático, así que este último paso lo confirmas tú.
-5. Pulsa el icono anclado para abrir el popup con tus apps.
-
-> La interfaz está en español o inglés según el idioma de Windows. Fuérzalo con la variable de entorno `TBG_LANG=es` / `TBG_LANG=en`.
+1. Pulsa **Añadir grupo** y dale un **nombre** y un **icono** (una imagen, un emoji, o **Apps** para hacerlo con las apps del grupo).
+2. Añade accesos con **Aplicación** (cualquier app instalada de la lista buscable, o *Examinar…*), **Carpeta** o **Grupo**.
+3. Elige cómo se ve su panel en **Panel** y pulsa **Guardar grupo**.
+4. En la tarjeta del grupo, pulsa **Anclar a la barra de tareas**. La app abre la carpeta con el acceso del grupo resaltado: haz clic derecho en él, luego *Mostrar más opciones* y luego *Anclar a la barra de tareas*. Windows 11 no deja que las apps se anclen solas, así que este último paso lo haces tú.
+5. Pulsa el botón anclado para abrir el panel con tus apps, o haz clic derecho para **Abrir todas** y **Editar grupo**.
 
 ---
 
@@ -119,10 +112,11 @@ cd TaskbarGroupsFluent
 dotnet build TaskbarGroupsFluent.sln -c Release
 ```
 
-Ejecuta el proyecto `TaskbarGroups.App`. Para generar una build distribuible:
+Ejecuta el proyecto `TaskbarGroups.App`. Para generar la carpeta que empaqueta el instalador:
 
 ```bash
 dotnet publish src/TaskbarGroups.App -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
+dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
 dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
 ```
 
@@ -130,26 +124,36 @@ El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a pa
 
 ### 🧱 Cómo funciona
 
-| Proyecto | Rol |
+| Proyecto | Qué hace |
 | --- | --- |
-| `TaskbarGroups.Core` | Lógica sin UI: modelo de datos, catálogo `AppsFolder` del shell + pipeline de iconos, interop del shell, rutas |
-| `TaskbarGroups.App` | Editor Fluent — ventana principal, editor de grupo, selectores de app y emoji, editor de recorte, updater |
-| `TaskbarGroups.Background` | El popup sin bordes que se muestra sobre la barra de tareas |
-| `TaskbarGroups.Hover` | Vigilante residente opcional para abrir al pasar el cursor, vive en la bandeja del sistema |
+| `TaskbarGroups.Core` | La lógica sin interfaz: modelo de datos, catálogo de apps de Windows e iconos, interop del shell, rutas |
+| `TaskbarGroups.App` | La app Fluent: ventana principal, editor de grupo, selectores de apps y emojis, editor de recorte, actualizador |
+| `TaskbarGroups.Background` | El panel sin bordes que sale encima de la barra de tareas |
+| `TaskbarGroups.Hover` | Vigilante opcional para abrir al pasar el cursor, vive en la bandeja del sistema |
 
-La app despliega el popup de fondo junto a sí misma; un acceso directo anclado lo lanza con el nombre del grupo como argumento.
+Cada grupo anclado es un acceso directo al panel con el nombre del grupo como argumento y su propio AppUserModelID, que es lo que hace que cada grupo sea un botón aparte en la barra.
 
 Lo del cursor no es algo que Windows ofrezca: un botón de la barra no avisa de nada cuando el cursor pasa por encima, así que el vigilante lee los botones de la barra con UI Automation y compara la posición del cursor con ellos. Solo lo hace mientras el cursor está de verdad sobre la barra, y guarda en caché lo que lee, que es lo que lo mantiene en una fracción de un uno por ciento de un núcleo cuando no pasa nada.
 
-Que abra rápido pide un truco más. Arrancar un popup en frío significa cargar .NET, luego WPF, y luego pintar una ventana por primera vez: casi un segundo, por poco que haga el popup. Así que cuando el cursor se acerca a la barra, el vigilante carga uno por adelantado y lo deja escondido, listo para salir en unos cincuenta milisegundos; un popup cargado ocupa memoria de verdad, así que se suelta en cuanto el cursor lleva un rato lejos. El vigilante en sí se mantiene pequeño todo el tiempo.
+Que abra rápido pide un truco más. Arrancar un panel en frío significa cargar .NET, luego WPF, y luego pintar una ventana por primera vez: casi un segundo, por poco que haga el panel. Así que cuando el cursor se acerca a la barra, el vigilante carga uno por adelantado y lo deja escondido, listo para salir en unos cincuenta milisegundos; un panel cargado ocupa memoria de verdad, así que se suelta en cuanto el cursor lleva un rato lejos.
 
 ## 🙏 Créditos
 
 Construido sobre el trabajo de:
 
-- [tjackenpacken/taskbar-groups](https://github.com/tjackenpacken/taskbar-groups) — la app original.
-- [PikeNote/taskbar-groups-pike-beta](https://github.com/PikeNote/taskbar-groups-pike-beta) — fork de la comunidad cuya estructura sirvió de base a esta reescritura.
-- [WPF-UI](https://github.com/lepoco/wpfui) — la librería de controles Fluent · [SkiaSharp](https://github.com/mono/SkiaSharp) — renderizado de emojis a color.
+- [tjackenpacken/taskbar-groups](https://github.com/tjackenpacken/taskbar-groups), la app original.
+- [PikeNote/taskbar-groups-pike-beta](https://github.com/PikeNote/taskbar-groups-pike-beta), el fork de la comunidad cuya estructura sirvió de base a esta reescritura.
+- [WPF-UI](https://github.com/lepoco/wpfui), la librería de controles Fluent, y [SkiaSharp](https://github.com/mono/SkiaSharp), para los emojis a color.
+
+## 🔍 No te fíes, compruébalo
+
+El código abierto solo sirve si alguien lo lee, y casi nadie lo hace. Así que en vez de
+pedirte que te fíes de este proyecto, aquí tienes el texto para comprobarlo: pásaselo a tu
+propia IA junto con este repositorio y en unos minutos tendrás un informe de seguridad en tu
+idioma, aunque no sepas programar.
+
+**[Abre AI-AUDIT.md](AI-AUDIT.md)** y pégalo en Claude Code, Codex, Cursor, Copilot o lo que
+uses. Es el mismo texto en todos los repositorios públicos de aquí, así que puedes comparar.
 
 ## 📜 Licencia
 
