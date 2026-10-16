@@ -94,6 +94,36 @@
                             IsOpen="False"
                             Message="{DynamicResource Loc_Settings_HoverRunning}" />
 
+                <!-- The only way to support the app: there is no paid version. It sits
+                     last, below every setting, so it never gets in the way of one. -->
+                <ui:Card Padding="16" Margin="0,16,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:SymbolIcon Grid.Column="0" Symbol="DrinkCoffee24" FontSize="22"
+                                       VerticalAlignment="Center" Margin="0,0,14,0"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Loc_Settings_SupportTitle}"
+                                       FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <TextBlock Text="{DynamicResource Loc_Settings_SupportSubtitle}"
+                                       FontSize="12" Margin="0,3,12,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+
+                        <ui:Button Grid.Column="2" Content="{DynamicResource Loc_Settings_SupportButton}"
+                                   Icon="{ui:SymbolIcon Open24}" VerticalAlignment="Center"
+                                   ToolTip="buymeacoffee.com/munito"
+                                   Click="Support_Click" />
+                    </Grid>
+                </ui:Card>
+
             </StackPanel>
         </ScrollViewer>
 

@@ -187,5 +187,8 @@
     <s:String x:Key="Loc_Settings_DelayFast">Fast</s:String>
     <s:String x:Key="Loc_Settings_DelayNormal">Normal</s:String>
     <s:String x:Key="Loc_Settings_DelayRelaxed">Relaxed</s:String>
+    <s:String x:Key="Loc_Settings_SupportTitle">Support the project</s:String>
+    <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can buy me a coffee.</s:String>
+    <s:String x:Key="Loc_Settings_SupportButton">Buy me a coffee</s:String>
 
 </ResourceDictionary>
