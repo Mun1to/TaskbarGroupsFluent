@@ -27,9 +27,9 @@
   </a>
 </p>
 
-<img src="docs/screenshots/panel-demo.gif" width="732" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11, abriéndose uno tras otro: cuadrícula, lista, columna vertical y fila" />
+<img src="docs/screenshots/panel-demo.gif" width="618" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11: dos se abren dejando el cursor encima y dos con un clic, como columna vertical, lista, cuadrícula y fila" />
 
-<sub>Grabado en una barra de tareas real de Windows 11: cuatro grupos, cada uno con su forma de panel.</sub>
+<sub>Grabado en una barra de tareas real de Windows 11: deja el cursor sobre un grupo o haz clic, y cada uno se abre con su forma de panel.</sub>
 
 </div>
 

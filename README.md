@@ -27,9 +27,9 @@
   </a>
 </p>
 
-<img src="docs/screenshots/panel-demo.gif" width="732" alt="Four groups pinned to a real Windows 11 taskbar, opened one after another: a grid, a list, a vertical column and a row" />
+<img src="docs/screenshots/panel-demo.gif" width="618" alt="Four groups pinned to a real Windows 11 taskbar: two open by resting the cursor on them and two by clicking, as a vertical column, a list, a grid and a row" />
 
-<sub>Recorded on a real Windows 11 taskbar: four groups, each with its own panel layout.</sub>
+<sub>Recorded on a real Windows 11 taskbar: rest the cursor on a group or click it, and each one opens with its own panel layout.</sub>
 
 </div>
 
