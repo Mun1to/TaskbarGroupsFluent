@@ -94,7 +94,7 @@ uses. Es el mismo texto en todos los repositorios públicos de aquí, así que p
 
 ## ☕ Apoyar el proyecto
 
-Taskbar Groups Fluent es gratis y no tiene versión de pago. Si te ahorra tiempo, puedes [invitarme a un café](https://buymeacoffee.com/munito), y una ⭐ en el repo ayuda a que más gente lo encuentre.
+Taskbar Groups Fluent es gratis y no tiene versión de pago. Si te ahorra tiempo, puedes [invitarme a un café](https://buymeacoffee.com/munito) (la app tiene el mismo botón en su barra de abajo y en **Ajustes**), y una ⭐ en el repo ayuda a que más gente lo encuentre.
 
 ## 📜 Licencia
 

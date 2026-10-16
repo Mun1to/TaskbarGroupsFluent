@@ -98,7 +98,7 @@ whatever you use. It is the same prompt in every public repository here, so you 
 
 ## ☕ Support
 
-Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/munito), and a ⭐ on the repo helps more people find it.
+Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/munito) (the app has the same button in its bottom bar and in **Settings**), and a ⭐ on the repo helps more people find it.
 
 ## 📜 License
 
