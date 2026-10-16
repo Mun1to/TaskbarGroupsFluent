@@ -765,6 +765,15 @@
       color: var(--suave); font-size: 12.5px; cursor: pointer; transition: border-color 0.15s, color 0.15s;
     }
     .valvula:hover { border-color: var(--azul); color: var(--texto); }
+    /* El café del pie va como píldora, igual que la válvula, para que se lea como un
+       botón pequeño y no como parte de la firma de al lado. */
+    footer a.cafe {
+      display: inline-flex; align-items: center; gap: 7px; padding: 6px 12px; border-radius: 999px;
+      border: 1px solid var(--borde); color: var(--suave); font-size: 12.5px; text-decoration: none;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    footer a.cafe:hover { border-color: var(--azul); color: var(--texto); }
+    footer a.cafe svg { width: 15px; height: 15px; flex: none; }
 
     /* ==========================================================================
        ENTRADAS AL APARECER: el bloque sube un poco y se enciende. La subida va
@@ -797,6 +806,7 @@
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
   <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
   <g>
+    <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol>
     <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
     <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="m14.5 5.5 3 3"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
@@ -1354,10 +1364,14 @@
         <a class="btn fantasma" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases" target="_blank" rel="noopener">
           <span data-en="All versions">Todas las versiones</span>
         </a>
+        <a class="btn fantasma" href="https://buymeacoffee.com/munito" target="_blank" rel="noopener">
+          <svg aria-hidden="true"><use href="#i-coffee"/></svg>
+          <span data-en="Buy me a coffee">Invítame a un café</span>
+        </a>
       </div>
       <p class="letra-chica"
-         data-en="If it is useful to you, a &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;star on GitHub&lt;/a&gt; helps more people find it.">
-        Si te resulta útil, una <a href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">estrella en GitHub</a> ayuda a que más gente la encuentre.
+         data-en="It is free and has no paid version. If it is useful to you, a &lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;star on GitHub&lt;/a&gt; helps more people find it, and a coffee helps me keep it going.">
+        Es gratis y no tiene versión de pago. Si te resulta útil, una <a href="https://github.com/Mun1to/TaskbarGroupsFluent" target="_blank" rel="noopener">estrella en GitHub</a> ayuda a que más gente la encuentre, y un café me ayuda a seguir con ella.
       </p>
     </div>
   </div>
@@ -1368,6 +1382,7 @@
   <div class="env">
     <a class="marca" href="./"><img src="assets/logo.png?v=1" alt="" width="20" height="20" loading="lazy"> Taskbar Groups Fluent · MIT</a>
     <span data-en="Made by &lt;a href=&quot;https://munito.dev&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Munir Torres&lt;/a&gt;">Hecho por <a href="https://munito.dev" target="_blank" rel="noopener">Munir Torres</a></span>
+    <a class="cafe" href="https://buymeacoffee.com/munito" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#i-coffee"/></svg> <span data-en="Buy me a coffee">Invítame a un café</span></a>
     <button type="button" class="valvula" id="valvula">Quitar animaciones</button>
     <p class="pie-legal">
       <span data-en="Not affiliated with Microsoft. Windows is a trademark of its owner.">Sin vínculo con Microsoft. Windows es marca de su propietario.</span>

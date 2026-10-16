@@ -16,6 +16,9 @@
     <img src="https://img.shields.io/badge/license-MIT-0a84ff?style=for-the-badge" alt="MIT license" />
   </a>
   <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-x64-22c55e?style=for-the-badge" alt="Windows 10/11 x64" />
+  <a href="https://buymeacoffee.com/munito">
+    <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee" />
+  </a>
 </p>
 
 <p align="center">
