@@ -8,7 +8,7 @@ Everything Partner Center asks for, ready to paste. Screenshots are in `screensh
 | Field | Value |
 |---|---|
 | Product type | MSIX app (Microsoft signs MSIX packages for free, as with winshotx and Vocript) |
-| Store ID | 9PCZDXWFT6SN (identity in `packaging/store/identidad.json`) |
+| Store ID | 9PCZDXWFT6SN (identity in `packaging/store/identidad.json`). Public since 16 October 2026: https://apps.microsoft.com/detail/9PCZDXWFT6SN |
 | Architecture | x64 |
 | Languages | English, Spanish |
 | .NET | Self-contained inside the package: the Store does not install the .NET Desktop Runtime for an MSIX |
@@ -52,7 +52,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-First release in the Microsoft Store. New in 1.6.1: a quick bar at the bottom of the window for the theme, the language and opening on hover, the version at a glance with a tick when it is the latest, and a right-click menu on pinned groups with Open all and Edit group.
+Clicking a group now opens it almost instantly: about 0.1 s instead of nearly a second, because the panel stays loaded for a while after you use it and gives its memory back while it waits. The vertical panel fits its icons, with no empty sides. And there is a Support button in the quick bar and in Settings, the only way to support the app: it is free and has no paid version.
 
 **Product features** (one per line, up to 20)
 
@@ -102,7 +102,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Primera versión en la Microsoft Store. Novedades de la 1.6.1: una barra rápida abajo de la ventana para el tema, el idioma y abrir al pasar el cursor, la versión a la vista con un ✓ cuando es la última, y un menú en el clic derecho de los grupos anclados con «Abrir todas» y «Editar grupo».
+Al hacer clic en un grupo ahora se abre casi al instante: unos 0,1 s en vez de casi un segundo, porque el panel se queda cargado un rato después de usarlo y devuelve su memoria mientras espera. El panel vertical se ajusta a sus iconos, sin huecos a los lados. Y hay un botón «Apoyar» en la barra rápida y en Ajustes, la única forma de apoyar la app: es gratis y no tiene versión de pago.
 
 **Características** (una por línea, hasta 20)
 
