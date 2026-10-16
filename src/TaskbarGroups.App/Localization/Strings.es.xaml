@@ -170,6 +170,8 @@
     <s:String x:Key="Loc_Quick_Language">Idioma</s:String>
     <s:String x:Key="Loc_Quick_LangSystem">Automático: como Windows</s:String>
     <s:String x:Key="Loc_Quick_Hover">Abrir al pasar el cursor</s:String>
+    <s:String x:Key="Loc_Quick_Support">Apoyar</s:String>
+    <s:String x:Key="Loc_Quick_SupportTip">Invítame a un café: es la única forma de apoyar la app, que no tiene versión de pago</s:String>
 
     <!-- Errores -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">Ocurrió un error inesperado:&#10;&#10;{0}</s:String>

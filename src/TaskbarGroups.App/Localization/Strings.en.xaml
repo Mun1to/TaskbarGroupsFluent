@@ -170,6 +170,8 @@
     <s:String x:Key="Loc_Quick_Language">Language</s:String>
     <s:String x:Key="Loc_Quick_LangSystem">Automatic: same as Windows</s:String>
     <s:String x:Key="Loc_Quick_Hover">Open on hover</s:String>
+    <s:String x:Key="Loc_Quick_Support">Support</s:String>
+    <s:String x:Key="Loc_Quick_SupportTip">Buy me a coffee: it is the only way to support the app, which has no paid version</s:String>
 
     <!-- Errors -->
     <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">An unexpected error occurred:&#10;&#10;{0}</s:String>

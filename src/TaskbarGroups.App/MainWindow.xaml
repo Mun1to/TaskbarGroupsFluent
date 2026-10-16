@@ -291,6 +291,17 @@
                         </Grid>
                     </ui:Button>
                 </StackPanel>
+
+                <!-- The coffee, the only way to support the app. Docked right after the
+                     version, so it sits just left of it and never between two settings. -->
+                <ui:Button DockPanel.Dock="Right" Appearance="Transparent" BorderThickness="0"
+                           Background="Transparent" Padding="8,4" Margin="0,0,10,0"
+                           VerticalAlignment="Center" FontSize="11.5"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                           Icon="{ui:SymbolIcon DrinkCoffee24}"
+                           Content="{DynamicResource Loc_Quick_Support}"
+                           ToolTip="{DynamicResource Loc_Quick_SupportTip}"
+                           Click="Support_Click" />
             </DockPanel>
         </Border>
     </Grid>

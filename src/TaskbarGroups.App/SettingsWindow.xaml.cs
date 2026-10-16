@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using TaskbarGroups.App.Helpers;
@@ -106,14 +105,7 @@ public partial class SettingsWindow : FluentWindow
         HoverNotice.IsOpen = on;
     }
 
-    // The same page the README, the site and GitHub's Sponsor button point at.
-    private const string SupportUrl = "https://buymeacoffee.com/munito";
-
-    private void Support_Click(object sender, RoutedEventArgs e)
-    {
-        try { Process.Start(new ProcessStartInfo(SupportUrl) { UseShellExecute = true }); }
-        catch { /* no default browser: nothing to open, and nothing else breaks */ }
-    }
+    private void Support_Click(object sender, RoutedEventArgs e) => SupportLink.Open();
 
     private void Close_Click(object sender, RoutedEventArgs e) => Close();
 }

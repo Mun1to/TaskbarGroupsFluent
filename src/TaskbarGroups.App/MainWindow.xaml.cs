@@ -120,6 +120,8 @@ public partial class MainWindow : FluentWindow
 
     private void UpdateNow_Click(object sender, RoutedEventArgs e) => _ = InstallUpdateAsync();
 
+    private void Support_Click(object sender, RoutedEventArgs e) => SupportLink.Open();
+
     /// <summary>
     /// Looks for a new version. The automatic look at start is silent unless it
     /// finds one; the one asked for with the button always says how it went.
