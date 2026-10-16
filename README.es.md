@@ -25,6 +25,10 @@
   <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
     <img src="brand/download-button-es.svg" alt="Descargar Taskbar Groups Fluent" width="320" height="72" />
   </a>
+  <br />
+  <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct">
+    <img src="https://get.microsoft.com/images/es%20dark.svg" alt="Consíguelo en la Microsoft Store" width="200" />
+  </a>
 </p>
 
 <table>
@@ -66,6 +70,8 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 
 1. Descarga **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** y ejecútalo. Se instala solo para tu usuario y descarga el **.NET 10 Desktop Runtime** si falta.
 2. Abre **Taskbar Groups** desde el menú Inicio.
+
+> ¿Prefieres la Store? **[Consíguelo en la Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: la misma app, firmada por Microsoft y actualizada por el propio Windows. Puede ir una versión por detrás del instalador mientras Microsoft revisa cada actualización.
 
 > ¿Ese PC no tiene internet? `TaskbarGroupsFluent-Setup-Offline.exe`, en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest), lleva .NET dentro. Si Windows avisa de un *"editor desconocido"*, pulsa **Más información → Ejecutar de todas formas**: la app no está firmada con un certificado de pago.
 

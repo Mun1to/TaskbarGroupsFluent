@@ -25,6 +25,10 @@
   <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
     <img src="brand/download-button-en.svg" alt="Download Taskbar Groups Fluent" width="320" height="72" />
   </a>
+  <br />
+  <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct">
+    <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from the Microsoft Store" width="200" />
+  </a>
 </p>
 
 <table>
@@ -66,6 +70,8 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 
 1. Download **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** and run it. It installs for your user only and downloads the **.NET 10 Desktop Runtime** if it is missing.
 2. Open **Taskbar Groups** from the Start menu.
+
+> Prefer the Store? **[Get it from the Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: the same app, signed by Microsoft and kept up to date by Windows. It can lag a version behind the installer while each update is reviewed.
 
 > No internet on that PC? `TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info → Run anyway**: the app isn't signed with a paid certificate.
 
