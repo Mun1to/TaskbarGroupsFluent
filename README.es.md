@@ -27,9 +27,18 @@
   </a>
 </p>
 
-<img src="docs/screenshots/panel-demo.gif" width="618" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11: dos se abren dejando el cursor encima y dos con un clic, como columna vertical, lista, cuadrícula y fila" />
+<table>
+  <tr>
+    <th align="center">Haz clic en un grupo</th>
+    <th align="center">O deja el cursor encima</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/panel-click.gif" width="400" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11, cada uno abierto con un clic: columna vertical, lista, cuadrícula y fila" /></td>
+    <td align="center"><img src="docs/screenshots/panel-hover.gif" width="400" alt="Los mismos cuatro grupos abriéndose solos al posar el cursor en cada uno, y cerrándose al alejarlo" /></td>
+  </tr>
+</table>
 
-<sub>Grabado en una barra de tareas real de Windows 11: <b>Creative</b> y <b>Dev</b> se abren con dejar el cursor encima, <b>Gaming</b> y <b>Office</b> con un clic.<br />▶️ <a href="docs/screenshots/panel-demo.mp4">Verlo en vídeo</a> · 🖥️ <a href="https://tbgf.munito.dev">Probar la demo en la web</a></sub>
+<sub>Grabado en una barra de tareas real de Windows 11. <b>Abrir al pasar el cursor</b> viene apagado; se enciende en la barra rápida.<br />▶️ Vídeos: <a href="docs/screenshots/panel-click.mp4">clic</a> · <a href="docs/screenshots/panel-hover.mp4">pasar el ratón</a> · 🖥️ <a href="https://tbgf.munito.dev">Demo en la web</a></sub>
 
 </div>
 

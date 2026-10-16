@@ -27,9 +27,18 @@
   </a>
 </p>
 
-<img src="docs/screenshots/panel-demo.gif" width="618" alt="Four groups pinned to a real Windows 11 taskbar: two open by resting the cursor on them and two by clicking, as a vertical column, a list, a grid and a row" />
+<table>
+  <tr>
+    <th align="center">Click a group</th>
+    <th align="center">Or just rest the cursor on it</th>
+  </tr>
+  <tr>
+    <td align="center"><img src="docs/screenshots/panel-click.gif" width="400" alt="Four groups pinned to a real Windows 11 taskbar, each opened with a click: a vertical column, a list, a grid and a row" /></td>
+    <td align="center"><img src="docs/screenshots/panel-hover.gif" width="400" alt="The same four groups opening by themselves as the cursor rests on each one, and closing when it moves away" /></td>
+  </tr>
+</table>
 
-<sub>Recorded on a real Windows 11 taskbar: <b>Creative</b> and <b>Dev</b> open by resting the cursor on them, <b>Gaming</b> and <b>Office</b> by clicking.<br />▶️ <a href="docs/screenshots/panel-demo.mp4">Watch it as a video</a> · 🖥️ <a href="https://tbgf.munito.dev">Try the live demo on the website</a></sub>
+<sub>Recorded on a real Windows 11 taskbar. <b>Open on hover</b> is off by default; switch it on in the quick bar.<br />▶️ Videos: <a href="docs/screenshots/panel-click.mp4">click</a> · <a href="docs/screenshots/panel-hover.mp4">hover</a> · 🖥️ <a href="https://tbgf.munito.dev">Live demo on the website</a></sub>
 
 </div>
 
