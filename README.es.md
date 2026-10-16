@@ -92,6 +92,10 @@ idioma, aunque no sepas programar.
 **[Abre AI-AUDIT.md](AI-AUDIT.md)** y pégalo en Claude Code, Codex, Cursor, Copilot o lo que
 uses. Es el mismo texto en todos los repositorios públicos de aquí, así que puedes comparar.
 
+## ☕ Apoyar el proyecto
+
+Taskbar Groups Fluent es gratis y no tiene versión de pago. Si te ahorra tiempo, puedes [invitarme a un café](https://buymeacoffee.com/munito), y una ⭐ en el repo ayuda a que más gente lo encuentre.
+
 ## 📜 Licencia
 
 [MIT](LICENSE), igual que los proyectos de arriba.
