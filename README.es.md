@@ -29,7 +29,8 @@
 
 <img src="docs/screenshots/panel-demo.gif" width="618" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11: dos se abren dejando el cursor encima y dos con un clic, como columna vertical, lista, cuadrícula y fila" />
 
-<sub>Grabado en una barra de tareas real de Windows 11: deja el cursor sobre un grupo o haz clic, y cada uno se abre con su forma de panel.</sub>
+<sub>Grabado en una barra de tareas real de Windows 11: <b>Creative</b> y <b>Dev</b> se abren con dejar el cursor encima, <b>Gaming</b> y <b>Office</b> con un clic.<br />
+▶️ <a href="docs/screenshots/panel-demo.mp4">Verlo en vídeo</a> · 🖥️ <a href="https://tbgf.munito.dev">Probar la demo en la web</a></sub>
 
 </div>
 

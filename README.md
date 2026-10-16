@@ -29,7 +29,8 @@
 
 <img src="docs/screenshots/panel-demo.gif" width="618" alt="Four groups pinned to a real Windows 11 taskbar: two open by resting the cursor on them and two by clicking, as a vertical column, a list, a grid and a row" />
 
-<sub>Recorded on a real Windows 11 taskbar: rest the cursor on a group or click it, and each one opens with its own panel layout.</sub>
+<sub>Recorded on a real Windows 11 taskbar: <b>Creative</b> and <b>Dev</b> open by resting the cursor on them, <b>Gaming</b> and <b>Office</b> by clicking.<br />
+▶️ <a href="docs/screenshots/panel-demo.mp4">Watch it as a video</a> · 🖥️ <a href="https://tbgf.munito.dev">Try the live demo on the website</a></sub>
 
 </div>
 
