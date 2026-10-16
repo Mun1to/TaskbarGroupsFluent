@@ -9,7 +9,8 @@ using System.Threading;
 namespace TaskbarGroups.Core
 {
     /// <summary>
-    /// The one-line protocol between the hover watcher and a warm flyout.
+    /// The one-line protocol between a warm flyout and whoever wants a panel on
+    /// screen: the hover watcher, or a click on a pinned group.
     ///
     /// A flyout that has already loaded can be put on screen in about fifty
     /// milliseconds, against roughly nine hundred for one started from scratch, so
@@ -46,6 +47,14 @@ namespace TaskbarGroups.Core
         /// </summary>
         public static bool Show(string group, int left, int top, int right, int bottom, int timeoutMs = 300)
             => Send($"show\t{group}\t{left}\t{top}\t{right}\t{bottom}", timeoutMs);
+
+        /// <summary>
+        /// Asks a warm flyout to show a group the way a click on its pinned icon does:
+        /// next to the cursor, taking the focus. This is what turns a click from a
+        /// process started from nothing into a message to one already on its feet.
+        /// </summary>
+        public static bool Click(string group, int timeoutMs = 300)
+            => Send($"click\t{group}", timeoutMs);
 
         /// <summary>
         /// True if a warm flyout has finished loading and is listening. This is what
@@ -149,6 +158,20 @@ namespace TaskbarGroups.Core
                 && int.TryParse(parts[3], out top)
                 && int.TryParse(parts[4], out right)
                 && int.TryParse(parts[5], out bottom);
+        }
+
+        /// <summary>
+        /// Reads a "click" message. Returns false for anything else or malformed.
+        /// </summary>
+        public static bool TryParseClick(string message, out string group)
+        {
+            group = string.Empty;
+
+            string[] parts = message.Split('\t');
+            if (parts.Length != 2 || parts[0] != "click") return false;
+
+            group = parts[1];
+            return group.Length > 0;
         }
     }
 }

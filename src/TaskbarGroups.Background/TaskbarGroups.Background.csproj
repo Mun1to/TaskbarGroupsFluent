@@ -13,6 +13,9 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>..\assets\Icon.ico</ApplicationIcon>
     <AssemblyTitle>Taskbar Groups Background</AssemblyTitle>
+    <!-- Program.Main, not the one WPF generates from App.xaml: a click that finds a
+         warm flyout hands over and leaves before WPF is loaded. -->
+    <StartupObject>TaskbarGroups.Background.Program</StartupObject>
   </PropertyGroup>
 
 </Project>

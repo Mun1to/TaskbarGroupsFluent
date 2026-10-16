@@ -35,18 +35,21 @@ internal sealed class WarmFlyout : IDisposable
     /// True if a warm flyout is loaded AND listening. The process being alive is not
     /// enough: for the best part of a second after starting it is still loading, and
     /// a request sent then is accepted and never acted on.
+    ///
+    /// It does not have to be ours. A flyout opened by a click stays loaded for a
+    /// while to take the next clicks, and it answers the watcher just the same.
     /// </summary>
-    public bool IsReady =>
-        _process is not null && !_process.HasExited && FlyoutChannel.IsFlyoutReady();
+    public bool IsReady => FlyoutChannel.IsFlyoutReady();
 
     /// <summary>
     /// Called while the cursor is on or near the taskbar. Starts the warm flyout if
-    /// there is not one already.
+    /// there is not one already, ours or one a click left loaded.
     /// </summary>
     public void KeepReady()
     {
         _awaySince = null;
         if (_process is not null && !_process.HasExited) return;
+        if (FlyoutChannel.IsFlyoutReady()) return;
 
         try
         {
@@ -82,7 +85,7 @@ internal sealed class WarmFlyout : IDisposable
     /// </summary>
     public bool Show(string group, RECT rect)
     {
-        if (_process is null || _process.HasExited) return false;
+        if (!IsReady) return false;
         return FlyoutChannel.Show(group, rect.Left, rect.Top, rect.Right, rect.Bottom);
     }
 

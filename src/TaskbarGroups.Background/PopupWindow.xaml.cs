@@ -56,6 +56,9 @@ public partial class PopupWindow : Window
     /// </summary>
     public bool Reusable { get; set; }
 
+    /// <summary>True while a warm flyout is waiting off screen rather than showing a group.</summary>
+    public bool IsParked => Left <= OffScreen / 2;
+
     public PopupWindow(Category category, HoverAnchor? anchor = null)
     {
         InitializeComponent();
@@ -358,6 +361,16 @@ public partial class PopupWindow : Window
         UpdateLayout();
     }
 
+    /// <summary>
+    /// Turns a flyout opened the ordinary way into a warm one, so that closing it
+    /// parks it off screen for the next click instead of ending the process.
+    /// </summary>
+    public void KeepForReuse()
+    {
+        Reusable = true;
+        Title = WarmWindowTitle;
+    }
+
     /// <summary>Parks a warm flyout off screen without unloading it.</summary>
     public void HideForReuse()
     {
@@ -370,14 +383,38 @@ public partial class PopupWindow : Window
         _anchor = null;
         Left = OffScreen;
         Top = OffScreen;
+
+        // Parked, a warm flyout only waits, so what it holds is given back now and
+        // paged in again the next time it shows. Low priority, so a showing already
+        // queued goes first, and skipped if one did.
+        Dispatcher.BeginInvoke(() => { if (IsParked) TrimMemory(); }, DispatcherPriority.ContextIdle);
     }
 
     /// <summary>
-    /// Puts an already warm flyout on screen showing <paramref name="category"/>,
-    /// positioned over <paramref name="anchor"/>. Measured at about fifty
-    /// milliseconds, against roughly nine hundred to start a fresh process.
+    /// Compacts the heap and hands the process's pages back to Windows. They stay
+    /// in memory as standby pages, so showing again brings them back cheaply, but
+    /// they no longer count against this process while it only waits.
     /// </summary>
-    public void ShowFor(Category category, HoverAnchor anchor)
+    private static void TrimMemory()
+    {
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        GC.Collect();
+        try { SetProcessWorkingSetSize(Process.GetCurrentProcess().Handle, -1, -1); }
+        catch { /* nothing to trim is no reason to fail */ }
+    }
+
+    [DllImport("kernel32.dll")]
+    private static extern bool SetProcessWorkingSetSize(IntPtr process, nint min, nint max);
+
+    /// <summary>
+    /// Puts an already warm flyout on screen showing <paramref name="category"/>,
+    /// positioned over <paramref name="anchor"/>, or next to the cursor and with
+    /// the focus when there is no anchor, which is how a click opens it. Measured
+    /// at about fifty milliseconds, against roughly nine hundred to start a fresh
+    /// process.
+    /// </summary>
+    public void ShowFor(Category category, HoverAnchor? anchor)
     {
         _category = category;
         _anchor = anchor;
@@ -391,6 +428,12 @@ public partial class PopupWindow : Window
         FitToContent();
 
         PositionOverTaskbar();
+
+        // Clicked: the user meant it, so the panel takes the keyboard like one
+        // started from scratch does. The process that received the click handed
+        // its right to the foreground over to this one on the way out.
+        if (anchor is null) TakeFocus();
+
         StartDismissGuard();
     }
 
@@ -581,13 +624,7 @@ public partial class PopupWindow : Window
         // second it takes to start a process and paint a window for the first time.
         if (Reusable)
         {
-            _closing = false;
-            _hadFocus = false;
-            _mouseWentUp = false;
-            _cursorLeftAt = null;
-            _anchor = null;
-            Left = OffScreen;
-            Top = OffScreen;
+            HideForReuse();
             return;
         }
 

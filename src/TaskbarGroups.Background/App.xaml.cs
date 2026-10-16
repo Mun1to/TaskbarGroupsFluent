@@ -10,9 +10,11 @@ using TaskbarGroups.Core;
 namespace TaskbarGroups.Background;
 
 /// <summary>
-/// Background client entry point. Launched (by a pinned taskbar shortcut) with
-/// the group name as its argument; shows that group's flyout above the taskbar
-/// and exits when the flyout closes.
+/// Background client. Launched (by a pinned taskbar shortcut) with the group name
+/// as its argument; shows that group's flyout above the taskbar. A click that
+/// finds a warm flyout never gets here, see <see cref="Program"/>. One that does
+/// keeps its flyout loaded after it closes, unless something else is already
+/// keeping one warm, so the next click is a hand-off rather than a cold start.
 /// </summary>
 public partial class App : Application
 {
@@ -137,6 +139,35 @@ public partial class App : Application
         }
 
         w.Show();
+
+        // A click from cold pays for loading everything, and the next one should
+        // not. Looked at once the panel is up, so the check is never part of the wait.
+        if (anchor is null)
+            Dispatcher.BeginInvoke(() => StayWarm(w), System.Windows.Threading.DispatcherPriority.ApplicationIdle);
+    }
+
+    /// <summary>
+    /// How long a flyout opened by a click stays loaded with nothing asked of it.
+    /// Long enough to cover reaching for the same groups again during a session,
+    /// short enough that the memory it holds goes back soon after.
+    /// </summary>
+    private static readonly TimeSpan ClickWarmLife = TimeSpan.FromMinutes(10);
+
+    /// <summary>How long a flyout the watcher started stays loaded with nothing asked of it.</summary>
+    private static readonly TimeSpan WatcherWarmLife = TimeSpan.FromMinutes(3);
+
+    /// <summary>
+    /// Keeps a flyout opened by a click loaded once it closes, so it can take the
+    /// next clicks itself. Not when the hover watcher is running, which keeps its
+    /// own warm flyout and would fight a second one for the channel, nor when one
+    /// came up while this one was loading.
+    /// </summary>
+    private void StayWarm(PopupWindow window)
+    {
+        if (HoverService.IsRunning() || FlyoutChannel.IsFlyoutReady()) return;
+
+        window.KeepForReuse();
+        Serve(window, ClickWarmLife, needsWatcher: false);
     }
 
 
@@ -150,6 +181,14 @@ public partial class App : Application
     /// </summary>
     private void RunWarm()
     {
+        // A flyout a click left loaded is already doing this job, and the watcher
+        // talks to it just the same. A second one would only fight it for the channel.
+        if (FlyoutChannel.IsFlyoutReady())
+        {
+            Shutdown();
+            return;
+        }
+
         Category? seed = FirstGroup();
         if (seed is null)
         {
@@ -159,16 +198,25 @@ public partial class App : Application
 
         var window = new PopupWindow(seed);
         window.Prewarm();
+        Serve(window, WatcherWarmLife, needsWatcher: true);
+    }
 
+    /// <summary>
+    /// Makes <paramref name="window"/> the warm flyout: listening on the channel,
+    /// and gone once nobody has asked anything of it for <paramref name="idle"/>.
+    /// </summary>
+    private void Serve(PopupWindow window, TimeSpan idle, bool needsWatcher)
+    {
         var stop = new CancellationTokenSource();
         Exit += (_, _) => stop.Cancel();
 
         // A warm flyout holds a lot of memory and has no window anyone can see, so
-        // it must never outlive the watcher that asked for it. The watcher stops it
-        // on the way out, but a watcher that is killed outright cannot, and an
-        // invisible orphan of 160 MB is the worst thing this feature could leave
-        // behind. So it also watches for that itself and goes quietly.
-        StartOrphanGuard(window, stop);
+        // it must never outlive the reason it was kept. One the watcher started
+        // goes with the watcher: the watcher stops it on the way out, but a watcher
+        // that is killed outright cannot, and an invisible orphan of 160 MB is the
+        // worst thing this feature could leave behind. Any of them goes after a
+        // spell with nothing asked of it.
+        StartOrphanGuard(window, stop, idle, needsWatcher);
 
         var listener = new Thread(() => FlyoutChannel.Listen(
             message => Dispatcher.Invoke(() => Handle(window, message)), stop.Token))
@@ -188,12 +236,12 @@ public partial class App : Application
 
 
     /// <summary>
-    /// Ends the warm flyout if its watcher is gone, or if nothing has been asked of
-    /// it for a long time. Either means nobody is coming back for it.
+    /// Ends the warm flyout if the watcher it depends on is gone, or if nothing has
+    /// been asked of it for <paramref name="idle"/>. Either means nobody is coming
+    /// back for it.
     /// </summary>
-    private void StartOrphanGuard(PopupWindow window, CancellationTokenSource stop)
+    private void StartOrphanGuard(PopupWindow window, CancellationTokenSource stop, TimeSpan idle, bool needsWatcher)
     {
-        var idle = TimeSpan.FromMinutes(3);
         var lastAsk = DateTime.UtcNow;
         TouchMessage = () => lastAsk = DateTime.UtcNow;
 
@@ -203,11 +251,10 @@ public partial class App : Application
         };
         timer.Tick += (_, _) =>
         {
-            bool watcherGone;
-            try { watcherGone = Process.GetProcessesByName(HoverService.ProcessName).Length == 0; }
-            catch { watcherGone = false; }
+            bool watcherGone = needsWatcher && !HoverService.IsRunning();
 
-            bool forgotten = DateTime.UtcNow - lastAsk > idle;
+            // A panel still on screen is in use, however long ago it was asked for.
+            bool forgotten = window.IsParked && DateTime.UtcNow - lastAsk > idle;
             if (!watcherGone && !forgotten) return;
 
             timer.Stop();
@@ -219,7 +266,7 @@ public partial class App : Application
 
     private static Action? TouchMessage;
 
-    /// <summary>Carries out one request from the watcher.</summary>
+    /// <summary>Carries out one request from the watcher or from a click.</summary>
     private void Handle(PopupWindow window, string message)
     {
         TouchMessage?.Invoke();
@@ -236,16 +283,27 @@ public partial class App : Application
             return;
         }
 
+        if (FlyoutChannel.TryParseClick(message, out string clicked))
+        {
+            ShowGroup(window, clicked, null);
+            return;
+        }
+
         if (!FlyoutChannel.TryParseShow(message, out string group,
                 out int left, out int top, out int right, out int bottom))
             return;
 
+        ShowGroup(window, group, new HoverAnchor(left, top, right, bottom));
+    }
+
+    private static void ShowGroup(PopupWindow window, string group, HoverAnchor? anchor)
+    {
         string dir = Path.Combine(Paths.ConfigPath, group);
         if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) return;
 
         try
         {
-            window.ShowFor(new Category(dir), new HoverAnchor(left, top, right, bottom));
+            window.ShowFor(new Category(dir), anchor);
         }
         catch
         {
