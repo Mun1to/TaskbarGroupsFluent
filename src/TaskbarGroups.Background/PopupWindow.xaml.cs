@@ -28,6 +28,7 @@ public partial class PopupWindow : Window
     private bool _hadFocus;
     private bool _mouseWentUp;
     private bool _closing;
+    private bool _menuOpen;
     private DateTime? _cursorLeftAt;
 
     /// <summary>
@@ -79,7 +80,8 @@ public partial class PopupWindow : Window
 
         Loaded += OnLoadedPosition;
         Deactivated += (_, _) => { if (!Reusable || Left > OffScreen / 2) CloseOnce(); };
-        PreviewKeyDown += (_, e) => { if (e.Key == System.Windows.Input.Key.Escape) CloseOnce(); };
+        PreviewKeyDown += OnKey;
+        ItemsHost.PreviewMouseRightButtonUp += Item_RightClick;
         Closed += (_, _) =>
         {
             _guard?.Stop();
@@ -564,6 +566,10 @@ public partial class PopupWindow : Window
             // a position that means nothing.
             if (Reusable && Left <= OffScreen / 2) { _guard?.Stop(); return; }
 
+            // A right-click menu is open. It reaches outside the panel, so a click
+            // on it, or the cursor resting on it, would read as leaving.
+            if (_menuOpen) return;
+
             if (GetForegroundWindow() == hwnd) { _hadFocus = true; _cursorLeftAt = null; return; }
             if (_hadFocus) { CloseOnce(); return; }
 
@@ -628,7 +634,71 @@ public partial class PopupWindow : Window
             return;
         }
 
+        // A command from the right-click menu can leave a window of this process
+        // behind, owned by this panel: the Properties sheet, a delete confirmation.
+        // Closing the panel would close those too, so it is hidden instead and
+        // closes once they are gone.
+        if (ShellContextMenu.CommandRan)
+        {
+            Hide();
+            ShellContextMenu.CloseWhenDone(this);
+            return;
+        }
+
         Close();
+    }
+
+    private void OnKey(object sender, System.Windows.Input.KeyEventArgs e)
+    {
+        if (e.Key == System.Windows.Input.Key.Escape) { CloseOnce(); return; }
+
+        // The menu key, or Shift+F10, on the focused app: the keyboard's right-click.
+        bool menuKey = e.Key == System.Windows.Input.Key.Apps
+            || (e.SystemKey == System.Windows.Input.Key.F10
+                && System.Windows.Input.Keyboard.Modifiers == System.Windows.Input.ModifierKeys.Shift);
+        if (!menuKey || System.Windows.Input.Keyboard.FocusedElement is not FrameworkElement fe
+            || fe.DataContext is not PopupItem item) return;
+
+        e.Handled = true;
+        Point corner = fe.PointToScreen(new Point(0, fe.ActualHeight));
+        ShowItemMenu(item, (int)corner.X, (int)corner.Y);
+    }
+
+    private void Item_RightClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.OriginalSource is not FrameworkElement fe || fe.DataContext is not PopupItem item) return;
+
+        e.Handled = true;
+        if (!GetCursorPos(out POINT p)) return;
+        ShowItemMenu(item, p.X, p.Y);
+    }
+
+    /// <summary>
+    /// The app's own right-click menu, as File Explorer or the Start menu shows it.
+    /// A command picked from it counts as using the panel, which then closes.
+    /// </summary>
+    private void ShowItemMenu(PopupItem item, int x, int y)
+    {
+        string? name = ShellContextMenu.ParsingName(item.Shortcut);
+        if (name is null || _menuOpen) return;
+
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        if (hwnd == IntPtr.Zero) return;
+
+        // A menu that is not in front can need two clicks to go away.
+        TakeFocus();
+
+        bool ran;
+        _menuOpen = true;
+        try { ran = ShellContextMenu.Show(hwnd, name, x, y, _isDark); }
+        finally { _menuOpen = false; }
+
+        if (ran) { CloseOnce(); return; }
+
+        // Dismissed: the panel stays, and the click that dismissed the menu, which
+        // may have landed outside it, is not taken as a click to dismiss it too.
+        _mouseWentUp = false;
+        _cursorLeftAt = null;
     }
 
     private const int VK_LBUTTON = 0x01;

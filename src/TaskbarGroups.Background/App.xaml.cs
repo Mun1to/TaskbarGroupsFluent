@@ -4,6 +4,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Windows;
+using TaskbarGroups.Background.Helpers;
 using TaskbarGroups.Background.Models;
 using TaskbarGroups.Core;
 
@@ -255,7 +256,12 @@ public partial class App : Application
 
             // A panel still on screen is in use, however long ago it was asked for.
             bool forgotten = window.IsParked && DateTime.UtcNow - lastAsk > idle;
-            if (!watcherGone && !forgotten) return;
+            if (!watcherGone && !forgotten && !_quitAsked) return;
+
+            // Something a right-click menu command opened is still up, and it lives
+            // in this process: wait for the user to be done with it.
+            if (ShellContextMenu.HasWindowsBesides(new System.Windows.Interop.WindowInteropHelper(window).Handle))
+                return;
 
             timer.Stop();
             stop.Cancel();
@@ -266,6 +272,15 @@ public partial class App : Application
 
     private static Action? TouchMessage;
 
+    /// <summary>The watcher asked this flyout to go while a menu command's window was still up.</summary>
+    private bool _quitAsked;
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        ShellContextMenu.ReleaseClipboard();
+        base.OnExit(e);
+    }
+
     /// <summary>Carries out one request from the watcher or from a click.</summary>
     private void Handle(PopupWindow window, string message)
     {
@@ -273,6 +288,14 @@ public partial class App : Application
 
         if (message == "quit")
         {
+            // Left to the guard while a window from a right-click menu command is
+            // up: ending now would close it under the user.
+            if (ShellContextMenu.HasWindowsBesides(new System.Windows.Interop.WindowInteropHelper(window).Handle))
+            {
+                window.HideForReuse();
+                _quitAsked = true;
+                return;
+            }
             Shutdown();
             return;
         }
@@ -347,6 +370,14 @@ public partial class App : Application
                 // fast. Ask it to put its panel away and leave the process alone,
                 // otherwise every click would throw away the head start.
                 if (p.Id == warm) { FlyoutChannel.Hide(); continue; }
+
+                // Ran a command from its right-click menu and may be holding the
+                // window that command opened. It ends itself once that is closed.
+                if (EventWaitHandle.TryOpenExisting(ShellContextMenu.BusyName(p.Id), out EventWaitHandle? busy))
+                {
+                    busy.Dispose();
+                    continue;
+                }
 
                 try { p.Kill(); } catch { /* already gone, or not ours to kill */ }
             }
