@@ -110,7 +110,7 @@
     <s:String x:Key="Loc_AppOpt_ArgsHint">Se le pasan al programa al abrirlo, por ejemplo --incognito o un archivo que abrir.</s:String>
     <s:String x:Key="Loc_AppOpt_Admin">Abrir como administrador</s:String>
     <s:String x:Key="Loc_AppOpt_AdminHint">Windows te pedirá permiso cada vez que se abra.</s:String>
-    <s:String x:Key="Loc_AppOpt_NotForStore">Las apps de la Store y las carpetas se abren a través de Windows, así que no admiten argumentos ni abrirse como administrador.</s:String>
+    <s:String x:Key="Loc_AppOpt_NotForStore">Las apps de la Store, los enlaces web o de juegos y las carpetas se abren a través de Windows, así que no admiten argumentos ni abrirse como administrador.</s:String>
     <s:String x:Key="Loc_AppOpt_Save">Guardar</s:String>
 
     <!-- Subtítulos de acceso directo -->

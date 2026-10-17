@@ -296,6 +296,27 @@ namespace TaskbarGroups.Core
             return null;
         }
 
+        /// <summary>
+        /// What a desktop app from the app list starts from when it needs arguments
+        /// or an administrator start: the Start menu shortcut it comes from, so
+        /// Windows still applies that shortcut's own arguments, folder and taskbar
+        /// identity and adds the extra arguments after them (measured), or else its
+        /// .exe. Null for Store apps and for web or game links, which only open
+        /// through Windows and take neither.
+        /// </summary>
+        public static string DesktopLaunchPath(string launchId)
+        {
+            if (string.IsNullOrWhiteSpace(launchId)) return null;
+            string exe = ResolveTargetPath(launchId);
+            if (exe == null) return null;
+
+            string lnk = ShellLink.ReadIdListPath("shell:AppsFolder\\" + launchId,
+                ShellLink.PROPERTYKEY.AppUserModel_BestShortcut);
+            if (lnk != null && lnk.EndsWith(".lnk", StringComparison.OrdinalIgnoreCase) && File.Exists(lnk))
+                return lnk;
+            return File.Exists(exe) ? exe : null;
+        }
+
         // The path an AppsFolder entry launches (PKEY_Link_TargetParsingPath), if it
         // is a plain executable. Null for UWP/packaged apps and non-.exe targets.
         private static string? ResolveTargetPath(string launchId)

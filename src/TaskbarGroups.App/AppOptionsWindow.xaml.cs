@@ -28,10 +28,13 @@ public partial class AppOptionsWindow : FluentWindow
         NameBox.Text = shortcut.name ?? "";
         NameBox.PlaceholderText = defaultName;
 
-        // Store apps start through the shell and folders just open, so neither
-        // takes arguments or an elevated start. Rather than offer switches that
-        // would do nothing, say so.
-        bool program = !shortcut.isWindowsApp && !shortcut.IsGroup && !Directory.Exists(shortcut.FilePath);
+        // Store apps and web or game links only open through Windows, and folders
+        // just open, so none takes arguments or an elevated start. Rather than
+        // offer switches that would do nothing, say so. A desktop app picked from
+        // the app list does take them: the panel then starts it through its Start
+        // menu shortcut.
+        bool program = !shortcut.IsGroup && !Directory.Exists(shortcut.FilePath)
+            && (!shortcut.isWindowsApp || AppCatalog.DesktopLaunchPath(shortcut.FilePath) is not null);
         ProgramOnly.Visibility = program ? Visibility.Visible : Visibility.Collapsed;
         NotForThisKind.Visibility = program ? Visibility.Collapsed : Visibility.Visible;
         ArgsBox.Text = shortcut.Arguments ?? "";

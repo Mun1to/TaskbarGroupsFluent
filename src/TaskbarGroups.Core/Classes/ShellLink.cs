@@ -71,7 +71,44 @@ namespace TaskbarGroups.Core
             return string.Empty;
         }
 
+        /// <summary>
+        /// The file a shell property holding an item ID list points to, or null:
+        /// how the shell files System.AppUserModel.BestShortcut, the Start menu
+        /// shortcut an entry of the app list comes from.
+        /// </summary>
+        internal static string ReadIdListPath(string parsingName, PROPERTYKEY key)
+        {
+            Guid iid = typeof(IPropertyStore).GUID;
+            IPropertyStore store;
+            try
+            {
+                SHGetPropertyStoreFromParsingName(parsingName, IntPtr.Zero, GPS_DEFAULT, ref iid, out store);
+            }
+            catch { return null; }
+            if (store == null) return null;
+
+            try
+            {
+                store.GetValue(ref key, out PROPVARIANT value);
+                try
+                {
+                    // A byte vector: the count where a pointer would go, the bytes after.
+                    if (value.vt != (ushort)(VarEnum.VT_VECTOR | VarEnum.VT_UI1) || value.vectorItems == IntPtr.Zero)
+                        return null;
+                    var path = new StringBuilder(1024);
+                    return SHGetPathFromIDListEx(value.vectorItems, path, (uint)path.Capacity, 0)
+                        ? path.ToString() : null;
+                }
+                finally { PropVariantHelper.Clear(ref value); }
+            }
+            catch { return null; }
+            finally { Marshal.ReleaseComObject(store); }
+        }
+
         private const uint GPS_DEFAULT = 0;
+
+        [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
+        private static extern bool SHGetPathFromIDListEx(IntPtr pidl, StringBuilder path, uint cchPath, uint options);
 
         [DllImport("shell32.dll", CharSet = CharSet.Unicode, PreserveSig = false)]
         private static extern void SHGetPropertyStoreFromParsingName(
@@ -156,6 +193,9 @@ namespace TaskbarGroups.Core
             public IntPtr unionmember;
             [FieldOffset(8)]
             public UInt64 forceStructToLargeEnoughSize;
+            // A vector keeps its element count at 8 and the pointer to them here.
+            [FieldOffset(16)]
+            public IntPtr vectorItems;
         }
 
         [ComImport, Guid("886D8EEB-8CF2-4446-8D02-CDBA1DBDCF99"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -189,6 +229,7 @@ namespace TaskbarGroups.Core
             }
 
             public static readonly PROPERTYKEY AppUserModel_ID = new PROPERTYKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 5);
+            public static readonly PROPERTYKEY AppUserModel_BestShortcut = new PROPERTYKEY(new Guid("9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3"), 10);
         }
         #endregion
 

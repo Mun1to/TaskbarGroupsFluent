@@ -673,26 +673,44 @@ public partial class PopupWindow : Window
             }
             else if (ps.isWindowsApp)
             {
-                Process.Start(new ProcessStartInfo("explorer.exe", $"shell:AppsFolder\\{ps.FilePath}")
-                {
-                    UseShellExecute = true
-                });
+                // Picked from the app list. A desktop app with arguments or an
+                // administrator start goes through its Start menu shortcut, which
+                // takes both; Store apps have none and, like any app without
+                // either, open through Windows as the Start menu does.
+                string? desktop = NeedsOwnStart(ps) ? AppCatalog.DesktopLaunchPath(ps.FilePath) : null;
+                if (desktop is not null)
+                    StartProgram(desktop, ps);
+                else
+                    Process.Start(new ProcessStartInfo("explorer.exe", $"shell:AppsFolder\\{ps.FilePath}")
+                    {
+                        UseShellExecute = true
+                    });
             }
             else
             {
-                var psi = new ProcessStartInfo(ps.FilePath) { UseShellExecute = true };
-                if (!string.IsNullOrWhiteSpace(ps.Arguments))
-                    psi.Arguments = ps.Arguments;
-                // "runas" is what asks Windows for the elevated start; declining
-                // the prompt throws, which the catch below already absorbs.
-                if (ps.RunAsAdmin)
-                    psi.Verb = "runas";
-                Process.Start(psi);
+                StartProgram(ps.FilePath, ps);
             }
         }
         catch
         {
             // Launch failures shouldn't crash the flyout.
         }
+    }
+
+    private static bool NeedsOwnStart(ProgramShortcut ps)
+        => !string.IsNullOrWhiteSpace(ps.Arguments) || ps.RunAsAdmin;
+
+    // A program, or a shortcut to one: Windows adds the arguments after the
+    // shortcut's own.
+    private static void StartProgram(string path, ProgramShortcut ps)
+    {
+        var psi = new ProcessStartInfo(path) { UseShellExecute = true };
+        if (!string.IsNullOrWhiteSpace(ps.Arguments))
+            psi.Arguments = ps.Arguments;
+        // "runas" is what asks Windows for the elevated start; declining
+        // the prompt throws, which the caller's catch already absorbs.
+        if (ps.RunAsAdmin)
+            psi.Verb = "runas";
+        Process.Start(psi);
     }
 }

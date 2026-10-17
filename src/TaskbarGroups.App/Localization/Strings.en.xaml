@@ -110,7 +110,7 @@
     <s:String x:Key="Loc_AppOpt_ArgsHint">Passed to the program when it opens, for example --incognito or a file to open.</s:String>
     <s:String x:Key="Loc_AppOpt_Admin">Open as administrator</s:String>
     <s:String x:Key="Loc_AppOpt_AdminHint">Windows will ask for permission every time it opens.</s:String>
-    <s:String x:Key="Loc_AppOpt_NotForStore">Store apps and folders open through Windows, so they don't take arguments or an administrator start.</s:String>
+    <s:String x:Key="Loc_AppOpt_NotForStore">Store apps, web and game links, and folders open through Windows, so they don't take arguments or an administrator start.</s:String>
     <s:String x:Key="Loc_AppOpt_Save">Save</s:String>
 
     <!-- Shortcut subtitles -->
