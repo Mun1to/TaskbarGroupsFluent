@@ -453,7 +453,9 @@ public partial class GroupEditorWindow : FluentWindow
             if (pinnedLnk is null) return; // not pinned — nothing to refresh
 
             TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));
-            System.Threading.Tasks.Task.Run(TaskbarPin.RestartExplorer);
+            // On a thread that keeps the app alive until the taskbar is back: opened
+            // from the pinned group, the app closes as soon as this window does.
+            TaskbarPin.RestartExplorerInBackground();
         }
         catch { /* never block saving on a refresh failure */ }
     }
