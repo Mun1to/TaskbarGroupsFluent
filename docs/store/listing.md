@@ -52,7 +52,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-Clicking a group now opens it almost instantly: about 0.1 s instead of nearly a second, because the panel stays loaded for a while after you use it and gives its memory back while it waits. The vertical panel fits its icons, with no empty sides. And there is a Support button in the quick bar and in Settings, the only way to support the app: it is free and has no paid version.
+Apps picked from the app list now take launch arguments and "Open as administrator" in App options, like programs added with Browse. And saving a pinned group after changing its icon or name can no longer leave you without a taskbar: the app now waits until Explorer is back.
 
 **Product features** (one per line, up to 20)
 
@@ -102,7 +102,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Al hacer clic en un grupo ahora se abre casi al instante: unos 0,1 s en vez de casi un segundo, porque el panel se queda cargado un rato después de usarlo y devuelve su memoria mientras espera. El panel vertical se ajusta a sus iconos, sin huecos a los lados. Y hay un botón «Apoyar» en la barra rápida y en Ajustes, la única forma de apoyar la app: es gratis y no tiene versión de pago.
+Las apps elegidas de la lista ya admiten argumentos y «Abrir como administrador» en las opciones de la app, como los programas añadidos con «Examinar…». Y guardar un grupo anclado después de cambiarle el icono o el nombre ya no puede dejarte sin barra de tareas: la app espera a que vuelva el Explorador.
 
 **Características** (una por línea, hasta 20)
 
