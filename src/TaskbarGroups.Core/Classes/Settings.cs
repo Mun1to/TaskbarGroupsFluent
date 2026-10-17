@@ -88,6 +88,21 @@ namespace TaskbarGroups.Core
         }
     }
 
+    /// <summary>The ways the panel can come and go.</summary>
+    public static class PanelAnimation
+    {
+        /// <summary>It appears and disappears at once.</summary>
+        public const string None = "none";
+
+        /// <summary>It rises a short way into place while the apps fade in.</summary>
+        public const string Peek = "peek";
+
+        /// <summary>It slides out from behind the taskbar, as the Start menu does.</summary>
+        public const string Rise = "rise";
+
+        public static readonly string[] All = { None, Peek, Rise };
+    }
+
     [Serializable()]
     public class Setting
     {
@@ -109,6 +124,13 @@ namespace TaskbarGroups.Core
         /// </summary>
         [XmlElement]
         public int hoverDelayMs { get; set; } = 400;
+
+        /// <summary>
+        /// How the panel comes and goes, one of <see cref="PanelAnimation"/>. None by
+        /// default: it is a matter of taste, and the panel has always appeared at once.
+        /// </summary>
+        [XmlElement]
+        public string panelAnimation { get; set; } = PanelAnimation.None;
 
         /// <summary>"system" to follow Windows' light or dark mode, or "light" / "dark".</summary>
         [XmlElement]

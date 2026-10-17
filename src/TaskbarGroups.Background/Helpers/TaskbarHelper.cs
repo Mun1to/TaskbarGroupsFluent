@@ -15,6 +15,7 @@ public static class TaskbarHelper
     {
         public int Left, Top, Right, Bottom;   // physical pixels
         public Edge Edge;
+        public IntPtr Handle;                  // zero if no taskbar was found
         public int Width => Right - Left;
         public int Height => Bottom - Top;
     }
@@ -38,6 +39,7 @@ public static class TaskbarHelper
         {
             info.Left = r.Left; info.Top = r.Top; info.Right = r.Right; info.Bottom = r.Bottom;
             info.Edge = ResolveEdge(r);
+            info.Handle = handle;
         }
         return info;
     }

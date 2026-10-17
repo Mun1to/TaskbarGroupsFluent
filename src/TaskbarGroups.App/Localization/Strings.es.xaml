@@ -189,6 +189,11 @@
     <s:String x:Key="Loc_Settings_DelayFast">Rápido</s:String>
     <s:String x:Key="Loc_Settings_DelayNormal">Normal</s:String>
     <s:String x:Key="Loc_Settings_DelayRelaxed">Relajado</s:String>
+    <s:String x:Key="Loc_Settings_AnimateTitle">Animación del panel</s:String>
+    <s:String x:Key="Loc_Settings_AnimateSubtitle">Cómo entra y sale un grupo: asomando un poco mientras aparecen sus apps, o saliendo de detrás de la barra de tareas como el menú Inicio. Si tienes quitados los efectos de animación de Windows, no se mueve.</s:String>
+    <s:String x:Key="Loc_Settings_AnimateNone">Ninguna</s:String>
+    <s:String x:Key="Loc_Settings_AnimatePeek">Asomar</s:String>
+    <s:String x:Key="Loc_Settings_AnimateRise">Desde la barra</s:String>
     <s:String x:Key="Loc_Settings_SupportTitle">Apoya el proyecto</s:String>
     <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent es gratis y no tiene versión de pago. Si te ahorra tiempo, puedes invitarme a un café.</s:String>
     <s:String x:Key="Loc_Settings_SupportButton">Invitar a un café</s:String>

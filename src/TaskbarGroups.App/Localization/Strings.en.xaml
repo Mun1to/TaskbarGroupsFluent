@@ -189,6 +189,11 @@
     <s:String x:Key="Loc_Settings_DelayFast">Fast</s:String>
     <s:String x:Key="Loc_Settings_DelayNormal">Normal</s:String>
     <s:String x:Key="Loc_Settings_DelayRelaxed">Relaxed</s:String>
+    <s:String x:Key="Loc_Settings_AnimateTitle">Panel animation</s:String>
+    <s:String x:Key="Loc_Settings_AnimateSubtitle">How a group comes and goes: rising a little while its apps fade in, or sliding out from behind the taskbar like the Start menu. With animation effects turned off in Windows, it doesn't move.</s:String>
+    <s:String x:Key="Loc_Settings_AnimateNone">None</s:String>
+    <s:String x:Key="Loc_Settings_AnimatePeek">Peek</s:String>
+    <s:String x:Key="Loc_Settings_AnimateRise">From the taskbar</s:String>
     <s:String x:Key="Loc_Settings_SupportTitle">Support the project</s:String>
     <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can buy me a coffee.</s:String>
     <s:String x:Key="Loc_Settings_SupportButton">Buy me a coffee</s:String>

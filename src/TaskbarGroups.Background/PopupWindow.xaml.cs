@@ -85,6 +85,7 @@ public partial class PopupWindow : Window
         Closed += (_, _) =>
         {
             _guard?.Stop();
+            StopSlide();
             Application.Current.Shutdown();
         };
     }
@@ -378,6 +379,7 @@ public partial class PopupWindow : Window
     {
         if (!Reusable) return;
         _guard?.Stop();
+        StopSlide();
         _closing = false;
         _hadFocus = false;
         _mouseWentUp = false;
@@ -418,6 +420,10 @@ public partial class PopupWindow : Window
     /// </summary>
     public void ShowFor(Category category, HoverAnchor? anchor)
     {
+        // A slide still running from the last showing must not carry on moving the
+        // panel, nor finish by putting it away.
+        StopSlide();
+
         _category = category;
         _anchor = anchor;
         _closing = false;
@@ -425,16 +431,21 @@ public partial class PopupWindow : Window
         _mouseWentUp = false;
         _cursorLeftAt = null;
 
+        // This process can outlive many trips to the settings, and how the panel
+        // comes in is read on every showing.
+        Settings.Reload();
+
         ApplyAppearance();
         LoadItems();
         FitToContent();
-
-        PositionOverTaskbar();
 
         // Clicked: the user meant it, so the panel takes the keyboard like one
         // started from scratch does. The process that received the click handed
         // its right to the foreground over to this one on the way out.
         if (anchor is null) TakeFocus();
+
+        // After taking the focus, which would lift the panel over the taskbar.
+        Arrive(TargetOverTaskbar());
 
         StartDismissGuard();
     }
@@ -446,7 +457,6 @@ public partial class PopupWindow : Window
         if (Reusable) return;
 
         FitToContent();
-        PositionOverTaskbar();
 
         // A hover-opened flyout must not steal the keyboard. The cursor only brushed
         // past the taskbar, and the user may well be typing somewhere else; yanking
@@ -454,11 +464,210 @@ public partial class PopupWindow : Window
         // takes the focus the moment it is clicked, which is when the user meant it.
         if (_anchor is null) TakeFocus();
 
+        Arrive(TargetOverTaskbar());
+
         StartDismissGuard();
     }
 
-    /// <summary>Places the panel against the taskbar, above the icon it belongs to.</summary>
-    private void PositionOverTaskbar()
+    /// <summary>How long the panel takes to come in.</summary>
+    private static readonly TimeSpan ArriveTime = TimeSpan.FromMilliseconds(250);
+
+    /// <summary>Going away is quicker, as in Windows: by then the user is done with it.</summary>
+    private static readonly TimeSpan LeaveTime = TimeSpan.FromMilliseconds(175);
+
+    /// <summary>How far a peeking panel travels, in the units the rest of the panel is laid out in.</summary>
+    private const double PeekDistance = 24;
+
+    /// <summary>The most one frame may advance a slide: two frames at 60 Hz.</summary>
+    private const double LongestStepMs = 33;
+
+    private EventHandler? _frame;
+
+    // The user's choice, unless Windows' own "Animation effects" are off: then
+    // nothing in the system moves, and neither does this.
+    private static string Animation()
+        => SystemParameters.ClientAreaAnimation
+            ? Settings.settingInfo?.panelAnimation ?? PanelAnimation.None
+            : PanelAnimation.None;
+
+    /// <summary>
+    /// Brings the panel in to <paramref name="target"/>, in the way the user chose.
+    /// An animated panel goes straight to where its slide starts: placed at the
+    /// target first, a warm panel could show there for a frame before jumping back.
+    ///
+    /// From the taskbar: it starts fully behind the taskbar and slides out, as the
+    /// Start menu does. It stays under the taskbar in the z-order until it arrives,
+    /// so the taskbar covers it on the way and the screen edge hides the rest; then
+    /// it goes back on top of everything.
+    ///
+    /// Peek: it rises a short way into place while the apps fade in. The glass
+    /// itself cannot fade, since Windows will not make this kind of window see
+    /// through (measured: the request is turned down), so it is there whole from
+    /// the first frame.
+    ///
+    /// Either way the apps can be clicked from the first frame. Measured on a 1080p
+    /// screen at sixty moves a second or more.
+    /// </summary>
+    private void Arrive(Point target)
+    {
+        ContentHost.Opacity = 1;
+        string style = Animation();
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        var tb = TaskbarHelper.GetTaskbar();
+
+        RECT now = default;
+        bool animated = (style == PanelAnimation.Peek || (style == PanelAnimation.Rise && tb.Handle != IntPtr.Zero))
+            && hwnd != IntPtr.Zero && GetWindowRect(hwnd, out now);
+        if (!animated)
+        {
+            Left = target.X;
+            Top = target.Y;
+            // On top of everything again: a panel that last left by sinking behind
+            // the taskbar is still under it in the z-order.
+            if (hwnd != IntPtr.Zero)
+                SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            return;
+        }
+
+        // Where the target is in screen pixels, at the size the panel already has.
+        double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
+        if (scale <= 0) scale = 1;
+        int x = (int)Math.Round(target.X * scale), y = (int)Math.Round(target.Y * scale);
+        var r = new RECT { Left = x, Top = y, Right = x + (now.Right - now.Left), Bottom = y + (now.Bottom - now.Top) };
+        var end = new POINT { X = x, Y = y };
+
+        if (style == PanelAnimation.Rise)
+        {
+            POINT from = Tucked(r, tb);
+            SetWindowPos(hwnd, tb.Handle, from.X, from.Y, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
+            Slide(hwnd, tb.Handle, from, end, ArriveTime, EaseOut, null,
+                () => SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE));
+            return;
+        }
+
+        POINT start = Nudged(r, tb);
+        ContentHost.Opacity = 0;
+        SetWindowPos(hwnd, HWND_TOPMOST, start.X, start.Y, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
+        Slide(hwnd, IntPtr.Zero, start, end, ArriveTime, EaseOut, e => ContentHost.Opacity = e, null);
+    }
+
+    /// <summary>
+    /// Takes the panel out the way it came in, then runs <paramref name="then"/>.
+    /// False, with nothing done, when the panel does not animate.
+    /// </summary>
+    private bool Leave(Action then)
+    {
+        string style = Animation();
+        if (style != PanelAnimation.Rise && style != PanelAnimation.Peek) return false;
+        if (IsParked || !IsVisible) return false;
+
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        var tb = TaskbarHelper.GetTaskbar();
+        if (hwnd == IntPtr.Zero || !GetWindowRect(hwnd, out RECT r)) return false;
+        var now = new POINT { X = r.Left, Y = r.Top };
+
+        if (style == PanelAnimation.Rise)
+        {
+            if (tb.Handle == IntPtr.Zero) return false;
+            SetWindowPos(hwnd, tb.Handle, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+            Slide(hwnd, tb.Handle, now, Tucked(r, tb), LeaveTime, EaseIn, null, then);
+            return true;
+        }
+
+        Slide(hwnd, IntPtr.Zero, now, Nudged(r, tb), LeaveTime, EaseIn, e => ContentHost.Opacity = 1 - e, then);
+        return true;
+    }
+
+    // Arriving slows down into place; leaving speeds up on the way out.
+    private static double EaseOut(double p) => 1 - Math.Pow(1 - p, 4);
+    private static double EaseIn(double p) => p * p * p;
+
+    // Where the panel sits fully behind the taskbar: its edge on the taskbar's
+    // inner edge, the rest past the screen's edge.
+    private static POINT Tucked(RECT r, TaskbarHelper.TaskbarInfo tb) => tb.Edge switch
+    {
+        TaskbarHelper.Edge.Top => new POINT { X = r.Left, Y = tb.Bottom - (r.Bottom - r.Top) },
+        TaskbarHelper.Edge.Left => new POINT { X = tb.Right - (r.Right - r.Left), Y = r.Top },
+        TaskbarHelper.Edge.Right => new POINT { X = tb.Left, Y = r.Top },
+        _ => new POINT { X = r.Left, Y = tb.Top },
+    };
+
+    // Where a peeking panel starts and ends: a short way towards the taskbar.
+    private POINT Nudged(RECT r, TaskbarHelper.TaskbarInfo tb)
+    {
+        double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
+        int d = (int)Math.Round(PeekDistance * (scale > 0 ? scale : 1));
+        return tb.Edge switch
+        {
+            TaskbarHelper.Edge.Top => new POINT { X = r.Left, Y = r.Top - d },
+            TaskbarHelper.Edge.Left => new POINT { X = r.Left - d, Y = r.Top },
+            TaskbarHelper.Edge.Right => new POINT { X = r.Left + d, Y = r.Top },
+            _ => new POINT { X = r.Left, Y = r.Top + d },
+        };
+    }
+
+    // One move per frame WPF draws. The clock starts once the window is really on
+    // screen, not when the slide is set up: a panel opened from cold is drawn for
+    // the first time while still hidden, which was measured taking about a second,
+    // and timing from before that finished the slide before anyone could see it.
+    // Nor does a frame ever count for more than a short step: a panel opened from
+    // cold is still busy for a moment after it appears (measured stalling 0.6 s),
+    // and the slide waits that out instead of jumping to its end.
+    // With no window to go under, the panel keeps its place in the z-order.
+    private void Slide(IntPtr hwnd, IntPtr under, POINT from, POINT to, TimeSpan time,
+        Func<double, double> ease, Action<double>? step, Action? done)
+    {
+        StopSlide();
+        uint flags = SWP_NOSIZE | SWP_NOACTIVATE | (under == IntPtr.Zero ? SWP_NOZORDER : 0);
+        Stopwatch? clock = null;
+        double elapsed = 0, last = 0;
+        _frame = (_, _) =>
+        {
+            if (clock is null)
+            {
+                if (!IsWindowVisible(hwnd)) return;
+                clock = Stopwatch.StartNew();
+            }
+            double now = clock.Elapsed.TotalMilliseconds;
+            elapsed += Math.Min(now - last, LongestStepMs);
+            last = now;
+            double p = Math.Min(1, elapsed / time.TotalMilliseconds);
+            double e = ease(p);
+            int x = (int)Math.Round(from.X + (to.X - from.X) * e);
+            int y = (int)Math.Round(from.Y + (to.Y - from.Y) * e);
+            SetWindowPos(hwnd, under, x, y, 0, 0, flags);
+            step?.Invoke(e);
+            if (p < 1) return;
+
+            StopSlide();
+            done?.Invoke();
+        };
+        CompositionTarget.Rendering += _frame;
+    }
+
+    private void StopSlide()
+    {
+        if (_frame is not null) CompositionTarget.Rendering -= _frame;
+        _frame = null;
+    }
+
+    private static readonly IntPtr HWND_TOPMOST = new(-1);
+    private const uint SWP_NOSIZE = 0x0001;
+    private const uint SWP_NOMOVE = 0x0002;
+    private const uint SWP_NOZORDER = 0x0004;
+    private const uint SWP_NOACTIVATE = 0x0010;
+
+    [DllImport("user32.dll")]
+    private static extern bool SetWindowPos(IntPtr hwnd, IntPtr after, int x, int y, int cx, int cy, uint flags);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsWindowVisible(IntPtr hwnd);
+
+    /// <summary>
+    /// Where the panel goes: against the taskbar, above the icon it belongs to. Only
+    /// worked out here; <see cref="Arrive"/> puts it there.
+    /// </summary>
+    private Point TargetOverTaskbar()
     {
         var tb = TaskbarHelper.GetTaskbar();
         var (cursorX, cursorY) = TaskbarHelper.GetCursor();
@@ -502,8 +711,7 @@ public partial class PopupWindow : Window
         left = Math.Max(area.Left + 4, Math.Min(left, area.Right - w - 4));
         top = Math.Max(area.Top + 4, Math.Min(top, area.Bottom - h - 4));
 
-        Left = left;
-        Top = top;
+        return new Point(left, top);
     }
 
     // Activate() alone is not enough. Windows only lets the process that already
@@ -625,6 +833,12 @@ public partial class PopupWindow : Window
         _closing = true;
         _guard?.Stop();
 
+        if (Leave(FinishClosing)) return;
+        FinishClosing();
+    }
+
+    private void FinishClosing()
+    {
         // Kept warm: park it off screen instead of closing, so the next showing is
         // the fifty milliseconds it takes to swap the contents rather than the near
         // second it takes to start a process and paint a window for the first time.

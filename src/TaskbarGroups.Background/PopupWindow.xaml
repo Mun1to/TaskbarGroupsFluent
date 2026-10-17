@@ -108,7 +108,8 @@
 
     <Border x:Name="RootBorder" CornerRadius="8" Padding="10"
             Background="#F0202020" BorderBrush="{DynamicResource FlyoutBorderBrush}" BorderThickness="1">
-        <DockPanel>
+        <!-- Named so a peeking panel can fade its apps in; the glass behind them cannot fade. -->
+        <DockPanel x:Name="ContentHost">
             <!-- The group's name, with a pencil that opens its editor straight away. -->
             <Grid x:Name="HeaderBar" DockPanel.Dock="Top" Margin="8,0,0,4" Visibility="Collapsed">
                 <TextBlock x:Name="HeaderText" Foreground="{DynamicResource FlyoutTextBrush}"

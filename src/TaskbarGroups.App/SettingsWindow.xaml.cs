@@ -9,9 +9,9 @@ using MessageBox = Wpf.Ui.Controls.MessageBox;
 namespace TaskbarGroups.App;
 
 /// <summary>
-/// Application settings. Currently one feature lives here, hover-to-open, which
-/// needs more than a stored flag: it runs as a resident process, so the switch
-/// starts and stops it and registers it to run at sign-in.
+/// Application settings. Hover-to-open needs more than a stored flag: it runs as a
+/// resident process, so the switch starts and stops it and registers it to run at
+/// sign-in. The panel animation is only stored, and every panel reads it as it shows.
 /// </summary>
 public partial class SettingsWindow : FluentWindow
 {
@@ -35,6 +35,12 @@ public partial class SettingsWindow : FluentWindow
 
         HoverToggle.IsChecked = Settings.settingInfo.hoverToOpen;
         DelayBox.SelectedIndex = ClosestDelayIndex(Settings.settingInfo.hoverDelayMs);
+        AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimateNone"));
+        AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimatePeek"));
+        AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimateRise"));
+        AnimationBox.SelectedIndex = System.Math.Max(0,
+            System.Array.IndexOf(PanelAnimation.All, Settings.settingInfo.panelAnimation));
+
         UpdateHoverUi();
 
         _loading = false;
@@ -96,6 +102,18 @@ public partial class SettingsWindow : FluentWindow
         // to decide one was already running. Start() alone is a no-op when it is,
         // and revives it if it somehow died.
         if (Settings.settingInfo.hoverToOpen) HoverService.Start();
+    }
+
+    // Only stored: every panel reads it as it shows, the warm one included.
+    private void AnimationBox_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading) return;
+
+        int index = AnimationBox.SelectedIndex;
+        if (index < 0 || index >= PanelAnimation.All.Length) return;
+
+        Settings.settingInfo.panelAnimation = PanelAnimation.All[index];
+        Settings.writeXML();
     }
 
     private void UpdateHoverUi()
