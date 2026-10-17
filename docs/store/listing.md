@@ -52,7 +52,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-Apps picked from the app list now take launch arguments and "Open as administrator" in App options, like programs added with Browse. And saving a pinned group after changing its icon or name can no longer leave you without a taskbar: the app now waits until Explorer is back.
+Right-click an app in a group's panel for its own Windows menu, the same one File Explorer or the Start menu gives it. And the panel can now slide out from behind the taskbar like the Start menu, or peek up while its apps fade in: pick it in Settings, under Panel animation.
 
 **Product features** (one per line, up to 20)
 
@@ -65,6 +65,8 @@ Apps picked from the app list now take launch arguments and "Open as administrat
 - Apps, folders and groups inside groups
 - Open all the apps in a group at once
 - Rename apps, add arguments, run as administrator
+- Each app's own right-click menu, right in the panel
+- Optional animation: out from behind the taskbar, or a quick peek
 - Export, import and duplicate groups
 - Import from Taskbar Groups and AppGroup
 - Every installed app in one searchable list, Store apps included
@@ -102,7 +104,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Las apps elegidas de la lista ya admiten argumentos y «Abrir como administrador» en las opciones de la app, como los programas añadidos con «Examinar…». Y guardar un grupo anclado después de cambiarle el icono o el nombre ya no puede dejarte sin barra de tareas: la app espera a que vuelva el Explorador.
+Haz clic derecho en una app del panel de un grupo para ver su propio menú de Windows, el mismo que le da el Explorador o el menú Inicio. Y el panel ya puede salir de detrás de la barra de tareas como el menú Inicio, o asomar mientras aparecen sus apps: se elige en Ajustes, en «Animación del panel».
 
 **Características** (una por línea, hasta 20)
 
@@ -115,6 +117,8 @@ Las apps elegidas de la lista ya admiten argumentos y «Abrir como administrador
 - Apps, carpetas y grupos dentro de grupos
 - Abrir todas las apps del grupo de golpe
 - Cambiar el nombre, añadir argumentos, abrir como administrador
+- El menú del clic derecho de cada app, en el propio panel
+- Animación opcional: desde detrás de la barra o asomando
 - Exportar, importar y duplicar grupos
 - Importar desde Taskbar Groups y AppGroup
 - Todas tus apps en una lista con buscador, también las de la Store
