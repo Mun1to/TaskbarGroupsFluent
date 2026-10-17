@@ -53,8 +53,9 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 - 🧩 **Cualquier app instalada**, de escritorio o de Microsoft Store, además de carpetas e incluso otros grupos.
 - 🎨 **Icono del grupo** con una imagen, un emoji a color o las propias apps del grupo.
 - 🪟 **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas.
+- 🎞️ **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).
 - 🖱️ **Abrir al pasar el cursor**, sin hacer clic (viene apagado).
-- 📋 **Clic derecho en un grupo anclado** para **Abrir todas** y **Editar grupo**.
+- 📋 **Clic derecho en un grupo anclado** para **Abrir todas** y **Editar grupo**, o **en una app del panel** para su menú de Windows.
 - ⚙️ **Opciones por app**: cambiarle el nombre, pasarle argumentos o abrirla como administrador.
 - 💾 **Exporta, importa y duplica** grupos, o tráelos de Taskbar Groups o de AppGroup.
 - 🌗 **Claro u oscuro, español o inglés**: sigue a Windows, o lo eliges en la barra rápida.

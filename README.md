@@ -53,8 +53,9 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 - 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups.
 - 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
 - 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit.
+- 🎞️ **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
 - 🖱️ **Open on hover**, no click needed (off by default).
-- 📋 **Right-click a pinned group** for **Open all** and **Edit group**.
+- 📋 **Right-click a pinned group** for **Open all** and **Edit group**, or **an app in the panel** for its own Windows menu.
 - ⚙️ **Per-app options**: rename, launch arguments, run as administrator.
 - 💾 **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
 - 🌗 **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
