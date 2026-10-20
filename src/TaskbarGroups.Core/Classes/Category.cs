@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
@@ -281,7 +281,7 @@ namespace TaskbarGroups.Core
         // Resolves the icon image for a shortcut directly from its target,
         // decoupled from any UI control. Used by both cacheIcons() and the
         // on-demand cache rebuild in loadImageCache().
-        public static Image ResolveShortcutImage(ProgramShortcut shortcutObject)
+        public static Image ResolveShortcutImage(ProgramShortcut shortcutObject, int size = 256)
         {
             string programPath = shortcutObject.FilePath;
 
@@ -302,7 +302,7 @@ namespace TaskbarGroups.Core
                     // AppsFolder id (UWP or Win32): resolve through the shell's own
                     // image pipeline — correct for every app type. Fall back to the
                     // AppxManifest logo for older UWP-only entries.
-                    Image shellIcon = AppCatalog.GetIcon(programPath, 256);
+                    Image shellIcon = AppCatalog.GetIcon(programPath, size);
                     if (shellIcon != null)
                         return shellIcon;
                     try { return handleWindowsApp.getWindowsAppIcon(programPath, true); }

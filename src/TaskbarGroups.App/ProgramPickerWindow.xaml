@@ -33,7 +33,8 @@
                        TextWrapping="Wrap" />
             <ui:TextBox x:Name="SearchBox" PlaceholderText="{DynamicResource Loc_Prog_Search}"
                         Icon="{ui:SymbolIcon Search24}"
-                        TextChanged="SearchBox_TextChanged" />
+                        TextChanged="SearchBox_TextChanged"
+                        PreviewKeyDown="SearchBox_PreviewKeyDown" />
         </StackPanel>
 
         <Grid Grid.Row="2" Margin="20,0,20,0">
@@ -43,11 +44,26 @@
             <ListBox x:Name="AppsList"
                      Background="Transparent" BorderThickness="0"
                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                     HorizontalContentAlignment="Stretch">
+                     HorizontalContentAlignment="Stretch"
+                     VirtualizingStackPanel.IsVirtualizing="True"
+                     VirtualizingStackPanel.VirtualizationMode="Recycling"
+                     ScrollViewer.CanContentScroll="True">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <EventSetter Event="MouseDoubleClick" Handler="ListBoxItem_MouseDoubleClick" />
+                        <EventSetter Event="KeyDown" Handler="ListBoxItem_KeyDown" />
+                    </Style>
+                </ListBox.ItemContainerStyle>
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Padding="8,6" Margin="0,2" CornerRadius="8">
-                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}">
+                        <Border Padding="8,6" Margin="0,2" CornerRadius="8"
+                                Background="Transparent"
+                                MouseLeftButtonUp="ItemBorder_MouseLeftButtonUp">
+                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalAlignment="Center">
                                 <CheckBox.Content>
                                     <Grid Margin="6,0,0,0">
                                         <Grid.ColumnDefinitions>

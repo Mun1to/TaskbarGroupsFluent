@@ -60,6 +60,22 @@ namespace TaskbarGroups.Core
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
 
+        [DllImport("shell32.dll")]
+        private static extern int SHGetKnownFolderPath(in Guid rfid, uint dwFlags, IntPtr hToken, out IntPtr pszPath);
+
+        private static string? GetKnownFolderPath(Guid kfId)
+        {
+            IntPtr pPath = IntPtr.Zero;
+            try
+            {
+                if (SHGetKnownFolderPath(in kfId, 0, IntPtr.Zero, out pPath) == 0 && pPath != IntPtr.Zero)
+                    return Marshal.PtrToStringUni(pPath);
+                return null;
+            }
+            catch { return null; }
+            finally { if (pPath != IntPtr.Zero) Marshal.FreeCoTaskMem(pPath); }
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         private struct BITMAP
         {
@@ -180,7 +196,7 @@ namespace TaskbarGroups.Core
                     {
                         item.GetDisplayName(SIGDN.NORMALDISPLAY, out string name);
                         item.GetDisplayName(SIGDN.PARENTRELATIVEPARSING, out string id);
-                        if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(id) && !IsNoise(id))
+                        if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(id) && !IsNoise(name, id))
                             list.Add(new AppCatalogEntry { DisplayName = name, LaunchId = id });
                     }
                     catch { /* skip items we can't read */ }
@@ -194,22 +210,33 @@ namespace TaskbarGroups.Core
             return list;
         }
 
-        // Hide AppsFolder entries that aren't really "apps you'd group": web links,
-        // documentation/console files, Control Panel applets (their id is a
-        // "{CLSID}\tool.exe" path), Windows system apps, and SDK tools. Real apps
-        // use their own AUMID or a plain executable path, so this has no false
-        // positives on user apps; anything hidden is reachable via Browse….
-        private static bool IsNoise(string id)
+        // Hide AppsFolder entries that aren't launchable apps: web links, documentation,
+        // release notes, management console snap-ins (.msc), and uninstallers.
+        // Real apps (including packaged Store apps, KnownFolder desktop apps, and system
+        // tools like Settings, File Explorer or PowerShell) are preserved.
+        private static bool IsNoise(string name, string id)
         {
             string lid = id.ToLowerInvariant();
+            string lname = name.ToLowerInvariant();
+
+            // Web links and web documents
             if (lid.StartsWith("http://") || lid.StartsWith("https://")) return true;
-            if (lid.EndsWith(".url") || lid.EndsWith(".msc") || lid.EndsWith(".txt")
-                || lid.EndsWith(".chm") || lid.EndsWith(".htm") || lid.EndsWith(".html")) return true;
-            // Control Panel / system applets live under a CLSID folder: "{GUID}\tool".
-            if (id.Length > 38 && id[0] == '{' && id.IndexOf('}') == 37) return true;
-            if (lid.StartsWith("microsoft.windows.")) return true;            // Control Panel, Admin Tools, Remote Desktop…
-            if (lid.StartsWith("windows.immersivecontrolpanel")) return true; // Settings
-            if (lid.Contains(@"\vulkansdk\") || lid.Contains(@"\windows kits\")) return true;
+            if (lid.EndsWith(".url") || lid.EndsWith(".htm") || lid.EndsWith(".html")) return true;
+
+            // Documentation, release notes & manuals
+            if (lid.EndsWith(".txt") || lid.EndsWith(".chm") || lid.EndsWith(".pdf")) return true;
+
+            // Management console snap-ins (Services, Event Viewer, etc.)
+            if (lid.EndsWith(".msc")) return true;
+
+            // Uninstallers
+            if (lid.Contains("unins000") || lid.EndsWith("uninstall.exe")
+                || lname.StartsWith("uninstall ") || lname.StartsWith("desinstalar "))
+                return true;
+
+            // Internal Windows Run dialog
+            if (lid == "microsoft.windows.shell.rundialog") return true;
+
             return false;
         }
 
@@ -319,8 +346,26 @@ namespace TaskbarGroups.Core
 
         // The path an AppsFolder entry launches (PKEY_Link_TargetParsingPath), if it
         // is a plain executable. Null for UWP/packaged apps and non-.exe targets.
+        // Also resolves KnownFolder GUID-prefixed IDs (e.g. {6D809377...}\app\app.exe)
+        // to their full filesystem path.
         private static string? ResolveTargetPath(string launchId)
         {
+            if (string.IsNullOrWhiteSpace(launchId)) return null;
+
+            // KnownFolder path prefix check (e.g. {6D809377-6AF0-444B-8957-A3773F02200E}\app\app.exe)
+            if (launchId.Length > 38 && launchId[0] == '{' && launchId[37] == '}' && launchId[38] == '\\')
+            {
+                if (Guid.TryParse(launchId.AsSpan(1, 36), out Guid kfId))
+                {
+                    string? basePath = GetKnownFolderPath(kfId);
+                    if (basePath != null)
+                    {
+                        string full = Path.Combine(basePath, launchId.Substring(39));
+                        if (File.Exists(full)) return full;
+                    }
+                }
+            }
+
             try
             {
                 Guid iid = IID_IShellItem2;
