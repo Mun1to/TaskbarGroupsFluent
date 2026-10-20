@@ -33,6 +33,9 @@ internal static class Program
     [STAThread]
     private static void Main(string[] args)
     {
+        if (Array.Exists(args, arg => string.Equals(arg, Category.SeparatorArgument, StringComparison.OrdinalIgnoreCase)))
+            return;
+
         if (HandOff(args)) return;
         RunWpf();
     }

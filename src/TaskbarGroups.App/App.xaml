@@ -11,6 +11,7 @@
                 <ui:ControlsDictionary />
             </ResourceDictionary.MergedDictionaries>
             <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <conv:NonSeparatorToVisibilityConverter x:Key="NonSeparatorToVisibilityConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -68,7 +68,8 @@ public partial class App : Application
             try
             {
                 foreach (var group in Services.GroupService.LoadAll())
-                    GroupJumpList.Register(group.Name, openAll, edit);
+                    if (!group.IsSeparator)
+                        GroupJumpList.Register(group.Name, openAll, edit);
             }
             catch { /* best effort: the menus only add convenience */ }
         }) { IsBackground = true };

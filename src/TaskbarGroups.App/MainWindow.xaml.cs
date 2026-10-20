@@ -262,6 +262,34 @@ public partial class MainWindow : FluentWindow
             RefreshGroups();
     }
 
+    private async void AddSeparatorButton_Click(object sender, RoutedEventArgs e)
+    {
+        string baseName = Loc.Get("Loc_Separator_DefaultName");
+        var existingNames = new HashSet<string>(
+            GroupService.LoadAll().ConvertAll(group => group.Name),
+            StringComparer.OrdinalIgnoreCase);
+
+        string name = baseName;
+        int suffix = 2;
+        while (existingNames.Contains(name) || Directory.Exists(Path.Combine(Paths.ConfigPath, name)))
+            name = $"{baseName} {suffix++}";
+
+        try
+        {
+            Category.CreateSeparator(name);
+            RefreshGroups();
+        }
+        catch (Exception ex)
+        {
+            await new MessageBox
+            {
+                Title = Loc.Get("Loc_Main_SeparatorFailTitle"),
+                Content = ex.Message,
+                CloseButtonText = Loc.Get("Loc_Common_Close")
+            }.ShowDialogAsync();
+        }
+    }
+
     // The settings window can switch hover-to-open too, so the bar follows it.
     private void SettingsButton_Click(object sender, RoutedEventArgs e)
     {
@@ -493,7 +521,7 @@ public partial class MainWindow : FluentWindow
         await new MessageBox
         {
             Title = Loc.Get("Loc_Pin_Title"),
-            Content = Loc.Get("Loc_Pin_Body"),
+            Content = Loc.Get(group.IsSeparator ? "Loc_Pin_SeparatorBody" : "Loc_Pin_Body"),
             CloseButtonText = Loc.Get("Loc_Common_Understood")
         }.ShowDialogAsync();
     }

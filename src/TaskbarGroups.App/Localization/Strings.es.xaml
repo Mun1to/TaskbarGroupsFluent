@@ -17,6 +17,10 @@
     <s:String x:Key="Loc_Main_Heading">Tus grupos</s:String>
     <s:String x:Key="Loc_Main_Subheading">Agrupa tus accesos directos y ánclalos a la barra de tareas</s:String>
     <s:String x:Key="Loc_Main_AddGroup">Añadir grupo</s:String>
+    <s:String x:Key="Loc_Main_SeparatorButton">Separador</s:String>
+    <s:String x:Key="Loc_Main_AddSeparator">Añadir separador a la barra de tareas</s:String>
+    <s:String x:Key="Loc_Main_SeparatorFailTitle">No se pudo crear el separador</s:String>
+    <s:String x:Key="Loc_Separator_DefaultName">Separador</s:String>
     <s:String x:Key="Loc_Main_Pin">Anclar a la barra de tareas</s:String>
     <s:String x:Key="Loc_Main_EmptyTitle">Aún no tienes grupos</s:String>
     <s:String x:Key="Loc_Main_EmptySubtitle">Crea tu primer grupo para empezar a organizar la barra de tareas</s:String>
@@ -45,6 +49,7 @@
     <!-- Tarjeta de grupo -->
     <s:String x:Key="Loc_Group_ShortcutOne">1 acceso directo</s:String>
     <s:String x:Key="Loc_Group_ShortcutMany">{0} accesos directos</s:String>
+    <s:String x:Key="Loc_Group_Separator">Separador de la barra de tareas</s:String>
 
     <!-- Eliminar grupo -->
     <s:String x:Key="Loc_Del_Title">Eliminar grupo</s:String>
@@ -56,6 +61,7 @@
     <s:String x:Key="Loc_Pin_NotFoundBody">No se encontró el acceso directo del grupo. Vuelve a guardarlo desde el editor.</s:String>
     <s:String x:Key="Loc_Pin_Title">Anclar a la barra de tareas</s:String>
     <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
+    <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;El separador aparecerá en la barra de tareas. Al hacer clic no ocurre nada.</s:String>
 
     <!-- Editor de grupo -->
     <s:String x:Key="Loc_Editor_TitleNew">Nuevo grupo</s:String>

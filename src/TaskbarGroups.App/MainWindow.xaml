@@ -94,6 +94,12 @@
                                AutomationProperties.Name="{DynamicResource Loc_Settings_Title}"
                                Margin="0,0,8,0"
                                Click="SettingsButton_Click" />
+                    <ui:Button Content="{DynamicResource Loc_Main_SeparatorButton}"
+                               Icon="{ui:SymbolIcon Add24}"
+                               ToolTip="{DynamicResource Loc_Main_AddSeparator}"
+                               AutomationProperties.Name="{DynamicResource Loc_Main_AddSeparator}"
+                               Margin="0,0,8,0"
+                               Click="AddSeparatorButton_Click" />
                     <ui:Button x:Name="AddGroupButton"
                                Content="{DynamicResource Loc_Main_AddGroup}"
                                Icon="{ui:SymbolIcon Add24}"
@@ -165,7 +171,8 @@
                                             </Grid.ColumnDefinitions>
                                             <ui:Button Grid.Column="0" Content="{DynamicResource Loc_Common_Edit}" Icon="{ui:SymbolIcon Edit24}"
                                                        HorizontalAlignment="Stretch" Margin="0,0,4,0"
-                                                       Tag="{Binding}" Click="EditGroup_Click" />
+                                                       Tag="{Binding}" Click="EditGroup_Click"
+                                                       Visibility="{Binding IsSeparator, Converter={StaticResource NonSeparatorToVisibilityConverter}}" />
                                             <ui:Button Grid.Column="1" Content="{DynamicResource Loc_Common_Delete}" Icon="{ui:SymbolIcon Delete24}"
                                                        HorizontalAlignment="Stretch" Margin="4,0,0,0"
                                                        Tag="{Binding}" Click="DeleteGroup_Click" />

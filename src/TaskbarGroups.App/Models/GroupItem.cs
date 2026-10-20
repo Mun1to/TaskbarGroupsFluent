@@ -12,14 +12,16 @@ public class GroupItem
 {
     public string Name { get; init; } = "";
     public int ShortcutCount { get; init; }
+    public bool IsSeparator { get; init; }
     public ImageSource? Icon { get; init; }
     public Category Source { get; init; } = null!;
 
     /// <summary>Path to the pinnable .lnk created for this group.</summary>
     public string ShortcutPath { get; init; } = "";
 
-    public string ShortcutCountText =>
-        ShortcutCount == 1
+    public string ShortcutCountText => IsSeparator
+        ? Loc.Get("Loc_Group_Separator")
+        : ShortcutCount == 1
             ? Loc.Get("Loc_Group_ShortcutOne")
             : Loc.Format("Loc_Group_ShortcutMany", ShortcutCount);
 }

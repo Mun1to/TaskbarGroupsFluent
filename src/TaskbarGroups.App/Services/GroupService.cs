@@ -33,6 +33,7 @@ public static class GroupService
                 {
                     Name = category.Name,
                     ShortcutCount = category.ShortcutList?.Count ?? 0,
+                    IsSeparator = category.IsSeparator,
                     Icon = LoadGroupIcon(dir),
                     Source = category,
                     ShortcutPath = Path.Combine(

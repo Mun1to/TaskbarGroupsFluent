@@ -17,6 +17,7 @@ namespace TaskbarGroups.Core
         public string ColorString = System.Drawing.ColorTranslator.ToHtml(Color.FromArgb(31, 31, 31));
         public bool allowOpenAll = false;
         public List<ProgramShortcut> ShortcutList;
+        public bool IsSeparator = false;
         public int Width; // not used aon
         public double Opacity = 10;
         public String HoverColor;
@@ -28,6 +29,8 @@ namespace TaskbarGroups.Core
         /// Changing it orphans every shortcut already pinned by a user.
         /// </summary>
         public const string AppIdPrefix = "tjackenpacken.taskbarGroup.menu.";
+        public const string SeparatorAppIdPrefix = "tjackenpacken.taskbarGroup.separator.";
+        public const string SeparatorArgument = "--taskbar-separator";
         public int IconSize = 30;
         public int Separation = 8;
 
@@ -95,6 +98,7 @@ namespace TaskbarGroups.Core
                 Category category = (Category)reader.Deserialize(file);
                 this.Name = category.Name;
                 this.ShortcutList = category.ShortcutList;
+                this.IsSeparator = category.IsSeparator;
                 this.Width = category.Width;
                 this.ColorString = category.ColorString;
                 this.Opacity = category.Opacity;
@@ -120,6 +124,41 @@ namespace TaskbarGroups.Core
         public Category() // needed for XML serialization
         {
 
+        }
+
+        public static Category CreateSeparator(string name)
+        {
+            var separator = new Category
+            {
+                Name = name,
+                IsSeparator = true,
+                ShortcutList = new List<ProgramShortcut>()
+            };
+
+            using (Bitmap icon = CreateSeparatorIcon())
+                separator.CreateConfig(icon);
+
+            return separator;
+        }
+
+        private static Bitmap CreateSeparatorIcon()
+        {
+            var bitmap = new Bitmap(256, 256, PixelFormat.Format32bppArgb);
+            using (Graphics graphics = Graphics.FromImage(bitmap))
+            {
+                graphics.Clear(Color.Transparent);
+                graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                using (var shadow = new Pen(Color.FromArgb(190, 72, 72, 72), 8)
+                       { StartCap = System.Drawing.Drawing2D.LineCap.Round, EndCap = System.Drawing.Drawing2D.LineCap.Round })
+                using (var highlight = new Pen(Color.FromArgb(210, 224, 224, 224), 4)
+                       { StartCap = System.Drawing.Drawing2D.LineCap.Round, EndCap = System.Drawing.Drawing2D.LineCap.Round })
+                {
+                    graphics.DrawLine(shadow, 124, 48, 124, 208);
+                    graphics.DrawLine(highlight, 132, 48, 132, 208);
+                }
+            }
+
+            return bitmap;
         }
 
         public void CreateConfig(Image groupImage)
@@ -167,12 +206,12 @@ namespace TaskbarGroups.Core
                 // group from stacking with the main app on the taskbar.
                 ShellLink.InstallShortcut(
                     Paths.PanelLauncher,
-                    AppIdPrefix + this.Name,
+                    (IsSeparator ? SeparatorAppIdPrefix : AppIdPrefix) + this.Name,
                     "\"" + this.Name + "\"",
                     path,
                     Path.Combine(path, "GroupIcon.ico"),
                     Path.Combine(path, this.Name + ".lnk"),
-                    this.Name
+                    IsSeparator ? SeparatorArgument : this.Name
                 );
 
 
@@ -250,6 +289,8 @@ namespace TaskbarGroups.Core
         // Avoids having the icons need to be rebuilt everytime which takes time and resources
         public void cacheIcons()
         {
+            if (IsSeparator || ShortcutList == null)
+                return;
 
             // Defines the paths for the icons folder
             string path = Path.Combine(Paths.ConfigPath, this.Name);
