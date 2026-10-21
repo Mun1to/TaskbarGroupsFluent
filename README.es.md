@@ -51,6 +51,7 @@
 Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo se abre encima un pequeño panel con todas las apps del grupo.
 
 - 🧩 **Cualquier app instalada**, de escritorio o de Microsoft Store, además de carpetas e incluso otros grupos.
+- **Separadores en la barra de tareas** para separar tus grupos del resto de iconos anclados.
 - 🎨 **Icono del grupo** con una imagen, un emoji a color o las propias apps del grupo.
 - 🪟 **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas.
 - 🎞️ **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).
@@ -78,7 +79,7 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 
 ## 🚀 Cómo se usa
 
-1. Pulsa **Añadir grupo**, ponle nombre e icono, y añade apps con **Aplicación**, **Carpeta** o **Grupo**.
+1. Pulsa **Añadir grupo**, ponle nombre e icono, y añade apps con **Aplicación**, **Carpeta** o **Grupo**. Para añadir un separador, pulsa **Separador** junto a Ajustes.
 2. Elige cómo se ve el panel en **Panel** y pulsa **Guardar grupo**.
 3. Pulsa **Anclar a la barra de tareas**: la app abre la carpeta con el acceso resaltado, y tú haces clic derecho en él, luego *Mostrar más opciones* y luego *Anclar a la barra de tareas*. Windows 11 no deja que las apps se anclen solas.
 

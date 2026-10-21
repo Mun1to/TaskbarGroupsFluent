@@ -51,6 +51,7 @@
 Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
 
 - 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups.
+- **Taskbar separators** to keep your groups apart from the rest of your pinned icons.
 - 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
 - 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit.
 - 🎞️ **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
@@ -78,7 +79,7 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 
 ## 🚀 How to use it
 
-1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**.
+1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**. To add a divider, click **Separator** beside Settings.
 2. Pick the panel's look under **Panel** and click **Save group**.
 3. Click **Pin to taskbar**: the app opens the folder with the shortcut highlighted, and you right-click it, then *Show more options*, then *Pin to taskbar*. Windows 11 doesn't let apps pin themselves.
 

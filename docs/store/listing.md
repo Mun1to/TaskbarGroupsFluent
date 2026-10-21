@@ -40,6 +40,7 @@ Ten icons on your taskbar? Now just one.
 Taskbar Groups Fluent packs a set of apps into one taskbar button. Click it, or just rest the cursor on it, and a panel with real Windows 11 glass opens with every app in the group, so the taskbar stays tidy and everything you use is one click away.
 
 Make each group your own:
+• Add an empty taskbar separator to keep your groups apart from other pinned icons.
 • Lay its panel out as a grid, a horizontal row, a vertical column or a list, with or without app names, in three icon sizes.
 • Show the group's name above or below, with a pencil that opens its editor right there.
 • Use an image, a colour emoji or an icon made of the group's own apps.
@@ -52,11 +53,12 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-Right-click an app in a group's panel for its own Windows menu, the same one File Explorer or the Start menu gives it. And the panel can now slide out from behind the taskbar like the Start menu, or peek up while its apps fade in: pick it in Settings, under Panel animation.
+The app picker now finds more installed apps and searches app names without accents or by executable name. Add an empty separator to space your groups out on the taskbar. Right-click an app in a group's panel for its own Windows menu, the same one File Explorer or the Start menu gives it. And the panel can slide out from behind the taskbar like the Start menu, or peek up while its apps fade in: pick it in Settings, under Panel animation.
 
 **Product features** (one per line, up to 20)
 
 - One taskbar button for a whole group of apps
+- Empty separators to space out taskbar groups
 - Opens on click, or just by resting the cursor on it
 - Real Windows 11 glass, light and dark
 - Four panel layouts: grid, horizontal, vertical and list
@@ -92,6 +94,7 @@ Agrupa tus apps en un solo icono de la barra de tareas. Haz clic, o deja el curs
 Taskbar Groups Fluent junta varias apps en un solo botón de la barra de tareas. Haz clic, o deja el cursor encima, y se abre un panel con el cristal de verdad de Windows 11 con todas las apps del grupo: la barra queda ordenada y todo lo que usas está a un clic.
 
 Haz cada grupo a tu manera:
+• Añade un separador vacío a la barra para separar tus grupos del resto de iconos anclados.
 • Su panel en cuadrícula, en una fila horizontal, en una columna vertical o como lista, con o sin el nombre de las apps, en tres tamaños de icono.
 • El nombre del grupo arriba o abajo, con un lápiz que abre su editor ahí mismo.
 • Una imagen, un emoji de color o un icono hecho con las apps del grupo.
@@ -104,11 +107,12 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Haz clic derecho en una app del panel de un grupo para ver su propio menú de Windows, el mismo que le da el Explorador o el menú Inicio. Y el panel ya puede salir de detrás de la barra de tareas como el menú Inicio, o asomar mientras aparecen sus apps: se elige en Ajustes, en «Animación del panel».
+El buscador de apps ahora encuentra más programas instalados y busca los nombres sin tildes o por el nombre del ejecutable. Añade un separador vacío para dejar espacio entre tus grupos en la barra de tareas. Haz clic derecho en una app del panel para ver su propio menú de Windows, el mismo que le da el Explorador o el menú Inicio. Y el panel puede salir de detrás de la barra de tareas como el menú Inicio, o asomar mientras aparecen sus apps: se elige en Ajustes, en «Animación del panel».
 
 **Características** (una por línea, hasta 20)
 
 - Un solo botón en la barra para todo un grupo de apps
+- Separadores vacíos para separar los grupos en la barra
 - Se abre con un clic o solo con dejar el cursor encima
 - El cristal de verdad de Windows 11, en claro y en oscuro
 - Cuatro formas de panel: cuadrícula, horizontal, vertical y lista
