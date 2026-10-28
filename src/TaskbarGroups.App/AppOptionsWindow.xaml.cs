@@ -39,6 +39,15 @@ public partial class AppOptionsWindow : FluentWindow
         NotForThisKind.Visibility = program ? Visibility.Collapsed : Visibility.Visible;
         ArgsBox.Text = shortcut.Arguments ?? "";
         AdminToggle.IsChecked = shortcut.RunAsAdmin;
+
+        // A separator only has its title, and with none it is just the line.
+        if (shortcut.IsSeparator)
+        {
+            NameBox.PlaceholderText = Helpers.Loc.Get("Loc_AppOpt_SeparatorPlaceholder");
+            NameHint.Text = Helpers.Loc.Get("Loc_AppOpt_SeparatorHint");
+            ProgramOnly.Visibility = Visibility.Collapsed;
+            NotForThisKind.Visibility = Visibility.Collapsed;
+        }
     }
 
     private void Save_Click(object sender, RoutedEventArgs e)

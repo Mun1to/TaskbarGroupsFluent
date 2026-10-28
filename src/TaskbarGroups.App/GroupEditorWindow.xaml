@@ -57,6 +57,33 @@
                 </StackPanel>
             </Border>
         </DataTemplate>
+        <!-- Separators, as PopupWindow.xaml draws them. -->
+        <DataTemplate x:Key="PreviewSeparatorAcross">
+            <Grid Width="{DynamicResource SeparatorRowWidth}" Margin="0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="12" />
+                </Grid.ColumnDefinitions>
+                <Rectangle Grid.Column="0" Height="1" Margin="8,0,0,0" VerticalAlignment="Center" Opacity="0.35"
+                           Fill="{Binding Foreground, ElementName=PreviewHeaderText}" />
+                <TextBlock x:Name="Title" Grid.Column="1" Text="{Binding SeparatorTitle}" Margin="10,0"
+                           Foreground="{Binding Foreground, ElementName=PreviewHeaderText}"
+                           FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                <Rectangle Grid.Column="2" Height="1" Margin="0,0,8,0" VerticalAlignment="Center" Opacity="0.35"
+                           Fill="{Binding Foreground, ElementName=PreviewHeaderText}" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding SeparatorTitle}" Value="">
+                    <Setter TargetName="Title" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+        <DataTemplate x:Key="PreviewSeparatorDown">
+            <Rectangle Width="1" Margin="6,12" Opacity="0.35"
+                       Fill="{Binding Foreground, ElementName=PreviewHeaderText}" />
+        </DataTemplate>
         <ItemsPanelTemplate x:Key="PreviewGridPanel">
             <WrapPanel Orientation="Horizontal" />
         </ItemsPanelTemplate>
@@ -77,7 +104,7 @@
 
         <ui:TitleBar x:Name="EditorTitleBar" Grid.Row="0" Title="{DynamicResource Loc_Editor_TitleNew}" Padding="12,6" />
 
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,4,24,0">
+        <ScrollViewer x:Name="EditorScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="24,4,24,0">
             <StackPanel>
                 <TextBlock x:Name="HeaderText" Text="{DynamicResource Loc_Editor_TitleNew}"
                            FontSize="24" FontWeight="SemiBold" Margin="0,0,0,16"
@@ -124,28 +151,36 @@
                     </Grid>
                 </ui:Card>
 
-                <Grid Margin="0,0,0,8">
-                    <TextBlock Text="{DynamicResource Loc_Editor_Shortcuts}" FontSize="16" FontWeight="SemiBold"
-                               VerticalAlignment="Center"
-                               Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <ui:Button Content="{DynamicResource Loc_Editor_Program}" Icon="{ui:SymbolIcon AppGeneric24}"
-                                   Appearance="Info" Margin="0,0,8,0" Click="AddProgram_Click" />
-                        <ui:Button Content="{DynamicResource Loc_Editor_Folder}" Icon="{ui:SymbolIcon Folder24}"
-                                   Margin="0,0,8,0" Click="AddFolder_Click" />
-                        <ui:Button Content="{DynamicResource Loc_Editor_Group}" Icon="{ui:SymbolIcon GroupList24}"
-                                   ToolTip="{DynamicResource Loc_Editor_GroupTip}"
-                                   Click="AddGroup_Click" />
-                    </StackPanel>
-                </Grid>
+                <!-- The title on its own line and the buttons under it: with four
+                     buttons they no longer fit beside it. -->
+                <TextBlock Text="{DynamicResource Loc_Editor_Shortcuts}" FontSize="16" FontWeight="SemiBold"
+                           Margin="0,0,0,8"
+                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                <WrapPanel Margin="0,0,0,8">
+                    <ui:Button Content="{DynamicResource Loc_Editor_Program}" Icon="{ui:SymbolIcon AppGeneric24}"
+                               Appearance="Info" Margin="0,0,8,4" Click="AddProgram_Click" />
+                    <ui:Button Content="{DynamicResource Loc_Editor_Folder}" Icon="{ui:SymbolIcon Folder24}"
+                               Margin="0,0,8,4" Click="AddFolder_Click" />
+                    <ui:Button Content="{DynamicResource Loc_Editor_Group}" Icon="{ui:SymbolIcon GroupList24}"
+                               ToolTip="{DynamicResource Loc_Editor_GroupTip}"
+                               Margin="0,0,8,4" Click="AddGroup_Click" />
+                    <ui:Button Content="{DynamicResource Loc_Editor_Separator}" Icon="{ui:SymbolIcon LineHorizontal120}"
+                               ToolTip="{DynamicResource Loc_Editor_SeparatorTip}"
+                               Margin="0,0,0,4" Click="AddSeparator_Click" />
+                </WrapPanel>
 
-                <ItemsControl x:Name="ShortcutsItemsControl" Margin="0,4,0,16">
+                <!-- Rows are dragged to change the order, and files dropped here are
+                     added where the line shows. -->
+                <ItemsControl x:Name="ShortcutsItemsControl" Margin="0,4,0,16" AllowDrop="True"
+                              DragOver="List_DragOver" DragLeave="List_DragLeave" Drop="List_Drop">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <Border Margin="0,0,0,8" Padding="12,8" CornerRadius="8"
                                     Background="{DynamicResource ControlFillColorDefaultBrush}"
                                     BorderBrush="{DynamicResource ControlElevationBorderBrush}"
-                                    BorderThickness="1">
+                                    BorderThickness="1"
+                                    PreviewMouseLeftButtonDown="Row_PreviewMouseLeftButtonDown"
+                                    PreviewMouseMove="Row_PreviewMouseMove">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />

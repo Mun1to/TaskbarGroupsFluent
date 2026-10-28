@@ -108,6 +108,8 @@
     <s:String x:Key="Loc_Editor_Group">Grupo</s:String>
     <s:String x:Key="Loc_Editor_GroupTip">Añadir otro grupo, que se abre en su propio panel</s:String>
     <s:String x:Key="Loc_Editor_NoOtherGroups">Crea antes otro grupo: este botón mete un grupo dentro de otro.</s:String>
+    <s:String x:Key="Loc_Editor_Separator">Separador</s:String>
+    <s:String x:Key="Loc_Editor_SeparatorTip">Añadir una línea que divide el panel en partes, con un título si quieres. Arrastra las filas para cambiar el orden.</s:String>
     <s:String x:Key="Loc_Sub_Group">Grupo</s:String>
     <s:String x:Key="Loc_AppOpt_Title">Opciones de la app</s:String>
     <s:String x:Key="Loc_AppOpt_Name">Nombre</s:String>
@@ -118,11 +120,14 @@
     <s:String x:Key="Loc_AppOpt_AdminHint">Windows te pedirá permiso cada vez que se abra.</s:String>
     <s:String x:Key="Loc_AppOpt_NotForStore">Las apps de la Store, los enlaces web o de juegos y las carpetas se abren a través de Windows, así que no admiten argumentos ni abrirse como administrador.</s:String>
     <s:String x:Key="Loc_AppOpt_Save">Guardar</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorPlaceholder">Sin título</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorHint">Lo que se lee en medio de la línea. Déjalo vacío para que sea solo una línea.</s:String>
 
     <!-- Subtítulos de acceso directo -->
     <s:String x:Key="Loc_Sub_StoreApp">Aplicación</s:String>
     <s:String x:Key="Loc_Sub_Folder">Carpeta</s:String>
     <s:String x:Key="Loc_Sub_Program">Programa</s:String>
+    <s:String x:Key="Loc_Sub_Separator">Línea del panel</s:String>
 
     <!-- Selector de apps de la Store -->
     <s:String x:Key="Loc_Store_Title">Apps de Microsoft Store</s:String>

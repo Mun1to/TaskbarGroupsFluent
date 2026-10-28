@@ -32,7 +32,7 @@ public static class GroupService
                 groups.Add(new GroupItem
                 {
                     Name = category.Name,
-                    ShortcutCount = category.ShortcutList?.Count ?? 0,
+                    ShortcutCount = category.AppCount,
                     IsSeparator = category.IsSeparator,
                     Icon = LoadGroupIcon(dir),
                     Source = category,

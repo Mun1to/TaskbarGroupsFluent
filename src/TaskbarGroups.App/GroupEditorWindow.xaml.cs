@@ -121,10 +121,16 @@ public partial class GroupEditorWindow : FluentWindow
         if (_loadingPanel) return;
 
         var plan = PanelLayouts.Plan(SelectedLayout(), LabelsToggle.IsChecked == true,
-            SelectedColumns(), _shortcuts.Count);
+            SelectedColumns(), AppCount());
         PreviewItems.ItemsPanel = (System.Windows.Controls.ItemsPanelTemplate)Resources["Preview" + plan.Panel + "Panel"];
-        PreviewItems.ItemTemplate = (DataTemplate)Resources["Preview" + plan.Template];
+        PreviewItems.ItemTemplate = null;
+        PreviewItems.ItemTemplateSelector = new EntryTemplates
+        {
+            App = (DataTemplate)Resources["Preview" + plan.Template],
+            Separator = (DataTemplate)Resources[plan.Panel == "Row" ? "PreviewSeparatorDown" : "PreviewSeparatorAcross"]
+        };
         PreviewItems.MaxWidth = plan.MaxWidth;
+        Resources["SeparatorRowWidth"] = double.IsInfinity(plan.MaxWidth) ? double.NaN : plan.MaxWidth - 1;
         double scale = PanelLayouts.Scale(SelectedIconScale());
         PreviewItems.LayoutTransform = scale == 1.0
             ? System.Windows.Media.Transform.Identity
@@ -159,9 +165,12 @@ public partial class GroupEditorWindow : FluentWindow
         PreviewHeaderText.Text = name.Length > 0 ? name : Loc.Get("Loc_Editor_NamePlaceholder");
     }
 
+    /// <summary>The entries that open something, leaving out the separators.</summary>
+    private int AppCount() => _shortcuts.Count(s => !s.IsSeparator);
+
     private void GridIcon_Click(object sender, RoutedEventArgs e)
     {
-        if (_shortcuts.Count == 0)
+        if (AppCount() == 0)
         {
             ShowError(Loc.Get("Loc_Editor_GridIconNeedsApps"));
             return;
@@ -173,7 +182,7 @@ public partial class GroupEditorWindow : FluentWindow
     private void RebuildGridIcon()
     {
         var icons = new List<DrawingImage>();
-        foreach (var entry in _shortcuts.Take(4))
+        foreach (var entry in _shortcuts.Where(s => !s.IsSeparator).Take(4))
         {
             try { icons.Add(Category.ResolveShortcutImage(entry.Shortcut)); }
             catch { /* an app without an icon just leaves its cell to the others */ }
@@ -206,6 +215,8 @@ public partial class GroupEditorWindow : FluentWindow
 
     private static ShortcutEntry BuildEntry(ProgramShortcut ps)
     {
+        if (ps.IsSeparator) return new ShortcutEntry { Shortcut = ps, Icon = ShortcutEntry.SeparatorGlyph };
+
         ImageSource_TryResolve(ps, out var icon);
         return new ShortcutEntry { Shortcut = ps, Icon = icon };
     }
@@ -242,13 +253,16 @@ public partial class GroupEditorWindow : FluentWindow
     }
 
     // A group inside this one. Offered from the groups that already exist, minus
-    // this one: a group that opens itself would just reopen the same panel.
+    // this one: a group that opens itself would just reopen the same panel. Nor
+    // the taskbar's separators, which open nothing and only look out of place in
+    // a panel; the panel has its own, below.
     private void AddGroup_Click(object sender, RoutedEventArgs e)
     {
         if (sender is not FrameworkElement button) return;
 
         string self = _originalName ?? (NameTextBox.Text ?? "").Trim();
         var others = Services.GroupService.LoadAll()
+            .Where(g => !g.IsSeparator)
             .Select(g => g.Name)
             .Where(n => !string.Equals(n, self, StringComparison.OrdinalIgnoreCase))
             .OrderBy(n => n, StringComparer.CurrentCultureIgnoreCase)
@@ -273,11 +287,149 @@ public partial class GroupEditorWindow : FluentWindow
         menu.IsOpen = true;
     }
 
-    private void AddShortcut(ProgramShortcut ps)
+    // A line across the panel. It goes in at the end, and is dragged from there to
+    // where it belongs; its title is set from its options, like an app's name.
+    private void AddSeparator_Click(object sender, RoutedEventArgs e)
     {
-        if (_shortcuts.Any(s => s.Shortcut.FilePath.Equals(ps.FilePath, StringComparison.OrdinalIgnoreCase)))
+        _shortcuts.Add(BuildEntry(ProgramShortcut.ForSeparator()));
+        Dispatcher.BeginInvoke(() =>
+            (ShortcutsItemsControl.ItemContainerGenerator.ContainerFromIndex(_shortcuts.Count - 1) as FrameworkElement)
+                ?.BringIntoView(), System.Windows.Threading.DispatcherPriority.Loaded);
+    }
+
+    private void AddShortcut(ProgramShortcut ps, int at = -1)
+    {
+        // The same app twice is a slip; the same separator twice is two sections.
+        if (!ps.IsSeparator
+            && _shortcuts.Any(s => s.Shortcut.FilePath.Equals(ps.FilePath, StringComparison.OrdinalIgnoreCase)))
             return;
-        _shortcuts.Add(BuildEntry(ps));
+
+        var entry = BuildEntry(ps);
+        if (at < 0 || at > _shortcuts.Count) _shortcuts.Add(entry);
+        else _shortcuts.Insert(at, entry);
+    }
+
+    // Dragging rows. A row is picked up by pressing anywhere on it but its
+    // buttons, and dropped where the line shows. The same line marks where
+    // dropped files go in.
+
+    private const string RowFormat = "TaskbarGroupsFluent.EditorRow";
+    private System.Windows.Point _pressedAt;
+    private ShortcutEntry? _pressed;
+    private DropLine? _dropLine;
+
+    private void Row_PreviewMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        _pressed = IsOnButton(e.OriginalSource as DependencyObject, sender as DependencyObject)
+            ? null
+            : (sender as FrameworkElement)?.DataContext as ShortcutEntry;
+        _pressedAt = e.GetPosition(this);
+    }
+
+    private void Row_PreviewMouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+    {
+        if (_pressed is null || e.LeftButton != System.Windows.Input.MouseButtonState.Pressed) return;
+
+        System.Windows.Point now = e.GetPosition(this);
+        if (Math.Abs(now.X - _pressedAt.X) < SystemParameters.MinimumHorizontalDragDistance
+            && Math.Abs(now.Y - _pressedAt.Y) < SystemParameters.MinimumVerticalDragDistance)
+            return;
+
+        var entry = _pressed;
+        _pressed = null;
+        DragDrop.DoDragDrop((DependencyObject)sender, new DataObject(RowFormat, entry), DragDropEffects.Move);
+        HideDropLine();
+    }
+
+    private static bool IsOnButton(DependencyObject? from, DependencyObject? row)
+    {
+        for (var d = from; d is not null && d != row; d = System.Windows.Media.VisualTreeHelper.GetParent(d))
+            if (d is System.Windows.Controls.Primitives.ButtonBase) return true;
+        return false;
+    }
+
+    private void List_DragOver(object sender, DragEventArgs e)
+    {
+        bool row = e.Data.GetDataPresent(RowFormat);
+        bool files = e.Data.GetDataPresent(DataFormats.FileDrop);
+        e.Effects = row ? DragDropEffects.Move : files ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+        if (!row && !files) { HideDropLine(); return; }
+
+        ShowDropLine(DropIndex(e));
+        ScrollNearEdges(e);
+    }
+
+    private void List_DragLeave(object sender, DragEventArgs e) => HideDropLine();
+
+    private void List_Drop(object sender, DragEventArgs e)
+    {
+        int at = DropIndex(e);
+        HideDropLine();
+        e.Handled = true;
+
+        if (e.Data.GetData(RowFormat) is ShortcutEntry entry)
+        {
+            int from = _shortcuts.IndexOf(entry);
+            if (from < 0) return;
+            // Taking the row out first moves everything after it up by one.
+            if (at > from) at--;
+            if (at != from) _shortcuts.Move(from, at);
+        }
+    }
+
+    /// <summary>The position in the list the cursor points at: before the first row whose middle is below it.</summary>
+    private int DropIndex(DragEventArgs e)
+    {
+        for (int i = 0; i < _shortcuts.Count; i++)
+        {
+            if (ShortcutsItemsControl.ItemContainerGenerator.ContainerFromIndex(i) is not FrameworkElement row) continue;
+            if (e.GetPosition(row).Y < row.ActualHeight / 2) return i;
+        }
+        return _shortcuts.Count;
+    }
+
+    private void ShowDropLine(int index)
+    {
+        if (_dropLine is null)
+        {
+            var layer = System.Windows.Documents.AdornerLayer.GetAdornerLayer(ShortcutsItemsControl);
+            if (layer is null) return;
+            _dropLine = new DropLine(ShortcutsItemsControl);
+            layer.Add(_dropLine);
+        }
+
+        // In the gap above the row it goes before, or under the last one. Each row
+        // carries an 8 px gap below it, so the middle of that gap is 4 px up.
+        double y = 0;
+        int count = _shortcuts.Count;
+        if (count > 0)
+        {
+            int reference = Math.Min(index, count - 1);
+            if (ShortcutsItemsControl.ItemContainerGenerator.ContainerFromIndex(reference) is FrameworkElement row)
+            {
+                System.Windows.Point top = row.TranslatePoint(new System.Windows.Point(0, 0), ShortcutsItemsControl);
+                y = index < count ? Math.Max(1, top.Y - 4) : top.Y + row.ActualHeight - 4;
+            }
+        }
+        _dropLine.MoveTo(y);
+    }
+
+    private void HideDropLine()
+    {
+        if (_dropLine is null) return;
+        System.Windows.Documents.AdornerLayer.GetAdornerLayer(ShortcutsItemsControl)?.Remove(_dropLine);
+        _dropLine = null;
+    }
+
+    // A long list runs past the window: holding the drag near the top or the
+    // bottom edge scrolls it.
+    private void ScrollNearEdges(DragEventArgs e)
+    {
+        const double edge = 48;
+        double y = e.GetPosition(EditorScroll).Y;
+        if (y < edge) EditorScroll.ScrollToVerticalOffset(EditorScroll.VerticalOffset - 12);
+        else if (y > EditorScroll.ActualHeight - edge) EditorScroll.ScrollToVerticalOffset(EditorScroll.VerticalOffset + 12);
     }
 
     private void AppOptions_Click(object sender, RoutedEventArgs e)
@@ -367,7 +519,7 @@ public partial class GroupEditorWindow : FluentWindow
             ShowError(Loc.Get("Loc_Editor_BadName"));
             return;
         }
-        if (_shortcuts.Count == 0)
+        if (AppCount() == 0)
         {
             ShowError(Loc.Get("Loc_Editor_NeedShortcut"));
             return;

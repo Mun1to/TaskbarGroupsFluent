@@ -27,11 +27,11 @@ internal static class ShellContextMenu
 
     /// <summary>
     /// The name Windows knows the entry by, or null for one that has no menu of its
-    /// own: a group inside a group lives only in this app.
+    /// own: a group inside a group, or a separator, lives only in this app.
     /// </summary>
     public static string? ParsingName(ProgramShortcut ps)
     {
-        if (ps.IsGroup || string.IsNullOrWhiteSpace(ps.FilePath)) return null;
+        if (ps.IsGroup || ps.IsSeparator || string.IsNullOrWhiteSpace(ps.FilePath)) return null;
         return ps.isWindowsApp ? @"shell:AppsFolder\" + ps.FilePath : ps.FilePath;
     }
 

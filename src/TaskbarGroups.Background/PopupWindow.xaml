@@ -95,6 +95,37 @@
             </Button>
         </DataTemplate>
 
+        <!-- A line across the panel that splits the apps into sections, with its
+             title in the middle when it has one. In a grid it is exactly as wide
+             as a row of cells (SeparatorRowWidth, set with the layout), so the apps
+             after it start on a row of their own. -->
+        <DataTemplate x:Key="SeparatorAcross">
+            <Grid Width="{DynamicResource SeparatorRowWidth}" Margin="0,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="12" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" MinWidth="12" />
+                </Grid.ColumnDefinitions>
+                <Rectangle Grid.Column="0" Height="1" Margin="8,0,0,0" VerticalAlignment="Center"
+                           Fill="{DynamicResource FlyoutLineBrush}" />
+                <TextBlock x:Name="Title" Grid.Column="1" Text="{Binding DisplayName}" Margin="10,0"
+                           Foreground="{DynamicResource FlyoutTextBrush}" FontSize="12" FontWeight="SemiBold"
+                           VerticalAlignment="Center" TextTrimming="CharacterEllipsis" MaxWidth="220" />
+                <Rectangle Grid.Column="2" Height="1" Margin="0,0,8,0" VerticalAlignment="Center"
+                           Fill="{DynamicResource FlyoutLineBrush}" />
+            </Grid>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding DisplayName}" Value="">
+                    <Setter TargetName="Title" Property="Visibility" Value="Collapsed" />
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+        <!-- The same line standing up, between two apps of a single row. -->
+        <DataTemplate x:Key="SeparatorDown">
+            <Rectangle Width="1" Margin="6,12" Fill="{DynamicResource FlyoutLineBrush}" />
+        </DataTemplate>
+
         <ItemsPanelTemplate x:Key="GridPanel">
             <WrapPanel Orientation="Horizontal" />
         </ItemsPanelTemplate>

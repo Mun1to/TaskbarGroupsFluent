@@ -105,6 +105,8 @@ public partial class PopupWindow : Window
             ? Color.FromArgb(0x22, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x14, 0x00, 0x00, 0x00));
         Resources["FlyoutPressBrush"] = Frozen(_isDark
             ? Color.FromArgb(0x11, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x22, 0x00, 0x00, 0x00));
+        Resources["FlyoutLineBrush"] = Frozen(_isDark
+            ? Color.FromArgb(0x55, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x40, 0x00, 0x00, 0x00));
     }
 
     private static SolidColorBrush Frozen(Color c)
@@ -119,10 +121,18 @@ public partial class PopupWindow : Window
     private void ApplyAppearance()
     {
         var plan = PanelLayouts.Plan(_category.PanelLayout, _category.ShowLabels,
-            _category.Width, _category.ShortcutList?.Count ?? 0);
+            _category.Width, _category.AppCount);
         ItemsHost.ItemsPanel = (System.Windows.Controls.ItemsPanelTemplate)Resources[plan.Panel + "Panel"];
-        ItemsHost.ItemTemplate = (DataTemplate)Resources[plan.Template];
+        ItemsHost.ItemTemplate = null;
+        ItemsHost.ItemTemplateSelector = new PopupItemTemplates
+        {
+            App = (DataTemplate)Resources[plan.Template],
+            Separator = (DataTemplate)Resources[plan.Panel == "Row" ? "SeparatorDown" : "SeparatorAcross"]
+        };
         ItemsHost.MaxWidth = plan.MaxWidth;
+        // A whole row of cells, so a separator in a grid sits on a line of its own;
+        // in a column it simply stretches across.
+        Resources["SeparatorRowWidth"] = double.IsInfinity(plan.MaxWidth) ? double.NaN : plan.MaxWidth - 1;
 
         // Scaled as a whole, names included, so a bigger icon keeps its proportions
         // with the text under it. MaxWidth is in the unscaled units, which is what
@@ -323,6 +333,12 @@ public partial class PopupWindow : Window
         {
             foreach (var ps in _category.ShortcutList)
             {
+                if (ps.IsSeparator)
+                {
+                    items.Add(new PopupItem { Shortcut = ps, DisplayName = (ps.name ?? "").Trim() });
+                    continue;
+                }
+
                 ImageSource? icon = null;
                 try { icon = _category.loadImageCache(ps).ToImageSource(); }
                 catch { }
@@ -942,6 +958,9 @@ public partial class PopupWindow : Window
 
     internal static void Launch(ProgramShortcut ps)
     {
+        // A line in the panel: "Open all" walks past it, and there is nothing to click.
+        if (ps.IsSeparator) return;
+
         try
         {
             if (ps.IsGroup)

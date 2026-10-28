@@ -18,6 +18,12 @@ namespace TaskbarGroups.Core
         public bool allowOpenAll = false;
         public List<ProgramShortcut> ShortcutList;
         public bool IsSeparator = false;
+
+        /// <summary>
+        /// How many entries open something, leaving out the lines that split the
+        /// panel. Read-only, so the XML serializer leaves it out of ObjectData.xml.
+        /// </summary>
+        public int AppCount => ShortcutList?.Count(ps => !ps.IsSeparator) ?? 0;
         public int Width; // not used aon
         public double Opacity = 10;
         public String HoverColor;
@@ -313,6 +319,7 @@ namespace TaskbarGroups.Core
             for (int i = 0; i < ShortcutList.Count; i++)
             {
                 ProgramShortcut ps = ShortcutList[i];
+                if (ps.IsSeparator) continue;
                 string savePath = Path.Combine(iconPath, generateMD5Hash(ps.FilePath + ps.Arguments) + ".png");
                 using (Image img = ResolveShortcutImage(ps))
                     img?.Save(savePath, ImageFormat.Png);

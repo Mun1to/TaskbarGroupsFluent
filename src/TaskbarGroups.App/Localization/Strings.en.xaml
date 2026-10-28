@@ -108,6 +108,8 @@
     <s:String x:Key="Loc_Editor_Group">Group</s:String>
     <s:String x:Key="Loc_Editor_GroupTip">Add another group, which opens in its own panel</s:String>
     <s:String x:Key="Loc_Editor_NoOtherGroups">Create another group first: this button puts one group inside another.</s:String>
+    <s:String x:Key="Loc_Editor_Separator">Separator</s:String>
+    <s:String x:Key="Loc_Editor_SeparatorTip">Add a line that splits the panel into sections, with a title if you like. Drag the rows to change the order.</s:String>
     <s:String x:Key="Loc_Sub_Group">Group</s:String>
     <s:String x:Key="Loc_AppOpt_Title">App options</s:String>
     <s:String x:Key="Loc_AppOpt_Name">Name</s:String>
@@ -118,11 +120,14 @@
     <s:String x:Key="Loc_AppOpt_AdminHint">Windows will ask for permission every time it opens.</s:String>
     <s:String x:Key="Loc_AppOpt_NotForStore">Store apps, web and game links, and folders open through Windows, so they don't take arguments or an administrator start.</s:String>
     <s:String x:Key="Loc_AppOpt_Save">Save</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorPlaceholder">No title</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorHint">What reads in the middle of the line. Leave it empty for just the line.</s:String>
 
     <!-- Shortcut subtitles -->
     <s:String x:Key="Loc_Sub_StoreApp">App</s:String>
     <s:String x:Key="Loc_Sub_Folder">Folder</s:String>
     <s:String x:Key="Loc_Sub_Program">Program</s:String>
+    <s:String x:Key="Loc_Sub_Separator">Panel divider</s:String>
 
     <!-- Store app picker -->
     <s:String x:Key="Loc_Store_Title">Microsoft Store apps</s:String>
