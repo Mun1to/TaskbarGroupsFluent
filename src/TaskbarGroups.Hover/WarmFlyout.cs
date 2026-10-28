@@ -27,9 +27,27 @@ internal sealed class WarmFlyout : IDisposable
     /// </summary>
     private static readonly TimeSpan IdleLife = TimeSpan.FromSeconds(20);
 
+    /// <summary>
+    /// A warm flyout that ends sooner than this, without being asked to, did not
+    /// manage to stay up: it found nothing to load, or it crashed on the way.
+    /// </summary>
+    private static readonly TimeSpan ShortLife = TimeSpan.FromSeconds(10);
+
+    /// <summary>
+    /// The wait after the first flyout that did not stay up, doubled after each
+    /// one that follows, up to <see cref="LongestRetry"/>. Starting the next one
+    /// straight away is what turned a flyout that could not stay up into a new
+    /// process every half second for as long as the cursor was on the taskbar.
+    /// </summary>
+    private static readonly TimeSpan FirstRetry = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan LongestRetry = TimeSpan.FromMinutes(5);
+
     private DateTime? _awaySince;
 
     private Process? _process;
+    private DateTime _startedAt;
+    private int _shortLives;
+    private DateTime _retryAt = DateTime.MinValue;
 
     /// <summary>
     /// True if a warm flyout is loaded AND listening. The process being alive is not
@@ -49,20 +67,44 @@ internal sealed class WarmFlyout : IDisposable
     {
         _awaySince = null;
         if (_process is not null && !_process.HasExited) return;
+        Forget();
+        if (DateTime.UtcNow < _retryAt) return;
         if (FlyoutChannel.IsFlyoutReady()) return;
 
+        _startedAt = DateTime.UtcNow;
         try
         {
-            var psi = new ProcessStartInfo(Paths.BackgroundApplication) { UseShellExecute = false };
-            psi.ArgumentList.Add("--warm");
-            _process = Process.Start(psi);
+            _process = QuietStart.Start(Paths.BackgroundApplication, new[] { "--warm" });
         }
         catch
         {
             // Without a warm flyout the watcher still works, it is just back to
             // starting one from scratch each time.
             _process = null;
+            CountShortLife();
         }
+    }
+
+    /// <summary>
+    /// Lets go of a warm flyout that has ended by itself, and holds back the next
+    /// one if this one did not last.
+    /// </summary>
+    private void Forget()
+    {
+        if (_process is null) return;
+
+        if (DateTime.UtcNow - _startedAt < ShortLife) CountShortLife();
+        else _shortLives = 0;
+
+        _process.Dispose();
+        _process = null;
+    }
+
+    private void CountShortLife()
+    {
+        _shortLives++;
+        double seconds = FirstRetry.TotalSeconds * Math.Pow(2, Math.Min(_shortLives - 1, 10));
+        _retryAt = DateTime.UtcNow + TimeSpan.FromSeconds(Math.Min(seconds, LongestRetry.TotalSeconds));
     }
 
     /// <summary>
@@ -71,7 +113,7 @@ internal sealed class WarmFlyout : IDisposable
     /// </summary>
     public void ReleaseIfIdle()
     {
-        if (_process is null || _process.HasExited) { _process = null; _awaySince = null; return; }
+        if (_process is null || _process.HasExited) { Forget(); _awaySince = null; return; }
 
         _awaySince ??= DateTime.UtcNow;
         if (DateTime.UtcNow - _awaySince < IdleLife) return;

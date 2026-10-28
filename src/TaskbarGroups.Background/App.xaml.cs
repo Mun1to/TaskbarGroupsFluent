@@ -190,12 +190,10 @@ public partial class App : Application
             return;
         }
 
-        Category? seed = FirstGroup();
-        if (seed is null)
-        {
-            Shutdown();
-            return;
-        }
+        // With no group made yet there is nothing to borrow, so it lays out an empty
+        // one. Leaving instead had the watcher start a new flyout every half second
+        // for as long as the cursor stayed on the taskbar (issue #6).
+        Category seed = FirstGroup() ?? new Category { ShortcutList = new List<ProgramShortcut>() };
 
         var window = new PopupWindow(seed);
         window.Prewarm();

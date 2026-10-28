@@ -360,14 +360,17 @@ internal sealed class TaskbarWatcher : IDisposable
     {
         try
         {
-            var psi = new ProcessStartInfo(Paths.BackgroundApplication) { UseShellExecute = false };
-            psi.ArgumentList.Add(
-                $"--hover={button.Rect.Left},{button.Rect.Top},{button.Rect.Right},{button.Rect.Bottom}");
-            // What is left of the dwell once the head start is subtracted. The flyout
-            // sees it through, so the wait happens while it loads instead of before.
-            psi.ArgumentList.Add($"--dwell={Math.Max(0, delayMs - PrelaunchMs)}");
-            psi.ArgumentList.Add(button.Group);
-            Process.Start(psi);
+            // Without the "app starting" cursor: the panel showing up is the answer
+            // to resting on the icon, and one the cursor moved away from in time
+            // never shows at all, so there is nothing to flash it for.
+            using var _ = QuietStart.Start(Paths.BackgroundApplication, new[]
+            {
+                $"--hover={button.Rect.Left},{button.Rect.Top},{button.Rect.Right},{button.Rect.Bottom}",
+                // What is left of the dwell once the head start is subtracted. The flyout
+                // sees it through, so the wait happens while it loads instead of before.
+                $"--dwell={Math.Max(0, delayMs - PrelaunchMs)}",
+                button.Group
+            });
         }
         catch { /* a group whose flyout will not start must not stop the watcher */ }
     }
