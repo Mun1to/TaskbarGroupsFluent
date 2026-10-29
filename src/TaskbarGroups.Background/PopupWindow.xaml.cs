@@ -31,6 +31,15 @@ public partial class PopupWindow : Window
     private bool _menuOpen;
     private DateTime? _cursorLeftAt;
 
+    // A group inside this one opens beside it, as a submenu (issue #5). Only the
+    // panel on the taskbar keeps watch; the ones opened from it count as part of
+    // it, so moving the focus or the cursor between them closes nothing.
+    private PopupWindow? _parent;
+    private PopupWindow? _child;
+    private FrameworkElement? _source;
+    private ProgramShortcut? _sourceShortcut;
+    private bool _ranCommand;
+
     /// <summary>
     /// How long the cursor may wander off a hover-opened flyout before it closes.
     /// Long enough to cross the gap between the icon and the panel, or to overshoot
@@ -79,7 +88,9 @@ public partial class PopupWindow : Window
         LoadItems();
 
         Loaded += OnLoadedPosition;
-        Deactivated += (_, _) => { if (!Reusable || Left > OffScreen / 2) CloseOnce(); };
+        // Also raised when the focus only moves to a subgroup opened beside this
+        // panel, or back from one, so where it went is looked at once it got there.
+        Deactivated += (_, _) => Dispatcher.BeginInvoke(DismissIfFocusLeft, DispatcherPriority.Background);
         PreviewKeyDown += OnKey;
         ItemsHost.PreviewMouseRightButtonUp += Item_RightClick;
         AllowDrop = true;
@@ -90,8 +101,41 @@ public partial class PopupWindow : Window
         {
             _guard?.Stop();
             StopSlide();
-            Application.Current.Shutdown();
+            // A subgroup goes on its own; the panel it came from carries on.
+            if (_parent is null) Application.Current.Shutdown();
         };
+    }
+
+    /// <summary>The panel on the taskbar this one was opened from, or itself.</summary>
+    private PopupWindow Root
+    {
+        get
+        {
+            var w = this;
+            while (w._parent is not null) w = w._parent;
+            return w;
+        }
+    }
+
+    /// <summary>Every panel open in the cascade, from the one on the taskbar outwards.</summary>
+    private System.Collections.Generic.IEnumerable<PopupWindow> Family()
+    {
+        for (var w = Root; w is not null; w = w._child) yield return w;
+    }
+
+    private bool InFamily(IntPtr hwnd)
+    {
+        if (hwnd == IntPtr.Zero) return false;
+        foreach (var w in Family())
+            if (new WindowInteropHelper(w).Handle == hwnd) return true;
+        return false;
+    }
+
+    private void DismissIfFocusLeft()
+    {
+        if (_closing || InFamily(GetForegroundWindow())) return;
+        var root = Root;
+        if (!root.Reusable || !root.IsParked) root.CloseOnce();
     }
 
     // Follow the Windows light/dark setting: a light panel with dark text under a
@@ -165,7 +209,7 @@ public partial class PopupWindow : Window
         if (_category.ShortcutList is not null)
             foreach (var ps in _category.ShortcutList)
                 Launch(ps);
-        CloseOnce();
+        Root.CloseOnce();
     }
 
     // The pencil in the header: open this group's editor in the main app, and get
@@ -183,7 +227,7 @@ public partial class PopupWindow : Window
         {
             // No app to open: the panel still closes, as any click in it does.
         }
-        CloseOnce();
+        Root.CloseOnce();
     }
 
     // A per-pixel transparent (AllowsTransparency) window is software-rendered and
@@ -398,6 +442,7 @@ public partial class PopupWindow : Window
     public void HideForReuse()
     {
         if (!Reusable) return;
+        CloseChild();
         _guard?.Stop();
         StopSlide();
         _closing = false;
@@ -443,6 +488,7 @@ public partial class PopupWindow : Window
         // A slide still running from the last showing must not carry on moving the
         // panel, nor finish by putting it away.
         StopSlide();
+        CloseChild();
 
         _category = category;
         _anchor = anchor;
@@ -475,6 +521,16 @@ public partial class PopupWindow : Window
         // A warm flyout positions itself when it is asked to show, not when it is
         // first loaded; at that point it is parked off screen with nothing to say.
         if (Reusable) return;
+
+        // A subgroup: beside its panel, with the focus, so Escape takes the user
+        // back. The panel on the taskbar keeps watch for both.
+        if (_parent is not null)
+        {
+            FitToContent();
+            PlaceBesideParent();
+            TakeFocus();
+            return;
+        }
 
         FitToContent();
 
@@ -734,6 +790,99 @@ public partial class PopupWindow : Window
         return new Point(left, top);
     }
 
+    /// <summary>
+    /// Puts a subgroup beside the panel it was opened from, with its first app level
+    /// with the icon that opened it, as a submenu sits: to the right, or to the left
+    /// where the screen runs out. A panel that is a single row along the taskbar has
+    /// no side to spare, so there it opens over the row, away from the taskbar.
+    /// Worked out in screen pixels, which is what the panel's real position is in
+    /// even while it is still sliding in.
+    /// </summary>
+    private void PlaceBesideParent()
+    {
+        IntPtr hwnd = new WindowInteropHelper(this).Handle;
+        IntPtr parentHwnd = new WindowInteropHelper(_parent!).Handle;
+        if (hwnd == IntPtr.Zero || !GetWindowRect(parentHwnd, out RECT p) || !GetWindowRect(hwnd, out RECT me)) return;
+
+        double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
+        if (scale <= 0) scale = 1;
+        int gap = (int)Math.Round(4 * scale);
+        int w = me.Right - me.Left, h = me.Bottom - me.Top;
+
+        // The icon that was clicked; the whole panel if it is no longer there.
+        RECT icon = p;
+        try
+        {
+            if (_source is not null && PresentationSource.FromVisual(_source) is not null)
+            {
+                Point a = _source.PointToScreen(new Point(0, 0));
+                Point b = _source.PointToScreen(new Point(_source.ActualWidth, _source.ActualHeight));
+                icon = new RECT { Left = (int)a.X, Top = (int)a.Y, Right = (int)b.X, Bottom = (int)b.Y };
+            }
+        }
+        catch { /* measured from the panel instead */ }
+
+        RECT area = WorkAreaOf(parentHwnd, scale);
+        var tb = TaskbarHelper.GetTaskbar();
+        int x, y;
+        if (PanelLayouts.IsRow(_parent!._category.PanelLayout)
+            && (tb.Edge == TaskbarHelper.Edge.Bottom || tb.Edge == TaskbarHelper.Edge.Top))
+        {
+            x = (icon.Left + icon.Right) / 2 - w / 2;
+            y = tb.Edge == TaskbarHelper.Edge.Top ? p.Bottom + gap : p.Top - h - gap;
+        }
+        else
+        {
+            x = p.Right + gap;
+            if (x + w > area.Right) x = p.Left - gap - w;
+
+            // The header, when it is on top, sits above the icon, not level with it.
+            double inset = 0;
+            try { inset = ItemsHost.TransformToAncestor(this).Transform(new Point(0, 0)).Y; }
+            catch { }
+            y = icon.Top - (int)Math.Round(inset * scale);
+        }
+
+        // On screen, and no nearer the taskbar than the panel itself, so the two
+        // line up along it.
+        int edge = (int)Math.Round(4 * scale);
+        int lowest = area.Bottom - edge, highest = area.Top + edge;
+        if (tb.Edge == TaskbarHelper.Edge.Bottom) lowest = Math.Min(lowest, p.Bottom);
+        if (tb.Edge == TaskbarHelper.Edge.Top) highest = Math.Max(highest, p.Top);
+        x = Math.Max(area.Left + edge, Math.Min(x, area.Right - w - edge));
+        y = Math.Max(highest, Math.Min(y, lowest - h));
+        SetWindowPos(hwnd, HWND_TOPMOST, x, y, 0, 0, SWP_NOSIZE | SWP_NOACTIVATE);
+    }
+
+    // The work area of the screen a window is on, in screen pixels.
+    private static RECT WorkAreaOf(IntPtr hwnd, double scale)
+    {
+        var info = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+        IntPtr monitor = MonitorFromWindow(hwnd, MONITOR_DEFAULTTONEAREST);
+        if (monitor != IntPtr.Zero && GetMonitorInfo(monitor, ref info)) return info.rcWork;
+
+        var area = SystemParameters.WorkArea;
+        return new RECT
+        {
+            Left = (int)(area.Left * scale), Top = (int)(area.Top * scale),
+            Right = (int)(area.Right * scale), Bottom = (int)(area.Bottom * scale)
+        };
+    }
+
+    private const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct MONITORINFO
+    {
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
+    }
+
+    [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] private static extern bool GetMonitorInfo(IntPtr monitor, ref MONITORINFO info);
+
     // Activate() alone is not enough. Windows only lets the process that already
     // owns the foreground hand it to someone else, and a flyout launched from a
     // pinned shortcut does not always inherit that right, so Activate() silently
@@ -796,9 +945,11 @@ public partial class PopupWindow : Window
 
             // A right-click menu is open. It reaches outside the panel, so a click
             // on it, or the cursor resting on it, would read as leaving.
-            if (_menuOpen) return;
+            foreach (var w in Family())
+                if (w._menuOpen) return;
 
-            if (GetForegroundWindow() == hwnd) { _hadFocus = true; _cursorLeftAt = null; return; }
+            // A subgroup open beside the panel counts as the panel itself.
+            if (InFamily(GetForegroundWindow())) { _hadFocus = true; _cursorLeftAt = null; return; }
             if (_hadFocus) { CloseOnce(); return; }
 
             bool pressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
@@ -810,7 +961,7 @@ public partial class PopupWindow : Window
                 // here, and it landed on the taskbar, which is outside us. Wait for
                 // the mouse to come up once so we never dismiss on the press that
                 // opened us.
-                if (_mouseWentUp && !CursorIsOver(hwnd)) CloseOnce();
+                if (_mouseWentUp && !CursorIsOverFamily(0)) CloseOnce();
                 return;
             }
 
@@ -818,33 +969,36 @@ public partial class PopupWindow : Window
 
             if (_anchor is null) return;
 
-            if (CursorIsInHoverZone(hwnd)) { _cursorLeftAt = null; return; }
+            if (CursorIsInHoverZone()) { _cursorLeftAt = null; return; }
             _cursorLeftAt ??= DateTime.UtcNow;
             if (DateTime.UtcNow - _cursorLeftAt >= HoverGrace) CloseOnce();
         };
         _guard.Start();
     }
 
-    private static bool CursorIsOver(IntPtr hwnd)
+    // Over the panel or a subgroup open beside it, give or take margin pixels.
+    private bool CursorIsOverFamily(int margin)
     {
-        // Both are physical screen pixels, so they compare without DPI scaling.
-        if (!GetCursorPos(out POINT p) || !GetWindowRect(hwnd, out RECT r)) return true;
-        return p.X >= r.Left && p.X < r.Right && p.Y >= r.Top && p.Y < r.Bottom;
+        // Cannot tell where the cursor is: assume it is still here. Erring the other
+        // way would close the flyout under the user's hand.
+        if (!GetCursorPos(out POINT p)) return true;
+        foreach (var w in Family())
+        {
+            // Both are physical screen pixels, so they compare without DPI scaling.
+            if (!GetWindowRect(new WindowInteropHelper(w).Handle, out RECT r)) return true;
+            if (p.X >= r.Left - margin && p.X < r.Right + margin
+                && p.Y >= r.Top - margin && p.Y < r.Bottom + margin) return true;
+        }
+        return false;
     }
 
     // The panel and the icon that opened it count as one region, with slack around
     // both: the panel sits a few pixels clear of the taskbar, and without the slack
     // that gap would read as "the cursor left" every time it travelled between them.
-    private bool CursorIsInHoverZone(IntPtr hwnd)
+    private bool CursorIsInHoverZone()
     {
-        // Cannot tell where the cursor is: assume it is still here. Erring the other
-        // way would close the flyout under the user's hand.
-        if (!GetCursorPos(out POINT p)) return true;
-        if (_anchor is not null && _anchor.Contains(p.X, p.Y, HoverMargin)) return true;
-        if (!GetWindowRect(hwnd, out RECT r)) return true;
-
-        return p.X >= r.Left - HoverMargin && p.X < r.Right + HoverMargin
-            && p.Y >= r.Top - HoverMargin && p.Y < r.Bottom + HoverMargin;
+        if (_anchor is not null && GetCursorPos(out POINT p) && _anchor.Contains(p.X, p.Y, HoverMargin)) return true;
+        return CursorIsOverFamily(HoverMargin);
     }
 
     private void CloseOnce()
@@ -852,9 +1006,64 @@ public partial class PopupWindow : Window
         if (_closing) return;
         _closing = true;
         _guard?.Stop();
+        CloseChild();
+
+        // A subgroup leaves the cascade at once, and without a slide: a submenu
+        // just goes.
+        if (_parent is not null)
+        {
+            if (_parent._child == this) _parent._child = null;
+            _source?.ClearValue(System.Windows.Controls.Control.BackgroundProperty);
+            FinishClosing();
+            return;
+        }
 
         if (Leave(FinishClosing)) return;
         FinishClosing();
+    }
+
+    private void CloseChild()
+    {
+        var child = _child;
+        _child = null;
+        child?.CloseOnce();
+    }
+
+    /// <summary>
+    /// Opens the group <paramref name="ps"/> points to beside this panel, as a
+    /// submenu, and keeps this one open (issue #5). Clicking the same group again
+    /// closes it, and another one takes its place. False if the group cannot be
+    /// read, which leaves it to a panel of its own, as before.
+    /// </summary>
+    private bool OpenSubgroup(FrameworkElement source, ProgramShortcut ps)
+    {
+        bool again = _child is not null && ReferenceEquals(_child._sourceShortcut, ps);
+        CloseChild();
+        if (again) return true;
+
+        string dir = Path.Combine(Paths.ConfigPath, ps.GroupName);
+        if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) return false;
+        Category group;
+        try { group = new Category(dir); }
+        catch { return false; }
+
+        var child = new PopupWindow(group)
+        {
+            _parent = this,
+            _source = source,
+            _sourceShortcut = ps,
+            // Owned, so it always stays over the panel it came from.
+            Owner = this,
+            // Laid out off screen and moved into place once it knows its size, so
+            // it never flashes up wherever Windows would have put it.
+            Left = OffScreen,
+            Top = OffScreen
+        };
+        _child = child;
+        // The icon it came from stays lit while it is open, as a menu item does.
+        source.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "FlyoutHoverBrush");
+        child.Show();
+        return true;
     }
 
     private void FinishClosing()
@@ -872,7 +1081,8 @@ public partial class PopupWindow : Window
         // behind, owned by this panel: the Properties sheet, a delete confirmation.
         // Closing the panel would close those too, so it is hidden instead and
         // closes once they are gone.
-        if (ShellContextMenu.CommandRan)
+        // A subgroup only waits for what its own menu opened.
+        if (ShellContextMenu.CommandRan && (_parent is null || _ranCommand))
         {
             Hide();
             ShellContextMenu.CloseWhenDone(this);
@@ -884,7 +1094,14 @@ public partial class PopupWindow : Window
 
     private void OnKey(object sender, System.Windows.Input.KeyEventArgs e)
     {
-        if (e.Key == System.Windows.Input.Key.Escape) { CloseOnce(); return; }
+        // In a subgroup, Escape steps back to the panel it came from, as in a menu.
+        if (e.Key == System.Windows.Input.Key.Escape)
+        {
+            var parent = _parent;
+            CloseOnce();
+            parent?.TakeFocus();
+            return;
+        }
 
         // The menu key, or Shift+F10, on the focused app: the keyboard's right-click.
         bool menuKey = e.Key == System.Windows.Input.Key.Apps
@@ -927,12 +1144,12 @@ public partial class PopupWindow : Window
         try { ran = ShellContextMenu.Show(hwnd, name, x, y, _isDark); }
         finally { _menuOpen = false; }
 
-        if (ran) { CloseOnce(); return; }
+        if (ran) { _ranCommand = true; Root.CloseOnce(); return; }
 
         // Dismissed: the panel stays, and the click that dismissed the menu, which
         // may have landed outside it, is not taken as a click to dismiss it too.
-        _mouseWentUp = false;
-        _cursorLeftAt = null;
+        Root._mouseWentUp = false;
+        Root._cursorLeftAt = null;
     }
 
     private const int VK_LBUTTON = 0x01;
@@ -981,10 +1198,13 @@ public partial class PopupWindow : Window
             return; // a group that cannot be written keeps what it had
         }
 
-        // Shown straight away, in place: the layout may gain a column or a row.
+        // Shown straight away, in place: the layout may gain a column or a row,
+        // which would leave a subgroup open beside it out of place.
+        CloseChild();
         ApplyAppearance();
         LoadItems();
         FitToContent();
+        if (_parent is not null) { PlaceBesideParent(); return; }
         Point target = TargetOverTaskbar();
         Left = target.X;
         Top = target.Y;
@@ -1000,8 +1220,12 @@ public partial class PopupWindow : Window
     private void Item_Click(object sender, RoutedEventArgs e)
     {
         if (sender is FrameworkElement fe && fe.Tag is PopupItem item)
+        {
+            // A group inside this one opens beside it, and this panel stays.
+            if (item.Shortcut.IsGroup && OpenSubgroup(fe, item.Shortcut)) return;
             Launch(item.Shortcut);
-        CloseOnce();
+        }
+        Root.CloseOnce();
     }
 
     internal static void Launch(ProgramShortcut ps)
@@ -1013,7 +1237,8 @@ public partial class PopupWindow : Window
         {
             if (ps.IsGroup)
             {
-                // A group inside a group: start another flyout for it, which closes
+                // A group inside a group, from "Open all" or one that could not
+                // open beside the panel: start another flyout for it, which closes
                 // this one on its way in, as any newly opened flyout does.
                 var sub = new ProcessStartInfo(Environment.ProcessPath ?? Paths.BackgroundApplication)
                 {

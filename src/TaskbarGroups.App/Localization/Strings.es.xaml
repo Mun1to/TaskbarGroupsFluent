@@ -106,7 +106,7 @@
     <s:String x:Key="Loc_Editor_HeaderBottom">Abajo</s:String>
     <s:String x:Key="Loc_Editor_AppOptions">Opciones de la app</s:String>
     <s:String x:Key="Loc_Editor_Group">Grupo</s:String>
-    <s:String x:Key="Loc_Editor_GroupTip">Añadir otro grupo, que se abre en su propio panel</s:String>
+    <s:String x:Key="Loc_Editor_GroupTip">Añadir otro grupo, que se abre al lado de este panel, como un submenú</s:String>
     <s:String x:Key="Loc_Editor_NoOtherGroups">Crea antes otro grupo: este botón mete un grupo dentro de otro.</s:String>
     <s:String x:Key="Loc_Editor_Separator">Separador</s:String>
     <s:String x:Key="Loc_Editor_SeparatorTip">Añadir una línea que divide el panel en partes, con un título si quieres. Arrastra las filas para cambiar el orden.</s:String>
