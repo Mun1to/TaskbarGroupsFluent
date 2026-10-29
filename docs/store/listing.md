@@ -40,31 +40,32 @@ Ten icons on your taskbar? Now just one.
 Taskbar Groups Fluent packs a set of apps into one taskbar button. Click it, or just rest the cursor on it, and a panel with real Windows 11 glass opens with every app in the group, so the taskbar stays tidy and everything you use is one click away.
 
 Make each group your own:
-• Add an empty taskbar separator to keep your groups apart from other pinned icons.
+• Add separators: on the taskbar to keep your groups apart from other pinned icons, and inside a panel to split it into sections.
 • Lay its panel out as a grid, a horizontal row, a vertical column or a list, with or without app names, in three icon sizes.
 • Show the group's name above or below, with a pencil that opens its editor right there.
 • Use an image, a colour emoji or an icon made of the group's own apps.
-• Mix apps, folders and even other groups, and open them all with one button.
+• Mix apps, folders and even other groups, which open beside the panel like a submenu, and open them all with one button.
 • Rename an app inside a group, give it launch arguments or run it as administrator.
 
-Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
+Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons, or just drag files and shortcuts in from File Explorer. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
 
 It follows your Windows theme, accent colour and language (English or Spanish), or the ones you pick in its quick bar, installs for your user only without administrator rights, and has no account, no telemetry and no ads. It is free and open source (MIT).
 
 **What's new in this version**
 
-The app picker now finds more installed apps and searches app names without accents or by executable name. Add an empty separator to space your groups out on the taskbar. Right-click an app in a group's panel for its own Windows menu, the same one File Explorer or the Start menu gives it. And the panel can slide out from behind the taskbar like the Start menu, or peek up while its apps fade in: pick it in Settings, under Panel animation.
+A group inside another group now opens beside the panel, like a submenu, and the first panel stays open. Split a panel into sections with separator lines, each with an optional title, and drag the editor's rows to put them in place. Drag files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel to add them. And with open on hover turned on, the cursor no longer flickers over the taskbar.
 
 **Product features** (one per line, up to 20)
 
 - One taskbar button for a whole group of apps
-- Empty separators to space out taskbar groups
+- Separators on the taskbar and inside a panel
 - Opens on click, or just by resting the cursor on it
 - Real Windows 11 glass, light and dark
 - Four panel layouts: grid, horizontal, vertical and list
 - Live preview while you edit a group
 - Group icon from an image, an emoji or the group's own apps
-- Apps, folders and groups inside groups
+- Apps, folders and groups that open like a submenu
+- Drag and drop files and shortcuts to add them
 - Open all the apps in a group at once
 - Rename apps, add arguments, run as administrator
 - Each app's own right-click menu, right in the panel
@@ -94,31 +95,32 @@ Agrupa tus apps en un solo icono de la barra de tareas. Haz clic, o deja el curs
 Taskbar Groups Fluent junta varias apps en un solo botón de la barra de tareas. Haz clic, o deja el cursor encima, y se abre un panel con el cristal de verdad de Windows 11 con todas las apps del grupo: la barra queda ordenada y todo lo que usas está a un clic.
 
 Haz cada grupo a tu manera:
-• Añade un separador vacío a la barra para separar tus grupos del resto de iconos anclados.
+• Añade separadores: en la barra, para separar tus grupos del resto de iconos anclados, y dentro del panel, para dividirlo en partes.
 • Su panel en cuadrícula, en una fila horizontal, en una columna vertical o como lista, con o sin el nombre de las apps, en tres tamaños de icono.
 • El nombre del grupo arriba o abajo, con un lápiz que abre su editor ahí mismo.
 • Una imagen, un emoji de color o un icono hecho con las apps del grupo.
-• Apps, carpetas e incluso otros grupos, y un botón para abrirlas todas.
+• Apps, carpetas e incluso otros grupos, que se abren al lado del panel como un submenú, y un botón para abrirlas todas.
 • Cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
 
-Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
+Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos, o arrastra archivos y accesos directos desde el Explorador. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
 
 Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés), o los que elijas en su barra rápida, se instala solo para tu usuario sin permisos de administrador y no tiene cuentas, ni telemetría, ni anuncios. Es gratis y de código abierto (MIT).
 
 **Novedades de esta versión**
 
-El buscador de apps ahora encuentra más programas instalados y busca los nombres sin tildes o por el nombre del ejecutable. Añade un separador vacío para dejar espacio entre tus grupos en la barra de tareas. Haz clic derecho en una app del panel para ver su propio menú de Windows, el mismo que le da el Explorador o el menú Inicio. Y el panel puede salir de detrás de la barra de tareas como el menú Inicio, o asomar mientras aparecen sus apps: se elige en Ajustes, en «Animación del panel».
+Un grupo dentro de otro ahora se abre al lado del panel, como un submenú, y el primer panel sigue abierto. Divide un panel en partes con líneas separadoras, cada una con un título si quieres, y arrastra las filas del editor para ponerlas en su sitio. Arrastra archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto para añadirlos. Y con «abrir al pasar el cursor» encendido, el cursor ya no parpadea sobre la barra de tareas.
 
 **Características** (una por línea, hasta 20)
 
 - Un solo botón en la barra para todo un grupo de apps
-- Separadores vacíos para separar los grupos en la barra
+- Separadores en la barra y dentro del panel
 - Se abre con un clic o solo con dejar el cursor encima
 - El cristal de verdad de Windows 11, en claro y en oscuro
 - Cuatro formas de panel: cuadrícula, horizontal, vertical y lista
 - Vista previa mientras editas el grupo
 - Icono del grupo con una imagen, un emoji o sus propias apps
-- Apps, carpetas y grupos dentro de grupos
+- Apps, carpetas y grupos que se abren como un submenú
+- Arrastrar y soltar archivos y accesos directos para añadirlos
 - Abrir todas las apps del grupo de golpe
 - Cambiar el nombre, añadir argumentos, abrir como administrador
 - El menú del clic derecho de cada app, en el propio panel
