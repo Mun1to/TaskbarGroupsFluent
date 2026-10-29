@@ -12,7 +12,8 @@
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
         ExtendsContentIntoTitleBar="True"
-        WindowStartupLocation="CenterOwner">
+        WindowStartupLocation="CenterOwner"
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
 
     <ui:FluentWindow.Resources>
         <!-- The same three looks the flyout has, so the preview is the real thing

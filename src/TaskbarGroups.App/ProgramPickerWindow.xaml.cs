@@ -218,12 +218,7 @@ public partial class ProgramPickerWindow : FluentWindow
         {
             var item = new AppPickerItem
             {
-                Shortcut = new ProgramShortcut
-                {
-                    FilePath = path,
-                    name = Path.GetFileNameWithoutExtension(path),
-                    isWindowsApp = false
-                },
+                Shortcut = ProgramShortcut.ForPath(path),
                 IsSelected = true
             };
             if (_allItems.Any(i => i.Key.Equals(item.Key, StringComparison.OrdinalIgnoreCase)))

@@ -297,16 +297,41 @@ public partial class GroupEditorWindow : FluentWindow
                 ?.BringIntoView(), System.Windows.Threading.DispatcherPriority.Loaded);
     }
 
-    private void AddShortcut(ProgramShortcut ps, int at = -1)
+    private bool AddShortcut(ProgramShortcut ps, int at = -1)
     {
         // The same app twice is a slip; the same separator twice is two sections.
         if (!ps.IsSeparator
             && _shortcuts.Any(s => s.Shortcut.FilePath.Equals(ps.FilePath, StringComparison.OrdinalIgnoreCase)))
-            return;
+            return false;
 
         var entry = BuildEntry(ps);
         if (at < 0 || at > _shortcuts.Count) _shortcuts.Add(entry);
         else _shortcuts.Insert(at, entry);
+        return true;
+    }
+
+    // Files, shortcuts and folders dragged in from File Explorer or the desktop,
+    // in the order they came, from position at (or at the end).
+    private void AddDropped(string[] paths, int at)
+    {
+        foreach (string path in paths)
+        {
+            if (!File.Exists(path) && !Directory.Exists(path)) continue;
+            if (AddShortcut(ProgramShortcut.ForPath(path), at) && at >= 0) at++;
+        }
+    }
+
+    // Dropped anywhere but the list: they go at the end.
+    private void Window_DragOver(object sender, DragEventArgs e)
+    {
+        e.Effects = e.Data.GetDataPresent(DataFormats.FileDrop) ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+    }
+
+    private void Window_Drop(object sender, DragEventArgs e)
+    {
+        if (e.Data.GetData(DataFormats.FileDrop) is string[] paths) AddDropped(paths, -1);
+        e.Handled = true;
     }
 
     // Dragging rows. A row is picked up by pressing anywhere on it but its
@@ -375,6 +400,10 @@ public partial class GroupEditorWindow : FluentWindow
             // Taking the row out first moves everything after it up by one.
             if (at > from) at--;
             if (at != from) _shortcuts.Move(from, at);
+        }
+        else if (e.Data.GetData(DataFormats.FileDrop) is string[] paths)
+        {
+            AddDropped(paths, at);
         }
     }
 

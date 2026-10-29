@@ -82,6 +82,10 @@ public partial class PopupWindow : Window
         Deactivated += (_, _) => { if (!Reusable || Left > OffScreen / 2) CloseOnce(); };
         PreviewKeyDown += OnKey;
         ItemsHost.PreviewMouseRightButtonUp += Item_RightClick;
+        AllowDrop = true;
+        DragOver += OnDragOver;
+        DragLeave += (_, _) => MarkDropTarget(false);
+        Drop += OnDrop;
         Closed += (_, _) =>
         {
             _guard?.Stop();
@@ -948,6 +952,50 @@ public partial class PopupWindow : Window
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT p);
     [DllImport("user32.dll")] private static extern bool GetWindowRect(IntPtr hWnd, out RECT r);
     [DllImport("kernel32.dll")] private static extern uint GetCurrentThreadId();
+
+    // Files, shortcuts and folders dropped on the panel join its group. With
+    // open-on-hover, a file dragged from the desktop can rest on the group's
+    // taskbar icon until the panel comes up and be let go on it, without opening
+    // the editor at all. The panel is not dismissed meanwhile: the button that
+    // holds the drag was already down when it opened, which the guard waits out.
+    private void OnDragOver(object sender, DragEventArgs e)
+    {
+        bool files = e.Data.GetDataPresent(DataFormats.FileDrop) && !IsParked;
+        e.Effects = files ? DragDropEffects.Copy : DragDropEffects.None;
+        e.Handled = true;
+        MarkDropTarget(files);
+    }
+
+    private void OnDrop(object sender, DragEventArgs e)
+    {
+        MarkDropTarget(false);
+        e.Handled = true;
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] paths) return;
+
+        try
+        {
+            if (_category.AddAndSave(paths) == 0) return;
+        }
+        catch
+        {
+            return; // a group that cannot be written keeps what it had
+        }
+
+        // Shown straight away, in place: the layout may gain a column or a row.
+        ApplyAppearance();
+        LoadItems();
+        FitToContent();
+        Point target = TargetOverTaskbar();
+        Left = target.X;
+        Top = target.Y;
+    }
+
+    // The border lights up while something that can be dropped is over the panel.
+    private void MarkDropTarget(bool on)
+    {
+        if (on) RootBorder.BorderBrush = (Brush)Resources["FlyoutTextBrush"];
+        else RootBorder.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "FlyoutBorderBrush");
+    }
 
     private void Item_Click(object sender, RoutedEventArgs e)
     {

@@ -74,7 +74,7 @@
     <s:String x:Key="Loc_Editor_Program">App</s:String>
     <s:String x:Key="Loc_Editor_Folder">Folder</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">Store app</s:String>
-    <s:String x:Key="Loc_Editor_EmptyHint">Add programs, folders or Store apps to this group</s:String>
+    <s:String x:Key="Loc_Editor_EmptyHint">Add programs, folders or Store apps to this group, or drag them here from File Explorer or the desktop</s:String>
     <s:String x:Key="Loc_Editor_Save">Save group</s:String>
     <s:String x:Key="Loc_Editor_NeedName">Give the group a name.</s:String>
     <s:String x:Key="Loc_Editor_BadName">The name can't end in a dot or contain: \ / : * ? " &lt; &gt; |</s:String>

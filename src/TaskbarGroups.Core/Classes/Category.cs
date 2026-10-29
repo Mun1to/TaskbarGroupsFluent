@@ -240,6 +240,37 @@ namespace TaskbarGroups.Core
         }
 
 
+        /// <summary>
+        /// Adds files and folders to the end of the group and saves it, with their
+        /// icons cached: what dropping them on an open panel does. Only the list
+        /// changes; the group's shortcut and its taskbar icon stay as they are, so
+        /// nothing pinned has to be refreshed. Paths already in the group are
+        /// skipped. Returns how many were added.
+        /// </summary>
+        public int AddAndSave(IEnumerable<string> paths)
+        {
+            ShortcutList ??= new List<ProgramShortcut>();
+            var added = new List<ProgramShortcut>();
+            foreach (string p in paths)
+            {
+                if (string.IsNullOrWhiteSpace(p) || !(File.Exists(p) || Directory.Exists(p))) continue;
+                if (ShortcutList.Exists(s => string.Equals(s.FilePath, p, StringComparison.OrdinalIgnoreCase))) continue;
+                var ps = ProgramShortcut.ForPath(p);
+                ShortcutList.Add(ps);
+                added.Add(ps);
+            }
+            if (added.Count == 0) return 0;
+
+            path ??= Path.Combine(Paths.ConfigPath, Name);
+            writeXML();
+            foreach (var ps in added)
+            {
+                try { using (loadImageCache(ps)) { } }
+                catch { /* the panel falls back to building it when it shows */ }
+            }
+            return added.Count;
+        }
+
         private void writeXML()
         {
             //

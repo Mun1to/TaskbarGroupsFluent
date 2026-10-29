@@ -29,6 +29,21 @@
         public string GroupName => IsGroup ? FilePath.Substring(GroupPrefix.Length) : null;
 
         /// <summary>
+        /// An entry for a file or folder on disk, made the same way whether it was
+        /// picked with Browse… or dropped on the editor or on a panel: a file is
+        /// named after itself without its extension, a folder by Windows' own name.
+        /// </summary>
+        public static ProgramShortcut ForPath(string path)
+            => System.IO.Directory.Exists(path)
+                ? new ProgramShortcut { FilePath = path, isWindowsApp = false }
+                : new ProgramShortcut
+                {
+                    FilePath = path,
+                    isWindowsApp = false,
+                    name = System.IO.Path.GetFileNameWithoutExtension(path)
+                };
+
+        /// <summary>
         /// Marks an entry that is a line across the panel rather than something to
         /// open: it splits the apps into sections, with its name as an optional
         /// title over the line. A version from before it existed reads it as a
