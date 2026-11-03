@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using TaskbarGroups.Background.Helpers;
 
 namespace TaskbarGroups.Background.Models;
 
@@ -36,6 +37,16 @@ public sealed record HoverAnchor(int Left, int Top, int Right, int Bottom)
         }
 
         return new HoverAnchor(n[0], n[1], n[2], n[3]);
+    }
+
+    /// <summary>
+    /// The same button in the pixels the rest of this process works in, which are the
+    /// ones it has to be compared with.
+    /// </summary>
+    public HoverAnchor InOwnPixels()
+    {
+        var (left, top, right, bottom) = TaskbarHelper.FromRealPixels(Left, Top, Right, Bottom);
+        return new HoverAnchor(left, top, right, bottom);
     }
 
     public bool Contains(int x, int y, int margin = 0)

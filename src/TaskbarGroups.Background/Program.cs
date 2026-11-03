@@ -27,8 +27,12 @@ internal static class Program
     /// </summary>
     private const int HandOffTimeoutMs = 700;
 
-    /// <summary>Anything left of this is the parking spot of a warm flyout.</summary>
-    private const int Parked = -5000;
+    /// <summary>
+    /// Anything left of this is the parking spot of a warm flyout. Far past any screen:
+    /// the ones to the left of the main one are real places with negative coordinates,
+    /// and a panel showing there must not read as parked.
+    /// </summary>
+    private const int Parked = (int)(PopupWindow.OffScreen / 2);
 
     [STAThread]
     private static void Main(string[] args)

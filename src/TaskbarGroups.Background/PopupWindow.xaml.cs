@@ -22,6 +22,9 @@ public partial class PopupWindow : Window
     // and a new icon to sit above.
     private Category _category;
     private HoverAnchor? _anchor;
+    // The taskbar this panel opened from. Worked out once, on the way in: the cursor
+    // has every right to be on another screen by the time the panel leaves.
+    private TaskbarHelper.TaskbarInfo _bar;
     private Color _tint = Color.FromRgb(0x20, 0x20, 0x20);
     private bool _isDark = true;
     private DispatcherTimer? _guard;
@@ -55,7 +58,7 @@ public partial class PopupWindow : Window
     /// the slow parts, laying out and painting for the first time, are already paid
     /// for by the time the user rests on an icon.
     /// </summary>
-    private const double OffScreen = -32000;
+    public const double OffScreen = -32000;
 
     /// <summary>Marks the warm flyout's window so other processes can spot it.</summary>
     public const string WarmWindowTitle = "TaskbarGroupsFluent.WarmFlyout";
@@ -73,7 +76,7 @@ public partial class PopupWindow : Window
     {
         InitializeComponent();
         _category = category;
-        _anchor = anchor;
+        _anchor = anchor?.InOwnPixels();
 
         // Opened by hover, so it must appear without taking the keyboard. Not
         // calling Activate() is not enough: Show() activates by default, and it was
@@ -491,7 +494,7 @@ public partial class PopupWindow : Window
         CloseChild();
 
         _category = category;
-        _anchor = anchor;
+        _anchor = anchor?.InOwnPixels();
         _closing = false;
         _hadFocus = false;
         _mouseWentUp = false;
@@ -587,9 +590,10 @@ public partial class PopupWindow : Window
     private void Arrive(Point target)
     {
         ContentHost.Opacity = 1;
-        string style = Animation();
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
-        var tb = TaskbarHelper.GetTaskbar();
+        TaskbarHelper.TaskbarInfo tb = _bar;
+
+        string style = Animation();
 
         RECT now = default;
         bool animated = (style == PanelAnimation.Peek || (style == PanelAnimation.Rise && tb.Handle != IntPtr.Zero))
@@ -638,7 +642,7 @@ public partial class PopupWindow : Window
         if (IsParked || !IsVisible) return false;
 
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
-        var tb = TaskbarHelper.GetTaskbar();
+        TaskbarHelper.TaskbarInfo tb = _bar;
         if (hwnd == IntPtr.Zero || !GetWindowRect(hwnd, out RECT r)) return false;
         var now = new POINT { X = r.Left, Y = r.Top };
 
@@ -740,12 +744,11 @@ public partial class PopupWindow : Window
     private static extern bool IsWindowVisible(IntPtr hwnd);
 
     /// <summary>
-    /// Where the panel goes: against the taskbar, above the icon it belongs to. Only
-    /// worked out here; <see cref="Arrive"/> puts it there.
+    /// Where the panel goes: against the taskbar of the screen it was opened on, above
+    /// the icon it belongs to. Only worked out here; <see cref="Arrive"/> puts it there.
     /// </summary>
     private Point TargetOverTaskbar()
     {
-        var tb = TaskbarHelper.GetTaskbar();
         var (cursorX, cursorY) = TaskbarHelper.GetCursor();
         double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
         if (scale <= 0) scale = 1;
@@ -758,6 +761,8 @@ public partial class PopupWindow : Window
             cursorX = _anchor.CenterX;
             cursorY = _anchor.CenterY;
         }
+
+        TaskbarHelper.TaskbarInfo tb = _bar = TaskbarHelper.GetTaskbarAt(cursorX, cursorY);
 
         const double gap = 8;
         double w = ActualWidth, h = ActualHeight;
@@ -783,9 +788,10 @@ public partial class PopupWindow : Window
                 break;
         }
 
-        var area = SystemParameters.WorkArea;
-        left = Math.Max(area.Left + 4, Math.Min(left, area.Right - w - 4));
-        top = Math.Max(area.Top + 4, Math.Min(top, area.Bottom - h - 4));
+        // On that same screen: SystemParameters.WorkArea is always the main one's, and
+        // holding the panel to it is what sent it to the corner of the wrong screen.
+        left = Math.Max(tb.WorkLeft / scale + 4, Math.Min(left, tb.WorkRight / scale - w - 4));
+        top = Math.Max(tb.WorkTop / scale + 4, Math.Min(top, tb.WorkBottom / scale - h - 4));
 
         return new Point(left, top);
     }
@@ -823,7 +829,7 @@ public partial class PopupWindow : Window
         catch { /* measured from the panel instead */ }
 
         RECT area = WorkAreaOf(parentHwnd, scale);
-        var tb = TaskbarHelper.GetTaskbar();
+        TaskbarHelper.TaskbarInfo tb = Root._bar;
         int x, y;
         if (PanelLayouts.IsRow(_parent!._category.PanelLayout)
             && (tb.Edge == TaskbarHelper.Edge.Bottom || tb.Edge == TaskbarHelper.Edge.Top))
