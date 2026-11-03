@@ -42,6 +42,7 @@ public static class TaskbarHelper
         public uint dwFlags;
     }
 
+    private const uint MONITOR_DEFAULTTONULL = 0;
     private const uint MONITOR_DEFAULTTOPRIMARY = 1;
     private const uint MONITOR_DEFAULTTONEAREST = 2;
 
@@ -56,6 +57,7 @@ public static class TaskbarHelper
     [DllImport("user32.dll")] private static extern bool IsWindowVisible(IntPtr hWnd);
     [DllImport("user32.dll")] private static extern bool GetCursorPos(out POINT p);
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromPoint(POINT p, uint flags);
+    [DllImport("user32.dll")] private static extern IntPtr MonitorFromRect(ref RECT rect, uint flags);
     [DllImport("user32.dll")] private static extern bool GetMonitorInfo(IntPtr monitor, ref MONITORINFO info);
     [DllImport("user32.dll")] private static extern IntPtr SetThreadDpiAwarenessContext(IntPtr context);
 
@@ -193,6 +195,41 @@ public static class TaskbarHelper
                 (int)Math.Round(to.Top + (top - from.Top) * scaleY),
                 (int)Math.Round(to.Left + (right - from.Left) * scaleX),
                 (int)Math.Round(to.Top + (bottom - from.Top) * scaleY));
+    }
+
+    /// <summary>
+    /// True if a rectangle in this process's own pixels, on the screen of a point in
+    /// them, reaches another screen. Asked in real pixels: at another scale a screen
+    /// reads narrower here than it really is, so a place that reads as empty can be
+    /// right on top of it.
+    /// </summary>
+    public static bool ReachesAnotherScreen(int x, int y, int left, int top, int right, int bottom)
+    {
+        IntPtr own = MonitorFromPoint(new POINT { X = x, Y = y }, MONITOR_DEFAULTTONEAREST);
+        RECT to = ScreenOf(own).rcMonitor;
+
+        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        try
+        {
+            RECT from = ScreenOf(own).rcMonitor;
+            if (to.Right <= to.Left || to.Bottom <= to.Top) return false;
+
+            double scaleX = (double)(from.Right - from.Left) / (to.Right - to.Left);
+            double scaleY = (double)(from.Bottom - from.Top) / (to.Bottom - to.Top);
+            var real = new RECT
+            {
+                Left = (int)Math.Round(from.Left + (left - to.Left) * scaleX),
+                Top = (int)Math.Round(from.Top + (top - to.Top) * scaleY),
+                Right = (int)Math.Round(from.Left + (right - to.Left) * scaleX),
+                Bottom = (int)Math.Round(from.Top + (bottom - to.Top) * scaleY)
+            };
+            IntPtr found = MonitorFromRect(ref real, MONITOR_DEFAULTTONULL);
+            return found != IntPtr.Zero && found != own;
+        }
+        finally
+        {
+            SetThreadDpiAwarenessContext(previous);
+        }
     }
 
     /// <summary>

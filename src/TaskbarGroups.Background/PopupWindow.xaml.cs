@@ -686,7 +686,8 @@ public partial class PopupWindow : Window
             case TaskbarHelper.Edge.Right: past.Left = tb.Right; break;
             default: past.Top = tb.Bottom; break;
         }
-        return MonitorFromRect(ref past, MONITOR_DEFAULTTONULL) == IntPtr.Zero ? style : PanelAnimation.Peek;
+        return TaskbarHelper.ReachesAnotherScreen(r.Left, r.Top, past.Left, past.Top, past.Right, past.Bottom)
+            ? PanelAnimation.Peek : style;
     }
 
     // Where the panel sits fully behind the taskbar: its edge on the taskbar's
@@ -902,7 +903,6 @@ public partial class PopupWindow : Window
         };
     }
 
-    private const uint MONITOR_DEFAULTTONULL = 0;
     private const uint MONITOR_DEFAULTTONEAREST = 2;
 
     [StructLayout(LayoutKind.Sequential)]
@@ -915,7 +915,6 @@ public partial class PopupWindow : Window
     }
 
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
-    [DllImport("user32.dll")] private static extern IntPtr MonitorFromRect(ref RECT rect, uint flags);
     [DllImport("user32.dll")] private static extern bool GetMonitorInfo(IntPtr monitor, ref MONITORINFO info);
 
     // Activate() alone is not enough. Windows only lets the process that already
