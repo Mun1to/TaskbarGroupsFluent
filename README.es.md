@@ -53,6 +53,7 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 - 🧩 **Cualquier app instalada**, de escritorio o de Microsoft Store, además de carpetas e incluso otros grupos, que se abren al lado del panel como un submenú.
 - **Separadores** en la barra de tareas, para separar tus grupos del resto de iconos anclados, y dentro del panel, para dividir sus apps en partes con un título si quieres.
 - 📥 **Arrastrar y soltar** archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto.
+- 🖥️ **Todos tus monitores**: el panel se abre encima del icono que pulsaste, en esa pantalla.
 - 🎨 **Icono del grupo** con una imagen, un emoji a color o las propias apps del grupo.
 - 🪟 **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas.
 - 🎞️ **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).

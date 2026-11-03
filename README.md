@@ -53,6 +53,7 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 - 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups, which open beside the panel like a submenu.
 - **Separators** on the taskbar, to keep your groups apart from the rest of your pinned icons, and inside a panel, to split its apps into sections with an optional title.
 - 📥 **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
+- 🖥️ **Every monitor**: the panel opens over the icon you clicked, on that screen.
 - 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
 - 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit.
 - 🎞️ **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
