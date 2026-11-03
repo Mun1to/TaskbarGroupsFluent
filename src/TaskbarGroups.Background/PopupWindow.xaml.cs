@@ -593,11 +593,19 @@ public partial class PopupWindow : Window
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
         TaskbarHelper.TaskbarInfo tb = _bar;
 
-        string style = Animation();
+        // Where the target is in screen pixels, at the size the panel already has.
+        double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
+        if (scale <= 0) scale = 1;
+        int x = (int)Math.Round(target.X * scale), y = (int)Math.Round(target.Y * scale);
+        RECT r = default;
+        string style = PanelAnimation.None;
+        if (hwnd != IntPtr.Zero && GetWindowRect(hwnd, out RECT now))
+        {
+            r = new RECT { Left = x, Top = y, Right = x + (now.Right - now.Left), Bottom = y + (now.Bottom - now.Top) };
+            style = Animation(r, tb);
+        }
 
-        RECT now = default;
-        bool animated = (style == PanelAnimation.Peek || (style == PanelAnimation.Rise && tb.Handle != IntPtr.Zero))
-            && hwnd != IntPtr.Zero && GetWindowRect(hwnd, out now);
+        bool animated = style == PanelAnimation.Peek || (style == PanelAnimation.Rise && tb.Handle != IntPtr.Zero);
         if (!animated)
         {
             Left = target.X;
@@ -609,11 +617,6 @@ public partial class PopupWindow : Window
             return;
         }
 
-        // Where the target is in screen pixels, at the size the panel already has.
-        double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
-        if (scale <= 0) scale = 1;
-        int x = (int)Math.Round(target.X * scale), y = (int)Math.Round(target.Y * scale);
-        var r = new RECT { Left = x, Top = y, Right = x + (now.Right - now.Left), Bottom = y + (now.Bottom - now.Top) };
         var end = new POINT { X = x, Y = y };
 
         if (style == PanelAnimation.Rise)
@@ -637,13 +640,13 @@ public partial class PopupWindow : Window
     /// </summary>
     private bool Leave(Action then)
     {
-        string style = Animation();
-        if (style != PanelAnimation.Rise && style != PanelAnimation.Peek) return false;
         if (IsParked || !IsVisible) return false;
 
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
         TaskbarHelper.TaskbarInfo tb = _bar;
         if (hwnd == IntPtr.Zero || !GetWindowRect(hwnd, out RECT r)) return false;
+        string style = Animation(r, tb);
+        if (style != PanelAnimation.Rise && style != PanelAnimation.Peek) return false;
         var now = new POINT { X = r.Left, Y = r.Top };
 
         if (style == PanelAnimation.Rise)
@@ -661,6 +664,30 @@ public partial class PopupWindow : Window
     // Arriving slows down into place; leaving speeds up on the way out.
     private static double EaseOut(double p) => 1 - Math.Pow(1 - p, 4);
     private static double EaseIn(double p) => p * p * p;
+
+    // How the panel comes and goes from this taskbar. Rising only works with nothing
+    // past the taskbar to see it on: with another screen there, the panel would show
+    // on that screen on its way up, so there it peeks instead.
+    private string Animation(RECT r, TaskbarHelper.TaskbarInfo tb)
+    {
+        string style = Animation();
+        if (style != PanelAnimation.Rise || tb.Handle == IntPtr.Zero) return style;
+
+        POINT tucked = Tucked(r, tb);
+        var past = new RECT
+        {
+            Left = tucked.X, Top = tucked.Y,
+            Right = tucked.X + (r.Right - r.Left), Bottom = tucked.Y + (r.Bottom - r.Top)
+        };
+        switch (tb.Edge)
+        {
+            case TaskbarHelper.Edge.Top: past.Bottom = tb.Top; break;
+            case TaskbarHelper.Edge.Left: past.Right = tb.Left; break;
+            case TaskbarHelper.Edge.Right: past.Left = tb.Right; break;
+            default: past.Top = tb.Bottom; break;
+        }
+        return MonitorFromRect(ref past, MONITOR_DEFAULTTONULL) == IntPtr.Zero ? style : PanelAnimation.Peek;
+    }
 
     // Where the panel sits fully behind the taskbar: its edge on the taskbar's
     // inner edge, the rest past the screen's edge.
@@ -875,6 +902,7 @@ public partial class PopupWindow : Window
         };
     }
 
+    private const uint MONITOR_DEFAULTTONULL = 0;
     private const uint MONITOR_DEFAULTTONEAREST = 2;
 
     [StructLayout(LayoutKind.Sequential)]
@@ -887,6 +915,7 @@ public partial class PopupWindow : Window
     }
 
     [DllImport("user32.dll")] private static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint flags);
+    [DllImport("user32.dll")] private static extern IntPtr MonitorFromRect(ref RECT rect, uint flags);
     [DllImport("user32.dll")] private static extern bool GetMonitorInfo(IntPtr monitor, ref MONITORINFO info);
 
     // Activate() alone is not enough. Windows only lets the process that already
