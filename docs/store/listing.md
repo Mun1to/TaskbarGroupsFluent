@@ -53,7 +53,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-A group inside another group now opens beside the panel, like a submenu, and the first panel stays open. Split a panel into sections with separator lines, each with an optional title, and drag the editor's rows to put them in place. Drag files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel to add them. And with open on hover turned on, the cursor no longer flickers over the taskbar.
+With several monitors, the panel now opens over the icon you clicked, on that screen, instead of in the corner of the main one. The same goes for groups that open on hover, and for screens at a different display scale.
 
 **Product features** (one per line, up to 20)
 
@@ -108,7 +108,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Un grupo dentro de otro ahora se abre al lado del panel, como un submenú, y el primer panel sigue abierto. Divide un panel en partes con líneas separadoras, cada una con un título si quieres, y arrastra las filas del editor para ponerlas en su sitio. Arrastra archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto para añadirlos. Y con «abrir al pasar el cursor» encendido, el cursor ya no parpadea sobre la barra de tareas.
+Con varios monitores, el panel ahora se abre encima del icono que pulsaste, en esa pantalla, y no en la esquina de la principal. Vale también para los grupos que se abren al pasar el cursor y para las pantallas con otra escala.
 
 **Características** (una por línea, hasta 20)
 
