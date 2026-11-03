@@ -111,7 +111,8 @@ internal sealed class TaskbarWatcher : IDisposable
             _hovered = null;
             Forget();
 
-            if (NearAnyTaskbar(cursor, bars))
+            nint near = TaskbarNear(cursor, bars);
+            if (near != 0)
             {
                 // Heading for the taskbar. Two things are got out of the way now, so
                 // that neither is paid for once the cursor is resting on an icon and
@@ -121,7 +122,7 @@ internal sealed class TaskbarWatcher : IDisposable
                 // second to load from cold. Approaching and turning away costs one
                 // reading a second, and a loaded flyout that is let go shortly after.
                 if (DateTime.UtcNow - _cachedAt > ApproachRefresh)
-                    RefreshButtons(bars.Count > 0 ? bars[0] : 0);
+                    RefreshButtons(near);
                 _warm.KeepReady();
             }
             else
@@ -222,17 +223,17 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <summary>How often an approach may trigger a reading.</summary>
     private static readonly TimeSpan ApproachRefresh = TimeSpan.FromMilliseconds(900);
 
-    /// <summary>True if the cursor is just outside one of the taskbars.</summary>
-    private static bool NearAnyTaskbar(POINT cursor, List<nint> bars)
+    /// <summary>The taskbar the cursor is just outside of, or zero if it is near none.</summary>
+    private static nint TaskbarNear(POINT cursor, List<nint> bars)
     {
         foreach (nint h in bars)
         {
             if (!Native.GetWindowRect(h, out RECT r)) continue;
             if (cursor.X >= r.Left - ApproachMargin && cursor.X < r.Right + ApproachMargin
              && cursor.Y >= r.Top - ApproachMargin && cursor.Y < r.Bottom + ApproachMargin)
-                return true;
+                return h;
         }
-        return false;
+        return 0;
     }
 
     /// <summary>
