@@ -66,6 +66,27 @@
     <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;The divider will appear on your taskbar. Clicking it does nothing.</s:String>
     <s:String x:Key="Loc_Pin_Body10" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.</s:String>
     <s:String x:Key="Loc_Pin_SeparatorBody10" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Choose "Pin to taskbar".&#10;&#10;The divider will appear on your taskbar. Clicking it does nothing.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseTitle">Pin "{0}"</s:String>
+    <s:String x:Key="Loc_Pin_ChooseBody">This group holds {0} groups. You can pin them to the taskbar one after another, in its order and with its separators, so the whole set sits on the taskbar. Or pin just this group.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseAll">Pin all {0}</s:String>
+    <s:String x:Key="Loc_Pin_ChooseOne">Just this group</s:String>
+    <s:String x:Key="Loc_PinAll_Window">Pin the groups</s:String>
+    <s:String x:Key="Loc_PinAll_Heading">The groups of "{0}" on the taskbar</s:String>
+    <s:String x:Key="Loc_PinAll_Intro">Windows lets no app pin anything by itself, so the right-click is yours. I keep the next shortcut selected in File Explorer and move on as soon as you pin it.</s:String>
+    <s:String x:Key="Loc_PinAll_NowTitle">{0} of {1}: {2}</s:String>
+    <s:String x:Key="Loc_PinAll_Steps">Right-click the highlighted shortcut, click "Show more options" and choose "Pin to taskbar".</s:String>
+    <s:String x:Key="Loc_PinAll_Steps10">Right-click the highlighted shortcut and choose "Pin to taskbar".</s:String>
+    <s:String x:Key="Loc_PinAll_Now">Now</s:String>
+    <s:String x:Key="Loc_PinAll_Done">Pinned</s:String>
+    <s:String x:Key="Loc_PinAll_Already">Already there</s:String>
+    <s:String x:Key="Loc_PinAll_Skipped">Skipped</s:String>
+    <s:String x:Key="Loc_PinAll_Skip">Skip this one</s:String>
+    <s:String x:Key="Loc_PinAll_Reopen">Open the folder again</s:String>
+    <s:String x:Key="Loc_PinAll_Finished">Done: they are all on the taskbar.</s:String>
+    <s:String x:Key="Loc_PinAll_FinishedSkipped">Done. The ones you skipped can be pinned later from their own cards.</s:String>
+    <s:String x:Key="Loc_PinAll_Nothing">None of the groups inside this one exists any more.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteOrder">Windows puts each new icon at the end of the taskbar, which is why they go in this order. You can drag them around on the taskbar afterwards.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteKept">The ones that were already pinned stay where they are. You can drag them into place on the taskbar.</s:String>
 
     <!-- Group editor -->
     <s:String x:Key="Loc_Editor_TitleNew">New group</s:String>

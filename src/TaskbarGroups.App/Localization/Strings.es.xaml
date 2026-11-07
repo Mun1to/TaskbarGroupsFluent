@@ -66,6 +66,27 @@
     <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;El separador aparecerá en la barra de tareas. Al hacer clic no ocurre nada.</s:String>
     <s:String x:Key="Loc_Pin_Body10" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
     <s:String x:Key="Loc_Pin_SeparatorBody10" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Elige "Anclar a la barra de tareas".&#10;&#10;El separador aparecerá en la barra de tareas. Al hacer clic no ocurre nada.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseTitle">Anclar "{0}"</s:String>
+    <s:String x:Key="Loc_Pin_ChooseBody">Este grupo lleva {0} grupos dentro. Puedes anclarlos a la barra de tareas uno tras otro, en su orden y con sus separadores, para tener el conjunto entero en la barra. O anclar solo este grupo.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseAll">Anclar los {0}</s:String>
+    <s:String x:Key="Loc_Pin_ChooseOne">Solo este grupo</s:String>
+    <s:String x:Key="Loc_PinAll_Window">Anclar los grupos</s:String>
+    <s:String x:Key="Loc_PinAll_Heading">Los grupos de "{0}" en la barra</s:String>
+    <s:String x:Key="Loc_PinAll_Intro">Windows no deja que una app ancle nada por su cuenta, así que el clic derecho es tuyo. Yo te dejo seleccionado el siguiente acceso en el Explorador de archivos y paso al otro en cuanto lo anclas.</s:String>
+    <s:String x:Key="Loc_PinAll_NowTitle">{0} de {1}: {2}</s:String>
+    <s:String x:Key="Loc_PinAll_Steps">Haz clic derecho en el acceso resaltado, pulsa "Mostrar más opciones" y elige "Anclar a la barra de tareas".</s:String>
+    <s:String x:Key="Loc_PinAll_Steps10">Haz clic derecho en el acceso resaltado y elige "Anclar a la barra de tareas".</s:String>
+    <s:String x:Key="Loc_PinAll_Now">Ahora</s:String>
+    <s:String x:Key="Loc_PinAll_Done">Anclado</s:String>
+    <s:String x:Key="Loc_PinAll_Already">Ya estaba</s:String>
+    <s:String x:Key="Loc_PinAll_Skipped">Saltado</s:String>
+    <s:String x:Key="Loc_PinAll_Skip">Saltar este</s:String>
+    <s:String x:Key="Loc_PinAll_Reopen">Abrir la carpeta otra vez</s:String>
+    <s:String x:Key="Loc_PinAll_Finished">Listo: ya están todos en la barra de tareas.</s:String>
+    <s:String x:Key="Loc_PinAll_FinishedSkipped">Listo. Los que saltaste los puedes anclar luego desde su propia tarjeta.</s:String>
+    <s:String x:Key="Loc_PinAll_Nothing">Ya no existe ninguno de los grupos que lleva dentro.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteOrder">Windows pone cada icono nuevo al final de la barra, por eso van en este orden. Luego puedes moverlos arrastrándolos en la barra.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteKept">Los que ya estaban anclados se quedan donde están. Puedes arrastrarlos a su sitio en la barra.</s:String>
 
     <!-- Editor de grupo -->
     <s:String x:Key="Loc_Editor_TitleNew">Nuevo grupo</s:String>

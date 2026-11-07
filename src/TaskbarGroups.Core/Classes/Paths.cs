@@ -116,6 +116,22 @@ namespace TaskbarGroups.Core
             return directoryPath;
         }
 
+        /// <summary>
+        /// Where Windows keeps a shortcut for every taskbar pin. TBGF_PINNED_DIR points
+        /// it somewhere else, only so the pin assistant can be tried without pinning
+        /// anything for real.
+        /// </summary>
+        public static string TaskbarPinFolder
+        {
+            get
+            {
+                string test = Environment.GetEnvironmentVariable("TBGF_PINNED_DIR");
+                return !string.IsNullOrWhiteSpace(test) ? test : Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "Microsoft", "Internet Explorer", "Quick Launch", "User Pinned", "TaskBar");
+            }
+        }
+
         public static string OptimizationProfilePath
         {
             get

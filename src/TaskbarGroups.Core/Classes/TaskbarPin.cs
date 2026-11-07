@@ -35,9 +35,7 @@ namespace TaskbarGroups.Core
         private const uint WM_EXIT_EXPLORER = 0x5B4; // WM_USER + 436
         private const uint SMTO_BLOCK = 0x0001;
 
-        private static string PinnedDir => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Microsoft", "Internet Explorer", "Quick Launch", "User Pinned", "TaskBar");
+        private static string PinnedDir => Paths.TaskbarPinFolder;
 
         /// <summary>
         /// Finds the pinned-taskbar shortcut for a group (matched by its background

@@ -39,9 +39,7 @@ namespace TaskbarGroups.Core
     public static class PinnedGroups
     {
         /// <summary>Where Windows keeps a shortcut for every taskbar pin.</summary>
-        private static string PinFolder => Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-            "Microsoft", "Internet Explorer", "Quick Launch", "User Pinned", "TaskBar");
+        private static string PinFolder => Paths.TaskbarPinFolder;
 
         /// <summary>
         /// Every pinned group with a configuration still on disk. Pins can outlive the
@@ -150,6 +148,36 @@ namespace TaskbarGroups.Core
                 if (best is null || p.LinkName.Length > best.LinkName.Length) best = p;
             }
             return best?.GroupName;
+        }
+
+        /// <summary>
+        /// The AppUserModelID of every shortcut of ours pinned to the taskbar, groups
+        /// and taskbar separators alike. A separator's shortcut names no group, so
+        /// <see cref="Scan"/> leaves it out; this is how the pin assistant tells
+        /// whether one is on the taskbar yet.
+        /// </summary>
+        public static HashSet<string> PinnedAppIds()
+        {
+            var ids = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            string[] links;
+            try
+            {
+                string folder = PinFolder;
+                if (!Directory.Exists(folder)) return ids;
+                links = Directory.GetFiles(folder, "*.lnk");
+            }
+            catch { return ids; }
+
+            foreach (string link in links)
+            {
+                try
+                {
+                    ShellLink.ReadShortcut(link, out string target, out _, out string appId);
+                    if (IsOurFlyout(target) && !string.IsNullOrEmpty(appId)) ids.Add(appId);
+                }
+                catch { /* a shortcut we cannot read is not one we made */ }
+            }
+            return ids;
         }
 
         private static bool IsOurFlyout(string target)

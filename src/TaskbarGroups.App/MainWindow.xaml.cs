@@ -503,6 +503,32 @@ public partial class MainWindow : FluentWindow
     {
         if (sender is not FrameworkElement { Tag: GroupItem group }) return;
 
+        // A group with groups inside can set out the taskbar with them (issue #8):
+        // each of its groups pinned in turn, in its order, with its separators.
+        int inside = group.IsSeparator ? 0 : PinPlan.Groups(group.Source).Count;
+        if (inside > 0)
+        {
+            var choice = await new MessageBox
+            {
+                Title = Loc.Format("Loc_Pin_ChooseTitle", group.Name),
+                Content = Loc.Format("Loc_Pin_ChooseBody", inside),
+                PrimaryButtonText = Loc.Format("Loc_Pin_ChooseAll", inside),
+                PrimaryButtonAppearance = ControlAppearance.Primary,
+                SecondaryButtonText = Loc.Get("Loc_Pin_ChooseOne"),
+                CloseButtonText = Loc.Get("Loc_Common_Cancel")
+            }.ShowDialogAsync();
+
+            if (choice == Wpf.Ui.Controls.MessageBoxResult.Primary)
+            {
+                var assistant = new PinAllWindow(group.Source) { Owner = this };
+                // It may have made taskbar separators, which get cards of their own.
+                assistant.Closed += (_, _) => RefreshGroups();
+                assistant.Show();
+                return;
+            }
+            if (choice != Wpf.Ui.Controls.MessageBoxResult.Secondary) return;
+        }
+
         if (!File.Exists(group.ShortcutPath))
         {
             await new MessageBox
