@@ -202,7 +202,9 @@ internal static class ShellContextMenu
     // Classic menus are drawn light unless the process asks for dark. These two
     // entry points have no name, only a number, but they are the ones File
     // Explorer and many other apps use, and they have been stable since Windows 10
-    // version 1903, older than anything this app runs on.
+    // version 1903. On 1809, the oldest this app installs on, the first one only
+    // allows dark menus and the second refreshes them: the menu may stay light
+    // there, and nothing else changes.
     private static void FollowTheme(bool dark)
     {
         try
