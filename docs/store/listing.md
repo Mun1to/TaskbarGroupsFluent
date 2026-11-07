@@ -45,6 +45,8 @@ Make each group your own:
 • Show the group's name above or below, with a pencil that opens its editor right there.
 • Use an image, a colour emoji or an icon made of the group's own apps.
 • Mix apps, folders and even other groups, which open beside the panel like a submenu, and open them all with one button.
+• Or have the panel show a folder, read again each time it opens: any folder, or a Windows place like the Control Panel, This PC or all your apps.
+• Set out a whole taskbar from one group: a group that holds groups pins them all, one after another, in its order and with its separators.
 • Rename an app inside a group, give it launch arguments or run it as administrator.
 
 Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons, or just drag files and shortcuts in from File Explorer. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
@@ -53,7 +55,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-With several monitors, the panel now opens over the icon you clicked, on that screen, instead of in the corner of the main one. The same goes for groups that open on hover, and for screens at a different display scale.
+A group can now show a folder: the panel lists what is in it each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel like a submenu. A group that holds other groups can now pin them all to the taskbar, one after another, in its order and with taskbar separators where it has lines. On Windows 10, the steps to pin a group now match its right-click menu, and the panel draws its corners square like the rest of Windows 10.
 
 **Product features** (one per line, up to 20)
 
@@ -100,6 +102,8 @@ Haz cada grupo a tu manera:
 • El nombre del grupo arriba o abajo, con un lápiz que abre su editor ahí mismo.
 • Una imagen, un emoji de color o un icono hecho con las apps del grupo.
 • Apps, carpetas e incluso otros grupos, que se abren al lado del panel como un submenú, y un botón para abrirlas todas.
+• O que el panel enseñe una carpeta, leída de nuevo cada vez que se abre: cualquier carpeta, o un lugar de Windows como el Panel de control, Este equipo o todas tus apps.
+• Monta toda una barra desde un grupo: un grupo que lleva grupos dentro los ancla todos, uno tras otro, en su orden y con sus separadores.
 • Cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
 
 Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos, o arrastra archivos y accesos directos desde el Explorador. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
@@ -108,7 +112,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Con varios monitores, el panel ahora se abre encima del icono que pulsaste, en esa pantalla, y no en la esquina de la principal. Vale también para los grupos que se abren al pasar el cursor y para las pantallas con otra escala.
+Un grupo ahora puede enseñar una carpeta: el panel lista lo que hay dentro cada vez que se abre, también lugares de Windows como el Panel de control, Este equipo o todas tus apps, y las carpetas de dentro se abren al lado del panel como un submenú. Un grupo que lleva otros dentro ahora los ancla todos a la barra de tareas, uno tras otro, en su orden y con separadores en la barra donde tiene líneas. En Windows 10, los pasos para anclar un grupo ya coinciden con su menú del clic derecho, y el panel dibuja sus esquinas rectas como el resto de Windows 10.
 
 **Características** (una por línea, hasta 20)
 
