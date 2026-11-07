@@ -104,7 +104,10 @@ public partial class App : Application
         // leave without showing a panel at all.
         if (openAll)
         {
-            if (category.ShortcutList is not null)
+            // A folder group's menu opens the folder itself, as its panel's button does.
+            if (category.IsFolderGroup)
+                ShellFolder.Open(category.FolderSource);
+            else if (category.ShortcutList is not null)
                 foreach (var ps in category.ShortcutList)
                     PopupWindow.Launch(ps);
             Shutdown();
@@ -333,7 +336,11 @@ public partial class App : Application
         }
     }
 
-    /// <summary>Any readable group, used only to give the warm window something to lay out.</summary>
+    /// <summary>
+    /// Any readable group, used only to give the warm window something to lay out.
+    /// Not one that shows a folder: listing it would cost the warm start a folder's
+    /// worth of reading for nothing, as the first real showing replaces it anyway.
+    /// </summary>
     private static Category? FirstGroup()
     {
         try
@@ -341,7 +348,12 @@ public partial class App : Application
             foreach (string dir in Directory.GetDirectories(Paths.ConfigPath))
             {
                 if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) continue;
-                try { return new Category(dir); } catch { }
+                try
+                {
+                    var group = new Category(dir);
+                    if (!group.IsFolderGroup) return group;
+                }
+                catch { }
             }
         }
         catch { }

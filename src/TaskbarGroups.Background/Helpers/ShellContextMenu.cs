@@ -31,6 +31,8 @@ internal static class ShellContextMenu
     /// </summary>
     public static string? ParsingName(ProgramShortcut ps)
     {
+        // Something in the folder a group shows: the shell already named it.
+        if (ps.IsShellItem) return ps.ShellItem;
         if (ps.IsGroup || ps.IsSeparator || string.IsNullOrWhiteSpace(ps.FilePath)) return null;
         return ps.isWindowsApp ? @"shell:AppsFolder\" + ps.FilePath : ps.FilePath;
     }
@@ -44,8 +46,22 @@ internal static class ShellContextMenu
     public static bool Show(IntPtr owner, string parsingName, int x, int y, bool dark)
     {
         Guid iidItem = typeof(IShellItem).GUID;
-        if (SHCreateItemFromParsingName(parsingName, IntPtr.Zero, ref iidItem, out IShellItem? item) != 0 || item is null)
+        IShellItem? item;
+        if (parsingName.StartsWith(ShellFolder.IdPrefix, StringComparison.Ordinal))
+        {
+            // Something in a folder group, which goes by its id list (see ShellEntry.Id).
+            IntPtr pidl = ShellFolder.IdList(parsingName);
+            if (pidl == IntPtr.Zero) return false;
+            try
+            {
+                if (SHCreateItemFromIDList(pidl, ref iidItem, out item) != 0 || item is null) return false;
+            }
+            finally { Marshal.FreeCoTaskMem(pidl); }
+        }
+        else if (SHCreateItemFromParsingName(parsingName, IntPtr.Zero, ref iidItem, out item) != 0 || item is null)
+        {
             return false;
+        }
 
         IntPtr unknown = IntPtr.Zero, menu = IntPtr.Zero;
         object? handler = null;
@@ -307,6 +323,8 @@ internal static class ShellContextMenu
 
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
     private static extern int SHCreateItemFromParsingName(string path, IntPtr pbc, ref Guid riid, out IShellItem? item);
+    [DllImport("shell32.dll")]
+    private static extern int SHCreateItemFromIDList(IntPtr pidl, ref Guid riid, out IShellItem? item);
     [DllImport("user32.dll")] private static extern IntPtr CreatePopupMenu();
     [DllImport("user32.dll")] private static extern bool DestroyMenu(IntPtr menu);
     [DllImport("user32.dll")] private static extern int TrackPopupMenuEx(IntPtr menu, uint flags, int x, int y, IntPtr hwnd, IntPtr tpm);

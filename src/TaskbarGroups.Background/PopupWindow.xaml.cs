@@ -43,6 +43,14 @@ public partial class PopupWindow : Window
     private ProgramShortcut? _sourceShortcut;
     private bool _ranCommand;
 
+    // A folder group lists its names at once and fills in the icons, and which of
+    // its folders hold anything, from a thread of its own (issue #9). Each listing
+    // gets a number, so a thread still working on the last one stops touching it.
+    private volatile int _listing;
+
+    // What the panel lists: the group's own entries, or what was in its folder.
+    private int _itemCount;
+
     /// <summary>
     /// How long the cursor may wander off a hover-opened flyout before it closes.
     /// Long enough to cross the gap between the icon and the panel, or to overshoot
@@ -87,8 +95,9 @@ public partial class PopupWindow : Window
         if (_anchor is not null) ShowActivated = false;
 
         ApplyTheme();
-        ApplyAppearance();
+        // The items first: how a folder group lays out depends on how much it holds.
         LoadItems();
+        ApplyAppearance();
 
         Loaded += OnLoadedPosition;
         // Also raised when the focus only moves to a subgroup opened beside this
@@ -102,6 +111,7 @@ public partial class PopupWindow : Window
         Drop += OnDrop;
         Closed += (_, _) =>
         {
+            _listing++;
             _guard?.Stop();
             StopSlide();
             // A subgroup goes on its own; the panel it came from carries on.
@@ -171,8 +181,12 @@ public partial class PopupWindow : Window
     // again rather than trusting what the previous group left behind.
     private void ApplyAppearance()
     {
-        var plan = PanelLayouts.Plan(_category.PanelLayout, _category.ShowLabels,
-            _category.Width, _category.AppCount);
+        // A folder can hold hundreds of things, and a single row of them would run
+        // off the screen: past a dozen it wraps like the grid.
+        string layout = _category.IsFolderGroup && PanelLayouts.IsRow(_category.PanelLayout) && _itemCount > 12
+            ? PanelLayouts.Grid
+            : _category.PanelLayout;
+        var plan = PanelLayouts.Plan(layout, _category.ShowLabels, _category.Width, _itemCount);
         ItemsHost.ItemsPanel = (System.Windows.Controls.ItemsPanelTemplate)Resources[plan.Panel + "Panel"];
         ItemsHost.ItemTemplate = null;
         ItemsHost.ItemTemplateSelector = new PopupItemTemplates
@@ -198,7 +212,13 @@ public partial class PopupWindow : Window
         HeaderBar.Visibility = _category.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
         HeaderText.Text = _category.Name;
         EditButton.ToolTip = SpanishUi() ? "Editar grupo" : "Edit group";
-        OpenAllButton.ToolTip = SpanishUi() ? "Abrir todas" : "Open all";
+        // A folder's panel opens the folder itself here: opening everything in the
+        // Control Panel at once is nobody's idea of a shortcut.
+        bool folder = _category.IsFolderGroup;
+        OpenAllButton.ToolTip = folder
+            ? (SpanishUi() ? "Abrir la carpeta" : "Open the folder")
+            : (SpanishUi() ? "Abrir todas" : "Open all");
+        OpenAllGlyph.Text = folder ? "" : "";
     }
 
     // The flyout carries no string tables of its own for one tooltip, so it follows
@@ -209,21 +229,24 @@ public partial class PopupWindow : Window
     // a work session, a game launcher and its chat, and so on.
     private void OpenAll_Click(object sender, RoutedEventArgs e)
     {
-        if (_category.ShortcutList is not null)
+        if (_category.IsFolderGroup)
+            ShellFolder.Open(_category.FolderSource);
+        else if (_category.ShortcutList is not null)
             foreach (var ps in _category.ShortcutList)
                 Launch(ps);
         Root.CloseOnce();
     }
 
     // The pencil in the header: open this group's editor in the main app, and get
-    // out of the way.
+    // out of the way. A folder opened beside a folder group is no group of its
+    // own, so its pencil edits the group it came from.
     private void Edit_Click(object sender, RoutedEventArgs e)
     {
         try
         {
             var psi = new ProcessStartInfo(Paths.MainApplication) { UseShellExecute = false };
             psi.ArgumentList.Add("--edit");
-            psi.ArgumentList.Add(_category.Name);
+            psi.ArgumentList.Add(_category.IsVirtual ? Root._category.Name : _category.Name);
             Process.Start(psi);
         }
         catch
@@ -281,9 +304,40 @@ public partial class PopupWindow : Window
     // panel is centred on its icon at the width it really has.
     private void FitToContent()
     {
+        LimitHeight();
         SizeToContent = SizeToContent.Manual;
         SizeToContent = SizeToContent.WidthAndHeight;
         UpdateLayout();
+    }
+
+    /// <summary>
+    /// No taller than the screen it opens on, which only a folder with a lot in it
+    /// would be: past that, its list scrolls. The screen is the one under the icon,
+    /// or the one the panel it opened from is on.
+    /// </summary>
+    private void LimitHeight()
+    {
+        double scale = VisualTreeHelper.GetDpi(this).DpiScaleY;
+        if (scale <= 0) scale = 1;
+
+        int top, bottom;
+        if (_parent is not null)
+        {
+            RECT area = WorkAreaOf(new WindowInteropHelper(Root).Handle, scale);
+            top = area.Top;
+            bottom = area.Bottom;
+        }
+        else
+        {
+            var (x, y) = _anchor is not null ? (_anchor.CenterX, _anchor.CenterY) : TaskbarHelper.GetCursor();
+            TaskbarHelper.TaskbarInfo tb = TaskbarHelper.GetTaskbarAt(x, y);
+            top = tb.WorkTop;
+            bottom = tb.WorkBottom;
+        }
+
+        // The gap to the taskbar and a little room at the far edge.
+        double room = (bottom - top) / scale - 24;
+        RootBorder.MaxHeight = room > 160 ? room : double.PositiveInfinity;
     }
 
     // The system backdrop that WPF-UI applies (DWMWA_SYSTEMBACKDROP_TYPE) was
@@ -383,6 +437,17 @@ public partial class PopupWindow : Window
 
     private void LoadItems()
     {
+        // Whatever the previous showing was still filling in, it stops here.
+        _listing++;
+        EmptyText.Visibility = Visibility.Collapsed;
+        ItemsScroll.ScrollToTop();
+
+        if (_category.IsFolderGroup)
+        {
+            LoadFolder();
+            return;
+        }
+
         var items = new System.Collections.Generic.List<PopupItem>();
         if (_category.ShortcutList is not null)
         {
@@ -402,11 +467,108 @@ public partial class PopupWindow : Window
                 {
                     Shortcut = ps,
                     Icon = icon,
-                    DisplayName = ResolveName(ps)
+                    DisplayName = ResolveName(ps),
+                    // A group inside this one opens beside it, so it wears the arrow too.
+                    HasChildren = ps.IsGroup,
+                    ChildrenKnown = true
                 });
             }
         }
+        _itemCount = _category.AppCount;
         ItemsHost.ItemsSource = items;
+    }
+
+    /// <summary>
+    /// Lists what is in the group's folder. The names are read here, which is quick
+    /// (a fifth of a second for the whole Control Panel, measured); the icons, and
+    /// which folders hold something, can take seconds between them, so they are
+    /// filled in afterwards and the panel shows at once.
+    /// </summary>
+    private void LoadFolder()
+    {
+        string source = _category.FolderSource;
+        var items = new System.Collections.Generic.List<PopupItem>();
+        System.Collections.Generic.List<ShellEntry> entries;
+        bool more;
+        try { entries = ShellFolder.List(source, out more); }
+        catch { entries = new(); more = false; }
+
+        foreach (var entry in entries)
+            items.Add(new PopupItem { Shortcut = ProgramShortcut.ForShellEntry(entry), DisplayName = entry.Name });
+
+        // Past what a menu can hold, the last entry opens the folder for the rest.
+        if (more)
+        {
+            string rest = SpanishUi() ? "Ver todo en la carpeta…" : "See all in the folder…";
+            items.Add(new PopupItem
+            {
+                Shortcut = new ProgramShortcut { FilePath = source, name = rest, ShellItem = source },
+                DisplayName = rest
+            });
+        }
+
+        _itemCount = items.Count;
+        ItemsHost.ItemsSource = items;
+
+        if (items.Count == 0)
+        {
+            EmptyText.Text = ShellFolder.IsFolder(source)
+                ? (SpanishUi() ? "Esta carpeta está vacía." : "This folder is empty.")
+                : (SpanishUi() ? "No se encuentra la carpeta. Elige otra desde el lápiz." : "The folder can't be found. Pick another one from the pencil.");
+            EmptyText.Visibility = Visibility.Visible;
+            return;
+        }
+
+        FillInLater(items, PanelLayouts.Plan(_category.PanelLayout, _category.ShowLabels, _category.Width, items.Count)
+            .Template.StartsWith("Tile", StringComparison.Ordinal) ? 96 : 64);
+    }
+
+    /// <summary>
+    /// Fetches each entry's icon, then looks into each folder for whether it holds
+    /// anything, on a thread of its own, and hands each answer to the panel as it
+    /// comes. Icons go first because every entry has one; the folders after,
+    /// because one of them (Fonts) was measured taking three seconds on its own.
+    /// </summary>
+    private void FillInLater(System.Collections.Generic.List<PopupItem> items, int iconSize)
+    {
+        int listing = _listing;
+        var work = new System.Collections.Generic.List<(PopupItem Item, string Name, bool Folder)>();
+        foreach (var item in items)
+            work.Add((item, item.Shortcut.ShellItem, item.Shortcut.IsShellFolder));
+
+        var thread = new System.Threading.Thread(() =>
+        {
+            foreach (var (item, name, _) in work)
+            {
+                if (_listing != listing) return;
+                ImageSource? icon = null;
+                try
+                {
+                    using var bitmap = ShellFolder.Icon(name, iconSize);
+                    icon = bitmap.ToImageSource();
+                }
+                catch { }
+                if (icon is not null)
+                    Dispatcher.BeginInvoke(() => { if (_listing == listing) item.Icon = icon; }, DispatcherPriority.Background);
+            }
+
+            foreach (var (item, name, folder) in work)
+            {
+                if (!folder) continue;
+                if (_listing != listing) return;
+                bool has = false;
+                try { has = ShellFolder.HasChildren(name); } catch { }
+                Dispatcher.BeginInvoke(() =>
+                {
+                    if (_listing != listing || item.ChildrenKnown) return;
+                    item.ChildrenKnown = true;
+                    item.HasChildren = has;
+                }, DispatcherPriority.Background);
+            }
+        })
+        { IsBackground = true, Name = "folder-icons" };
+        thread.SetApartmentState(System.Threading.ApartmentState.STA);
+        thread.Start();
     }
 
     private static string ResolveName(ProgramShortcut ps)
@@ -508,8 +670,8 @@ public partial class PopupWindow : Window
         // comes in is read on every showing.
         Settings.Reload();
 
-        ApplyAppearance();
         LoadItems();
+        ApplyAppearance();
         FitToContent();
 
         // Clicked: the user meant it, so the panel takes the keyboard like one
@@ -1075,15 +1237,97 @@ public partial class PopupWindow : Window
     /// </summary>
     private bool OpenSubgroup(FrameworkElement source, ProgramShortcut ps)
     {
-        bool again = _child is not null && ReferenceEquals(_child._sourceShortcut, ps);
-        CloseChild();
-        if (again) return true;
+        if (_child is not null && ReferenceEquals(_child._sourceShortcut, ps))
+        {
+            CloseChild();
+            return true;
+        }
 
         string dir = Path.Combine(Paths.ConfigPath, ps.GroupName);
         if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) return false;
         Category group;
         try { group = new Category(dir); }
         catch { return false; }
+
+        OpenBeside(source, ps, group);
+        return true;
+    }
+
+    /// <summary>
+    /// What a click on an entry of a folder group does (issue #9). A folder that
+    /// holds something opens beside the panel, like a submenu; anything else,
+    /// files and the Control Panel pages that only call themselves folders, opens
+    /// the way a double-click in File Explorer would. Whether a folder holds
+    /// anything may not be known yet, and finding out can take seconds, so then
+    /// it is looked into on the spot, off the UI thread, and acted on after.
+    /// </summary>
+    private void OpenShellEntry(FrameworkElement source, PopupItem item)
+    {
+        ProgramShortcut ps = item.Shortcut;
+        if (_child is not null && ReferenceEquals(_child._sourceShortcut, ps))
+        {
+            CloseChild();
+            return;
+        }
+
+        if (!ps.IsShellFolder || (item.ChildrenKnown && !item.HasChildren))
+        {
+            Launch(ps);
+            Root.CloseOnce();
+            return;
+        }
+
+        if (item.ChildrenKnown)
+        {
+            OpenFolderBeside(source, item);
+            return;
+        }
+
+        if (_looking) return;
+        _looking = true;
+        source.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "FlyoutPressBrush");
+        int listing = _listing;
+        var thread = new System.Threading.Thread(() =>
+        {
+            bool has = false;
+            try { has = ShellFolder.HasChildren(ps.ShellItem); } catch { }
+            Dispatcher.BeginInvoke(() =>
+            {
+                _looking = false;
+                source.ClearValue(System.Windows.Controls.Control.BackgroundProperty);
+                if (_listing != listing || _closing) return;
+                item.ChildrenKnown = true;
+                item.HasChildren = has;
+                if (has)
+                {
+                    OpenFolderBeside(source, item);
+                }
+                else
+                {
+                    Launch(ps);
+                    Root.CloseOnce();
+                }
+            });
+        })
+        { IsBackground = true, Name = "folder-look" };
+        thread.SetApartmentState(System.Threading.ApartmentState.STA);
+        thread.Start();
+    }
+
+    /// <summary>A click is already waiting on a folder to be looked into.</summary>
+    private bool _looking;
+
+    private void OpenFolderBeside(FrameworkElement source, PopupItem item)
+        => OpenBeside(source, item.Shortcut,
+            Category.ForFolder(item.DisplayName, item.Shortcut.ShellItem, Root._category));
+
+    /// <summary>
+    /// Opens <paramref name="group"/> beside this panel as a submenu, in place of
+    /// any other one open there, with the entry that opened it lit up.
+    /// </summary>
+    private void OpenBeside(FrameworkElement source, ProgramShortcut ps, Category group)
+    {
+        CloseChild();
 
         var child = new PopupWindow(group)
         {
@@ -1101,7 +1345,6 @@ public partial class PopupWindow : Window
         // The icon it came from stays lit while it is open, as a menu item does.
         source.SetResourceReference(System.Windows.Controls.Control.BackgroundProperty, "FlyoutHoverBrush");
         child.Show();
-        return true;
     }
 
     private void FinishClosing()
@@ -1213,9 +1456,11 @@ public partial class PopupWindow : Window
     // taskbar icon until the panel comes up and be let go on it, without opening
     // the editor at all. The panel is not dismissed meanwhile: the button that
     // holds the drag was already down when it opened, which the guard waits out.
+    // A folder group shows what is in its folder and holds no list to add to, so
+    // nothing dropped on it would have anywhere to go.
     private void OnDragOver(object sender, DragEventArgs e)
     {
-        bool files = e.Data.GetDataPresent(DataFormats.FileDrop) && !IsParked;
+        bool files = e.Data.GetDataPresent(DataFormats.FileDrop) && !IsParked && !_category.IsFolderGroup;
         e.Effects = files ? DragDropEffects.Copy : DragDropEffects.None;
         e.Handled = true;
         MarkDropTarget(files);
@@ -1225,7 +1470,7 @@ public partial class PopupWindow : Window
     {
         MarkDropTarget(false);
         e.Handled = true;
-        if (e.Data.GetData(DataFormats.FileDrop) is not string[] paths) return;
+        if (_category.IsFolderGroup || e.Data.GetData(DataFormats.FileDrop) is not string[] paths) return;
 
         try
         {
@@ -1239,8 +1484,8 @@ public partial class PopupWindow : Window
         // Shown straight away, in place: the layout may gain a column or a row,
         // which would leave a subgroup open beside it out of place.
         CloseChild();
-        ApplyAppearance();
         LoadItems();
+        ApplyAppearance();
         FitToContent();
         if (_parent is not null) { PlaceBesideParent(); return; }
         Point target = TargetOverTaskbar();
@@ -1259,6 +1504,9 @@ public partial class PopupWindow : Window
     {
         if (sender is FrameworkElement fe && fe.Tag is PopupItem item)
         {
+            // Something in the folder a group shows: a folder of it opens beside
+            // the panel, anything else as File Explorer would open it.
+            if (item.Shortcut.IsShellItem) { OpenShellEntry(fe, item); return; }
             // A group inside this one opens beside it, and this panel stays.
             if (item.Shortcut.IsGroup && OpenSubgroup(fe, item.Shortcut)) return;
             Launch(item.Shortcut);
@@ -1273,7 +1521,11 @@ public partial class PopupWindow : Window
 
         try
         {
-            if (ps.IsGroup)
+            if (ps.IsShellItem)
+            {
+                ShellFolder.Open(ps.ShellItem);
+            }
+            else if (ps.IsGroup)
             {
                 // A group inside a group, from "Open all" or one that could not
                 // open beside the panel: start another flyout for it, which closes

@@ -12,6 +12,34 @@
         SizeToContent="WidthAndHeight">
 
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="Visible" />
+
+        <!-- A thin bar for a panel taller than the screen, which only a folder with a
+             lot in it gets: the stock one is a wide grey channel that belongs to no
+             panel of Windows'. Dragged or wheeled; the channel itself is not clickable. -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="6" />
+            <Setter Property="MinWidth" Value="6" />
+            <Setter Property="Margin" Value="4,0,0,0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border CornerRadius="3" Background="{DynamicResource FlyoutLineBrush}" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <Style x:Key="IconButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
@@ -38,19 +66,34 @@
             </Setter>
         </Style>
 
+        <!-- The mark on a folder that opens beside the panel, as a submenu's arrow. -->
+        <Style x:Key="Chevron" TargetType="TextBlock">
+            <Setter Property="Text" Value="&#xE76C;" />
+            <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+            <Setter Property="FontSize" Value="10" />
+            <Setter Property="Opacity" Value="0.7" />
+            <Setter Property="Foreground" Value="{DynamicResource FlyoutTextBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Visibility" Value="{Binding HasChildren, Converter={StaticResource Visible}}" />
+        </Style>
+
         <!-- The icon with its name underneath: the look every group had before the
              layouts existed, and still the default. -->
         <DataTemplate x:Key="TileWithLabel">
             <Button Style="{StaticResource IconButton}" Tag="{Binding}"
                     Click="Item_Click" ToolTip="{Binding DisplayName}"
                     Width="80" Height="88" Margin="2">
-                <StackPanel VerticalAlignment="Center">
-                    <Image Source="{Binding Icon}" Width="44" Height="44"
-                           RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
-                               FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
-                               TextTrimming="CharacterEllipsis" MaxWidth="68" />
-                </StackPanel>
+                <Grid>
+                    <StackPanel VerticalAlignment="Center">
+                        <Image Source="{Binding Icon}" Width="44" Height="44"
+                               RenderOptions.BitmapScalingMode="HighQuality" />
+                        <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                                   FontSize="11" TextAlignment="Center" Margin="0,6,0,0"
+                                   TextTrimming="CharacterEllipsis" MaxWidth="68" />
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource Chevron}" HorizontalAlignment="Right"
+                               VerticalAlignment="Top" Margin="0,-2,-2,0" />
+                </Grid>
             </Button>
         </DataTemplate>
 
@@ -60,38 +103,54 @@
             <Button Style="{StaticResource IconButton}" Tag="{Binding}"
                     Click="Item_Click" ToolTip="{Binding DisplayName}"
                     Width="52" Height="52" Margin="2">
-                <Image Source="{Binding Icon}" Width="32" Height="32"
-                       RenderOptions.BitmapScalingMode="HighQuality" />
+                <Grid>
+                    <Image Source="{Binding Icon}" Width="32" Height="32"
+                           RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock Style="{StaticResource Chevron}" HorizontalAlignment="Right"
+                               VerticalAlignment="Top" Margin="0,-4,-4,0" FontSize="8" />
+                </Grid>
             </Button>
         </DataTemplate>
 
         <!-- The icon with its name beside it, for a column: reads like a menu. -->
         <DataTemplate x:Key="LineWithLabel">
             <Button Style="{StaticResource IconButton}" Tag="{Binding}"
-                    Click="Item_Click" HorizontalContentAlignment="Left"
+                    Click="Item_Click" HorizontalContentAlignment="Stretch"
                     MinWidth="190" Height="44" Margin="1">
-                <StackPanel Orientation="Horizontal">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
                     <Image Source="{Binding Icon}" Width="28" Height="28"
                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
                                FontSize="13" VerticalAlignment="Center" Margin="12,0,8,0"
                                TextTrimming="CharacterEllipsis" MaxWidth="220" />
-                </StackPanel>
+                    <TextBlock Grid.Column="2" Style="{StaticResource Chevron}" Margin="0,0,4,0" />
+                </Grid>
             </Button>
         </DataTemplate>
 
         <!-- The same, at a fixed width, so a list can wrap into even columns. -->
         <DataTemplate x:Key="ListCell">
             <Button Style="{StaticResource IconButton}" Tag="{Binding}"
-                    Click="Item_Click" HorizontalContentAlignment="Left"
+                    Click="Item_Click" HorizontalContentAlignment="Stretch"
                     Width="200" Height="44" Margin="1">
-                <StackPanel Orientation="Horizontal">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
                     <Image Source="{Binding Icon}" Width="28" Height="28"
                            RenderOptions.BitmapScalingMode="HighQuality" />
-                    <TextBlock Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
+                    <TextBlock Grid.Column="1" Text="{Binding DisplayName}" Foreground="{DynamicResource FlyoutTextBrush}"
                                FontSize="13" VerticalAlignment="Center" Margin="12,0,0,0"
                                TextTrimming="CharacterEllipsis" MaxWidth="140" />
-                </StackPanel>
+                    <TextBlock Grid.Column="2" Style="{StaticResource Chevron}" Margin="4,0,2,0" />
+                </Grid>
             </Button>
         </DataTemplate>
 
@@ -150,7 +209,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button x:Name="OpenAllButton" Style="{StaticResource IconButton}"
                             Width="32" Height="32" Click="OpenAll_Click">
-                        <TextBlock Text="&#xE8A7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                        <TextBlock x:Name="OpenAllGlyph" Text="&#xE8A7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
                                    FontSize="14" Foreground="{DynamicResource FlyoutTextBrush}" />
                     </Button>
                     <Button x:Name="EditButton" Style="{StaticResource IconButton}"
@@ -160,8 +219,16 @@
                     </Button>
                 </StackPanel>
             </Grid>
-            <ItemsControl x:Name="ItemsHost" ItemTemplate="{StaticResource TileWithLabel}"
-                          ItemsPanel="{StaticResource GridPanel}" />
+            <!-- What a folder group says when there is nothing to list. -->
+            <TextBlock x:Name="EmptyText" DockPanel.Dock="Top" Visibility="Collapsed"
+                       Foreground="{DynamicResource FlyoutTextBrush}" Opacity="0.75" FontSize="13"
+                       Margin="12,10" MaxWidth="260" TextWrapping="Wrap" />
+            <!-- Scrolls only when the panel would be taller than the screen. -->
+            <ScrollViewer x:Name="ItemsScroll" Focusable="False"
+                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="ItemsHost" ItemTemplate="{StaticResource TileWithLabel}"
+                              ItemsPanel="{StaticResource GridPanel}" />
+            </ScrollViewer>
         </DockPanel>
     </Border>
 </Window>
