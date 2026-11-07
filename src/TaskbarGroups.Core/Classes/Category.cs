@@ -67,6 +67,43 @@ namespace TaskbarGroups.Core
         /// </summary>
         public bool GridIcon = false;
 
+        /// <summary>
+        /// The folder whose contents the panel shows instead of a list of apps
+        /// (issue #9): a path, or a name the shell opens such as "shell:Downloads"
+        /// or the Control Panel's class id. Empty for an ordinary group. What is in
+        /// it is read each time the panel opens, so it is always current. A version
+        /// from before it existed skips the field and shows the group's own list,
+        /// which for a folder group is empty.
+        /// </summary>
+        public string FolderSource = "";
+
+        /// <summary>The panel shows a folder rather than the group's own apps.</summary>
+        public bool IsFolderGroup => !string.IsNullOrWhiteSpace(FolderSource);
+
+        /// <summary>
+        /// Made up on the spot for a folder opened beside a panel, and never saved:
+        /// it has no config folder, no shortcut and nothing to edit of its own.
+        /// </summary>
+        [XmlIgnore]
+        public bool IsVirtual;
+
+        /// <summary>
+        /// The panel for a folder inside a folder group, looking like the group it
+        /// opened from.
+        /// </summary>
+        public static Category ForFolder(string name, string source, Category look) => new Category
+        {
+            Name = name,
+            FolderSource = source,
+            IsVirtual = true,
+            ShortcutList = new List<ProgramShortcut>(),
+            PanelLayout = look.PanelLayout,
+            ShowLabels = look.ShowLabels,
+            ShowHeader = look.ShowHeader,
+            HeaderPosition = look.HeaderPosition,
+            IconScale = look.IconScale
+        };
+
         Regex specialCharRegex = new Regex("[*'\",_&#^@]");
 
         private static int[] iconSizes = new int[] {16,32,64,128,256,512};
@@ -118,6 +155,7 @@ namespace TaskbarGroups.Core
                 this.HeaderPosition = category.HeaderPosition;
                 this.IconScale = category.IconScale;
                 this.GridIcon = category.GridIcon;
+                this.FolderSource = category.FolderSource ?? "";
             }
 
         }

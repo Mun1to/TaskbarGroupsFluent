@@ -57,6 +57,31 @@
         public bool IsSeparator
             => FilePath != null && FilePath.Equals(SeparatorPath, System.StringComparison.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Set on an entry read live from the folder a group shows (issue #9): the
+        /// shell's name for it, which reaches what a path cannot, such as a Control
+        /// Panel page. Such entries are made each time the panel opens and are never
+        /// written to ObjectData.xml.
+        /// </summary>
+        [System.Xml.Serialization.XmlIgnore]
+        public string ShellItem { get; set; }
+
+        /// <summary>The shell entry is a folder, which may open beside the panel as a submenu.</summary>
+        [System.Xml.Serialization.XmlIgnore]
+        public bool IsShellFolder { get; set; }
+
+        public bool IsShellItem => !string.IsNullOrEmpty(ShellItem);
+
+        /// <summary>An entry for something in a folder a group shows.</summary>
+        public static ProgramShortcut ForShellEntry(ShellEntry entry)
+            => new ProgramShortcut
+            {
+                FilePath = entry.Id,
+                name = entry.Name,
+                ShellItem = entry.Id,
+                IsShellFolder = entry.IsFolder
+            };
+
 
         public ProgramShortcut() // needed for XML serialization
         {

@@ -408,7 +408,7 @@ namespace TaskbarGroups.Core
         // top-down, and GDI knows how the bitmap is actually stored. It also hands back
         // straight, non-premultiplied alpha — hence Format32bppArgb; reading those bytes
         // as premultiplied left a bright fringe around soft edges.
-        private static Bitmap? BitmapFromHBitmap(IntPtr hbitmap)
+        internal static Bitmap? BitmapFromHBitmap(IntPtr hbitmap)
         {
             BITMAP bm = default;
             if (GetObject(hbitmap, Marshal.SizeOf<BITMAP>(), ref bm) == 0) return null;

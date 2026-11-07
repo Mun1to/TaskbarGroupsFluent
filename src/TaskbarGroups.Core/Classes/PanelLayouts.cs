@@ -72,8 +72,10 @@ namespace TaskbarGroups.Core
             if (Is(layout, List))
             {
                 // A list always shows names: that is what sets it apart from a grid.
-                // Past six apps it splits in two, so it never runs up the screen.
-                int listColumns = columns > 0 ? columns : (count > 6 ? 2 : 1);
+                // Past six apps it splits in two, so it never runs up the screen, and
+                // a folder with more than three dozen things in it goes to three or
+                // four columns of up to eighteen before it has to scroll.
+                int listColumns = columns > 0 ? columns : (count > 6 ? Math.Clamp((count + 17) / 18, 2, 4) : 1);
                 return new PanelPlan("Grid", "ListCell", listColumns * ListCell + 1, true, false);
             }
 
