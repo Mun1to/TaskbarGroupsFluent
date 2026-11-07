@@ -27,6 +27,7 @@
     <s:String x:Key="Loc_Main_CreateFirst">Crear primer grupo</s:String>
     <s:String x:Key="Loc_Jump_OpenAll">Abrir todas</s:String>
     <s:String x:Key="Loc_Jump_Edit">Editar grupo</s:String>
+    <s:String x:Key="Loc_Jump_OpenFolder">Abrir la carpeta</s:String>
     <s:String x:Key="Loc_Main_Import">Importar</s:String>
     <s:String x:Key="Loc_Main_ImportFile">Desde un archivo de grupo…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">Desde Taskbar Groups…</s:String>
@@ -50,6 +51,7 @@
     <s:String x:Key="Loc_Group_ShortcutOne">1 acceso directo</s:String>
     <s:String x:Key="Loc_Group_ShortcutMany">{0} accesos directos</s:String>
     <s:String x:Key="Loc_Group_Separator">Separador de la barra de tareas</s:String>
+    <s:String x:Key="Loc_Group_FolderOf">Carpeta: {0}</s:String>
 
     <!-- Eliminar grupo -->
     <s:String x:Key="Loc_Del_Title">Eliminar grupo</s:String>
@@ -112,6 +114,16 @@
     <s:String x:Key="Loc_Editor_NoOtherGroups">Crea antes otro grupo: este botón mete un grupo dentro de otro.</s:String>
     <s:String x:Key="Loc_Editor_Separator">Separador</s:String>
     <s:String x:Key="Loc_Editor_SeparatorTip">Añadir una línea que divide el panel en partes, con un título si quieres. Arrastra las filas para cambiar el orden.</s:String>
+    <s:String x:Key="Loc_Editor_SourceApps">Las apps que elijo</s:String>
+    <s:String x:Key="Loc_Editor_SourceFolder">Lo que hay en una carpeta</s:String>
+    <s:String x:Key="Loc_Editor_FolderNone">Todavía no hay carpeta</s:String>
+    <s:String x:Key="Loc_Editor_PickFolderButton">Elegir carpeta…</s:String>
+    <s:String x:Key="Loc_Editor_SpecialFolders">Lugares de Windows</s:String>
+    <s:String x:Key="Loc_Editor_FolderHint">El panel enseña lo que hay en la carpeta cada vez que se abre, así que siempre está al día. Las carpetas de dentro se abren al lado del panel, como un submenú. Los lugares de Windows son los que no son una carpeta del disco, como el Panel de control o Este equipo. También puedes soltar aquí una carpeta.</s:String>
+    <s:String x:Key="Loc_Editor_NeedFolder">Elige la carpeta que enseña el panel.</s:String>
+    <s:String x:Key="Loc_Editor_FolderMissing">Esa carpeta no se puede abrir. Elige otra.</s:String>
+    <s:String x:Key="Loc_Editor_FolderSpecial">Lugar de Windows</s:String>
+    <s:String x:Key="Loc_Editor_AllApps">Todas las apps</s:String>
     <s:String x:Key="Loc_Sub_Group">Grupo</s:String>
     <s:String x:Key="Loc_AppOpt_Title">Opciones de la app</s:String>
     <s:String x:Key="Loc_AppOpt_Name">Nombre</s:String>

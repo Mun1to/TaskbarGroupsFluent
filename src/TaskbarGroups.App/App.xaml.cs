@@ -62,14 +62,14 @@ public partial class App : Application
     /// </summary>
     internal static void RegisterJumpListsInBackground()
     {
-        string openAll = Loc.Get("Loc_Jump_OpenAll"), edit = Loc.Get("Loc_Jump_Edit");
+        string openAll = Loc.Get("Loc_Jump_OpenAll"), openFolder = Loc.Get("Loc_Jump_OpenFolder"), edit = Loc.Get("Loc_Jump_Edit");
         var thread = new System.Threading.Thread(() =>
         {
             try
             {
                 foreach (var group in Services.GroupService.LoadAll())
                     if (!group.IsSeparator)
-                        GroupJumpList.Register(group.Name, openAll, edit);
+                        GroupJumpList.Register(group.Name, group.FolderSource.Length > 0 ? openFolder : openAll, edit);
             }
             catch { /* best effort: the menus only add convenience */ }
         }) { IsBackground = true };

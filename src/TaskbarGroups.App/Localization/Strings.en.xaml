@@ -27,6 +27,7 @@
     <s:String x:Key="Loc_Main_CreateFirst">Create first group</s:String>
     <s:String x:Key="Loc_Jump_OpenAll">Open all</s:String>
     <s:String x:Key="Loc_Jump_Edit">Edit group</s:String>
+    <s:String x:Key="Loc_Jump_OpenFolder">Open the folder</s:String>
     <s:String x:Key="Loc_Main_Import">Import</s:String>
     <s:String x:Key="Loc_Main_ImportFile">From a group file…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">From Taskbar Groups…</s:String>
@@ -50,6 +51,7 @@
     <s:String x:Key="Loc_Group_ShortcutOne">1 shortcut</s:String>
     <s:String x:Key="Loc_Group_ShortcutMany">{0} shortcuts</s:String>
     <s:String x:Key="Loc_Group_Separator">Taskbar separator</s:String>
+    <s:String x:Key="Loc_Group_FolderOf">Folder: {0}</s:String>
 
     <!-- Delete group -->
     <s:String x:Key="Loc_Del_Title">Delete group</s:String>
@@ -112,6 +114,16 @@
     <s:String x:Key="Loc_Editor_NoOtherGroups">Create another group first: this button puts one group inside another.</s:String>
     <s:String x:Key="Loc_Editor_Separator">Separator</s:String>
     <s:String x:Key="Loc_Editor_SeparatorTip">Add a line that splits the panel into sections, with a title if you like. Drag the rows to change the order.</s:String>
+    <s:String x:Key="Loc_Editor_SourceApps">Apps I pick</s:String>
+    <s:String x:Key="Loc_Editor_SourceFolder">What is in a folder</s:String>
+    <s:String x:Key="Loc_Editor_FolderNone">No folder picked yet</s:String>
+    <s:String x:Key="Loc_Editor_PickFolderButton">Pick a folder…</s:String>
+    <s:String x:Key="Loc_Editor_SpecialFolders">Windows places</s:String>
+    <s:String x:Key="Loc_Editor_FolderHint">The panel shows what is in the folder every time it opens, so it is always up to date. Folders inside it open next to the panel, like a submenu. Windows places are the ones that are no folder on disk, like the Control Panel or This PC. You can also drop a folder here.</s:String>
+    <s:String x:Key="Loc_Editor_NeedFolder">Pick the folder the panel shows.</s:String>
+    <s:String x:Key="Loc_Editor_FolderMissing">That folder can't be opened. Pick another one.</s:String>
+    <s:String x:Key="Loc_Editor_FolderSpecial">Windows place</s:String>
+    <s:String x:Key="Loc_Editor_AllApps">All apps</s:String>
     <s:String x:Key="Loc_Sub_Group">Group</s:String>
     <s:String x:Key="Loc_AppOpt_Title">App options</s:String>
     <s:String x:Key="Loc_AppOpt_Name">Name</s:String>

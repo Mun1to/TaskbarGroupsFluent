@@ -157,6 +157,19 @@
                 <TextBlock Text="{DynamicResource Loc_Editor_Shortcuts}" FontSize="16" FontWeight="SemiBold"
                            Margin="0,0,0,8"
                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+
+                <!-- What the panel shows: the apps picked below, or whatever is in a
+                     folder, read again every time it opens (issue #9). -->
+                <WrapPanel Margin="0,0,0,10">
+                    <RadioButton x:Name="SourceAppsRadio" GroupName="PanelSource" MinWidth="0" Margin="0,0,20,4"
+                                 Content="{DynamicResource Loc_Editor_SourceApps}" IsChecked="True"
+                                 Checked="Source_Changed" />
+                    <RadioButton x:Name="SourceFolderRadio" GroupName="PanelSource" MinWidth="0" Margin="0,0,0,4"
+                                 Content="{DynamicResource Loc_Editor_SourceFolder}"
+                                 Checked="Source_Changed" />
+                </WrapPanel>
+
+                <StackPanel x:Name="AppsSection">
                 <WrapPanel Margin="0,0,0,8">
                     <ui:Button Content="{DynamicResource Loc_Editor_Program}" Icon="{ui:SymbolIcon AppGeneric24}"
                                Appearance="Info" Margin="0,0,8,4" Click="AddProgram_Click" />
@@ -219,6 +232,41 @@
                            Text="{DynamicResource Loc_Editor_EmptyHint}"
                            FontSize="13" Margin="0,4,0,16" TextAlignment="Center"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
+
+                <StackPanel x:Name="FolderSection" Visibility="Collapsed" Margin="0,0,0,16">
+                    <Border Padding="12,10" CornerRadius="8" Margin="0,0,0,8"
+                            Background="{DynamicResource ControlFillColorDefaultBrush}"
+                            BorderBrush="{DynamicResource ControlElevationBorderBrush}" BorderThickness="1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Width="32" Height="32" VerticalAlignment="Center">
+                                <ui:SymbolIcon x:Name="FolderIconPlaceholder" Symbol="Folder24" FontSize="24"
+                                               Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+                                <Image x:Name="FolderIcon" Width="32" Height="32"
+                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                            </Grid>
+                            <StackPanel Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock x:Name="FolderNameText" FontSize="14" TextTrimming="CharacterEllipsis"
+                                           Text="{DynamicResource Loc_Editor_FolderNone}"
+                                           Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                                <TextBlock x:Name="FolderPathText" FontSize="11" TextTrimming="CharacterEllipsis"
+                                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <WrapPanel Margin="0,0,0,8">
+                        <ui:Button Content="{DynamicResource Loc_Editor_PickFolderButton}" Icon="{ui:SymbolIcon FolderOpen24}"
+                                   Appearance="Info" Margin="0,0,8,4" Click="PickFolder_Click" />
+                        <ui:Button Content="{DynamicResource Loc_Editor_SpecialFolders}" Icon="{ui:SymbolIcon Star24}"
+                                   Margin="0,0,0,4" Click="SpecialFolders_Click" />
+                    </WrapPanel>
+                    <TextBlock Text="{DynamicResource Loc_Editor_FolderHint}" FontSize="12" TextWrapping="Wrap"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                </StackPanel>
 
                 <TextBlock Text="{DynamicResource Loc_Editor_PanelTitle}" FontSize="16" FontWeight="SemiBold"
                            Margin="0,0,0,8" Foreground="{DynamicResource TextFillColorPrimaryBrush}" />

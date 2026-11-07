@@ -35,6 +35,22 @@ public partial class GroupEditorWindow : FluentWindow
     // events don't redraw the preview a dozen times on the way.
     private bool _loadingPanel = true;
 
+    // A group that shows a folder (issue #9): which folder, how much is in it, and a
+    // taste of it for the preview. The apps list is kept as it was meanwhile, so
+    // going back to it loses nothing.
+    private string _folderSource = "";
+    private int _folderCount;
+    private readonly ObservableCollection<ShortcutEntry> _folderPreview = new();
+
+    // The taskbar icon is the folder's own until the user picks one, and follows
+    // the folder if another is chosen.
+    private bool _iconFromFolder;
+
+    /// <summary>How much of a folder the preview shows: enough to see the layout.</summary>
+    private const int PreviewEntries = 24;
+
+    private bool FolderMode => SourceFolderRadio.IsChecked == true;
+
     public GroupEditorWindow(Category? existing = null)
     {
         InitializeComponent();
@@ -74,6 +90,18 @@ public partial class GroupEditorWindow : FluentWindow
             LoadExistingIcon(existing);
             LoadExistingShortcuts(existing);
             _gridIcon = existing.GridIcon;
+            if (existing.IsFolderGroup)
+            {
+                SourceFolderRadio.IsChecked = true;
+                if (!ShowFolder(existing.FolderSource))
+                {
+                    // Gone since it was saved (a drive unplugged, a folder deleted):
+                    // kept as it was, so saving the group's other changes keeps it too.
+                    _folderSource = existing.FolderSource;
+                    FolderNameText.Text = existing.FolderSource;
+                    FolderPathText.Text = Loc.Get("Loc_Editor_FolderMissing");
+                }
+            }
         }
         LoadPanelOptions(panel);
 
@@ -165,26 +193,40 @@ public partial class GroupEditorWindow : FluentWindow
         PreviewHeaderText.Text = name.Length > 0 ? name : Loc.Get("Loc_Editor_NamePlaceholder");
     }
 
-    /// <summary>The entries that open something, leaving out the separators.</summary>
-    private int AppCount() => _shortcuts.Count(s => !s.IsSeparator);
+    /// <summary>
+    /// The entries that open something, leaving out the separators; for a group
+    /// that shows a folder, what is in the folder.
+    /// </summary>
+    private int AppCount() => FolderMode ? _folderCount : _shortcuts.Count(s => !s.IsSeparator);
+
+    /// <summary>The entries the taskbar icon can be built from, in order.</summary>
+    private IEnumerable<ShortcutEntry> IconSources()
+        => FolderMode ? _folderPreview : _shortcuts.Where(s => !s.IsSeparator);
 
     private void GridIcon_Click(object sender, RoutedEventArgs e)
     {
-        if (AppCount() == 0)
+        if (!IconSources().Any())
         {
             ShowError(Loc.Get("Loc_Editor_GridIconNeedsApps"));
             return;
         }
         _gridIcon = true;
+        _iconFromFolder = false;
         RebuildGridIcon();
     }
 
     private void RebuildGridIcon()
     {
         var icons = new List<DrawingImage>();
-        foreach (var entry in _shortcuts.Where(s => !s.IsSeparator).Take(4))
+        foreach (var entry in IconSources().Take(4))
         {
-            try { icons.Add(Category.ResolveShortcutImage(entry.Shortcut)); }
+            try
+            {
+                DrawingImage? icon = entry.Shortcut.IsShellItem
+                    ? ShellFolder.Icon(entry.Shortcut.ShellItem, 128)
+                    : Category.ResolveShortcutImage(entry.Shortcut);
+                if (icon is not null) icons.Add(icon);
+            }
             catch { /* an app without an icon just leaves its cell to the others */ }
         }
         if (icons.Count == 0) return;
@@ -193,6 +235,136 @@ public partial class GroupEditorWindow : FluentWindow
         _iconChanged = true;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+    }
+
+    // ---- A group that shows a folder (issue #9) -----------------------------
+
+    private void Source_Changed(object sender, RoutedEventArgs e)
+    {
+        // Raised while the window is still being built, before the rest exists.
+        if (AppsSection is null || FolderSection is null || PreviewItems is null) return;
+
+        bool folder = FolderMode;
+        AppsSection.Visibility = folder ? Visibility.Collapsed : Visibility.Visible;
+        FolderSection.Visibility = folder ? Visibility.Visible : Visibility.Collapsed;
+        PreviewItems.ItemsSource = folder ? _folderPreview : _shortcuts;
+
+        // A folder reads best as a list, like a menu: a new group switches to it,
+        // unless the user already picked another shape.
+        if (folder && !_isEditing && !_loadingPanel && LayoutGridRadio.IsChecked == true)
+            LayoutListRadio.IsChecked = true;
+
+        if (_gridIcon) RebuildGridIcon();
+        UpdatePreview();
+    }
+
+    /// <summary>
+    /// Shows <paramref name="source"/> as the group's folder, with a taste of what
+    /// is in it in the preview. False, with nothing changed, if it is no folder.
+    /// </summary>
+    private bool ShowFolder(string source)
+    {
+        if (!ShellFolder.IsFolder(source)) return false;
+
+        _folderSource = source;
+        FolderNameText.Text = FolderTitle(source);
+        FolderPathText.Text = Path.IsPathRooted(source) ? source : Loc.Get("Loc_Editor_FolderSpecial");
+        using (var icon = ShellFolder.Icon(source, 64))
+            FolderIcon.Source = icon.ToImageSource();
+        FolderIconPlaceholder.Visibility = FolderIcon.Source is null ? Visibility.Visible : Visibility.Collapsed;
+
+        _folderPreview.Clear();
+        var entries = ShellFolder.List(source, out bool more);
+        _folderCount = entries.Count + (more ? 1 : 0);
+        foreach (var entry in entries.Take(PreviewEntries))
+        {
+            using var bitmap = ShellFolder.Icon(entry.Id, 48);
+            _folderPreview.Add(new ShortcutEntry { Shortcut = ProgramShortcut.ForShellEntry(entry), Icon = bitmap.ToImageSource() });
+        }
+        return true;
+    }
+
+    /// <summary>A folder's name as File Explorer shows it; "All apps" for the one Windows leaves in English.</summary>
+    internal static string FolderTitle(string source)
+        => string.Equals(source, ShellFolder.AllApps, StringComparison.OrdinalIgnoreCase)
+            ? Loc.Get("Loc_Editor_AllApps")
+            : ShellFolder.DisplayName(source) ?? source;
+
+    /// <summary>
+    /// The user picked a folder. Its name becomes the group's if there is none
+    /// yet, and its icon the taskbar icon unless the user chose one of their own.
+    /// </summary>
+    private void ChooseFolder(string source)
+    {
+        if (!ShowFolder(source))
+        {
+            ShowError(Loc.Get("Loc_Editor_FolderMissing"));
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(NameTextBox.Text))
+            NameTextBox.Text = SafeName(FolderNameText.Text);
+
+        if (_groupImage is null || _iconFromFolder)
+        {
+            using var big = ShellFolder.Icon(source, 256);
+            if (big is not null)
+            {
+                _groupImage = new Bitmap(big);
+                _iconChanged = true;
+                _iconFromFolder = true;
+                _gridIcon = false;
+                GroupIconPreview.Source = _groupImage.ToImageSource();
+                GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        if (_gridIcon) RebuildGridIcon();
+        UpdatePreview();
+    }
+
+    /// <summary>A folder's name made fit to name a group: no characters a file name cannot have, no dot at the end.</summary>
+    private static string SafeName(string name)
+    {
+        var invalid = Path.GetInvalidFileNameChars();
+        return new string((name ?? "").Where(c => Array.IndexOf(invalid, c) < 0).ToArray()).Trim().TrimEnd('.').Trim();
+    }
+
+    private void PickFolder_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFolderDialog { Title = Loc.Get("Loc_Editor_PickFolder") };
+        if (Directory.Exists(_folderSource)) dialog.InitialDirectory = _folderSource;
+        if (dialog.ShowDialog(this) != true) return;
+        ChooseFolder(dialog.FolderName);
+    }
+
+    // The places of Windows that are no folder on disk, and so cannot be picked
+    // with the folder dialog: the Control Panel, This PC, all the apps. A few
+    // common folders join them for convenience. Each is named as Windows names it.
+    private void SpecialFolders_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not FrameworkElement button) return;
+
+        var menu = new System.Windows.Controls.ContextMenu
+        {
+            PlacementTarget = button,
+            Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom
+        };
+        foreach (string source in ShellFolder.Presets)
+        {
+            if (!ShellFolder.IsFolder(source)) continue;
+            var item = new System.Windows.Controls.MenuItem { Header = FolderTitle(source) };
+            using (var icon = ShellFolder.Icon(source, 32))
+            {
+                var image = icon.ToImageSource();
+                if (image is not null)
+                    item.Icon = new System.Windows.Controls.Image { Source = image, Width = 16, Height = 16 };
+            }
+            string chosen = source;
+            item.Click += (_, _) => ChooseFolder(chosen);
+            menu.Items.Add(item);
+        }
+        menu.IsOpen = true;
     }
 
     private void LoadExistingIcon(Category category)
@@ -330,8 +502,17 @@ public partial class GroupEditorWindow : FluentWindow
 
     private void Window_Drop(object sender, DragEventArgs e)
     {
-        if (e.Data.GetData(DataFormats.FileDrop) is string[] paths) AddDropped(paths, -1);
         e.Handled = true;
+        if (e.Data.GetData(DataFormats.FileDrop) is not string[] paths) return;
+
+        // A group that shows a folder takes a folder dropped on it as that folder.
+        if (FolderMode)
+        {
+            string? folder = paths.FirstOrDefault(Directory.Exists);
+            if (folder is not null) ChooseFolder(folder);
+            return;
+        }
+        AddDropped(paths, -1);
     }
 
     // Dragging rows. A row is picked up by pressing anywhere on it but its
@@ -518,6 +699,7 @@ public partial class GroupEditorWindow : FluentWindow
         _groupImage = editor.Result;
         _iconChanged = true;
         _gridIcon = false;
+        _iconFromFolder = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
@@ -530,6 +712,7 @@ public partial class GroupEditorWindow : FluentWindow
         _groupImage = picker.Result;
         _iconChanged = true;
         _gridIcon = false;
+        _iconFromFolder = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
         GroupIconPlaceholder.Visibility = Visibility.Collapsed;
     }
@@ -548,7 +731,15 @@ public partial class GroupEditorWindow : FluentWindow
             ShowError(Loc.Get("Loc_Editor_BadName"));
             return;
         }
-        if (AppCount() == 0)
+        if (FolderMode)
+        {
+            if (string.IsNullOrWhiteSpace(_folderSource))
+            {
+                ShowError(Loc.Get("Loc_Editor_NeedFolder"));
+                return;
+            }
+        }
+        else if (AppCount() == 0)
         {
             ShowError(Loc.Get("Loc_Editor_NeedShortcut"));
             return;
@@ -564,7 +755,8 @@ public partial class GroupEditorWindow : FluentWindow
             ShowHeader = HeaderToggle.IsChecked == true,
             HeaderPosition = SelectedHeaderPosition(),
             IconScale = SelectedIconScale(),
-            GridIcon = _gridIcon
+            GridIcon = _gridIcon,
+            FolderSource = FolderMode ? _folderSource : ""
         };
 
         DrawingImage groupImage = _groupImage ?? GenerateDefaultGroupImage(name);
@@ -584,7 +776,7 @@ public partial class GroupEditorWindow : FluentWindow
         }
 
         // The pinned button's right-click menu: "Open all" and "Edit group".
-        GroupJumpList.Register(name, Loc.Get("Loc_Jump_OpenAll"), Loc.Get("Loc_Jump_Edit"));
+        GroupJumpList.Register(name, Loc.Get(FolderMode ? "Loc_Jump_OpenFolder" : "Loc_Jump_OpenAll"), Loc.Get("Loc_Jump_Edit"));
 
         if (_isEditing)
         {

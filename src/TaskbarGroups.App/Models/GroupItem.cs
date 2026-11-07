@@ -19,8 +19,13 @@ public class GroupItem
     /// <summary>Path to the pinnable .lnk created for this group.</summary>
     public string ShortcutPath { get; init; } = "";
 
+    /// <summary>The folder the group shows, or empty for a group of apps (issue #9).</summary>
+    public string FolderSource { get; init; } = "";
+
     public string ShortcutCountText => IsSeparator
         ? Loc.Get("Loc_Group_Separator")
+        : FolderSource.Length > 0
+            ? Loc.Format("Loc_Group_FolderOf", GroupEditorWindow.FolderTitle(FolderSource))
         : ShortcutCount == 1
             ? Loc.Get("Loc_Group_ShortcutOne")
             : Loc.Format("Loc_Group_ShortcutMany", ShortcutCount);

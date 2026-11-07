@@ -36,6 +36,7 @@ public static class GroupService
                     IsSeparator = category.IsSeparator,
                     Icon = LoadGroupIcon(dir),
                     Source = category,
+                    FolderSource = category.FolderSource ?? "",
                     ShortcutPath = Path.Combine(
                         Paths.ShortcutsPath,
                         Regex.Replace(category.Name, @"(_)+", " ") + ".lnk")
