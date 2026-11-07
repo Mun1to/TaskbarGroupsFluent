@@ -245,7 +245,7 @@ public partial class PopupWindow : Window
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
         bool glass = false;
 
-        if (Environment.OSVersion.Version.Build >= 22000) // Windows 11
+        if (WindowsVersion.IsWindows11)
         {
             int dark = _isDark ? 1 : 0;
             DwmSetWindowAttribute(hwnd, DWMWA_USE_IMMERSIVE_DARK_MODE, ref dark, sizeof(int));
@@ -267,6 +267,10 @@ public partial class PopupWindow : Window
             Background = solid;
             RootBorder.Background = solid;
         }
+
+        // Windows 10 keeps every window square, so the border goes square with it;
+        // drawn round, its line would curve away inside the corners of the window.
+        if (!WindowsVersion.IsWindows11) RootBorder.CornerRadius = new CornerRadius(0);
     }
 
     // WPF sizes the window once while it is still creating it, and at that moment
