@@ -1,4 +1,5 @@
 using System.Text;
+using TaskbarGroups.Core;
 
 namespace TaskbarGroups.Hover;
 
@@ -27,7 +28,12 @@ namespace TaskbarGroups.Hover;
 /// </summary>
 internal static class TaskbarTooltip
 {
-    private const string PopupClass = "Xaml_WindowedPopupClass";
+    /// <summary>
+    /// The window a taskbar tooltip lives in: a XAML popup on Windows 11, the
+    /// classic common-control tooltip on the older taskbar of Windows 10.
+    /// </summary>
+    private static readonly string PopupClass =
+        WindowsVersion.IsWindows11 ? "Xaml_WindowedPopupClass" : "tooltips_class32";
 
     /// <summary>
     /// Tallest a tooltip can be. The taskbar's right-click menu is the same class
