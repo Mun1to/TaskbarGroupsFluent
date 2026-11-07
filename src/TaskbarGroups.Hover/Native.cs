@@ -46,6 +46,9 @@ internal static class Native
     [DllImport("user32.dll")]
     internal static extern bool EnumWindows(EnumWindowsProc callback, nint param);
 
+    [DllImport("user32.dll")]
+    internal static extern bool EnumChildWindows(nint parent, EnumWindowsProc callback, nint param);
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern int GetClassName(nint hWnd, System.Text.StringBuilder name, int max);
 

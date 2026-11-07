@@ -124,6 +124,34 @@ namespace TaskbarGroups.Core
             return suffix.Length > 0 && GroupExists(suffix) ? suffix : null;
         }
 
+        /// <summary>
+        /// The group a taskbar button opens, going by the name the button reads out,
+        /// or null if no pinned group goes by it. For a taskbar that gives its
+        /// buttons no AppUserModelID to read, as Windows 10's may not.
+        ///
+        /// A pinned button is named after its shortcut. While something of its own
+        /// runs, Windows adds " - " and how many windows, in the language of the
+        /// system, so only what comes before that is compared.
+        /// </summary>
+        public static string? ResolveByButtonName(string buttonName, IReadOnlyList<PinnedGroup> pins)
+        {
+            string name = (buttonName ?? string.Empty).Trim();
+            if (name.Length == 0) return null;
+
+            PinnedGroup? best = null;
+            foreach (var p in pins)
+            {
+                if (p.LinkName.Length == 0) continue;
+                bool exact = string.Equals(name, p.LinkName, StringComparison.OrdinalIgnoreCase);
+                bool running = name.StartsWith(p.LinkName + " - ", StringComparison.OrdinalIgnoreCase);
+                if (!exact && !running) continue;
+                if (exact) return p.GroupName;
+                // "Web - Tools" and "Web" both pinned: the longer name is the one meant.
+                if (best is null || p.LinkName.Length > best.LinkName.Length) best = p;
+            }
+            return best?.GroupName;
+        }
+
         private static bool IsOurFlyout(string target)
         {
             if (string.IsNullOrEmpty(target)) return false;
