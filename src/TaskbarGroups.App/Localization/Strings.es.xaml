@@ -62,6 +62,8 @@
     <s:String x:Key="Loc_Pin_Title">Anclar a la barra de tareas</s:String>
     <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
     <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Pulsa "Mostrar más opciones" (o Mayús + F10).&#10;3.  Elige "Anclar a la barra de tareas".&#10;&#10;El separador aparecerá en la barra de tareas. Al hacer clic no ocurre nada.</s:String>
+    <s:String x:Key="Loc_Pin_Body10" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Elige "Anclar a la barra de tareas".&#10;&#10;Luego haz clic en ese icono de la barra para abrir el grupo.</s:String>
+    <s:String x:Key="Loc_Pin_SeparatorBody10" xml:space="preserve">Abrí la carpeta con el acceso directo resaltado. Windows pide un último paso manual:&#10;&#10;1.  Haz clic derecho en el archivo resaltado.&#10;2.  Elige "Anclar a la barra de tareas".&#10;&#10;El separador aparecerá en la barra de tareas. Al hacer clic no ocurre nada.</s:String>
 
     <!-- Editor de grupo -->
     <s:String x:Key="Loc_Editor_TitleNew">Nuevo grupo</s:String>

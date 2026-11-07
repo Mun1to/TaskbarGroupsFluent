@@ -62,6 +62,8 @@
     <s:String x:Key="Loc_Pin_Title">Pin to taskbar</s:String>
     <s:String x:Key="Loc_Pin_Body" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.</s:String>
     <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Click "Show more options" (or Shift + F10).&#10;3.  Choose "Pin to taskbar".&#10;&#10;The divider will appear on your taskbar. Clicking it does nothing.</s:String>
+    <s:String x:Key="Loc_Pin_Body10" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Choose "Pin to taskbar".&#10;&#10;Then click that taskbar icon to open the group.</s:String>
+    <s:String x:Key="Loc_Pin_SeparatorBody10" xml:space="preserve">I opened the folder with the shortcut highlighted. Windows needs one last manual step:&#10;&#10;1.  Right-click the highlighted file.&#10;2.  Choose "Pin to taskbar".&#10;&#10;The divider will appear on your taskbar. Clicking it does nothing.</s:String>
 
     <!-- Group editor -->
     <s:String x:Key="Loc_Editor_TitleNew">New group</s:String>

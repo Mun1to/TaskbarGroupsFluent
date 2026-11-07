@@ -514,15 +514,22 @@ public partial class MainWindow : FluentWindow
             return;
         }
 
-        // Open the folder with the .lnk selected. Windows 11 blocks programmatic
+        // Open the folder with the .lnk selected. Windows blocks programmatic
         // taskbar pinning, so the final right-click is the user's to make.
         ShellHelper.SelectInExplorer(group.ShortcutPath);
 
         await new MessageBox
         {
             Title = Loc.Get("Loc_Pin_Title"),
-            Content = Loc.Get(group.IsSeparator ? "Loc_Pin_SeparatorBody" : "Loc_Pin_Body"),
+            Content = Loc.Get(PinStepsKey(group.IsSeparator)),
             CloseButtonText = Loc.Get("Loc_Common_Understood")
         }.ShowDialogAsync();
     }
+
+    /// <summary>
+    /// The steps for pinning by hand. Windows 11 tucks "Pin to taskbar" under "Show
+    /// more options"; on Windows 10 it is right there in the right-click menu.
+    /// </summary>
+    internal static string PinStepsKey(bool separator)
+        => (separator ? "Loc_Pin_SeparatorBody" : "Loc_Pin_Body") + (WindowsVersion.IsWindows11 ? "" : "10");
 }
