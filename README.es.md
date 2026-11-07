@@ -51,11 +51,13 @@
 Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo se abre encima un pequeño panel con todas las apps del grupo.
 
 - 🧩 **Cualquier app instalada**, de escritorio o de Microsoft Store, además de carpetas e incluso otros grupos, que se abren al lado del panel como un submenú.
+- 📂 **Una carpeta como grupo**: el panel enseña lo que hay en una carpeta cada vez que se abre, también lugares de Windows como el Panel de control, Este equipo o todas tus apps, y las carpetas de dentro se abren al lado del panel.
+- 📌 **Toda una barra desde un grupo**: un grupo que lleva otros dentro los ancla todos, uno tras otro, en su orden y con separadores en la barra donde tiene líneas. Windows sigue pidiendo tu clic derecho en cada uno, y la app te va guiando.
 - **Separadores** en la barra de tareas, para separar tus grupos del resto de iconos anclados, y dentro del panel, para dividir sus apps en partes con un título si quieres.
 - 📥 **Arrastrar y soltar** archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto.
 - 🖥️ **Todos tus monitores**: el panel se abre encima del icono que pulsaste, en esa pantalla.
 - 🎨 **Icono del grupo** con una imagen, un emoji a color o las propias apps del grupo.
-- 🪟 **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas.
+- 🪟 **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas. En Windows 10 el panel es opaco, como sus propios menús.
 - 🎞️ **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).
 - 🖱️ **Abrir al pasar el cursor**, sin hacer clic (viene apagado).
 - 📋 **Clic derecho en un grupo anclado** para **Abrir todas** y **Editar grupo**, o **en una app del panel** para su menú de Windows.
@@ -75,15 +77,17 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 1. Descarga **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** y ejecútalo. Se instala solo para tu usuario y descarga el **.NET 10 Desktop Runtime** si falta.
 2. Abre **Taskbar Groups** desde el menú Inicio.
 
+Funciona en Windows 11 y en Windows 10 versión 1809 o posterior, de 64 bits.
+
 > ¿Prefieres la Store? **[Consíguelo en la Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: la misma app, firmada por Microsoft y actualizada por el propio Windows. Puede ir una versión por detrás del instalador mientras Microsoft revisa cada actualización.
 
 > ¿Ese PC no tiene internet? `TaskbarGroupsFluent-Setup-Offline.exe`, en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest), lleva .NET dentro. Si Windows avisa de un *"editor desconocido"*, pulsa **Más información → Ejecutar de todas formas**: la app no está firmada con un certificado de pago.
 
 ## 🚀 Cómo se usa
 
-1. Pulsa **Añadir grupo**, ponle nombre e icono, y añade apps con **Aplicación**, **Carpeta** o **Grupo**, o arrástralas desde el Explorador. **Separador** en el editor divide el panel en partes; para dejar espacio entre grupos en la barra, pulsa **Separador** junto a Ajustes.
+1. Pulsa **Añadir grupo**, ponle nombre e icono, y añade apps con **Aplicación**, **Carpeta** o **Grupo**, o arrástralas desde el Explorador. Para que el panel enseñe una carpeta, elige **Lo que hay en una carpeta** y escoge una, o uno de los **Lugares de Windows**. **Separador** en el editor divide el panel en partes; para dejar espacio entre grupos en la barra, pulsa **Separador** junto a Ajustes.
 2. Elige cómo se ve el panel en **Panel** y pulsa **Guardar grupo**.
-3. Pulsa **Anclar a la barra de tareas**: la app abre la carpeta con el acceso resaltado, y tú haces clic derecho en él, luego *Mostrar más opciones* y luego *Anclar a la barra de tareas*. Windows 11 no deja que las apps se anclen solas.
+3. Pulsa **Anclar a la barra de tareas**: la app abre la carpeta con el acceso resaltado, y tú haces clic derecho en él y eliges *Anclar a la barra de tareas* (en Windows 11 está dentro de *Mostrar más opciones*). Windows no deja que las apps se anclen solas. Un grupo con grupos dentro te ofrece anclarlos todos, uno tras otro.
 
 ## 🛠️ Compilar desde el código
 

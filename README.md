@@ -51,11 +51,13 @@
 Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
 
 - 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups, which open beside the panel like a submenu.
+- 📂 **A folder as a group**: the panel shows what is in a folder each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel.
+- 📌 **A whole taskbar from one group**: a group that holds other groups pins them all, one after another, in its order and with taskbar separators where it has lines. Windows still wants your right-click for each one, and the app walks you through them.
 - **Separators** on the taskbar, to keep your groups apart from the rest of your pinned icons, and inside a panel, to split its apps into sections with an optional title.
 - 📥 **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
 - 🖥️ **Every monitor**: the panel opens over the icon you clicked, on that screen.
 - 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
-- 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit.
+- 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit. On Windows 10 the panel is solid, like its own menus.
 - 🎞️ **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
 - 🖱️ **Open on hover**, no click needed (off by default).
 - 📋 **Right-click a pinned group** for **Open all** and **Edit group**, or **an app in the panel** for its own Windows menu.
@@ -75,15 +77,17 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 1. Download **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** and run it. It installs for your user only and downloads the **.NET 10 Desktop Runtime** if it is missing.
 2. Open **Taskbar Groups** from the Start menu.
 
+It runs on Windows 11 and on Windows 10 version 1809 or later, 64-bit.
+
 > Prefer the Store? **[Get it from the Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: the same app, signed by Microsoft and kept up to date by Windows. It can lag a version behind the installer while each update is reviewed.
 
 > No internet on that PC? `TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info → Run anyway**: the app isn't signed with a paid certificate.
 
 ## 🚀 How to use it
 
-1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**, or drag them in from File Explorer. **Separator** in the editor splits the panel into sections; to space groups out on the taskbar, click **Separator** beside Settings.
+1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**, or drag them in from File Explorer. To have the panel show a folder instead, pick **What is in a folder** and choose one, or one of the **Windows places**. **Separator** in the editor splits the panel into sections; to space groups out on the taskbar, click **Separator** beside Settings.
 2. Pick the panel's look under **Panel** and click **Save group**.
-3. Click **Pin to taskbar**: the app opens the folder with the shortcut highlighted, and you right-click it, then *Show more options*, then *Pin to taskbar*. Windows 11 doesn't let apps pin themselves.
+3. Click **Pin to taskbar**: the app opens the folder with the shortcut highlighted, and you right-click it and choose *Pin to taskbar* (on Windows 11 it is under *Show more options*). Windows doesn't let apps pin themselves. A group with groups inside offers to pin them all, one after another.
 
 ## 🛠️ Building from source
 
