@@ -1,78 +1,63 @@
 <div align="center">
 
-<img src="brand/logo.png" width="128" height="128" alt="Taskbar Groups Fluent logo" />
+<img src="brand/logo.png" alt="Taskbar Groups Fluent" height="88">
 
 # Taskbar Groups Fluent
 
-**Group your shortcuts into a single taskbar icon.** A modern **WPF / .NET 10** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
+**Group your shortcuts into a single taskbar icon.**
 
-🌍 [Español](README.es.md) · English · Website: **[tbgf.munito.dev](https://tbgf.munito.dev)**
+A modern **WPF / .NET 10** rewrite of Taskbar Groups, with a Fluent (WinUI 3-style) interface.
 
-<p>
-  <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest">
-    <img src="https://img.shields.io/github/v/release/Mun1to/TaskbarGroupsFluent?label=version&style=for-the-badge&color=0a84ff" alt="Latest release" />
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/license-MIT-0a84ff?style=for-the-badge" alt="MIT license" />
-  </a>
-  <img src="https://img.shields.io/badge/Windows%2010%20%2F%2011-x64-22c55e?style=for-the-badge" alt="Windows 10/11 x64" />
-  <a href="https://buymeacoffee.com/munito">
-    <img src="https://img.shields.io/badge/buy%20me%20a%20coffee-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee" />
-  </a>
-</p>
+<a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><picture><source media="(prefers-color-scheme: dark)" srcset=".github/readme/download-windows-dark.svg"><img src=".github/readme/download-windows-light.svg" alt="Download Taskbar Groups Fluent"></picture></a>
+<a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct"><img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from the Microsoft Store" height="52"></a>
 
-<p align="center">
-  <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">
-    <img src="brand/download-button-en.svg" alt="Download Taskbar Groups Fluent" width="320" height="72" />
-  </a>
-  <br />
-  <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct">
-    <img src="https://get.microsoft.com/images/en-us%20dark.svg" alt="Get it from the Microsoft Store" width="200" />
-  </a>
-</p>
+Windows 10 / 11 x64 · Free · [Licence MIT](LICENSE)
 
-<table>
-  <tr>
-    <th align="center">Click a group</th>
-    <th align="center">Or just rest the cursor on it</th>
-  </tr>
-  <tr>
-    <td align="center"><img src="docs/screenshots/panel-click.gif" width="400" alt="Four groups pinned to a real Windows 11 taskbar, each opened with a click: a vertical column, a list, a grid and a row" /></td>
-    <td align="center"><img src="docs/screenshots/panel-hover.gif" width="400" alt="The same four groups opening by themselves as the cursor rests on each one, and closing when it moves away" /></td>
-  </tr>
-</table>
-
-<sub>Recorded on a real Windows 11 taskbar. <b>Open on hover</b> is off by default; switch it on in the quick bar.<br />▶️ Videos: <a href="docs/screenshots/panel-click.mp4">click</a> · <a href="docs/screenshots/panel-hover.mp4">hover</a> · 🖥️ <a href="https://tbgf.munito.dev">Live demo on the website</a></sub>
+[Website](https://tbgf.munito.dev) · [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) · [Buy me a coffee](https://buymeacoffee.com/munito) · [Español](README.es.md)
 
 </div>
 
-## ✨ What it does
+<p align="center"><img src="docs/screenshots/panel-click.gif" alt="Four groups pinned to a real Windows 11 taskbar, each opened with a click: a vertical column, a list, a grid and a row"></p>
+
+<p align="center">Click a group. Recorded on a real Windows 11 taskbar. <strong>Open on hover</strong> is off by default; switch it on in the quick bar. Videos: <a href="docs/screenshots/panel-click.mp4">click</a>, <a href="docs/screenshots/panel-hover.mp4">hover</a>. <a href="https://tbgf.munito.dev">Live demo on the website</a></p>
+
+## What it does
 
 Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
 
-- 🧩 **Any installed app**, desktop or Microsoft Store, plus folders and even other groups, which open beside the panel like a submenu.
-- 📂 **A folder as a group**: the panel shows what is in a folder each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel.
-- 📌 **A whole taskbar from one group**: a group that holds other groups pins them all, one after another, in its order and with taskbar separators where it has lines. Windows still wants your right-click for each one, and the app walks you through them.
+- **Any installed app**, desktop or Microsoft Store, plus folders and even other groups, which open beside the panel like a submenu.
+- **A folder as a group**: the panel shows what is in a folder each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel.
+- **A whole taskbar from one group**: a group that holds other groups pins them all, one after another, in its order and with taskbar separators where it has lines. Windows still wants your right-click for each one, and the app walks you through them.
 - **Separators** on the taskbar, to keep your groups apart from the rest of your pinned icons, and inside a panel, to split its apps into sections with an optional title.
-- 📥 **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
-- 🖥️ **Every monitor**: the panel opens over the icon you clicked, on that screen.
-- 🎨 **Group icon** from an image, a colour emoji or the group's own apps.
-- 🪟 **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit. On Windows 10 the panel is solid, like its own menus.
-- 🎞️ **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
-- 🖱️ **Open on hover**, no click needed (off by default).
-- 📋 **Right-click a pinned group** for **Open all** and **Edit group**, or **an app in the panel** for its own Windows menu.
-- ⚙️ **Per-app options**: rename, launch arguments, run as administrator.
-- 💾 **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
-- 🌗 **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
-- ⬇️ **Updates itself** when a new version is out, if you say so.
+- **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
+- **Every monitor**: the panel opens over the icon you clicked, on that screen.
+- **Group icon** from an image, a colour emoji or the group's own apps.
+- **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit. On Windows 10 the panel is solid, like its own menus.
+- **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
+- **Open on hover**, no click needed (off by default).
+- **Right-click a pinned group** for **Open all** and **Edit group**, or **an app in the panel** for its own Windows menu.
+- **Per-app options**: rename, launch arguments, run as administrator.
+- **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
+- **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
+- **Updates itself** when a new version is out, if you say so.
 
-## 📸 Screenshots
+## Screenshots
 
-| Your groups | Group editor |
-| :--: | :--: |
-| <img src="docs/screenshots/en/main.png" width="520" alt="Main window with four groups and the quick bar at the bottom" /> | <img src="docs/screenshots/en/editor.png" width="240" alt="Group editor with the group's apps and a live preview of its panel" /> |
+<table>
+<tr>
+<td width="50%" valign="top"><img src="docs/screenshots/panel-hover.gif" alt="The same four groups opening by themselves as the cursor rests on each one, and closing when it moves away"><br>Or just rest the cursor on it</td>
+<td width="50%" valign="top"><img src="docs/screenshots/en/main.png" alt="Main window with four groups and the quick bar at the bottom"><br>Your groups</td>
+</tr>
+</table>
 
-## ⬇️ Install
+<table>
+<tr>
+<td width="50%" valign="top"><img src="docs/screenshots/en/editor.png" alt="Group editor with the group's apps and a live preview of its panel"><br>Group editor</td>
+<td width="50%"></td>
+</tr>
+</table>
+
+## Install
 
 1. Download **[TaskbarGroupsFluent-Setup.exe](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe)** and run it. It installs for your user only and downloads the **.NET 10 Desktop Runtime** if it is missing.
 2. Open **Taskbar Groups** from the Start menu.
@@ -81,33 +66,17 @@ It runs on Windows 11 and on Windows 10 version 1809 or later, 64-bit.
 
 > Prefer the Store? **[Get it from the Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: the same app, signed by Microsoft and kept up to date by Windows. It can lag a version behind the installer while each update is reviewed.
 
-> No internet on that PC? `TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info → Run anyway**: the app isn't signed with a paid certificate.
+## No internet on that PC?
 
-## 🚀 How to use it
+`TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info > Run anyway**: the app isn't signed with a paid certificate.
 
-1. Click **Add group**, give it a name and an icon, and add apps with **App**, **Folder** or **Group**, or drag them in from File Explorer. To have the panel show a folder instead, pick **What is in a folder** and choose one, or one of the **Windows places**. **Separator** in the editor splits the panel into sections; to space groups out on the taskbar, click **Separator** beside Settings.
-2. Pick the panel's look under **Panel** and click **Save group**.
-3. Click **Pin to taskbar**: the app opens the folder with the shortcut highlighted, and you right-click it and choose *Pin to taskbar* (on Windows 11 it is under *Show more options*). Windows doesn't let apps pin themselves. A group with groups inside offers to pin them all, one after another.
+## Support
 
-## 🛠️ Building from source
+Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/munito) (the app has the same button in its bottom bar and in **Settings**), and a star on the repo helps more people find it.
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Run `dotnet build TaskbarGroupsFluent.sln -c Release` and start `TaskbarGroups.App`. The folder the installer packs comes from:
+## Don't trust it, check it
 
-```bash
-dotnet publish src/TaskbarGroups.App -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
-dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
-dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
-```
-
-The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional watcher for open on hover.
-
-## 🙏 Credits
-
-Built on [tjackenpacken/taskbar-groups](https://github.com/tjackenpacken/taskbar-groups), the original app, and [PikeNote/taskbar-groups-pike-beta](https://github.com/PikeNote/taskbar-groups-pike-beta), the community fork this rewrite started from. Uses [WPF-UI](https://github.com/lepoco/wpfui) and [SkiaSharp](https://github.com/mono/SkiaSharp).
-
-## 🔍 Don't trust it, check it
-
-Open source only helps if somebody actually reads the code, and almost nobody does. So
+Published code only helps if somebody actually reads it, and almost nobody does. So
 instead of asking you to trust this project, here is the prompt to check it: point your own
 AI agent at this repository and get a security report, in your language, in a few minutes,
 even if you do not know how to program.
@@ -119,10 +88,31 @@ whatever you use. It is the same prompt in every public repository here, so you 
 > y te dirá en tu idioma qué hace este programa de verdad: qué envía por internet, qué toca
 > en tu ordenador y qué ejecuta al instalarse.
 
-## ☕ Support
+## Building from source
 
-Taskbar Groups Fluent is free and has no paid version. If it saves you time, you can [buy me a coffee](https://buymeacoffee.com/munito) (the app has the same button in its bottom bar and in **Settings**), and a ⭐ on the repo helps more people find it.
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Run `dotnet build TaskbarGroupsFluent.sln -c Release` and start `TaskbarGroups.App`. The folder the installer packs comes from:
 
-## 📜 License
+```bash
+dotnet publish src/TaskbarGroups.App -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
+dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent
+dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
+```
+
+The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional watcher for open on hover.
+
+## License
 
 [MIT](LICENSE), same as the projects above.
+
+## Credits
+
+|  |  |
+|---|---|
+| [**tjackenpacken/taskbar-groups**](https://github.com/tjackenpacken/taskbar-groups) | Built on it, the original app. |
+| [**PikeNote/taskbar-groups-pike-beta**](https://github.com/PikeNote/taskbar-groups-pike-beta) | The community fork this rewrite started from. |
+| [**WPF-UI**](https://github.com/lepoco/wpfui) | Used by this app. |
+| [**SkiaSharp**](https://github.com/mono/SkiaSharp) | Used by this app. |
+
+<br>
+
+<p align="center">Made by <a href="https://munito.dev"><b>Munir Torres</b></a>. Also by him: <a href="https://adeorq.com">Adeorq</a> · <a href="https://vocript.app">VoCript</a> · <a href="https://winshotx.com">winshotx</a> · <a href="https://github.com/Mun1to/Expoal">Expoal</a> · <a href="https://github.com/Mun1to/hotkeyconfig">hotkeyconfig</a> · <a href="https://github.com/Mun1to/froede">froede</a></p>
