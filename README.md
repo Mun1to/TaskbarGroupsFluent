@@ -21,6 +21,15 @@ Windows 10 / 11 x64 · Free · [Licence MIT](LICENSE)
 
 <p align="center">Click a group. Recorded on a real Windows 11 taskbar. <strong>Open on hover</strong> is off by default; switch it on in the quick bar. Videos: <a href="docs/screenshots/panel-click.mp4">click</a>, <a href="docs/screenshots/panel-hover.mp4">hover</a>. <a href="https://tbgf.munito.dev">Live demo on the website</a></p>
 
+## How it works
+
+<p align="center"><picture>
+<source media="(prefers-color-scheme: dark) and (max-width: 600px)" srcset=".github/readme/how-it-works-dark-narrow.svg">
+<source media="(max-width: 600px)" srcset=".github/readme/how-it-works-light-narrow.svg">
+<source media="(prefers-color-scheme: dark)" srcset=".github/readme/how-it-works-dark.svg">
+<img src=".github/readme/how-it-works-light.svg" alt="Click Add group: Click Add group, give it a name and an icon, and add apps with App, Folder or Group, or drag them in from File Explorer. To have the panel show a folder instead, pick What is in a folder and choose one, or one of the Windows places. Separator in the editor splits the panel into sections; to space groups out on the taskbar, click Separator beside Settings. Pick the panel's look: Pick the panel's look under Panel and click Save group. Click Pin to taskbar: Click Pin to taskbar: the app opens the folder with the shortcut highlighted, and you right-click it and choose *Pin to taskbar* (on Windows 11 it is under *Show more options*). Windows doesn't let apps pin themselves. A group with groups inside offers to pin them all, one after another.">
+</picture></p>
+
 ## What it does
 
 Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
@@ -66,9 +75,12 @@ It runs on Windows 11 and on Windows 10 version 1809 or later, 64-bit.
 
 > Prefer the Store? **[Get it from the Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: the same app, signed by Microsoft and kept up to date by Windows. It can lag a version behind the installer while each update is reviewed.
 
-## No internet on that PC?
+<details>
+<summary><b>No internet on that PC?</b></summary>
 
 `TaskbarGroupsFluent-Setup-Offline.exe` on the [Releases page](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest) carries .NET inside. If Windows warns about an *"unknown publisher"*, click **More info > Run anyway**: the app isn't signed with a paid certificate.
+
+</details>
 
 ## Support
 
@@ -88,7 +100,8 @@ whatever you use. It is the same prompt in every public repository here, so you 
 > y te dirá en tu idioma qué hace este programa de verdad: qué envía por internet, qué toca
 > en tu ordenador y qué ejecuta al instalarse.
 
-## Building from source
+<details>
+<summary><b>Building from source</b></summary>
 
 Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Run `dotnet build TaskbarGroupsFluent.sln -c Release` and start `TaskbarGroups.App`. The folder the installer packs comes from:
 
@@ -100,11 +113,14 @@ dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contain
 
 The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional watcher for open on hover.
 
+</details>
+
 ## License
 
 [MIT](LICENSE), same as the projects above.
 
-## Credits
+<details>
+<summary><b>Credits</b></summary>
 
 |  |  |
 |---|---|
@@ -112,6 +128,8 @@ The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from
 | [**PikeNote/taskbar-groups-pike-beta**](https://github.com/PikeNote/taskbar-groups-pike-beta) | The community fork this rewrite started from. |
 | [**WPF-UI**](https://github.com/lepoco/wpfui) | Used by this app. |
 | [**SkiaSharp**](https://github.com/mono/SkiaSharp) | Used by this app. |
+
+</details>
 
 <br>
 

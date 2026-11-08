@@ -21,6 +21,15 @@ Windows 10 / 11 x64 · Gratis · [Licencia MIT](LICENSE)
 
 <p align="center">Haz clic en un grupo. Grabado en una barra de tareas real de Windows 11. <strong>Abrir al pasar el cursor</strong> viene apagado; se enciende en la barra rápida. Vídeos: <a href="docs/screenshots/panel-click.mp4">clic</a>, <a href="docs/screenshots/panel-hover.mp4">pasar el ratón</a>. <a href="https://tbgf.munito.dev">Demo en la web</a></p>
 
+## Cómo funciona
+
+<p align="center"><picture>
+<source media="(prefers-color-scheme: dark) and (max-width: 600px)" srcset=".github/readme/how-it-works-dark-narrow.es.svg">
+<source media="(max-width: 600px)" srcset=".github/readme/how-it-works-light-narrow.es.svg">
+<source media="(prefers-color-scheme: dark)" srcset=".github/readme/how-it-works-dark.es.svg">
+<img src=".github/readme/how-it-works-light.es.svg" alt="Pulsa Añadir grupo: Pulsa Añadir grupo, ponle nombre e icono, y añade apps con Aplicación, Carpeta o Grupo, o arrástralas desde el Explorador. Para que el panel enseñe una carpeta, elige Lo que hay en una carpeta y escoge una, o uno de los Lugares de Windows. Separador en el editor divide el panel en partes; para dejar espacio entre grupos en la barra, pulsa Separador junto a Ajustes. Elige cómo se ve el panel: Elige cómo se ve el panel en Panel y pulsa Guardar grupo. Pulsa Anclar a la barra de tareas: Pulsa Anclar a la barra de tareas: la app abre la carpeta con el acceso resaltado, y tú haces clic derecho en él y eliges *Anclar a la barra de tareas* (en Windows 11 está dentro de *Mostrar más opciones*). Windows no deja que las apps se anclen solas. Un grupo con grupos dentro te ofrece anclarlos todos, uno tras otro.">
+</picture></p>
+
 ## Qué hace
 
 Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo se abre encima un pequeño panel con todas las apps del grupo.
@@ -66,9 +75,12 @@ Funciona en Windows 11 y en Windows 10 versión 1809 o posterior, de 64 bits.
 
 > ¿Prefieres la Store? **[Consíguelo en la Microsoft Store](https://apps.microsoft.com/detail/9PCZDXWFT6SN?mode=direct)**: la misma app, firmada por Microsoft y actualizada por el propio Windows. Puede ir una versión por detrás del instalador mientras Microsoft revisa cada actualización.
 
-## ¿Ese PC no tiene internet?
+<details>
+<summary><b>¿Ese PC no tiene internet?</b></summary>
 
 `TaskbarGroupsFluent-Setup-Offline.exe`, en la [página de Releases](https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest), lleva .NET dentro. Si Windows avisa de un *"editor desconocido"*, pulsa **Más información > Ejecutar de todas formas**: la app no está firmada con un certificado de pago.
+
+</details>
 
 ## Apoyar el proyecto
 
@@ -84,7 +96,8 @@ idioma, aunque no sepas programar.
 **[Abre AI-AUDIT.md](AI-AUDIT.md)** y pégalo en Claude Code, Codex, Cursor, Copilot o lo que
 uses. Es el mismo texto en todos los repositorios públicos de aquí, así que puedes comparar.
 
-## Compilar desde el código
+<details>
+<summary><b>Compilar desde el código</b></summary>
 
 Requiere el [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0). Ejecuta `dotnet build TaskbarGroupsFluent.sln -c Release` y arranca `TaskbarGroups.App`. La carpeta que empaqueta el instalador sale de:
 
@@ -96,11 +109,14 @@ dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contain
 
 El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a partir de [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` lleva la lógica, `TaskbarGroups.App` la ventana principal y el editor, `TaskbarGroups.Background` el panel, y `TaskbarGroups.Hover` el vigilante opcional para abrir al pasar el cursor.
 
+</details>
+
 ## Licencia
 
 [MIT](LICENSE), igual que los proyectos de arriba.
 
-## Créditos
+<details>
+<summary><b>Créditos</b></summary>
 
 |  |  |
 |---|---|
@@ -108,6 +124,8 @@ El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a pa
 | [**PikeNote/taskbar-groups-pike-beta**](https://github.com/PikeNote/taskbar-groups-pike-beta) | El fork de la comunidad del que partió esta reescritura. |
 | [**WPF-UI**](https://github.com/lepoco/wpfui) | Lo usa esta app. |
 | [**SkiaSharp**](https://github.com/mono/SkiaSharp) | Lo usa esta app. |
+
+</details>
 
 <br>
 
