@@ -17,9 +17,18 @@ Windows 10 / 11 x64 · Gratis · [Licencia MIT](LICENSE)
 
 </div>
 
-<p align="center"><img src="docs/screenshots/panel-click.gif" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11, cada uno abierto con un clic: columna vertical, lista, cuadrícula y fila"></p>
+<table>
+<tr>
+<th align="center">Haz clic en un grupo</th>
+<th align="center">O deja el cursor encima</th>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="docs/screenshots/panel-click.gif" alt="Cuatro grupos anclados en una barra de tareas real de Windows 11, cada uno abierto con un clic: columna vertical, lista, cuadrícula y fila"></td>
+<td align="center" width="50%"><img src="docs/screenshots/panel-hover.gif" alt="Los mismos cuatro grupos abriéndose solos al posar el cursor en cada uno, y cerrándose al alejarlo"></td>
+</tr>
+</table>
 
-<p align="center">Haz clic en un grupo. Grabado en una barra de tareas real de Windows 11. <strong>Abrir al pasar el cursor</strong> viene apagado; se enciende en la barra rápida. Vídeos: <a href="docs/screenshots/panel-click.mp4">clic</a>, <a href="docs/screenshots/panel-hover.mp4">pasar el ratón</a>. <a href="https://tbgf.munito.dev">Demo en la web</a></p>
+<p align="center">Grabado en una barra de tareas real de Windows 11. <strong>Abrir al pasar el cursor</strong> viene apagado; se enciende en la barra rápida. Vídeos: <a href="docs/screenshots/panel-click.mp4">clic</a>, <a href="docs/screenshots/panel-hover.mp4">pasar el ratón</a>. <a href="https://tbgf.munito.dev">Demo en la web</a></p>
 
 ## Cómo funciona
 
@@ -54,15 +63,8 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 
 <table>
 <tr>
-<td width="50%" valign="top"><img src="docs/screenshots/panel-hover.gif" alt="Los mismos cuatro grupos abriéndose solos al posar el cursor en cada uno, y cerrándose al alejarlo"><br>O deja el cursor encima</td>
 <td width="50%" valign="top"><img src="docs/screenshots/es/main.png" alt="Ventana principal con cuatro grupos y la barra rápida abajo"><br>Tus grupos</td>
-</tr>
-</table>
-
-<table>
-<tr>
 <td width="50%" valign="top"><img src="docs/screenshots/es/editor.png" alt="Editor de grupo con sus apps y la vista previa del panel"><br>Editor de grupo</td>
-<td width="50%"></td>
 </tr>
 </table>
 

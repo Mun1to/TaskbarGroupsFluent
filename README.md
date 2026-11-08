@@ -17,9 +17,18 @@ Windows 10 / 11 x64 · Free · [Licence MIT](LICENSE)
 
 </div>
 
-<p align="center"><img src="docs/screenshots/panel-click.gif" alt="Four groups pinned to a real Windows 11 taskbar, each opened with a click: a vertical column, a list, a grid and a row"></p>
+<table>
+<tr>
+<th align="center">Click a group</th>
+<th align="center">Or just rest the cursor on it</th>
+</tr>
+<tr>
+<td align="center" width="50%"><img src="docs/screenshots/panel-click.gif" alt="Four groups pinned to a real Windows 11 taskbar, each opened with a click: a vertical column, a list, a grid and a row"></td>
+<td align="center" width="50%"><img src="docs/screenshots/panel-hover.gif" alt="The same four groups opening by themselves as the cursor rests on each one, and closing when it moves away"></td>
+</tr>
+</table>
 
-<p align="center">Click a group. Recorded on a real Windows 11 taskbar. <strong>Open on hover</strong> is off by default; switch it on in the quick bar. Videos: <a href="docs/screenshots/panel-click.mp4">click</a>, <a href="docs/screenshots/panel-hover.mp4">hover</a>. <a href="https://tbgf.munito.dev">Live demo on the website</a></p>
+<p align="center">Recorded on a real Windows 11 taskbar. <strong>Open on hover</strong> is off by default; switch it on in the quick bar. Videos: <a href="docs/screenshots/panel-click.mp4">click</a>, <a href="docs/screenshots/panel-hover.mp4">hover</a>. <a href="https://tbgf.munito.dev">Live demo on the website</a></p>
 
 ## How it works
 
@@ -54,15 +63,8 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 
 <table>
 <tr>
-<td width="50%" valign="top"><img src="docs/screenshots/panel-hover.gif" alt="The same four groups opening by themselves as the cursor rests on each one, and closing when it moves away"><br>Or just rest the cursor on it</td>
 <td width="50%" valign="top"><img src="docs/screenshots/en/main.png" alt="Main window with four groups and the quick bar at the bottom"><br>Your groups</td>
-</tr>
-</table>
-
-<table>
-<tr>
 <td width="50%" valign="top"><img src="docs/screenshots/en/editor.png" alt="Group editor with the group's apps and a live preview of its panel"><br>Group editor</td>
-<td width="50%"></td>
 </tr>
 </table>
 
