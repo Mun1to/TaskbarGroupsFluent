@@ -126,6 +126,15 @@ namespace TaskbarGroups.Core
         public int hoverDelayMs { get; set; } = 400;
 
         /// <summary>
+        /// Keep one panel loaded at all times, so that even the first click after
+        /// signing in opens a group at once (issue #11). Off by default for the same
+        /// reason as <see cref="hoverToOpen"/>: it runs the resident program by the
+        /// clock, and it holds a loaded panel the whole time.
+        /// </summary>
+        [XmlElement]
+        public bool instantOpen { get; set; } = false;
+
+        /// <summary>
         /// How the panel comes and goes, one of <see cref="PanelAnimation"/>. None by
         /// default: it is a matter of taste, and the panel has always appeared at once.
         /// </summary>

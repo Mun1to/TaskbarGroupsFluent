@@ -87,12 +87,19 @@ internal sealed class TaskbarWatcher : IDisposable
     private void Poll()
     {
         // Picks up a changed dwell time without anyone restarting us, and lets us
-        // bow out if the feature was switched off behind our back.
-        if (_settings.TakeChange() && !Settings.settingInfo.hoverToOpen)
+        // bow out if everything we run for was switched off behind our back.
+        if (_settings.TakeChange() && !HoverService.Wanted())
         {
             TurnedOff?.Invoke();
             return;
         }
+
+        // Since issue #11 this process also runs without hover-to-open: for groups
+        // in the notification area, or to keep a panel loaded for good. Then only
+        // the warm flyout is looked after here, and no taskbar button is ever read.
+        bool hover = Settings.settingInfo.hoverToOpen;
+        bool keep = Settings.settingInfo.instantOpen;
+        if (keep) _warm.KeepReady(keep: true);
 
         if (!Native.GetCursorPos(out POINT cursor)) return;
 
@@ -121,11 +128,13 @@ internal sealed class TaskbarWatcher : IDisposable
                 // and go, and the flyout itself, which takes the best part of a
                 // second to load from cold. Approaching and turning away costs one
                 // reading a second, and a loaded flyout that is let go shortly after.
-                if (DateTime.UtcNow - _cachedAt > ApproachRefresh)
+                // The same head start serves a click on a pinned group or on a group
+                // by the clock, so it is taken with hover-to-open off as well.
+                if (hover && DateTime.UtcNow - _cachedAt > ApproachRefresh)
                     RefreshButtons(near);
-                _warm.KeepReady();
+                _warm.KeepReady(keep);
             }
-            else
+            else if (!keep)
             {
                 _warm.ReleaseIfIdle();
             }
@@ -133,7 +142,13 @@ internal sealed class TaskbarWatcher : IDisposable
             return;
         }
 
-        _warm.KeepReady();
+        _warm.KeepReady(keep);
+        if (!hover)
+        {
+            _hovered = null;
+            Forget();
+            return;
+        }
 
         // Only the taskbar under the cursor is read. Windows leaves a
         // Shell_SecondaryTrayWnd behind for monitors that are no longer attached,

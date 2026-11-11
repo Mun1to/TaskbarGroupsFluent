@@ -60,10 +60,12 @@ internal sealed class WarmFlyout : IDisposable
     public bool IsReady => FlyoutChannel.IsFlyoutReady();
 
     /// <summary>
-    /// Called while the cursor is on or near the taskbar. Starts the warm flyout if
-    /// there is not one already, ours or one a click left loaded.
+    /// Called while the cursor is on or near the taskbar, and on every tick when the
+    /// user asked for groups to open at once (<paramref name="keep"/>). Starts the
+    /// warm flyout if there is not one already, ours or one a click left loaded.
+    /// One started to be kept does not end after a few idle minutes as the others do.
     /// </summary>
-    public void KeepReady()
+    public void KeepReady(bool keep = false)
     {
         _awaySince = null;
         if (_process is not null && !_process.HasExited) return;
@@ -74,7 +76,8 @@ internal sealed class WarmFlyout : IDisposable
         _startedAt = DateTime.UtcNow;
         try
         {
-            _process = QuietStart.Start(Paths.BackgroundApplication, new[] { "--warm" });
+            _process = QuietStart.Start(Paths.BackgroundApplication,
+                keep ? new[] { "--warm", "--keep" } : new[] { "--warm" });
         }
         catch
         {

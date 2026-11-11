@@ -1,14 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
 namespace TaskbarGroups.Core
 {
     /// <summary>
-    /// Turns the hover-to-open watcher on and off. The watcher is a separate,
-    /// resident process, so switching the setting has to do three things that must
-    /// stay in step: persist the choice, register or clear the Windows startup
-    /// entry, and start or stop the process that is running right now.
+    /// Starts and stops the resident program by the clock (TaskbarGroups.Hover).
+    /// It began as the hover-to-open watcher and still carries its name, but since
+    /// issue #11 it runs for any of three reasons: opening on hover, keeping a panel
+    /// loaded so groups open at once, and showing groups in the notification area.
+    /// Whenever one of them changes, three things must stay in step: the choice
+    /// saved, the Windows startup entry, and the process running right now.
     /// </summary>
     public static class HoverService
     {
@@ -26,18 +29,73 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
-        /// Applies the setting end to end. Returns false if the watcher was meant to
-        /// start but its executable is missing, which happens when the app runs from
-        /// a build tree that has not deployed it yet.
+        /// True if anything the user switched on needs the resident program: hover to
+        /// open, instant opening, or a group shown in the notification area.
+        /// </summary>
+        public static bool Wanted()
+            => Settings.settingInfo.hoverToOpen
+            || Settings.settingInfo.instantOpen
+            || TrayGroupNames().Count > 0;
+
+        /// <summary>
+        /// The groups ticked to show in the notification area, in the order their
+        /// folders are listed. Separators never are: they have no panel to open.
+        /// A group that will not load is skipped, as everywhere else.
+        /// </summary>
+        public static List<string> TrayGroupNames()
+        {
+            var names = new List<string>();
+            try
+            {
+                foreach (string dir in Directory.GetDirectories(Paths.ConfigPath))
+                {
+                    if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) continue;
+                    try
+                    {
+                        var group = new Category(dir);
+                        if (group.ShowInTray && !group.IsSeparator) names.Add(group.Name);
+                    }
+                    catch { /* a broken group has no icon to show */ }
+                }
+            }
+            catch { /* no config folder yet means no groups */ }
+            return names;
+        }
+
+        /// <summary>
+        /// Applies the hover setting end to end. Returns false if the watcher was
+        /// meant to start but its executable is missing, which happens when the app
+        /// runs from a build tree that has not deployed it yet.
         /// </summary>
         public static bool Apply(bool enabled)
         {
             Settings.settingInfo.hoverToOpen = enabled;
             Settings.writeXML();
+            return Sync();
+        }
 
-            RegisterStartup(enabled);
+        /// <summary>Applies the instant-open setting end to end, as <see cref="Apply"/> does.</summary>
+        public static bool ApplyInstantOpen(bool enabled)
+        {
+            Settings.settingInfo.instantOpen = enabled;
+            Settings.writeXML();
+            return Sync();
+        }
 
-            if (!enabled)
+        /// <summary>
+        /// Brings the startup entry and the running process in line with what is
+        /// switched on now. A program that is already running is left alone: it reads
+        /// the settings and the groups again by itself, and leaves once nothing needs
+        /// it, so it is never killed and restarted (that race is what once left the
+        /// feature on with nothing running). Returns false only if it was wanted and
+        /// could not be started.
+        /// </summary>
+        public static bool Sync()
+        {
+            bool wanted = Wanted();
+            RegisterStartup(wanted);
+
+            if (!wanted)
             {
                 Stop();
                 return true;

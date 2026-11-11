@@ -42,16 +42,18 @@ public partial class App : Application
         // Started to sit ready rather than to show anything: load, paint off screen,
         // and wait to be told which group to put up. Everything slow is paid for
         // now, while the cursor is only heading towards the taskbar.
-        foreach (string a in e.Args)
+        if (Array.Exists(e.Args, a => a.Equals("--warm", StringComparison.OrdinalIgnoreCase)))
         {
-            if (a.Equals("--warm", StringComparison.OrdinalIgnoreCase)) { RunWarm(); return; }
+            RunWarm(keep: Array.Exists(e.Args, a => a.Equals(KeepArgument, StringComparison.OrdinalIgnoreCase)));
+            return;
         }
 
-        // "Edit group" from a pinned group's right-click menu, in the Store package.
-        // There the flyout's alias is the only way in from outside (the Store allows
-        // one alias per app), so the menu comes here and the editor is handed on to
-        // the main app, which this process can start by its real path.
-        if (Array.Exists(e.Args, a => a.Equals("--edit", StringComparison.OrdinalIgnoreCase)))
+        // "Edit group" and the app itself from a pinned group's right-click menu, in
+        // the Store package. There the flyout's alias is the only way in from outside
+        // (the Store allows one alias per app), so the menu comes here and the request
+        // is handed on to the main app, which this process can start by its real path.
+        if (Array.Exists(e.Args, a => a.Equals("--edit", StringComparison.OrdinalIgnoreCase)
+                                   || a.Equals(GroupJumpList.OpenAppArgument, StringComparison.OrdinalIgnoreCase)))
         {
             try
             {
@@ -176,14 +178,24 @@ public partial class App : Application
 
 
     /// <summary>
+    /// Passed with "--warm" when the user asked for groups to open at once (issue
+    /// #11): the flyout then stays for as long as the watcher does, however long
+    /// nothing is asked of it, instead of going after a few idle minutes.
+    /// </summary>
+    public const string KeepArgument = "--keep";
+
+    /// <summary>
     /// The warm mode. One flyout is loaded and painted off screen, then shows and
     /// hides itself on request for as long as the watcher keeps it around.
     ///
     /// It has to be loaded with something, since a window with no content cannot be
     /// laid out, so it takes the first group it finds; whatever it is actually asked
     /// for replaces that in about fifty milliseconds.
+    ///
+    /// Kept for good (<paramref name="keep"/>), it hands its memory back as soon as
+    /// it is painted, as a parked flyout does: it may wait for hours.
     /// </summary>
-    private void RunWarm()
+    private void RunWarm(bool keep)
     {
         // A flyout a click left loaded is already doing this job, and the watcher
         // talks to it just the same. A second one would only fight it for the channel.
@@ -200,7 +212,8 @@ public partial class App : Application
 
         var window = new PopupWindow(seed);
         window.Prewarm();
-        Serve(window, WatcherWarmLife, needsWatcher: true);
+        Serve(window, keep ? Timeout.InfiniteTimeSpan : WatcherWarmLife, needsWatcher: true);
+        if (keep) window.HideForReuse();
     }
 
     /// <summary>
@@ -256,7 +269,9 @@ public partial class App : Application
             bool watcherGone = needsWatcher && !HoverService.IsRunning();
 
             // A panel still on screen is in use, however long ago it was asked for.
-            bool forgotten = window.IsParked && DateTime.UtcNow - lastAsk > idle;
+            // One kept for good is never forgotten, only orphaned.
+            bool forgotten = idle != Timeout.InfiniteTimeSpan
+                && window.IsParked && DateTime.UtcNow - lastAsk > idle;
             if (!watcherGone && !forgotten && !_quitAsked) return;
 
             // Something a right-click menu command opened is still up, and it lives

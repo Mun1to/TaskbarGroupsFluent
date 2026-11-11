@@ -94,6 +94,36 @@
                             IsOpen="False"
                             Message="{DynamicResource Loc_Settings_HoverRunning}" />
 
+                <!-- Issue #11: the first click after signing in was a cold start. -->
+                <ui:Card Padding="16" Margin="0,10,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:SymbolIcon Grid.Column="0" Symbol="Flash24" FontSize="22"
+                                       VerticalAlignment="Center" Margin="0,0,14,0"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Loc_Settings_InstantTitle}"
+                                       FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <TextBlock Text="{DynamicResource Loc_Settings_InstantSubtitle}"
+                                       FontSize="12" Margin="0,3,12,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+
+                        <ui:ToggleSwitch Grid.Column="2" x:Name="InstantToggle"
+                                         VerticalAlignment="Center"
+                                         AutomationProperties.Name="{DynamicResource Loc_Settings_InstantTitle}"
+                                         Checked="InstantToggle_Changed"
+                                         Unchecked="InstantToggle_Changed" />
+                    </Grid>
+                </ui:Card>
+
                 <ui:Card Padding="16" Margin="0,10,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>

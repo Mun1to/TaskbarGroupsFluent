@@ -17,6 +17,16 @@ public partial class App : Application
     protected override void OnStartup(StartupEventArgs e)
     {
         DispatcherUnhandledException += OnUnhandledException;
+
+        // The main window is already open: bring it forward instead of a second one.
+        // Before anything else, so a start that only hands over costs next to nothing.
+        string? editName = EditRequest(e.Args);
+        if (editName is null && MainInstance.HandOver())
+        {
+            Shutdown();
+            return;
+        }
+
         // The language and the light/dark look chosen in the quick bar, or Windows'
         // own, before any window is created so the first paint is already right.
         // AppTheme.Watch on each window then keeps it in sync with Windows while
@@ -36,11 +46,12 @@ public partial class App : Application
         // Off the UI thread — it re-resolves every shortcut's icon.
         Task.Run(IconCacheMaintenance.RefreshIfStale);
 
-        // Bring the hover watcher back if the user wants it and nothing is running:
-        // an update stops it to unlock its files, and the startup entry only fires at
-        // sign-in, so without this the feature would look switched on and do nothing
-        // until the next reboot.
-        if (Settings.settingInfo.hoverToOpen) Task.Run(() => HoverService.Start());
+        // Bring the program by the clock back if something needs it and nothing is
+        // running: an update stops it to unlock its files, and the startup entry only
+        // fires at sign-in, so without this hover, instant opening and the groups in
+        // the notification area would look switched on and do nothing until the next
+        // reboot. Only ever started here, never stopped: that is the switches' job.
+        Task.Run(() => { if (HoverService.Wanted()) HoverService.Start(); });
 
         // Groups pinned before 1.6.1 never had a right-click menu, and the list
         // Windows keeps can be wiped by a cleanup tool, so every start registers
@@ -51,9 +62,15 @@ public partial class App : Application
         // The pencil in a flyout's header asks for one group's editor, not the whole
         // app, which is why the main window is opened here rather than by a
         // StartupUri in App.xaml.
-        string? editName = EditRequest(e.Args);
-        if (editName is not null) EditOnly(editName);
-        else new MainWindow().Show();
+        if (editName is not null)
+        {
+            EditOnly(editName);
+            return;
+        }
+
+        var main = new MainWindow();
+        main.Show();
+        MainInstance.Serve(main);
     }
 
     /// <summary>
@@ -62,14 +79,15 @@ public partial class App : Application
     /// </summary>
     internal static void RegisterJumpListsInBackground()
     {
-        string openAll = Loc.Get("Loc_Jump_OpenAll"), openFolder = Loc.Get("Loc_Jump_OpenFolder"), edit = Loc.Get("Loc_Jump_Edit");
+        string openAll = Loc.Get("Loc_Jump_OpenAll"), openFolder = Loc.Get("Loc_Jump_OpenFolder"),
+            edit = Loc.Get("Loc_Jump_Edit"), openApp = Loc.Get("Loc_Jump_OpenApp");
         var thread = new System.Threading.Thread(() =>
         {
             try
             {
                 foreach (var group in Services.GroupService.LoadAll())
                     if (!group.IsSeparator)
-                        GroupJumpList.Register(group.Name, group.FolderSource.Length > 0 ? openFolder : openAll, edit);
+                        GroupJumpList.Register(group.Name, group.FolderSource.Length > 0 ? openFolder : openAll, edit, openApp);
             }
             catch { /* best effort: the menus only add convenience */ }
         }) { IsBackground = true };
@@ -93,7 +111,10 @@ public partial class App : Application
             .Find(g => string.Equals(g.Source.Name, name, StringComparison.OrdinalIgnoreCase));
         if (group is null)
         {
-            new MainWindow().Show();
+            if (MainInstance.HandOver()) { Shutdown(); return; }
+            var main = new MainWindow();
+            main.Show();
+            MainInstance.Serve(main);
             return;
         }
 

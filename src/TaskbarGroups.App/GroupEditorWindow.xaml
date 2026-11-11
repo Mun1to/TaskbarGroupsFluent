@@ -339,6 +339,14 @@
                             <ComboBox x:Name="HeaderPositionCombo" HorizontalAlignment="Right" MinWidth="150"
                                       SelectionChanged="PanelOption_Changed" />
                         </Grid>
+
+                        <!-- Issue #11: the group's own icon by the clock, which opens the
+                             same panel there. Not part of the preview, so no change event. -->
+                        <ui:ToggleSwitch x:Name="TrayToggle" Content="{DynamicResource Loc_Editor_ShowInTray}"
+                                         Margin="0,16,0,0" />
+                        <TextBlock Text="{DynamicResource Loc_Editor_ShowInTrayHint}" FontSize="12"
+                                   Margin="0,4,0,0" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                     </StackPanel>
                 </ui:Card>
             </StackPanel>

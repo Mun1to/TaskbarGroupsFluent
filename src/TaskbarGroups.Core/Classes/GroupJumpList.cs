@@ -5,18 +5,28 @@ using System.Runtime.InteropServices;
 namespace TaskbarGroups.Core
 {
     /// <summary>
-    /// The right-click menu of a pinned group: "Open all" and "Edit group". Windows
-    /// keeps one such list per AppUserModelID, and every pinned group already has
-    /// its own (<see cref="Category.AppIdPrefix"/> plus its name), so registering a
-    /// list under that ID is all it takes for the menu to appear on its button.
+    /// The right-click menu of a pinned group: "Open all", "Edit group" and, since
+    /// issue #11, the app itself. Windows keeps one such list per AppUserModelID,
+    /// and every pinned group already has its own (<see cref="Category.AppIdPrefix"/>
+    /// plus its name), so registering a list under that ID is all it takes for the
+    /// menu to appear on its button.
     ///
-    /// Both tasks start our own programs with arguments: the flyout with
-    /// "--open-all", the app with "--edit". Everything here is best effort; a list
-    /// that fails to register only means the menu shows Windows' defaults.
+    /// The tasks start our own programs with arguments: the flyout with
+    /// "--open-all", the app with "--edit" or "--open-app". Everything here is best
+    /// effort; a list that fails to register only means the menu shows Windows'
+    /// defaults.
     /// </summary>
     public static class GroupJumpList
     {
-        public static bool Register(string groupName, string openAllTitle, string editTitle)
+        /// <summary>
+        /// What the app's entry passes. The app opens its main window for any start
+        /// without "--edit", so the switch only matters inside the Store package,
+        /// where the menu reaches the app through the flyout's alias and the flyout
+        /// has to know to hand it on rather than look for a group.
+        /// </summary>
+        public const string OpenAppArgument = "--open-app";
+
+        public static bool Register(string groupName, string openAllTitle, string editTitle, string openAppTitle)
         {
             try
             {
@@ -32,6 +42,7 @@ namespace TaskbarGroups.Core
                 var tasks = (IObjectCollection)new CEnumerableObjectCollection();
                 tasks.AddObject(Task(Paths.PanelLauncher, quoted + " --open-all", openAllTitle, icon));
                 tasks.AddObject(Task(Paths.AppLauncher, "--edit " + quoted, editTitle, Paths.MainApplication));
+                tasks.AddObject(Task(Paths.AppLauncher, OpenAppArgument, openAppTitle, Paths.MainApplication));
                 list.AddUserTasks((IObjectArray)tasks);
                 list.CommitList();
                 return true;

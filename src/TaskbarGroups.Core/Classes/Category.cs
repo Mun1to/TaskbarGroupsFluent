@@ -81,6 +81,13 @@ namespace TaskbarGroups.Core
         public bool IsFolderGroup => !string.IsNullOrWhiteSpace(FolderSource);
 
         /// <summary>
+        /// The group also has an icon of its own by the clock, in the notification
+        /// area, which opens its panel there (issue #11). The resident program shows
+        /// it, so ticking this is one of the reasons that program runs.
+        /// </summary>
+        public bool ShowInTray = false;
+
+        /// <summary>
         /// Made up on the spot for a folder opened beside a panel, and never saved:
         /// it has no config folder, no shortcut and nothing to edit of its own.
         /// </summary>
@@ -156,6 +163,7 @@ namespace TaskbarGroups.Core
                 this.IconScale = category.IconScale;
                 this.GridIcon = category.GridIcon;
                 this.FolderSource = category.FolderSource ?? "";
+                this.ShowInTray = category.ShowInTray;
             }
 
         }

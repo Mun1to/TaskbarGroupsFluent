@@ -327,6 +327,11 @@ public partial class MainWindow : FluentWindow
             if (Directory.Exists(configDir)) Directory.Delete(configDir, true);
             if (File.Exists(group.ShortcutPath)) File.Delete(group.ShortcutPath);
             GroupJumpList.Remove(group.Name);
+
+            // It may have been the last reason for the program by the clock to run,
+            // and then its startup entry has to go too. The program drops the icon
+            // by itself.
+            if (group.Source.ShowInTray) HoverService.Sync();
         }
         catch (Exception ex)
         {

@@ -29,6 +29,13 @@ internal static class Native
     [DllImport("user32.dll")]
     internal static extern bool GetCursorPos(out POINT p);
 
+    /// <summary>
+    /// Lends the right to take the foreground, which a click on one of our icons by
+    /// the clock gives this process, to the flyout it starts for that click.
+    /// </summary>
+    [DllImport("user32.dll")]
+    internal static extern bool AllowSetForegroundWindow(int processId);
+
     [DllImport("user32.dll")]
     internal static extern bool GetWindowRect(nint hWnd, out RECT r);
 

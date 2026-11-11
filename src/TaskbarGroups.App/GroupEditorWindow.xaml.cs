@@ -123,7 +123,16 @@ public partial class GroupEditorWindow : FluentWindow
         LabelsToggle.IsChecked = category.ShowLabels;
         HeaderToggle.IsChecked = category.ShowHeader;
         HeaderPositionCombo.SelectedIndex = PanelLayouts.IsBottom(category.HeaderPosition) ? 1 : 0;
+        TrayToggle.IsChecked = _wasInTray = category.ShowInTray;
     }
+
+    /// <summary>
+    /// Whether the group was in the notification area when the editor opened. The
+    /// resident program is only started or stopped when that changes: a save that
+    /// leaves it alone must not touch a process the user has running for other
+    /// reasons, nor its startup entry.
+    /// </summary>
+    private bool _wasInTray;
 
     private string SelectedLayout()
         => LayoutRowRadio.IsChecked == true ? PanelLayouts.Row
@@ -756,7 +765,8 @@ public partial class GroupEditorWindow : FluentWindow
             HeaderPosition = SelectedHeaderPosition(),
             IconScale = SelectedIconScale(),
             GridIcon = _gridIcon,
-            FolderSource = FolderMode ? _folderSource : ""
+            FolderSource = FolderMode ? _folderSource : "",
+            ShowInTray = TrayToggle.IsChecked == true
         };
 
         DrawingImage groupImage = _groupImage ?? GenerateDefaultGroupImage(name);
@@ -775,8 +785,9 @@ public partial class GroupEditorWindow : FluentWindow
             return;
         }
 
-        // The pinned button's right-click menu: "Open all" and "Edit group".
-        GroupJumpList.Register(name, Loc.Get(FolderMode ? "Loc_Jump_OpenFolder" : "Loc_Jump_OpenAll"), Loc.Get("Loc_Jump_Edit"));
+        // The pinned button's right-click menu: "Open all", "Edit group" and the app.
+        GroupJumpList.Register(name, Loc.Get(FolderMode ? "Loc_Jump_OpenFolder" : "Loc_Jump_OpenAll"),
+            Loc.Get("Loc_Jump_Edit"), Loc.Get("Loc_Jump_OpenApp"));
 
         if (_isEditing)
         {
@@ -796,6 +807,12 @@ public partial class GroupEditorWindow : FluentWindow
                 GroupJumpList.Remove(_originalName!);
             }
         }
+
+        // Ticking or unticking "show by the clock" may be the only reason the resident
+        // program has to run, or to stop. One already running notices the change by
+        // itself; this starts it when it is not, and keeps the startup entry right.
+        // After a rename's cleanup, so the old folder no longer counts.
+        if (category.ShowInTray != _wasInTray) HoverService.Sync();
 
         DialogResult = true;
         Close();

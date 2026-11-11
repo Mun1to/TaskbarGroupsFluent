@@ -34,6 +34,7 @@ public partial class SettingsWindow : FluentWindow
         DelayBox.Items.Add(Loc.Get("Loc_Settings_DelayRelaxed"));
 
         HoverToggle.IsChecked = Settings.settingInfo.hoverToOpen;
+        InstantToggle.IsChecked = Settings.settingInfo.instantOpen;
         DelayBox.SelectedIndex = ClosestDelayIndex(Settings.settingInfo.hoverDelayMs);
         AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimateNone"));
         AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimatePeek"));
@@ -83,6 +84,26 @@ public partial class SettingsWindow : FluentWindow
         }
 
         UpdateHoverUi();
+    }
+
+    // Same program as hover-to-open, so the same way of failing and of saying so.
+    private async void InstantToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+
+        bool wanted = InstantToggle.IsChecked == true;
+        if (HoverService.ApplyInstantOpen(wanted) || !wanted) return;
+
+        _loading = true;
+        InstantToggle.IsChecked = false;
+        _loading = false;
+
+        await new MessageBox
+        {
+            Title = Loc.Get("Loc_Settings_Title"),
+            Content = Loc.Get("Loc_Settings_HoverMissing"),
+            CloseButtonText = Loc.Get("Loc_Common_Close")
+        }.ShowDialogAsync();
     }
 
     private void DelayBox_Changed(object sender, SelectionChangedEventArgs e)

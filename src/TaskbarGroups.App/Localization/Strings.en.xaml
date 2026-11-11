@@ -28,6 +28,7 @@
     <s:String x:Key="Loc_Jump_OpenAll">Open all</s:String>
     <s:String x:Key="Loc_Jump_Edit">Edit group</s:String>
     <s:String x:Key="Loc_Jump_OpenFolder">Open the folder</s:String>
+    <s:String x:Key="Loc_Jump_OpenApp">Open Taskbar Groups Fluent</s:String>
     <s:String x:Key="Loc_Main_Import">Import</s:String>
     <s:String x:Key="Loc_Main_ImportFile">From a group file…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">From Taskbar Groups…</s:String>
@@ -129,6 +130,8 @@
     <s:String x:Key="Loc_Editor_HeaderPosition">Group name position</s:String>
     <s:String x:Key="Loc_Editor_HeaderTop">Top</s:String>
     <s:String x:Key="Loc_Editor_HeaderBottom">Bottom</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTray">Also show it by the clock</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTrayHint">Its icon sits in the notification area, maybe behind the arrow, and a click there opens this panel. It needs the small program that sits by the clock and starts with Windows.</s:String>
     <s:String x:Key="Loc_Editor_AppOptions">App options</s:String>
     <s:String x:Key="Loc_Editor_Group">Group</s:String>
     <s:String x:Key="Loc_Editor_GroupTip">Add another group, which opens next to this panel like a submenu</s:String>
@@ -230,6 +233,8 @@
     <s:String x:Key="Loc_Settings_HoverSubtitle">Open a group by resting the cursor on its icon, no click needed. It needs a small program that sits in the notification area and starts with Windows.</s:String>
     <s:String x:Key="Loc_Settings_HoverRunning">It is running now. Its icon sits by the clock, possibly tucked behind the arrow; you can switch it off from there any time.</s:String>
     <s:String x:Key="Loc_Settings_HoverMissing">The program that watches the cursor was not found. Reinstall the app to restore it.</s:String>
+    <s:String x:Key="Loc_Settings_InstantTitle">Open groups instantly</s:String>
+    <s:String x:Key="Loc_Settings_InstantSubtitle">Keeps one panel loaded in the background, so even the first click after starting Windows opens at once. It needs the small program that sits by the clock and starts with Windows.</s:String>
     <s:String x:Key="Loc_Settings_DelayTitle">How long to wait</s:String>
     <s:String x:Key="Loc_Settings_DelaySubtitle">How long the cursor has to rest on the icon before the group opens.</s:String>
     <s:String x:Key="Loc_Settings_DelayFast">Fast</s:String>

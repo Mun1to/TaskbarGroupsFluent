@@ -28,6 +28,7 @@
     <s:String x:Key="Loc_Jump_OpenAll">Abrir todas</s:String>
     <s:String x:Key="Loc_Jump_Edit">Editar grupo</s:String>
     <s:String x:Key="Loc_Jump_OpenFolder">Abrir la carpeta</s:String>
+    <s:String x:Key="Loc_Jump_OpenApp">Abrir Taskbar Groups Fluent</s:String>
     <s:String x:Key="Loc_Main_Import">Importar</s:String>
     <s:String x:Key="Loc_Main_ImportFile">Desde un archivo de grupo…</s:String>
     <s:String x:Key="Loc_Main_ImportTbg">Desde Taskbar Groups…</s:String>
@@ -129,6 +130,8 @@
     <s:String x:Key="Loc_Editor_HeaderPosition">Dónde va el nombre del grupo</s:String>
     <s:String x:Key="Loc_Editor_HeaderTop">Arriba</s:String>
     <s:String x:Key="Loc_Editor_HeaderBottom">Abajo</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTray">Mostrarlo también junto al reloj</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTrayHint">Su icono va en la bandeja del sistema, puede que tras la flecha, y un clic ahí abre este panel. Necesita el programa pequeño que se queda junto al reloj y arranca con Windows.</s:String>
     <s:String x:Key="Loc_Editor_AppOptions">Opciones de la app</s:String>
     <s:String x:Key="Loc_Editor_Group">Grupo</s:String>
     <s:String x:Key="Loc_Editor_GroupTip">Añadir otro grupo, que se abre al lado de este panel, como un submenú</s:String>
@@ -230,6 +233,8 @@
     <s:String x:Key="Loc_Settings_HoverSubtitle">Abre un grupo con solo dejar el cursor encima de su icono, sin hacer clic. Necesita un programa que se queda en la bandeja del sistema y arranca con Windows.</s:String>
     <s:String x:Key="Loc_Settings_HoverRunning">Ya está en marcha. Su icono está junto al reloj, puede que escondido tras la flecha; desde ahí lo apagas cuando quieras.</s:String>
     <s:String x:Key="Loc_Settings_HoverMissing">No se encontró el programa que vigila el cursor. Vuelve a instalar la aplicación.</s:String>
+    <s:String x:Key="Loc_Settings_InstantTitle">Abrir los grupos al instante</s:String>
+    <s:String x:Key="Loc_Settings_InstantSubtitle">Deja un panel cargado en segundo plano, para que hasta el primer clic después de encender el PC abra al momento. Necesita el programa pequeño que se queda junto al reloj y arranca con Windows.</s:String>
     <s:String x:Key="Loc_Settings_DelayTitle">Cuánto esperar</s:String>
     <s:String x:Key="Loc_Settings_DelaySubtitle">El tiempo que el cursor debe quedarse quieto sobre el icono antes de que se abra.</s:String>
     <s:String x:Key="Loc_Settings_DelayFast">Rápido</s:String>
