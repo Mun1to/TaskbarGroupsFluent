@@ -47,6 +47,7 @@ Make each group your own:
 • Mix apps, folders and even other groups, which open beside the panel like a submenu, and open them all with one button.
 • Or have the panel show a folder, read again each time it opens: any folder, or a Windows place like the Control Panel, This PC or all your apps.
 • Set out a whole taskbar from one group: a group that holds groups pins them all, one after another, in its order and with its separators.
+• Keep a group by the clock too, with its own icon in the notification area, one click away from its panel.
 • Rename an app inside a group, give it launch arguments or run it as administrator.
 
 Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons, or just drag files and shortcuts in from File Explorer. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
@@ -55,7 +56,7 @@ It follows your Windows theme, accent colour and language (English or Spanish), 
 
 **What's new in this version**
 
-A group can now show a folder: the panel lists what is in it each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel like a submenu. A group that holds other groups can now pin them all to the taskbar, one after another, in its order and with taskbar separators where it has lines. On Windows 10, the steps to pin a group now match its right-click menu, and the panel draws its corners square like the rest of Windows 10.
+A group can now sit by the clock as well, with its own icon in the notification area: a click opens its panel right there, and its right-click menu opens all its apps or its editor. A new setting, Open groups instantly, keeps one panel ready in the background, so even the first click after starting Windows opens at once. The right-click menu of a pinned group can now open Taskbar Groups Fluent itself, and so does a double click on the app's icon by the clock; if the app is already open, it comes to the front instead of opening a second window.
 
 **Product features** (one per line, up to 20)
 
@@ -104,6 +105,7 @@ Haz cada grupo a tu manera:
 • Apps, carpetas e incluso otros grupos, que se abren al lado del panel como un submenú, y un botón para abrirlas todas.
 • O que el panel enseñe una carpeta, leída de nuevo cada vez que se abre: cualquier carpeta, o un lugar de Windows como el Panel de control, Este equipo o todas tus apps.
 • Monta toda una barra desde un grupo: un grupo que lleva grupos dentro los ancla todos, uno tras otro, en su orden y con sus separadores.
+• Ten un grupo también junto al reloj, con su propio icono en la zona de notificaciones, a un clic de su panel.
 • Cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
 
 Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos, o arrastra archivos y accesos directos desde el Explorador. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
@@ -112,7 +114,7 @@ Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés),
 
 **Novedades de esta versión**
 
-Un grupo ahora puede enseñar una carpeta: el panel lista lo que hay dentro cada vez que se abre, también lugares de Windows como el Panel de control, Este equipo o todas tus apps, y las carpetas de dentro se abren al lado del panel como un submenú. Un grupo que lleva otros dentro ahora los ancla todos a la barra de tareas, uno tras otro, en su orden y con separadores en la barra donde tiene líneas. En Windows 10, los pasos para anclar un grupo ya coinciden con su menú del clic derecho, y el panel dibuja sus esquinas rectas como el resto de Windows 10.
+Un grupo ahora puede estar también junto al reloj, con su propio icono en la zona de notificaciones: un clic abre su panel ahí mismo, y su menú del clic derecho abre todas sus apps o su editor. Un ajuste nuevo, «Abrir los grupos al instante», deja un panel preparado en segundo plano, para que hasta el primer clic después de encender Windows abra al momento. El menú del clic derecho de un grupo anclado ahora también abre Taskbar Groups Fluent, y un doble clic en el icono de la app junto al reloj, también; si la app ya estaba abierta, la trae delante en vez de abrir otra ventana.
 
 **Características** (una por línea, hasta 20)
 
