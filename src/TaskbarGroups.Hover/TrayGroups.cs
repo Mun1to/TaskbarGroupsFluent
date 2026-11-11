@@ -160,8 +160,13 @@ internal sealed class TrayGroups : IDisposable
         };
 
         // Built as it opens, so it is always in the current language and knows
-        // whether the group shows a folder now.
-        icon.ContextMenuStrip.Opening += (_, _) => FillMenu(icon.ContextMenuStrip, name);
+        // whether the group shows a folder now. An empty menu starts its Opening with
+        // Cancel already set, so once filled it is told to open after all.
+        icon.ContextMenuStrip.Opening += (_, e) =>
+        {
+            FillMenu(icon.ContextMenuStrip, name);
+            e.Cancel = false;
+        };
         icon.Visible = true;
         return icon;
     }

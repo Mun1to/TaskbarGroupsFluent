@@ -56,7 +56,13 @@ internal static class Program
         {
             if (e.Button == MouseButtons.Left) TrayGroups.StartApp();
         };
-        tray.ContextMenuStrip.Opening += (_, _) => FillMenu(tray.ContextMenuStrip);
+        // An empty menu starts its Opening with Cancel already set, and it would never
+        // show: once it is filled, it is told to open after all.
+        tray.ContextMenuStrip.Opening += (_, e) =>
+        {
+            FillMenu(tray.ContextMenuStrip);
+            e.Cancel = false;
+        };
 
         using var groups = new TrayGroups();
         groups.Emptied += () =>
