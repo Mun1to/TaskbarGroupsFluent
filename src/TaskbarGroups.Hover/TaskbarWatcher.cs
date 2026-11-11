@@ -304,18 +304,20 @@ internal sealed class TaskbarWatcher : IDisposable
         cache.Add(AutomationElement.BoundingRectangleProperty);
         cache.Add(AutomationElement.NameProperty);
 
+        // Where the pinned and running apps sit on the older taskbar, the one of
+        // Windows 10 that Start11 and StartAllBack also bring back on Windows 11.
+        // A button is only matched by its name in there, so Start, the search box
+        // or a clock that happens to read like a group never opens one.
+        RECT? taskList = TaskbarStyle.ClassicTaskList(bar);
+
         AutomationElementCollection buttons;
         try
         {
             using (cache.Activate())
-                buttons = root.FindAll(TreeScope.Descendants, ButtonCondition);
+                buttons = root.FindAll(TreeScope.Descendants,
+                    taskList is null ? ModernButtons : ClassicButtons);
         }
         catch { _buttons = found; return; }
-
-        // Where the pinned and running apps sit on a Windows 10 taskbar. A button is
-        // only matched by its name in there, so Start, the search box or a clock
-        // that happens to read like a group never opens one.
-        RECT? taskList = WindowsVersion.IsWindows11 ? null : TaskListOf(bar);
 
         foreach (AutomationElement button in buttons)
         {
@@ -351,16 +353,20 @@ internal sealed class TaskbarWatcher : IDisposable
     }
 
     /// <summary>
-    /// What counts as a taskbar button. On Windows 11 its buttons are buttons. The
-    /// taskbar of Windows 10 is an older control, and a pinned icon there can also
-    /// come through as a menu item or a split button, so those are taken too.
+    /// What counts as a button on the taskbar of Windows 11: its buttons.
     /// </summary>
-    private static readonly Condition ButtonCondition = WindowsVersion.IsWindows11
-        ? new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button)
-        : new OrCondition(
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button),
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem),
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.SplitButton));
+    private static readonly Condition ModernButtons =
+        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button);
+
+    /// <summary>
+    /// What counts as a button on the older taskbar. It is an older control, and a
+    /// pinned icon there can also come through as a menu item or a split button,
+    /// so those are taken too.
+    /// </summary>
+    private static readonly Condition ClassicButtons = new OrCondition(
+        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button),
+        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem),
+        new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.SplitButton));
 
     /// <summary>
     /// The group a taskbar button opens, or null if the button is not one of ours.
@@ -382,29 +388,6 @@ internal sealed class TaskbarWatcher : IDisposable
         return automationId.Length == 0 && name is not null
             ? PinnedGroups.ResolveByButtonName(name, _pins)
             : null;
-    }
-
-    /// <summary>
-    /// The rectangle of a Windows 10 taskbar's list of apps (MSTaskListWClass),
-    /// somewhere inside the taskbar window, or null if it is not there.
-    /// </summary>
-    private static RECT? TaskListOf(nint bar)
-    {
-        RECT? found = null;
-        var name = new System.Text.StringBuilder(32);
-        Native.EnumChildWindows(bar, (child, _) =>
-        {
-            name.Clear();
-            if (Native.GetClassName(child, name, name.Capacity) > 0
-                && name.ToString() == "MSTaskListWClass"
-                && Native.GetWindowRect(child, out RECT r))
-            {
-                found = r;
-                return false;
-            }
-            return true;
-        }, 0);
-        return found;
     }
 
     /// <summary>

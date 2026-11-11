@@ -29,11 +29,15 @@ namespace TaskbarGroups.Hover;
 internal static class TaskbarTooltip
 {
     /// <summary>
-    /// The window a taskbar tooltip lives in: a XAML popup on Windows 11, the
-    /// classic common-control tooltip on the older taskbar of Windows 10.
+    /// The window a taskbar tooltip lives in: a XAML popup on the taskbar of
+    /// Windows 11, the classic common-control tooltip on the older taskbar, the
+    /// one of Windows 10 that Start11 and StartAllBack also bring back. Set by
+    /// <see cref="Watch"/> from the taskbar itself, not from the version of Windows.
     /// </summary>
-    private static readonly string PopupClass =
-        WindowsVersion.IsWindows11 ? "Xaml_WindowedPopupClass" : "tooltips_class32";
+    private static string PopupClass = ModernPopup;
+
+    private const string ModernPopup = "Xaml_WindowedPopupClass";
+    private const string ClassicPopup = "tooltips_class32";
 
     /// <summary>
     /// Tallest a tooltip can be. The taskbar's right-click menu is the same class
@@ -75,6 +79,7 @@ internal static class TaskbarTooltip
 
         if (_shownHook != 0) return;
 
+        PopupClass = TaskbarStyle.ClassicTaskList(bar) is null ? ModernPopup : ClassicPopup;
         Native.GetWindowThreadProcessId(bar, out _owner);
         if (_owner == 0) return;
 
