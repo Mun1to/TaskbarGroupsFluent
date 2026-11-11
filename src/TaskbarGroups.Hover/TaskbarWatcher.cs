@@ -61,6 +61,17 @@ internal sealed class TaskbarWatcher : IDisposable
     private DateTime _hoverStart;
     private string? _opened;
 
+    // A taskbar that hands none of its buttons over to UI Automation, as
+    // StartAllBack's (issue #12): where its apps sit, so they can be told apart by
+    // the tooltip each one shows instead, and the group found that way.
+    private RECT? _blind;
+    private GroupButton? _tipped;
+
+    // Where the cursor came to rest and since when. A tooltip is only there once
+    // it has, and the dwell is counted from then rather than from the tooltip.
+    private POINT _restAt;
+    private DateTime _restSince;
+
     public TaskbarWatcher()
     {
         _timer = new System.Windows.Forms.Timer { Interval = TickMs };
@@ -102,6 +113,11 @@ internal sealed class TaskbarWatcher : IDisposable
         if (keep) _warm.KeepReady(keep: true);
 
         if (!Native.GetCursorPos(out POINT cursor)) return;
+        if (Math.Abs(cursor.X - _restAt.X) > RestSlop || Math.Abs(cursor.Y - _restAt.Y) > RestSlop)
+        {
+            _restAt = cursor;
+            _restSince = DateTime.UtcNow;
+        }
 
         // The cheap gate. Nothing else runs unless the cursor is on a taskbar, so
         // the common case costs two P/Invoke calls and nothing else.
@@ -166,6 +182,7 @@ internal sealed class TaskbarWatcher : IDisposable
         {
             if (b.Rect.Contains(cursor)) { hit = b; break; }
         }
+        hit ??= TooltipHit(bar, cursor);
 
         if (hit is null)
         {
@@ -177,7 +194,9 @@ internal sealed class TaskbarWatcher : IDisposable
         if (hit.Group != _hovered)
         {
             _hovered = hit.Group;
-            _hoverStart = DateTime.UtcNow;
+            // A group told by its tooltip is only known half a second in, when the
+            // tooltip shows; counting the dwell from then would add the two up.
+            _hoverStart = ReferenceEquals(hit, _tipped) ? _restSince : DateTime.UtcNow;
             Forget();
             return;
         }
@@ -287,6 +306,7 @@ internal sealed class TaskbarWatcher : IDisposable
     {
         _cachedAt = DateTime.UtcNow;
         _cachedBar = bar;
+        _blind = null;
         var found = new List<GroupButton>();
 
         if (DateTime.UtcNow - _pinsAt > PinCacheLife)
@@ -310,7 +330,7 @@ internal sealed class TaskbarWatcher : IDisposable
         cache.Add(AutomationElement.NameProperty);
 
         // Where the pinned and running apps sit on the older taskbar, the one of
-        // Windows 10 that Start11 and StartAllBack also bring back on Windows 11.
+        // Windows 10, or one built after it such as StartAllBack's on Windows 11.
         // A button is only matched by its name in there, so Start, the search box
         // or a clock that happens to read like a group never opens one.
         RECT? taskList = TaskbarStyle.ClassicTaskList(bar);
@@ -331,6 +351,7 @@ internal sealed class TaskbarWatcher : IDisposable
 
         // Buttons that carry no ID of ours, kept for a second look by their name.
         var others = new List<(string Name, RECT Rect)>();
+        int seenInList = 0;
 
         foreach (AutomationElement button in buttons)
         {
@@ -357,6 +378,7 @@ internal sealed class TaskbarWatcher : IDisposable
                 X = (int)Math.Round(box.Left + box.Width / 2),
                 Y = (int)Math.Round(box.Top + box.Height / 2)
             });
+            if (inTaskList) seenInList++;
             string? group = GroupFor(id, inTaskList ? name : null);
             if (group is not null) found.Add(new GroupButton(group, rect));
             else if (taskList is null && AppIdFromAutomationId(id) is null) others.Add((name, rect));
@@ -375,8 +397,58 @@ internal sealed class TaskbarWatcher : IDisposable
             }
         }
 
+        // Still no group, and the list of apps on screen has not one button UI
+        // Automation can see (StartAllBack's, measured), or there is no such list
+        // at all: then the groups are told by their tooltips, in Poll. Never on the
+        // taskbar of Windows 11, which hands every button over.
+        if (!modern && found.Count == 0 && _pins.Count > 0 && (taskList is null || seenInList == 0))
+        {
+            if (taskList is RECT list) _blind = list;
+            else if (Native.GetWindowRect(bar, out RECT whole)) _blind = whole;
+        }
+
         _buttons = found;
     }
+
+    /// <summary>
+    /// The group the cursor rests on, told by the tooltip the taskbar shows for
+    /// it, on a taskbar whose buttons UI Automation cannot see (issue #12). Null
+    /// anywhere else.
+    ///
+    /// The tooltip gives the name but not where the button is, so the button is
+    /// taken to be a square as thick as the bar, centred where the cursor rested.
+    /// It stands for as long as the cursor stays inside it, since the tooltip goes
+    /// away by itself, and is hidden as the panel opens.
+    /// </summary>
+    private GroupButton? TooltipHit(nint bar, POINT cursor)
+    {
+        if (_tipped is not null && _tipped.Rect.Contains(cursor)) return _tipped;
+        _tipped = null;
+
+        if (_blind is not RECT area || bar != _cachedBar || !area.Contains(cursor)) return null;
+
+        // Only once the cursor has settled. Before that there is no tooltip yet, or
+        // there is still the one of the button the cursor has just left.
+        if (DateTime.UtcNow - _restSince < RestBeforeTooltip) return null;
+
+        string? group = TooltipReader.GroupNear(bar, cursor,
+            name => PinnedGroups.ResolveByButtonName(name, _pins));
+        if (group is null) return null;
+
+        int half = Math.Min(area.Width, area.Height) / 2;
+        RECT rect = area.Width >= area.Height
+            ? new RECT { Left = Math.Max(area.Left, cursor.X - half), Right = Math.Min(area.Right, cursor.X + half), Top = area.Top, Bottom = area.Bottom }
+            : new RECT { Left = area.Left, Right = area.Right, Top = Math.Max(area.Top, cursor.Y - half), Bottom = Math.Min(area.Bottom, cursor.Y + half) };
+
+        _tipped = new GroupButton(group, rect);
+        return _tipped;
+    }
+
+    /// <summary>How far the cursor may drift and still count as resting, in pixels.</summary>
+    private const int RestSlop = 3;
+
+    /// <summary>How long the cursor rests before a tooltip is looked for.</summary>
+    private static readonly TimeSpan RestBeforeTooltip = TimeSpan.FromMilliseconds(150);
 
     /// <summary>
     /// What counts as a button on the taskbar of Windows 11: its buttons.

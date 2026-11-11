@@ -98,6 +98,15 @@ internal static class Native
     [DllImport("user32.dll")]
     internal static extern bool GetMonitorInfo(nint monitor, ref MONITORINFO info);
 
+    // WM_GETTEXT to a window of another process, with a timeout so a taskbar that
+    // hangs cannot hang the watcher with it.
+    [DllImport("user32.dll", CharSet = CharSet.Unicode, EntryPoint = "SendMessageTimeoutW")]
+    internal static extern nint SendMessageTimeout(nint hWnd, uint msg, nint wParam,
+        System.Text.StringBuilder lParam, uint flags, uint timeoutMs, out nint result);
+
+    internal const uint WM_GETTEXT = 0x000D;
+    internal const uint SMTO_ABORTIFHUNG = 0x0002;
+
     internal delegate void WinEventProc(nint hook, uint evt, nint hWnd,
         int objectId, int childId, uint thread, uint time);
 
