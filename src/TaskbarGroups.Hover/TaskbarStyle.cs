@@ -40,6 +40,28 @@ internal static class TaskbarStyle
         return xaml ? null : list;
     }
 
+    /// <summary>
+    /// Whether <paramref name="bar"/> is drawn the way the taskbar of Windows 11
+    /// is, with a XAML island across it.
+    /// </summary>
+    public static bool HasXamlIsland(nint bar)
+    {
+        bool xaml = false;
+        var name = new System.Text.StringBuilder(64);
+        Native.EnumChildWindows(bar, (child, unused) =>
+        {
+            name.Clear();
+            if (Native.GetClassName(child, name, name.Capacity) > 0
+                && name.ToString() == XamlIsland && OnScreen(child, out RECT island))
+            {
+                xaml = true;
+                return false;
+            }
+            return true;
+        }, 0);
+        return xaml;
+    }
+
     private const string XamlIsland = "Windows.UI.Composition.DesktopWindowContentBridge";
     private const string TaskList = "MSTaskListWClass";
 

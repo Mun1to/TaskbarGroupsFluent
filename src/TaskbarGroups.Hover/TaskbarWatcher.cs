@@ -113,6 +113,11 @@ internal sealed class TaskbarWatcher : IDisposable
             if (Native.GetWindowRect(h, out RECT r) && r.Contains(cursor)) { bar = h; barRect = r; break; }
         }
 
+        // A taskbar of someone else's, such as the one Start11 draws (issue #12).
+        // A handful of calls more, and only when the cursor is on no taskbar of
+        // Windows; almost every window fails the first of them, being kept on top.
+        if (bar == 0 && hover) bar = TaskbarProbe.TaskbarAt(cursor, out barRect);
+
         if (bar == 0)
         {
             _hovered = null;
@@ -310,14 +315,22 @@ internal sealed class TaskbarWatcher : IDisposable
         // or a clock that happens to read like a group never opens one.
         RECT? taskList = TaskbarStyle.ClassicTaskList(bar);
 
+        // The taskbar of Windows 11 hands every icon over as a button, so only
+        // buttons are asked for there. Any other, the older one or one drawn by
+        // someone else such as Start11's (issue #12), may hand a pinned icon over
+        // as a menu item or a split button as well.
+        bool modern = taskList is null && TaskbarStyle.HasXamlIsland(bar);
+
         AutomationElementCollection buttons;
         try
         {
             using (cache.Activate())
-                buttons = root.FindAll(TreeScope.Descendants,
-                    taskList is null ? ModernButtons : ClassicButtons);
+                buttons = root.FindAll(TreeScope.Descendants, modern ? ModernButtons : ClassicButtons);
         }
         catch { _buttons = found; return; }
+
+        // Buttons that carry no ID of ours, kept for a second look by their name.
+        var others = new List<(string Name, RECT Rect)>();
 
         foreach (AutomationElement button in buttons)
         {
@@ -332,21 +345,34 @@ internal sealed class TaskbarWatcher : IDisposable
             catch { continue; }
             if (box.IsEmpty || box.Width <= 0) continue;
 
+            var rect = new RECT
+            {
+                Left = (int)Math.Round(box.Left),
+                Top = (int)Math.Round(box.Top),
+                Right = (int)Math.Round(box.Right),
+                Bottom = (int)Math.Round(box.Bottom)
+            };
             bool inTaskList = taskList is RECT list && list.Contains(new POINT
             {
                 X = (int)Math.Round(box.Left + box.Width / 2),
                 Y = (int)Math.Round(box.Top + box.Height / 2)
             });
             string? group = GroupFor(id, inTaskList ? name : null);
-            if (group is null) continue;
+            if (group is not null) found.Add(new GroupButton(group, rect));
+            else if (taskList is null && AppIdFromAutomationId(id) is null) others.Add((name, rect));
+        }
 
-            found.Add(new GroupButton(group, new RECT
+        // Not one button carried a group's ID, and there is no list of apps to look
+        // in: a taskbar that names its buttons its own way, as Start11's may (issue
+        // #12). Then a button is matched by the name of its pinned shortcut, the
+        // same name Windows reads out for it, wherever on the bar it is.
+        if (found.Count == 0 && _pins.Count > 0)
+        {
+            foreach (var (name, rect) in others)
             {
-                Left = (int)Math.Round(box.Left),
-                Top = (int)Math.Round(box.Top),
-                Right = (int)Math.Round(box.Right),
-                Bottom = (int)Math.Round(box.Bottom)
-            }));
+                string? group = PinnedGroups.ResolveByButtonName(name, _pins, wordAfter: true);
+                if (group is not null) found.Add(new GroupButton(group, rect));
+            }
         }
 
         _buttons = found;

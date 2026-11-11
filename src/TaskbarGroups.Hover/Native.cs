@@ -67,6 +67,37 @@ internal static class Native
 
     internal const int SW_HIDE = 0;
 
+    [DllImport("user32.dll")]
+    internal static extern nint WindowFromPoint(POINT p);
+
+    [DllImport("user32.dll")]
+    internal static extern nint GetAncestor(nint hWnd, uint flags);
+
+    internal const uint GA_ROOT = 2;
+
+    [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")]
+    internal static extern nint GetWindowLongPtr(nint hWnd, int index);
+
+    internal const int GWL_EXSTYLE = -20;
+    internal const long WS_EX_TOPMOST = 0x8;
+
+    [DllImport("user32.dll")]
+    internal static extern nint MonitorFromPoint(POINT p, uint flags);
+
+    internal const uint MONITOR_DEFAULTTONEAREST = 2;
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct MONITORINFO
+    {
+        public int cbSize;
+        public RECT rcMonitor;
+        public RECT rcWork;
+        public uint dwFlags;
+    }
+
+    [DllImport("user32.dll")]
+    internal static extern bool GetMonitorInfo(nint monitor, ref MONITORINFO info);
+
     internal delegate void WinEventProc(nint hook, uint evt, nint hWnd,
         int objectId, int childId, uint thread, uint time);
 

@@ -132,6 +132,18 @@ namespace TaskbarGroups.Core
         /// system, so only what comes before that is compared.
         /// </summary>
         public static string? ResolveByButtonName(string buttonName, IReadOnlyList<PinnedGroup> pins)
+            => ResolveByButtonName(buttonName, pins, wordAfter: false);
+
+        /// <summary>
+        /// As <see cref="ResolveByButtonName(string, IReadOnlyList{PinnedGroup})"/>,
+        /// and with <paramref name="wordAfter"/> it also takes a single word after
+        /// the name, which is how the taskbar of Windows 11 says a button is pinned
+        /// ("GAMES anclado" on a Spanish Windows, measured on 26200). That word is in
+        /// the language of the system, so it is not checked. Only for a taskbar where
+        /// no button could be told by its ID (issue #12), because "Web Browser" would
+        /// pass for a group called "Web" too.
+        /// </summary>
+        public static string? ResolveByButtonName(string buttonName, IReadOnlyList<PinnedGroup> pins, bool wordAfter)
         {
             string name = (buttonName ?? string.Empty).Trim();
             if (name.Length == 0) return null;
@@ -142,7 +154,11 @@ namespace TaskbarGroups.Core
                 if (p.LinkName.Length == 0) continue;
                 bool exact = string.Equals(name, p.LinkName, StringComparison.OrdinalIgnoreCase);
                 bool running = name.StartsWith(p.LinkName + " - ", StringComparison.OrdinalIgnoreCase);
-                if (!exact && !running) continue;
+                bool marked = wordAfter
+                    && name.StartsWith(p.LinkName + " ", StringComparison.OrdinalIgnoreCase)
+                    && name.Length > p.LinkName.Length + 1
+                    && name.IndexOf(' ', p.LinkName.Length + 1) < 0;
+                if (!exact && !running && !marked) continue;
                 if (exact) return p.GroupName;
                 // "Web - Tools" and "Web" both pinned: the longer name is the one meant.
                 if (best is null || p.LinkName.Length > best.LinkName.Length) best = p;

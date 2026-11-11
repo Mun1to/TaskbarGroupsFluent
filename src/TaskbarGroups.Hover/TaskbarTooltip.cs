@@ -30,9 +30,9 @@ internal static class TaskbarTooltip
 {
     /// <summary>
     /// The window a taskbar tooltip lives in: a XAML popup on the taskbar of
-    /// Windows 11, the classic common-control tooltip on the older taskbar, the
-    /// one of Windows 10 that Start11 and StartAllBack also bring back. Set by
-    /// <see cref="Watch"/> from the taskbar itself, not from the version of Windows.
+    /// Windows 11, the classic common-control tooltip on any other, such as the
+    /// one of Windows 10 that StartAllBack brings back. Set by <see cref="Watch"/>
+    /// from the taskbar itself, not from the version of Windows.
     /// </summary>
     private static string PopupClass = ModernPopup;
 
@@ -79,7 +79,7 @@ internal static class TaskbarTooltip
 
         if (_shownHook != 0) return;
 
-        PopupClass = TaskbarStyle.ClassicTaskList(bar) is null ? ModernPopup : ClassicPopup;
+        PopupClass = TaskbarStyle.HasXamlIsland(bar) ? ModernPopup : ClassicPopup;
         Native.GetWindowThreadProcessId(bar, out _owner);
         if (_owner == 0) return;
 
