@@ -49,11 +49,12 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 - **Separators** on the taskbar, to keep your groups apart from the rest of your pinned icons, and inside a panel, to split its apps into sections with an optional title.
 - **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
 - **Every monitor**: the panel opens over the icon you clicked, on that screen.
+- **By the clock** too, if you want: a group gets its own icon in the notification area, and a click there opens its panel.
 - **Group icon** from an image, a colour emoji or the group's own apps.
 - **Windows 11 glass** in four layouts: grid, row, column or list, with a live preview while you edit. On Windows 10 the panel is solid, like its own menus.
 - **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
-- **Open on hover**, no click needed (off by default).
-- **Right-click a pinned group** for **Open all** and **Edit group**, or **an app in the panel** for its own Windows menu.
+- **Open on hover**, no click needed, or **open instantly**, with a panel kept ready so even the first click after starting Windows is quick (both off by default).
+- **Right-click a pinned group** for **Open all**, **Edit group** or the app itself, or **an app in the panel** for its own Windows menu.
 - **Per-app options**: rename, launch arguments, run as administrator.
 - **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
 - **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
@@ -113,7 +114,7 @@ dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained fa
 dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
 ```
 
-The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional watcher for open on hover.
+The installer is built with [Inno Setup](https://jrsoftware.org/isinfo.php) from [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` holds the logic, `TaskbarGroups.App` the main window and editor, `TaskbarGroups.Background` the panel, and `TaskbarGroups.Hover` the optional program by the clock, for open on hover, groups by the clock and instant opening.
 
 </details>
 

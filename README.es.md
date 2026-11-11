@@ -49,11 +49,12 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 - **Separadores** en la barra de tareas, para separar tus grupos del resto de iconos anclados, y dentro del panel, para dividir sus apps en partes con un título si quieres.
 - **Arrastrar y soltar** archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto.
 - **Todos tus monitores**: el panel se abre encima del icono que pulsaste, en esa pantalla.
+- **Junto al reloj** también, si quieres: un grupo tiene su propio icono en la zona de notificaciones, y un clic ahí abre su panel.
 - **Icono del grupo** con una imagen, un emoji a color o las propias apps del grupo.
 - **Cristal de Windows 11** en cuatro formas: cuadrícula, fila, columna o lista, con vista previa mientras lo editas. En Windows 10 el panel es opaco, como sus propios menús.
 - **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).
-- **Abrir al pasar el cursor**, sin hacer clic (viene apagado).
-- **Clic derecho en un grupo anclado** para **Abrir todas** y **Editar grupo**, o **en una app del panel** para su menú de Windows.
+- **Abrir al pasar el cursor**, sin hacer clic, o **abrir al instante**, con un panel preparado para que hasta el primer clic tras encender Windows sea rápido (los dos vienen apagados).
+- **Clic derecho en un grupo anclado** para **Abrir todas**, **Editar grupo** o la propia app, o **en una app del panel** para su menú de Windows.
 - **Opciones por app**: cambiarle el nombre, pasarle argumentos o abrirla como administrador.
 - **Exporta, importa y duplica** grupos, o tráelos de Taskbar Groups o de AppGroup.
 - **Claro u oscuro, español o inglés**: sigue a Windows, o lo eliges en la barra rápida.
@@ -109,7 +110,7 @@ dotnet publish src/TaskbarGroups.Hover -c Release -r win-x64 --self-contained fa
 dotnet publish src/TaskbarGroups.Background -c Release -r win-x64 --self-contained false -o dist/TaskbarGroupsFluent/Background
 ```
 
-El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a partir de [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` lleva la lógica, `TaskbarGroups.App` la ventana principal y el editor, `TaskbarGroups.Background` el panel, y `TaskbarGroups.Hover` el vigilante opcional para abrir al pasar el cursor.
+El instalador se genera con [Inno Setup](https://jrsoftware.org/isinfo.php) a partir de [`installer/TaskbarGroupsFluent.iss`](installer/TaskbarGroupsFluent.iss). `TaskbarGroups.Core` lleva la lógica, `TaskbarGroups.App` la ventana principal y el editor, `TaskbarGroups.Background` el panel, y `TaskbarGroups.Hover` el programa opcional junto al reloj, para abrir al pasar el cursor, los grupos junto al reloj y abrir al instante.
 
 </details>
 
