@@ -43,8 +43,8 @@ Windows 10 / 11 x64 · Free · [Licence MIT](LICENSE)
 
 Each group becomes **one taskbar button**. Click it and a small panel opens above it with every app in the group.
 
-- **Any installed app**, desktop or Microsoft Store, plus folders and even other groups, which open beside the panel like a submenu.
-- **A folder as a group**: the panel shows what is in a folder each time it opens, Windows places like the Control Panel, This PC or all your apps included, and the folders inside it open beside the panel.
+- **Any installed app**, desktop, Microsoft Store or a browser's web app, plus folders and even other groups, which open beside the panel like a submenu.
+- **A folder as a group**: the panel shows what is in a folder each time it opens, Windows places like the Control Panel, This PC, the Recycle Bin or all your apps included, and the folders inside it open beside the panel.
 - **A whole taskbar from one group**: a group that holds other groups pins them all, one after another, in its order and with taskbar separators where it has lines. Windows still wants your right-click for each one, and the app walks you through them.
 - **Separators** on the taskbar, to keep your groups apart from the rest of your pinned icons, and inside a panel, to split its apps into sections with an optional title.
 - **Drag and drop** files, folders and shortcuts from File Explorer or the desktop onto the group editor or an open panel.
@@ -55,7 +55,7 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 - **Slides out from behind the taskbar** like the Start menu, or peeks up, if you want it to (off by default).
 - **Open on hover**, no click needed, or **open instantly**, with a panel kept ready so even the first click after starting Windows is quick (both off by default).
 - **Right-click a pinned group** for **Open all**, **Edit group** or the app itself, or **an app in the panel** for its own Windows menu.
-- **Per-app options**: rename, launch arguments, run as administrator.
+- **Per-app options**: rename, its own icon, launch arguments, run as administrator.
 - **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
 - **Light or dark, in English, Spanish or Russian**: follows Windows, or pick them in the quick bar.
 - **Updates itself** when a new version is out, if you say so.

@@ -43,8 +43,8 @@ Windows 10 / 11 x64 · Gratis · [Licencia MIT](LICENSE)
 
 Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo se abre encima un pequeño panel con todas las apps del grupo.
 
-- **Cualquier app instalada**, de escritorio o de Microsoft Store, además de carpetas e incluso otros grupos, que se abren al lado del panel como un submenú.
-- **Una carpeta como grupo**: el panel enseña lo que hay en una carpeta cada vez que se abre, también lugares de Windows como el Panel de control, Este equipo o todas tus apps, y las carpetas de dentro se abren al lado del panel.
+- **Cualquier app instalada**, de escritorio, de Microsoft Store o una web app del navegador, además de carpetas e incluso otros grupos, que se abren al lado del panel como un submenú.
+- **Una carpeta como grupo**: el panel enseña lo que hay en una carpeta cada vez que se abre, también lugares de Windows como el Panel de control, Este equipo, la Papelera o todas tus apps, y las carpetas de dentro se abren al lado del panel.
 - **Toda una barra desde un grupo**: un grupo que lleva otros dentro los ancla todos, uno tras otro, en su orden y con separadores en la barra donde tiene líneas. Windows sigue pidiendo tu clic derecho en cada uno, y la app te va guiando.
 - **Separadores** en la barra de tareas, para separar tus grupos del resto de iconos anclados, y dentro del panel, para dividir sus apps en partes con un título si quieres.
 - **Arrastrar y soltar** archivos, carpetas y accesos directos desde el Explorador o el escritorio al editor del grupo o a un panel abierto.
@@ -55,7 +55,7 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 - **Sale de detrás de la barra** como el menú Inicio, o asoma, si quieres (viene apagado).
 - **Abrir al pasar el cursor**, sin hacer clic, o **abrir al instante**, con un panel preparado para que hasta el primer clic tras encender Windows sea rápido (los dos vienen apagados).
 - **Clic derecho en un grupo anclado** para **Abrir todas**, **Editar grupo** o la propia app, o **en una app del panel** para su menú de Windows.
-- **Opciones por app**: cambiarle el nombre, pasarle argumentos o abrirla como administrador.
+- **Opciones por app**: cambiarle el nombre o el icono, pasarle argumentos o abrirla como administrador.
 - **Exporta, importa y duplica** grupos, o tráelos de Taskbar Groups o de AppGroup.
 - **Claro u oscuro, en español, inglés o ruso**: sigue a Windows, o lo eliges en la barra rápida.
 - **Se actualiza sola** cuando sale una versión nueva, si tú le dices que sí.

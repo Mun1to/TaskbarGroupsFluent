@@ -100,6 +100,8 @@
         "acceptedAnswer": { "@type": "Answer", "text": "Actívalo en la barra rápida, abajo en la ventana de la app. Viene apagado de fábrica: usa un pequeño vigilante en la bandeja del sistema, que puedes apagar desde ahí o desde la misma barra." } },
       { "@type": "Question", "name": "¿Se actualiza sola?",
         "acceptedAnswer": { "@type": "Answer", "text": "Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app." } },
+      { "@type": "Question", "name": "¿Qué trae la versión 1.10?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Cada app de un grupo puede llevar su propio icono, y las web apps del navegador salen con su icono y su nombre y aparecen en la lista de apps. Pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Guardar un grupo ya no recarga la barra de tareas salvo que cambien de verdad su icono o su nombre, y aun así pregunta antes. Hay un tamaño de icono muy pequeño, la Papelera entre los lugares de Windows, los menús nativos de Windows junto al reloj y el instalador en ruso. Y con Start11 o StartAllBack, abrir al pasar el cursor reconoce el grupo por su icono." } },
       { "@type": "Question", "name": "¿Qué trae la versión 1.9?",
         "acceptedAnswer": { "@type": "Answer", "text": "Los paneles ya no esperan a que despierte un disco dormido o una unidad de red: salen al momento con sus iconos y comprueban las apps después. El icono junto al reloj se puede ocultar, desde su propio menú o en Ajustes, y los menús de los iconos junto al reloj tienen ya el aspecto de Windows 11, en claro y en oscuro. Y la app habla también ruso." } },
       { "@type": "Question", "name": "¿Qué trae la versión 1.8?",
@@ -1061,15 +1063,15 @@
       <article class="caja" data-reveal style="--i:3">
         <div class="ico" aria-hidden="true"><svg><use href="#i-search"/></svg></div>
         <h3 data-en="Every app, Store ones too">Todas tus apps, también las de la Store</h3>
-        <p data-en="One searchable list with everything installed, desktop and Microsoft Store alike, with no shortcuts to make by hand. A Browse button covers anything else.">
-          Una lista con buscador con todo lo instalado, de escritorio y de la Microsoft Store, sin crear accesos a mano. Y un botón Examinar para lo que no salga.
+        <p data-en="One searchable list with everything installed, desktop, Microsoft Store and your browser's web apps alike, with no shortcuts to make by hand. A Browse button covers anything else.">
+          Una lista con buscador con todo lo instalado, de escritorio, de la Microsoft Store y las web apps de tu navegador, sin crear accesos a mano. Y un botón Examinar para lo que no salga.
         </p>
       </article>
       <article class="caja" data-reveal style="--i:1">
         <div class="ico" aria-hidden="true"><svg><use href="#i-layout"/></svg></div>
         <h3 data-en="Four shapes, Windows 11 glass">Cuatro formas, con el cristal de Windows 11</h3>
-        <p data-en="Grid, row, column or list, with or without names, in three icon sizes and with the group's name on top, at the bottom or hidden. If you like, it slides out from behind the taskbar like the Start menu. Try them in the demo above.">
-          Cuadrícula, fila, columna o lista, con o sin nombres, en tres tamaños y con el nombre del grupo arriba, abajo o sin él. Si quieres, sale de detrás de la barra como el menú Inicio. Pruébalas en la demo de arriba.
+        <p data-en="Grid, row, column or list, with or without names, in four icon sizes and with the group's name on top, at the bottom or hidden. If you like, it slides out from behind the taskbar like the Start menu. Try them in the demo above.">
+          Cuadrícula, fila, columna o lista, con o sin nombres, en cuatro tamaños y con el nombre del grupo arriba, abajo o sin él. Si quieres, sale de detrás de la barra como el menú Inicio. Pruébalas en la demo de arriba.
         </p>
       </article>
       <article class="caja" data-reveal style="--i:2">
@@ -1089,8 +1091,8 @@
       <article class="caja" data-reveal style="--i:1">
         <div class="ico" aria-hidden="true"><svg><use href="#i-ajustes"/></svg></div>
         <h3 data-en="Per-app options">Opciones por app</h3>
-        <p data-en="Rename an app inside a group, give it launch arguments or have it run as administrator.">
-          Cámbiale el nombre a una app dentro del grupo, pásale argumentos o haz que se abra como administrador.
+        <p data-en="Rename an app inside a group, give it an icon of its own or launch arguments, or have it run as administrator.">
+          Cámbiale el nombre o el icono a una app dentro del grupo, pásale argumentos o haz que se abra como administrador.
         </p>
       </article>
       <article class="caja" data-reveal style="--i:2">
@@ -1336,6 +1338,10 @@
         <details>
           <summary><h3 data-en="Does it update itself?">¿Se actualiza sola?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
           <div class="faq-cajon"><p data-en="Yes. When it opens it checks GitHub for a new version and offers it to you: one click downloads it, installs it and reopens the app.">Sí. Al abrirse comprueba en GitHub si hay una versión nueva y te la ofrece: un clic la descarga, la instala y vuelve a abrir la app.</p></div>
+        </details>
+        <details>
+          <summary><h3 data-en="What is new in version 1.10?">¿Qué trae la versión 1.10?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+          <div class="faq-cajon"><p data-en="Each app in a group can wear an icon of its own, and a browser's web apps show their own icon and name and are listed in the app picker. Clicking a pinned group while its panel is open closes it, like the Start menu. Saving a group no longer reloads the taskbar unless its icon or its name really changed, and even then it asks first. There is a tiny icon size, the Recycle Bin among the Windows places, Windows' own menus by the clock and a Russian installer. And with Start11 or StartAllBack, open on hover finds the group by its icon.">Cada app de un grupo puede llevar su propio icono, y las web apps del navegador salen con su icono y su nombre y aparecen en la lista de apps. Pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Guardar un grupo ya no recarga la barra de tareas salvo que cambien de verdad su icono o su nombre, y aun así pregunta antes. Hay un tamaño de icono muy pequeño, la Papelera entre los lugares de Windows, los menús nativos de Windows junto al reloj y el instalador en ruso. Y con Start11 o StartAllBack, abrir al pasar el cursor reconoce el grupo por su icono.</p></div>
         </details>
         <details>
           <summary><h3 data-en="What is new in version 1.9?">¿Qué trae la versión 1.9?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
