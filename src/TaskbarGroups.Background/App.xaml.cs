@@ -146,6 +146,10 @@ public partial class App : Application
 
         w.Show();
 
+        // Issue #17: how long this click took, noted once the panel is painted.
+        if (anchor is null && Program.StartMs >= 0)
+            w.ContentRendered += (_, _) => OpenTimes.Note("cold", Program.StartMs, SinceStart());
+
         // A click from cold pays for loading everything, and the next one should
         // not. Looked at once the panel is up, so the check is never part of the wait.
         if (anchor is null)

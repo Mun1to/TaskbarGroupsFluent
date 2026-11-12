@@ -34,6 +34,12 @@ internal static class Program
     /// </summary>
     private const int Parked = (int)(PopupWindow.OffScreen / 2);
 
+    /// <summary>
+    /// For a click, the milliseconds from Windows creating this process to Main;
+    /// -1 for anything else. See <see cref="OpenTimes"/>.
+    /// </summary>
+    internal static double StartMs = -1;
+
     [STAThread]
     private static void Main(string[] args)
     {
@@ -42,9 +48,17 @@ internal static class Program
 
         // The second click on a group's button closes its panel instead of opening
         // it again: pressing the button already closed it (issue #17).
-        if (IsPlainClick(args) && ClickToggle.JustClosed(string.Join(" ", args))) return;
+        bool click = IsPlainClick(args);
+        if (click && ClickToggle.JustClosed(string.Join(" ", args))) return;
 
-        if (HandOff(args)) return;
+        // What Windows took to get us here, before any of our own work.
+        if (click) StartMs = OpenTimes.SinceProcessStart();
+
+        if (HandOff(args))
+        {
+            OpenTimes.Note("warm", StartMs, OpenTimes.SinceProcessStart());
+            return;
+        }
         RunWpf();
     }
 
