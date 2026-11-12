@@ -164,7 +164,7 @@ internal sealed class TaskbarWatcher : IDisposable
             // Another program's window lies over the taskbar here, and the cursor
             // is on that window, not on any icon of the taskbar.
         }
-        else if (DrawnByAnotherProgram(under))
+        else if (DrawnByAnotherProgram(under, bar))
         {
             // Issue #12: Start11 draws its own taskbar over the one of Windows 11,
             // which stays underneath with its buttons squeezed out of place, so its
@@ -244,12 +244,16 @@ internal sealed class TaskbarWatcher : IDisposable
     /// The windows the taskbar of Windows 11 is made of, where its buttons can be
     /// read. Anything else under the cursor inside a taskbar was put there by
     /// another program, as Start11 does, or is the older taskbar's list of apps.
+    /// Measured on Windows 11 26200: over the buttons of apps, Windows says the
+    /// window under the cursor is MSTaskSwWClass; over Start, search and the clock,
+    /// Shell_TrayWnd or TrayNotifyWnd.
     /// </summary>
     private static readonly HashSet<string> Windows11Parts = new(StringComparer.Ordinal)
     {
         "Shell_TrayWnd", "Shell_SecondaryTrayWnd",
         "Windows.UI.Composition.DesktopWindowContentBridge",
         "Windows.UI.Input.InputSite.WindowClass",
+        "MSTaskSwWClass", "ReBarWindow32",
         "TrayNotifyWnd"
     };
 
@@ -261,7 +265,7 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <see cref="Covered"/> if that window is not part of the taskbar
     /// <paramref name="bar"/> at all: some window lying on top of it.
     /// </summary>
-    private static string ClassUnder(POINT cursor, nint bar)
+    internal static string ClassUnder(POINT cursor, nint bar)
     {
         nint window = Native.WindowFromPoint(cursor);
         if (window == 0) return "";
@@ -273,9 +277,19 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <summary>
     /// Whether the taskbar under the cursor is drawn by some other program on top
     /// of Windows 11's, so the buttons of Windows 11 beneath can't be trusted.
+    ///
+    /// The older taskbar's list of apps is a case of its own. Windows 11 shows it,
+    /// a button or two wide, on the taskbars of other screens, and there its
+    /// buttons read fine (measured on 26200). On the main taskbar Windows 11 never
+    /// shows it: when it is under the cursor there, StartAllBack or Start11 has
+    /// brought the older taskbar back.
     /// </summary>
-    private static bool DrawnByAnotherProgram(string under)
-        => WindowsVersion.IsWindows11 && under.Length > 0 && !Windows11Parts.Contains(under);
+    internal static bool DrawnByAnotherProgram(string under, nint bar)
+    {
+        if (!WindowsVersion.IsWindows11 || under.Length == 0) return false;
+        if (under == TaskListClass) return bar == Native.FindWindow("Shell_TrayWnd", null);
+        return !Windows11Parts.Contains(under);
+    }
 
     private POINT _matchPoint;
     private DateTime _matchSince;
