@@ -45,8 +45,7 @@ internal static class Program
         {
             Icon = LoadIcon(),
             Text = Trim(TrayText.Tooltip),
-            Visible = !Settings.settingInfo.hideTrayIcon,
-            ContextMenuStrip = FluentMenu.Create()
+            Visible = !Settings.settingInfo.hideTrayIcon
         };
 
         // Issue #14: the icon can be hidden, from its own menu or the app's settings,
@@ -60,13 +59,7 @@ internal static class Program
         {
             if (e.Button == MouseButtons.Left) TrayGroups.StartApp();
         };
-        // An empty menu starts its Opening with Cancel already set, and it would never
-        // show: once it is filled, it is told to open after all.
-        tray.ContextMenuStrip.Opening += (_, e) =>
-        {
-            FillMenu(tray.ContextMenuStrip);
-            e.Cancel = false;
-        };
+        NativeMenu.Attach(tray, FillMenu);
 
         using var groups = new TrayGroups();
         groups.Emptied += () =>
@@ -81,23 +74,18 @@ internal static class Program
         tray.Visible = false;
     }
 
-    private static void FillMenu(ContextMenuStrip menu)
+    private static void FillMenu(NativeMenu menu)
     {
-        foreach (ToolStripItem old in menu.Items.Cast<ToolStripItem>().ToList()) old.Dispose();
-        menu.Items.Clear();
-
-        var open = new ToolStripMenuItem(TrayText.OpenApp, null, (_, _) => TrayGroups.StartApp());
-        open.Font = new Font(menu.Font, FontStyle.Bold);
-        menu.Items.Add(open);
-        menu.Items.Add(new ToolStripSeparator());
+        menu.Add(TrayText.OpenApp, () => TrayGroups.StartApp(), isDefault: true);
+        menu.Separator();
 
         if (Settings.settingInfo.hoverToOpen)
-            menu.Items.Add(TrayText.TurnOff, null, (_, _) => TurnOff(hover: true));
+            menu.Add(TrayText.TurnOff, () => TurnOff(hover: true));
         if (Settings.settingInfo.instantOpen)
-            menu.Items.Add(TrayText.TurnOffInstant, null, (_, _) => TurnOff(hover: false));
+            menu.Add(TrayText.TurnOffInstant, () => TurnOff(hover: false));
 
-        menu.Items.Add(TrayText.HideIcon, null, (_, _) => HideIcon());
-        menu.Items.Add(TrayText.Quit, null, (_, _) => Application.Exit());
+        menu.Add(TrayText.HideIcon, HideIcon);
+        menu.Add(TrayText.Quit, Application.Exit);
     }
 
     /// <summary>

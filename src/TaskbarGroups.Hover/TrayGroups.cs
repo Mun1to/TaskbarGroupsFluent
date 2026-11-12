@@ -148,8 +148,7 @@ internal sealed class TrayGroups : IDisposable
         var icon = new NotifyIcon
         {
             Icon = LoadIcon(name),
-            Text = Trim(name),
-            ContextMenuStrip = FluentMenu.Create()
+            Text = Trim(name)
         };
 
         // A plain click, as on the taskbar. The second click of a double click does
@@ -160,32 +159,21 @@ internal sealed class TrayGroups : IDisposable
         };
 
         // Built as it opens, so it is always in the current language and knows
-        // whether the group shows a folder now. An empty menu starts its Opening with
-        // Cancel already set, so once filled it is told to open after all.
-        icon.ContextMenuStrip.Opening += (_, e) =>
-        {
-            FillMenu(icon.ContextMenuStrip, name);
-            e.Cancel = false;
-        };
+        // whether the group shows a folder now.
+        NativeMenu.Attach(icon, menu => FillMenu(menu, name));
         icon.Visible = true;
         return icon;
     }
 
-    private static void FillMenu(ContextMenuStrip menu, string name)
+    private static void FillMenu(NativeMenu menu, string name)
     {
-        foreach (ToolStripItem old in menu.Items.Cast<ToolStripItem>().ToList()) old.Dispose();
-        menu.Items.Clear();
-
-        var open = new ToolStripMenuItem(TrayText.OpenGroup, null, (_, _) => OpenGroup(name));
-        open.Font = new Font(menu.Font, FontStyle.Bold);
-        menu.Items.Add(open);
+        menu.Add(TrayText.OpenGroup, () => OpenGroup(name), isDefault: true);
 
         bool folder = IsFolderGroup(name);
-        menu.Items.Add(folder ? TrayText.OpenFolder : TrayText.OpenAll, null,
-            (_, _) => StartPanel(name, "--open-all"));
-        menu.Items.Add(TrayText.EditGroup, null, (_, _) => StartApp("--edit", name));
-        menu.Items.Add(new ToolStripSeparator());
-        menu.Items.Add(TrayText.OpenApp, null, (_, _) => StartApp());
+        menu.Add(folder ? TrayText.OpenFolder : TrayText.OpenAll, () => StartPanel(name, "--open-all"));
+        menu.Add(TrayText.EditGroup, () => StartApp("--edit", name));
+        menu.Separator();
+        menu.Add(TrayText.OpenApp, () => StartApp());
     }
 
     private static bool IsFolderGroup(string name)
@@ -272,7 +260,6 @@ internal sealed class TrayGroups : IDisposable
         if (!_icons.Remove(name, out Entry? entry)) return;
         entry.Icon.Visible = false;
         Icon? icon = entry.Icon.Icon;
-        entry.Icon.ContextMenuStrip?.Dispose();
         entry.Icon.Dispose();
         if (icon is not null && !ReferenceEquals(icon, SystemIcons.Application)) icon.Dispose();
     }
