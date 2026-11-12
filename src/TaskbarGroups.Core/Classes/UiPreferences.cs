@@ -19,26 +19,35 @@ namespace TaskbarGroups.Core
         public const string Dark = "dark";
         public const string Spanish = "es";
         public const string English = "en";
+        public const string Russian = "ru";
 
-        /// <summary>"es" or "en": the app speaks those two and nothing else.</summary>
+        /// <summary>"es", "ru" or "en": the languages the app speaks, English for any other.</summary>
         public static string Language()
         {
             string forced = Environment.GetEnvironmentVariable("TBG_LANG");
-            if (!string.IsNullOrWhiteSpace(forced))
-                return forced.Trim().StartsWith("es", StringComparison.OrdinalIgnoreCase) ? Spanish : English;
+            if (!string.IsNullOrWhiteSpace(forced)) return Known(forced.Trim());
 
             string chosen = Settings.settingInfo?.language;
-            if (chosen == Spanish || chosen == English) return chosen;
+            if (chosen == Spanish || chosen == English || chosen == Russian) return chosen;
 
-            try
-            {
-                return CultureInfo.CurrentUICulture.TwoLetterISOLanguageName
-                    .Equals("es", StringComparison.OrdinalIgnoreCase) ? Spanish : English;
-            }
+            try { return Known(CultureInfo.CurrentUICulture.TwoLetterISOLanguageName); }
             catch { return English; }
         }
 
+        private static string Known(string code)
+            => code.StartsWith(Spanish, StringComparison.OrdinalIgnoreCase) ? Spanish
+             : code.StartsWith(Russian, StringComparison.OrdinalIgnoreCase) ? Russian
+             : English;
+
         public static bool IsSpanish() => Language() == Spanish;
+
+        /// <summary>
+        /// One of three texts, in the language the app speaks now. For the few words
+        /// the flyout and the program by the clock show, which carry no string tables
+        /// of their own (issue #14 brought Russian).
+        /// </summary>
+        public static string Say(string english, string spanish, string russian)
+            => Language() switch { Spanish => spanish, Russian => russian, _ => english };
 
         /// <summary>"light", "dark" or "system" when nothing forces either.</summary>
         public static string Theme()

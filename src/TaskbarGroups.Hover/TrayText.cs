@@ -1,3 +1,5 @@
+using TaskbarGroups.Core;
+
 namespace TaskbarGroups.Hover;
 
 /// <summary>
@@ -11,35 +13,38 @@ namespace TaskbarGroups.Hover;
 /// </summary>
 internal static class TrayText
 {
-    private static bool Spanish => TaskbarGroups.Core.UiPreferences.IsSpanish();
-
     internal static string Tooltip => "Taskbar Groups Fluent";
 
-    internal static string OpenApp => Spanish
-        ? "Abrir Taskbar Groups Fluent"
-        : "Open Taskbar Groups Fluent";
+    internal static string OpenApp => UiPreferences.Say(
+        "Open Taskbar Groups Fluent",
+        "Abrir Taskbar Groups Fluent",
+        "Открыть Taskbar Groups Fluent");
 
-    internal static string TurnOff => Spanish
-        ? "Desactivar apertura al pasar el cursor"
-        : "Turn off open on hover";
+    internal static string TurnOff => UiPreferences.Say(
+        "Turn off open on hover",
+        "Desactivar apertura al pasar el cursor",
+        "Отключить открытие при наведении");
 
-    internal static string TurnOffInstant => Spanish
-        ? "Desactivar la apertura al instante"
-        : "Turn off instant opening";
+    internal static string TurnOffInstant => UiPreferences.Say(
+        "Turn off instant opening",
+        "Desactivar la apertura al instante",
+        "Отключить мгновенное открытие");
 
-    internal static string HideIcon => Spanish
-        ? "Ocultar este icono (vuelve desde los ajustes de la app)"
-        : "Hide this icon (bring it back in the app's settings)";
+    internal static string HideIcon => UiPreferences.Say(
+        "Hide this icon (bring it back in the app's settings)",
+        "Ocultar este icono (vuelve desde los ajustes de la app)",
+        "Скрыть этот значок (вернуть можно в настройках приложения)");
 
-    internal static string Quit => Spanish
-        ? "Salir hasta el próximo inicio"
-        : "Quit until next sign-in";
+    internal static string Quit => UiPreferences.Say(
+        "Quit until next sign-in",
+        "Salir hasta el próximo inicio",
+        "Выйти до следующего входа в систему");
 
-    internal static string OpenGroup => Spanish ? "Abrir" : "Open";
+    internal static string OpenGroup => UiPreferences.Say("Open", "Abrir", "Открыть");
 
-    internal static string OpenAll => Spanish ? "Abrir todas" : "Open all";
+    internal static string OpenAll => UiPreferences.Say("Open all", "Abrir todas", "Открыть все");
 
-    internal static string OpenFolder => Spanish ? "Abrir la carpeta" : "Open the folder";
+    internal static string OpenFolder => UiPreferences.Say("Open the folder", "Abrir la carpeta", "Открыть папку");
 
-    internal static string EditGroup => Spanish ? "Editar grupo" : "Edit group";
+    internal static string EditGroup => UiPreferences.Say("Edit group", "Editar grupo", "Изменить группу");
 }

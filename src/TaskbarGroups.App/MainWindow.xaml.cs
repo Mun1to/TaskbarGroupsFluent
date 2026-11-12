@@ -49,7 +49,8 @@ public partial class MainWindow : FluentWindow
 
         string lang = Settings.settingInfo.language;
         (lang == UiPreferences.Spanish ? LangEs
-            : lang == UiPreferences.English ? LangEn : LangSystem).IsChecked = true;
+            : lang == UiPreferences.English ? LangEn
+            : lang == UiPreferences.Russian ? LangRu : LangSystem).IsChecked = true;
 
         QuickHoverToggle.IsChecked = Settings.settingInfo.hoverToOpen;
         VersionText.Text = UpdateChecker.CurrentTag;
@@ -72,7 +73,8 @@ public partial class MainWindow : FluentWindow
     {
         if (_quickLoading) return;
         Settings.settingInfo.language = sender == LangEs ? UiPreferences.Spanish
-            : sender == LangEn ? UiPreferences.English : UiPreferences.System;
+            : sender == LangEn ? UiPreferences.English
+            : sender == LangRu ? UiPreferences.Russian : UiPreferences.System;
         Settings.writeXML();
 
         Loc.ApplyLanguage(Application.Current);

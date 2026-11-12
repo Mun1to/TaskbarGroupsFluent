@@ -1,0 +1,254 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Общие -->
+    <s:String x:Key="Loc_Common_AppName">Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Common_Cancel">Отмена</s:String>
+    <s:String x:Key="Loc_Common_Add">Добавить</s:String>
+    <s:String x:Key="Loc_Common_Edit">Изменить</s:String>
+    <s:String x:Key="Loc_Common_Delete">Удалить</s:String>
+    <s:String x:Key="Loc_Common_Close">Закрыть</s:String>
+    <s:String x:Key="Loc_Common_Understood">Понятно</s:String>
+    <s:String x:Key="Loc_Common_Remove">Убрать</s:String>
+    <s:String x:Key="Loc_Common_Attention">Внимание</s:String>
+
+    <!-- Главное окно -->
+    <s:String x:Key="Loc_Main_Heading">Ваши группы</s:String>
+    <s:String x:Key="Loc_Main_Subheading">Объединяйте ярлыки в группы и закрепляйте их на панели задач</s:String>
+    <s:String x:Key="Loc_Main_AddGroup">Добавить группу</s:String>
+    <s:String x:Key="Loc_Main_SeparatorButton">Разделитель</s:String>
+    <s:String x:Key="Loc_Main_AddSeparator">Добавить разделитель на панель задач</s:String>
+    <s:String x:Key="Loc_Main_SeparatorFailTitle">Не удалось создать разделитель</s:String>
+    <s:String x:Key="Loc_Separator_DefaultName">Разделитель</s:String>
+    <s:String x:Key="Loc_Main_Pin">Закрепить на панели задач</s:String>
+    <s:String x:Key="Loc_Main_EmptyTitle">У вас пока нет групп</s:String>
+    <s:String x:Key="Loc_Main_EmptySubtitle">Создайте первую группу, чтобы навести порядок на панели задач</s:String>
+    <s:String x:Key="Loc_Main_CreateFirst">Создать первую группу</s:String>
+    <s:String x:Key="Loc_Jump_OpenAll">Открыть все</s:String>
+    <s:String x:Key="Loc_Jump_Edit">Изменить группу</s:String>
+    <s:String x:Key="Loc_Jump_OpenFolder">Открыть папку</s:String>
+    <s:String x:Key="Loc_Jump_OpenApp">Открыть Taskbar Groups Fluent</s:String>
+    <s:String x:Key="Loc_Main_Import">Импорт</s:String>
+    <s:String x:Key="Loc_Main_ImportFile">Из файла группы…</s:String>
+    <s:String x:Key="Loc_Main_ImportTbg">Из Taskbar Groups…</s:String>
+    <s:String x:Key="Loc_Main_ImportAppGroup">Из AppGroup…</s:String>
+    <s:String x:Key="Loc_Main_AppGroupFilter">Резервная копия AppGroup</s:String>
+    <s:String x:Key="Loc_Main_AppGroupNone">Не найдено групп AppGroup для импорта.</s:String>
+    <s:String x:Key="Loc_Main_ImportTbgPick">Выберите папку, в которой находился Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Main_GroupFileFilter">Группа Taskbar Groups</s:String>
+    <s:String x:Key="Loc_Main_ImportedTitle">Группы импортированы</s:String>
+    <s:String x:Key="Loc_Main_ImportedOne">Группа «{0}» импортирована.</s:String>
+    <s:String x:Key="Loc_Main_ImportedMany">Импортировано групп: {0}.</s:String>
+    <s:String x:Key="Loc_Main_ImportNone">Здесь не найдено ни одной группы. Выберите папку, в которую был установлен Taskbar Groups, или его папку «config».</s:String>
+    <s:String x:Key="Loc_Main_ImportFailTitle">Не удалось импортировать</s:String>
+    <s:String x:Key="Loc_Group_More">Другие действия</s:String>
+    <s:String x:Key="Loc_Group_Duplicate">Дублировать</s:String>
+    <s:String x:Key="Loc_Group_Export">Экспортировать…</s:String>
+    <s:String x:Key="Loc_Group_ExportFailTitle">Не удалось экспортировать</s:String>
+    <s:String x:Key="Loc_Group_CopySuffix" xml:space="preserve"> (копия)</s:String>
+
+    <!-- Карточка группы -->
+    <s:String x:Key="Loc_Group_ShortcutOne">1 ярлык</s:String>
+    <s:String x:Key="Loc_Group_ShortcutMany">Ярлыков: {0}</s:String>
+    <s:String x:Key="Loc_Group_Separator">Разделитель панели задач</s:String>
+    <s:String x:Key="Loc_Group_FolderOf">Папка: {0}</s:String>
+
+    <!-- Удаление группы -->
+    <s:String x:Key="Loc_Del_Title">Удалить группу</s:String>
+    <s:String x:Key="Loc_Del_Message" xml:space="preserve">Вы действительно хотите удалить группу «{0}»?&#10;&#10;Если она была закреплена, отдельно открепите ее от панели задач.</s:String>
+    <s:String x:Key="Loc_Del_FailTitle">Не удалось удалить</s:String>
+
+    <!-- Закрепление -->
+    <s:String x:Key="Loc_Pin_NotFoundTitle">Ярлык не найден</s:String>
+    <s:String x:Key="Loc_Pin_NotFoundBody">Ярлык группы не найден. Сохраните группу в редакторе еще раз.</s:String>
+    <s:String x:Key="Loc_Pin_Title">Закрепить на панели задач</s:String>
+    <s:String x:Key="Loc_Pin_Body" xml:space="preserve">Папка открыта, ярлык в ней выделен. Последний шаг Windows требует сделать вручную:&#10;&#10;1.  Щелкните выделенный файл правой кнопкой мыши.&#10;2.  Нажмите «Показать дополнительные параметры» (или Shift + F10).&#10;3.  Выберите «Закрепить на панели задач».&#10;&#10;Затем щелкните этот значок на панели задач, чтобы открыть группу.</s:String>
+    <s:String x:Key="Loc_Pin_SeparatorBody" xml:space="preserve">Папка открыта, ярлык в ней выделен. Последний шаг Windows требует сделать вручную:&#10;&#10;1.  Щелкните выделенный файл правой кнопкой мыши.&#10;2.  Нажмите «Показать дополнительные параметры» (или Shift + F10).&#10;3.  Выберите «Закрепить на панели задач».&#10;&#10;Разделитель появится на панели задач. Щелчок по нему ничего не делает.</s:String>
+    <s:String x:Key="Loc_Pin_Body10" xml:space="preserve">Папка открыта, ярлык в ней выделен. Последний шаг Windows требует сделать вручную:&#10;&#10;1.  Щелкните выделенный файл правой кнопкой мыши.&#10;2.  Выберите «Закрепить на панели задач».&#10;&#10;Затем щелкните этот значок на панели задач, чтобы открыть группу.</s:String>
+    <s:String x:Key="Loc_Pin_SeparatorBody10" xml:space="preserve">Папка открыта, ярлык в ней выделен. Последний шаг Windows требует сделать вручную:&#10;&#10;1.  Щелкните выделенный файл правой кнопкой мыши.&#10;2.  Выберите «Закрепить на панели задач».&#10;&#10;Разделитель появится на панели задач. Щелчок по нему ничего не делает.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseTitle">Закрепить «{0}»</s:String>
+    <s:String x:Key="Loc_Pin_ChooseBody">Внутри этой группы есть другие группы (всего {0}). Их можно закрепить на панели задач по очереди, в том же порядке и с теми же разделителями, чтобы весь набор оказался на панели. Или закрепить только эту группу.</s:String>
+    <s:String x:Key="Loc_Pin_ChooseAll">Закрепить все ({0})</s:String>
+    <s:String x:Key="Loc_Pin_ChooseOne">Только эту группу</s:String>
+    <s:String x:Key="Loc_PinAll_Window">Закрепление групп</s:String>
+    <s:String x:Key="Loc_PinAll_Heading">Группы из «{0}» на панели задач</s:String>
+    <s:String x:Key="Loc_PinAll_Intro">Windows не позволяет приложениям ничего закреплять самостоятельно, поэтому щелчок правой кнопкой за вами. Следующий ярлык будет выделен в Проводнике, а как только вы его закрепите, выделится очередной.</s:String>
+    <s:String x:Key="Loc_PinAll_NowTitle">{0} из {1}: {2}</s:String>
+    <s:String x:Key="Loc_PinAll_Steps">Щелкните выделенный ярлык правой кнопкой мыши, нажмите «Показать дополнительные параметры» и выберите «Закрепить на панели задач».</s:String>
+    <s:String x:Key="Loc_PinAll_Steps10">Щелкните выделенный ярлык правой кнопкой мыши и выберите «Закрепить на панели задач».</s:String>
+    <s:String x:Key="Loc_PinAll_Now">Сейчас</s:String>
+    <s:String x:Key="Loc_PinAll_Done">Закреплено</s:String>
+    <s:String x:Key="Loc_PinAll_Already">Уже закреплено</s:String>
+    <s:String x:Key="Loc_PinAll_Skipped">Пропущено</s:String>
+    <s:String x:Key="Loc_PinAll_Skip">Пропустить</s:String>
+    <s:String x:Key="Loc_PinAll_Reopen">Открыть папку снова</s:String>
+    <s:String x:Key="Loc_PinAll_Finished">Готово: все они на панели задач.</s:String>
+    <s:String x:Key="Loc_PinAll_FinishedSkipped">Готово. Пропущенные группы можно закрепить позже с их карточек.</s:String>
+    <s:String x:Key="Loc_PinAll_Nothing">Ни одной из вложенных групп больше не существует.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteOrder">Windows добавляет каждый новый значок в конец панели задач, поэтому они идут в таком порядке. Потом их можно переставить, перетаскивая по панели задач.</s:String>
+    <s:String x:Key="Loc_PinAll_NoteKept">Уже закрепленные группы остаются на своих местах. Их можно перетащить в нужное место на панели задач.</s:String>
+
+    <!-- Редактор группы -->
+    <s:String x:Key="Loc_Editor_TitleNew">Новая группа</s:String>
+    <s:String x:Key="Loc_Editor_TitleEdit">Изменить группу</s:String>
+    <s:String x:Key="Loc_Editor_NameLabel">Название группы</s:String>
+    <s:String x:Key="Loc_Editor_NamePlaceholder">Моя группа</s:String>
+    <s:String x:Key="Loc_Editor_ChangeIcon">Сменить значок</s:String>
+    <s:String x:Key="Loc_Editor_Emoji">Эмодзи</s:String>
+    <s:String x:Key="Loc_Editor_Shortcuts">Ярлыки</s:String>
+    <s:String x:Key="Loc_Editor_Program">Приложение</s:String>
+    <s:String x:Key="Loc_Editor_Folder">Папка</s:String>
+    <s:String x:Key="Loc_Editor_StoreApp">Приложение Store</s:String>
+    <s:String x:Key="Loc_Editor_EmptyHint">Добавьте в эту группу программы, папки или приложения из Store либо перетащите их сюда из Проводника или с рабочего стола</s:String>
+    <s:String x:Key="Loc_Editor_Save">Сохранить группу</s:String>
+    <s:String x:Key="Loc_Editor_NeedName">Введите название группы.</s:String>
+    <s:String x:Key="Loc_Editor_BadName">Название не может заканчиваться точкой или содержать символы: \ / : * ? " &lt; &gt; |</s:String>
+    <s:String x:Key="Loc_Editor_NeedShortcut">Добавьте в группу хотя бы один ярлык.</s:String>
+    <s:String x:Key="Loc_Editor_SaveFailTitle">Не удалось сохранить</s:String>
+    <s:String x:Key="Loc_Editor_PickFolder">Выберите папку</s:String>
+    <s:String x:Key="Loc_Editor_PickImage">Выберите изображение для группы</s:String>
+    <s:String x:Key="Loc_Editor_ImagesFilter">Изображения</s:String>
+    <s:String x:Key="Loc_Editor_ImageLoadFail">Не удалось загрузить выбранное изображение.</s:String>
+    <s:String x:Key="Loc_Editor_GridIcon">Из приложений</s:String>
+    <s:String x:Key="Loc_Editor_GridIconTip">Собрать значок из первых четырех приложений группы</s:String>
+    <s:String x:Key="Loc_Editor_GridIconNeedsApps">Сначала добавьте приложения: значок собирается из них.</s:String>
+    <s:String x:Key="Loc_Editor_PanelTitle">Панель</s:String>
+    <s:String x:Key="Loc_Editor_LayoutLabel">Вид</s:String>
+    <s:String x:Key="Loc_Editor_LayoutGrid">Сетка</s:String>
+    <s:String x:Key="Loc_Editor_LayoutRow">Горизонтально</s:String>
+    <s:String x:Key="Loc_Editor_LayoutColumn">Вертикально</s:String>
+    <s:String x:Key="Loc_Editor_Columns">Столбцы</s:String>
+    <s:String x:Key="Loc_Editor_ColumnsAuto">Автоматически</s:String>
+    <s:String x:Key="Loc_Editor_ShowLabels">Показывать названия приложений</s:String>
+    <s:String x:Key="Loc_Editor_ShowHeader">Показывать название группы и карандаш для его изменения</s:String>
+    <s:String x:Key="Loc_Editor_LayoutList">Список</s:String>
+    <s:String x:Key="Loc_Editor_IconSize">Размер значков</s:String>
+    <s:String x:Key="Loc_Editor_IconSmall">Мелкие</s:String>
+    <s:String x:Key="Loc_Editor_IconNormal">Обычные</s:String>
+    <s:String x:Key="Loc_Editor_IconLarge">Крупные</s:String>
+    <s:String x:Key="Loc_Editor_HeaderPosition">Положение названия группы</s:String>
+    <s:String x:Key="Loc_Editor_HeaderTop">Сверху</s:String>
+    <s:String x:Key="Loc_Editor_HeaderBottom">Снизу</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTray">Показывать также рядом с часами</s:String>
+    <s:String x:Key="Loc_Editor_ShowInTrayHint">Значок группы появится в области уведомлений (возможно, среди скрытых значков за стрелкой), и щелчок по нему откроет эту панель. Для этого нужна небольшая программа, которая работает рядом с часами и запускается вместе с Windows.</s:String>
+    <s:String x:Key="Loc_Editor_AppOptions">Настройки приложения</s:String>
+    <s:String x:Key="Loc_Editor_Group">Группа</s:String>
+    <s:String x:Key="Loc_Editor_GroupTip">Добавить другую группу, которая открывается рядом с этой панелью, как подменю</s:String>
+    <s:String x:Key="Loc_Editor_NoOtherGroups">Сначала создайте другую группу: эта кнопка вкладывает одну группу в другую.</s:String>
+    <s:String x:Key="Loc_Editor_Separator">Разделитель</s:String>
+    <s:String x:Key="Loc_Editor_SeparatorTip">Добавить линию, которая делит панель на разделы, при желании с заголовком. Чтобы изменить порядок, перетаскивайте строки.</s:String>
+    <s:String x:Key="Loc_Editor_SourceApps">Выбранные приложения</s:String>
+    <s:String x:Key="Loc_Editor_SourceFolder">Содержимое папки</s:String>
+    <s:String x:Key="Loc_Editor_FolderNone">Папка еще не выбрана</s:String>
+    <s:String x:Key="Loc_Editor_PickFolderButton">Выбрать папку…</s:String>
+    <s:String x:Key="Loc_Editor_SpecialFolders">Места Windows</s:String>
+    <s:String x:Key="Loc_Editor_FolderHint">Панель показывает содержимое папки при каждом открытии, поэтому оно всегда актуально. Вложенные папки открываются рядом с панелью, как подменю. К местам Windows относится то, что не является папкой на диске, например «Панель управления» или «Этот компьютер». Папку можно и просто перетащить сюда.</s:String>
+    <s:String x:Key="Loc_Editor_NeedFolder">Выберите папку, которую будет показывать панель.</s:String>
+    <s:String x:Key="Loc_Editor_FolderMissing">Не удается открыть эту папку. Выберите другую.</s:String>
+    <s:String x:Key="Loc_Editor_FolderSpecial">Место Windows</s:String>
+    <s:String x:Key="Loc_Editor_AllApps">Все приложения</s:String>
+    <s:String x:Key="Loc_Sub_Group">Группа</s:String>
+    <s:String x:Key="Loc_AppOpt_Title">Настройки приложения</s:String>
+    <s:String x:Key="Loc_AppOpt_Name">Название</s:String>
+    <s:String x:Key="Loc_AppOpt_NameHint">Подпись под значком на панели. Оставьте поле пустым, чтобы использовать название самого приложения.</s:String>
+    <s:String x:Key="Loc_AppOpt_Args">Аргументы</s:String>
+    <s:String x:Key="Loc_AppOpt_ArgsHint">Передаются программе при запуске, например --incognito или файл, который нужно открыть.</s:String>
+    <s:String x:Key="Loc_AppOpt_Admin">Запускать от имени администратора</s:String>
+    <s:String x:Key="Loc_AppOpt_AdminHint">Windows будет запрашивать разрешение при каждом запуске.</s:String>
+    <s:String x:Key="Loc_AppOpt_NotForStore">Приложения из Store, веб-ссылки, ссылки на игры и папки открываются через Windows, поэтому для них нельзя задать аргументы или запуск от имени администратора.</s:String>
+    <s:String x:Key="Loc_AppOpt_Save">Сохранить</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorPlaceholder">Без названия</s:String>
+    <s:String x:Key="Loc_AppOpt_SeparatorHint">Текст посередине линии. Оставьте поле пустым, чтобы осталась только линия.</s:String>
+
+    <!-- Подписи ярлыков -->
+    <s:String x:Key="Loc_Sub_StoreApp">Приложение</s:String>
+    <s:String x:Key="Loc_Sub_Folder">Папка</s:String>
+    <s:String x:Key="Loc_Sub_Program">Программа</s:String>
+    <s:String x:Key="Loc_Sub_Separator">Разделитель панели</s:String>
+
+    <!-- Выбор приложений из Store -->
+    <s:String x:Key="Loc_Store_Title">Приложения из Microsoft Store</s:String>
+    <s:String x:Key="Loc_Store_Heading">Выберите приложения из Store</s:String>
+    <s:String x:Key="Loc_Store_Subtitle">Приложения без .exe (WhatsApp, Instagram, TikTok…), которые не найти через окно выбора файлов</s:String>
+    <s:String x:Key="Loc_Store_Search">Поиск приложений…</s:String>
+    <s:String x:Key="Loc_Store_CountOne">Выбрано: 1</s:String>
+    <s:String x:Key="Loc_Store_CountMany">Выбрано: {0}</s:String>
+
+    <!-- Выбор установленных программ -->
+    <s:String x:Key="Loc_Prog_Title">Приложения</s:String>
+    <s:String x:Key="Loc_Prog_Heading">Выберите приложения</s:String>
+    <s:String x:Key="Loc_Prog_Subtitle">Выберите из установленных приложений. Нужного нет? Нажмите «Обзор».</s:String>
+    <s:String x:Key="Loc_Prog_Search">Поиск приложений…</s:String>
+    <s:String x:Key="Loc_Prog_Browse">Обзор…</s:String>
+    <s:String x:Key="Loc_Prog_CountOne">Выбрано: 1</s:String>
+    <s:String x:Key="Loc_Prog_CountMany">Выбрано: {0}</s:String>
+    <s:String x:Key="Loc_Prog_PickTitle">Выберите программу или ярлык</s:String>
+    <s:String x:Key="Loc_Prog_FilterPrograms">Программы и ярлыки</s:String>
+    <s:String x:Key="Loc_Prog_FilterAll">Все файлы</s:String>
+
+    <!-- Редактор значка -->
+    <s:String x:Key="Loc_Icon_Title">Настройка значка</s:String>
+    <s:String x:Key="Loc_Icon_Hint">Перетащите, чтобы сдвинуть · колесико или ползунок для масштаба</s:String>
+    <s:String x:Key="Loc_Icon_Apply">Применить</s:String>
+
+    <!-- Выбор эмодзи -->
+    <s:String x:Key="Loc_Emoji_Title">Выбор эмодзи</s:String>
+    <s:String x:Key="Loc_Emoji_Heading">Выберите эмодзи</s:String>
+    <s:String x:Key="Loc_Emoji_Subtitle">Эмодзи станет значком группы, загружать изображение не нужно.</s:String>
+
+    <!-- Автоматическое обновление -->
+    <s:String x:Key="Loc_Update_Title">Доступно обновление</s:String>
+    <s:String x:Key="Loc_Update_Message">Доступна новая версия ({0}). Обновить сейчас? Приложение закроется на время установки и затем откроется снова.</s:String>
+    <s:String x:Key="Loc_Update_StoreMessage">Доступна новая версия ({0}). Обновить сейчас? Ее установит Microsoft Store, а приложение на это время закроется.</s:String>
+    <s:String x:Key="Loc_Update_Now">Обновить сейчас</s:String>
+    <s:String x:Key="Loc_Update_Later">Позже</s:String>
+    <s:String x:Key="Loc_Update_Failed">Не удалось скачать обновление. Повторите попытку позже.</s:String>
+    <s:String x:Key="Loc_Update_Checking">Поиск новой версии…</s:String>
+    <s:String x:Key="Loc_Update_UpToDate">У вас последняя версия ({0}). Нажмите, чтобы проверить еще раз.</s:String>
+    <s:String x:Key="Loc_Update_CheckNow">Проверить наличие обновлений</s:String>
+    <s:String x:Key="Loc_Update_AvailableShort">Доступна версия {0}</s:String>
+    <s:String x:Key="Loc_Update_Downloading">Скачивание версии {0}…</s:String>
+    <s:String x:Key="Loc_Update_CheckFailed">Не удалось проверить. Вы подключены к интернету?</s:String>
+
+    <!-- Быстрая панель -->
+    <s:String x:Key="Loc_Quick_Theme">Тема</s:String>
+    <s:String x:Key="Loc_Quick_ThemeSystem">Автоматически: как в Windows</s:String>
+    <s:String x:Key="Loc_Quick_ThemeLight">Светлая</s:String>
+    <s:String x:Key="Loc_Quick_ThemeDark">Темная</s:String>
+    <s:String x:Key="Loc_Quick_Language">Язык</s:String>
+    <s:String x:Key="Loc_Quick_LangSystem">Автоматически: как в Windows</s:String>
+    <s:String x:Key="Loc_Quick_Hover">Открывать при наведении</s:String>
+    <s:String x:Key="Loc_Quick_Support">Поддержать</s:String>
+    <s:String x:Key="Loc_Quick_SupportTip">Угостите меня кофе: это единственный способ поддержать приложение, ведь платной версии у него нет</s:String>
+
+    <!-- Ошибки -->
+    <s:String x:Key="Loc_Err_Unexpected" xml:space="preserve">Произошла непредвиденная ошибка:&#10;&#10;{0}</s:String>
+
+
+    <!-- Настройки -->
+    <s:String x:Key="Loc_Settings_Title">Настройки</s:String>
+    <s:String x:Key="Loc_Settings_Heading">Настройки</s:String>
+    <s:String x:Key="Loc_Settings_HoverTitle">Открывать при наведении</s:String>
+    <s:String x:Key="Loc_Settings_HoverSubtitle">Группа открывается, если задержать курсор на ее значке, без щелчка. Для этого нужна небольшая программа, которая работает в области уведомлений и запускается вместе с Windows.</s:String>
+    <s:String x:Key="Loc_Settings_HoverRunning">Программа уже запущена. Ее значок рядом с часами, возможно, скрыт за стрелкой; оттуда ее можно отключить в любой момент.</s:String>
+    <s:String x:Key="Loc_Settings_HoverMissing">Не найдена программа, которая отслеживает курсор. Переустановите приложение, чтобы восстановить ее.</s:String>
+    <s:String x:Key="Loc_Settings_InstantTitle">Открывать группы мгновенно</s:String>
+    <s:String x:Key="Loc_Settings_InstantSubtitle">Одна панель остается загруженной в фоновом режиме, поэтому даже первый щелчок после запуска Windows открывает группу сразу. Для этого нужна небольшая программа, которая работает рядом с часами и запускается вместе с Windows.</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconTitle">Показывать значок рядом с часами</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconSubtitle">Небольшая программа рядом с часами продолжает работать и без него. Чтобы вернуть ее значок и меню, снова включите этот переключатель.</s:String>
+    <s:String x:Key="Loc_Settings_DelayTitle">Задержка</s:String>
+    <s:String x:Key="Loc_Settings_DelaySubtitle">Как долго курсор должен оставаться на значке, прежде чем группа откроется.</s:String>
+    <s:String x:Key="Loc_Settings_DelayFast">Короткая</s:String>
+    <s:String x:Key="Loc_Settings_DelayNormal">Обычная</s:String>
+    <s:String x:Key="Loc_Settings_DelayRelaxed">Длинная</s:String>
+    <s:String x:Key="Loc_Settings_AnimateTitle">Анимация панели</s:String>
+    <s:String x:Key="Loc_Settings_AnimateSubtitle">Как группа появляется и исчезает: слегка приподнимается, пока проявляются ее приложения, или выезжает из-за панели задач, как меню «Пуск». Если в Windows отключены эффекты анимации, панель не двигается.</s:String>
+    <s:String x:Key="Loc_Settings_AnimateNone">Нет</s:String>
+    <s:String x:Key="Loc_Settings_AnimatePeek">Всплытие</s:String>
+    <s:String x:Key="Loc_Settings_AnimateRise">Из-за панели задач</s:String>
+    <s:String x:Key="Loc_Settings_SupportTitle">Поддержать проект</s:String>
+    <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent распространяется бесплатно и не имеет платной версии. Если приложение экономит вам время, можете угостить меня кофе.</s:String>
+    <s:String x:Key="Loc_Settings_SupportButton">Угостить кофе</s:String>
+
+</ResourceDictionary>

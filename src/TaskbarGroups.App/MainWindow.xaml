@@ -252,6 +252,9 @@
                         <RadioButton x:Name="LangEn" GroupName="Lang" Style="{StaticResource QuickSegment}"
                                      Content="EN" ToolTip="English" AutomationProperties.Name="English"
                                      Checked="Lang_Checked" />
+                        <RadioButton x:Name="LangRu" GroupName="Lang" Style="{StaticResource QuickSegment}"
+                                     Content="RU" ToolTip="Русский" AutomationProperties.Name="Русский"
+                                     Checked="Lang_Checked" />
                     </StackPanel>
                 </Border>
 

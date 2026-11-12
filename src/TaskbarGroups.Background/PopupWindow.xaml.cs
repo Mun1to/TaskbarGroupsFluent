@@ -211,19 +211,15 @@ public partial class PopupWindow : Window
         HeaderBar.Margin = bottom ? new Thickness(8, 4, 0, 0) : new Thickness(8, 0, 0, 4);
         HeaderBar.Visibility = _category.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
         HeaderText.Text = _category.Name;
-        EditButton.ToolTip = SpanishUi() ? "Editar grupo" : "Edit group";
+        EditButton.ToolTip = UiPreferences.Say("Edit group", "Editar grupo", "Изменить группу");
         // A folder's panel opens the folder itself here: opening everything in the
         // Control Panel at once is nobody's idea of a shortcut.
         bool folder = _category.IsFolderGroup;
         OpenAllButton.ToolTip = folder
-            ? (SpanishUi() ? "Abrir la carpeta" : "Open the folder")
-            : (SpanishUi() ? "Abrir todas" : "Open all");
+            ? UiPreferences.Say("Open the folder", "Abrir la carpeta", "Открыть папку")
+            : UiPreferences.Say("Open all", "Abrir todas", "Открыть все");
         OpenAllGlyph.Text = folder ? "" : "";
     }
-
-    // The flyout carries no string tables of its own for one tooltip, so it follows
-    // the same rule as the app (see UiPreferences).
-    private static bool SpanishUi() => UiPreferences.IsSpanish();
 
     // Opens every app in the group, for the times the whole set is wanted at once:
     // a work session, a game launcher and its chat, and so on.
@@ -570,7 +566,7 @@ public partial class PopupWindow : Window
         // Past what a menu can hold, the last entry opens the folder for the rest.
         if (more)
         {
-            string rest = SpanishUi() ? "Ver todo en la carpeta…" : "See all in the folder…";
+            string rest = UiPreferences.Say("See all in the folder…", "Ver todo en la carpeta…", "Показать всё в папке…");
             items.Add(new PopupItem
             {
                 Shortcut = new ProgramShortcut { FilePath = source, name = rest, ShellItem = source },
@@ -584,8 +580,8 @@ public partial class PopupWindow : Window
         if (items.Count == 0)
         {
             EmptyText.Text = ShellFolder.IsFolder(source)
-                ? (SpanishUi() ? "Esta carpeta está vacía." : "This folder is empty.")
-                : (SpanishUi() ? "No se encuentra la carpeta. Elige otra desde el lápiz." : "The folder can't be found. Pick another one from the pencil.");
+                ? UiPreferences.Say("This folder is empty.", "Esta carpeta está vacía.", "Эта папка пуста.")
+                : UiPreferences.Say("The folder can't be found. Pick another one from the pencil.", "No se encuentra la carpeta. Elige otra desde el lápiz.", "Папка не найдена. Выберите другую, нажав на карандаш.");
             EmptyText.Visibility = Visibility.Visible;
             return;
         }
