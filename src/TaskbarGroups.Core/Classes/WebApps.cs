@@ -267,6 +267,33 @@ namespace TaskbarGroups.Core
             return found.Values.ToList();
         }
 
+        /// <summary>
+        /// The web apps out of <paramref name="apps"/> that Windows' app list does
+        /// not have already. It lists a web app with a Start menu shortcut under an
+        /// id such as "Brave._crx_agimnkijcamfeangaknmldooml", the app's id cut short,
+        /// so which app it is comes from the shortcut it was made from; only when
+        /// that cannot be read does the name decide. Asks the shell, so it belongs
+        /// on a thread of the window that shows the list.
+        /// </summary>
+        public static List<WebApp> NotListed(IEnumerable<AppCatalogEntry> catalog, IEnumerable<WebApp> apps)
+        {
+            var listedShortcuts = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var listedNames = new HashSet<string>(StringComparer.CurrentCultureIgnoreCase);
+            foreach (AppCatalogEntry entry in catalog)
+            {
+                if (entry.LaunchId.IndexOf("_crx_", StringComparison.OrdinalIgnoreCase) < 0) continue;
+                string link = ShellLink.ReadIdListPath("shell:AppsFolder\\" + entry.LaunchId,
+                    ShellLink.PROPERTYKEY.AppUserModel_BestShortcut);
+                if (link != null) listedShortcuts.Add(Path.GetFullPath(link));
+                else listedNames.Add(entry.DisplayName);
+            }
+
+            return apps.Where(app =>
+                    !(app.Shortcut != null && listedShortcuts.Contains(Path.GetFullPath(app.Shortcut)))
+                    && !(app.Name != null && listedNames.Contains(app.Name)))
+                .ToList();
+        }
+
         // ---- Where things are ----
 
         // A launcher sits in <root>\<vendor>\<browser>\Application, and its browser
