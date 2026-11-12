@@ -39,6 +39,9 @@ internal static class Native
     [DllImport("user32.dll")]
     internal static extern bool GetWindowRect(nint hWnd, out RECT r);
 
+    [DllImport("user32.dll")]
+    internal static extern nint WindowFromPoint(POINT p);
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern nint FindWindow(string? cls, string? title);
 

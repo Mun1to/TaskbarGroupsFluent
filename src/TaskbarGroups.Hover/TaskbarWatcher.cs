@@ -157,16 +157,32 @@ internal sealed class TaskbarWatcher : IDisposable
             return;
         }
 
-        // Only the taskbar under the cursor is read. Windows leaves a
-        // Shell_SecondaryTrayWnd behind for monitors that are no longer attached,
-        // still flagged visible and parked off-screen, and reading those would
-        // triple the cost to learn nothing.
-        if (bar != _cachedBar || DateTime.UtcNow - _cachedAt > CacheLife) RefreshButtons(bar);
-
         GroupButton? hit = null;
-        foreach (var b in _buttons)
+        string under = ClassUnder(cursor);
+        if (DrawnByAnotherProgram(under))
         {
-            if (b.Rect.Contains(cursor)) { hit = b; break; }
+            // Issue #12: Start11 draws its own taskbar over the one of Windows 11,
+            // which stays underneath with its buttons squeezed out of place, so its
+            // buttons would name the wrong group. The icon on screen is what counts.
+            hit = MatchByIcon(cursor, barRect);
+        }
+        else
+        {
+            // Only the taskbar under the cursor is read. Windows leaves a
+            // Shell_SecondaryTrayWnd behind for monitors that are no longer attached,
+            // still flagged visible and parked off-screen, and reading those would
+            // triple the cost to learn nothing.
+            if (bar != _cachedBar || DateTime.UtcNow - _cachedAt > CacheLife) RefreshButtons(bar);
+
+            foreach (var b in _buttons)
+            {
+                if (b.Rect.Contains(cursor)) { hit = b; break; }
+            }
+
+            // The older taskbar's list of apps, as Windows 10 has it and as
+            // StartAllBack brings back, may not say which button is which: then the
+            // icon on screen does.
+            if (hit is null && under == TaskListClass) hit = MatchByIcon(cursor, barRect);
         }
 
         if (hit is null)
@@ -215,6 +231,88 @@ internal sealed class TaskbarWatcher : IDisposable
 
         Open(hit, delay);
         _opened = hit.Group;
+    }
+
+    private const string TaskListClass = "MSTaskListWClass";
+
+    /// <summary>
+    /// The windows the taskbar of Windows 11 is made of, where its buttons can be
+    /// read. Anything else under the cursor inside a taskbar was put there by
+    /// another program, as Start11 does, or is the older taskbar's list of apps.
+    /// </summary>
+    private static readonly HashSet<string> Windows11Parts = new(StringComparer.Ordinal)
+    {
+        "Shell_TrayWnd", "Shell_SecondaryTrayWnd",
+        "Windows.UI.Composition.DesktopWindowContentBridge",
+        "Windows.UI.Input.InputSite.WindowClass",
+        "TrayNotifyWnd"
+    };
+
+    /// <summary>The class of the window right under the cursor, or "" if there is none.</summary>
+    private static string ClassUnder(POINT cursor)
+    {
+        nint window = Native.WindowFromPoint(cursor);
+        if (window == 0) return "";
+        var name = new System.Text.StringBuilder(128);
+        return Native.GetClassName(window, name, name.Capacity) > 0 ? name.ToString() : "";
+    }
+
+    /// <summary>
+    /// Whether the taskbar under the cursor is drawn by some other program on top
+    /// of Windows 11's, so the buttons of Windows 11 beneath can't be trusted.
+    /// </summary>
+    private static bool DrawnByAnotherProgram(string under)
+        => WindowsVersion.IsWindows11 && under.Length > 0 && !Windows11Parts.Contains(under);
+
+    private POINT _matchPoint;
+    private DateTime _matchSince;
+    private bool _matchDone;
+    private GroupButton? _matched;
+
+    /// <summary>
+    /// The group whose icon the cursor rests on, told by the icon itself (see
+    /// <see cref="IconMatcher"/>). Looking costs tens of milliseconds, so it is
+    /// done once the cursor has stopped, and once per stop.
+    /// </summary>
+    private GroupButton? MatchByIcon(POINT cursor, RECT bar)
+    {
+        if (Math.Abs(cursor.X - _matchPoint.X) > 3 || Math.Abs(cursor.Y - _matchPoint.Y) > 3)
+        {
+            _matchPoint = cursor;
+            _matchSince = DateTime.UtcNow;
+            _matchDone = false;
+            _matched = null;
+            return null;
+        }
+        if (_matchDone) return _matched;
+        if (DateTime.UtcNow - _matchSince < MatchAfter) return null;
+
+        _matchDone = true;
+        RefreshPins();
+        var found = IconMatcher.GroupAt(cursor, bar, _pins);
+        if (found is not { } f) return null;
+
+        // The button stretches across the bar around its icon, so the panel lines
+        // up with it as it does with a button read from Windows.
+        bool across = bar.Width >= bar.Height;
+        int thick = across ? bar.Height : bar.Width;
+        int mid = across ? (f.Icon.Left + f.Icon.Right) / 2 : (f.Icon.Top + f.Icon.Bottom) / 2;
+        RECT button = across
+            ? new RECT { Left = mid - thick / 2, Right = mid + thick / 2, Top = bar.Top, Bottom = bar.Bottom }
+            : new RECT { Top = mid - thick / 2, Bottom = mid + thick / 2, Left = bar.Left, Right = bar.Right };
+        _matched = new GroupButton(f.Group, button);
+        return _matched;
+    }
+
+    /// <summary>How still the cursor has to be before its icon is looked at.</summary>
+    private static readonly TimeSpan MatchAfter = TimeSpan.FromMilliseconds(80);
+
+    private void RefreshPins()
+    {
+        if (DateTime.UtcNow - _pinsAt <= PinCacheLife) return;
+        try { _pins = PinnedGroups.Scan(); }
+        catch { /* keep the previous map rather than losing every group */ }
+        _pinsAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -291,12 +389,7 @@ internal sealed class TaskbarWatcher : IDisposable
         _cachedBar = bar;
         var found = new List<GroupButton>();
 
-        if (DateTime.UtcNow - _pinsAt > PinCacheLife)
-        {
-            try { _pins = PinnedGroups.Scan(); }
-            catch { /* keep the previous map rather than losing every group */ }
-            _pinsAt = DateTime.UtcNow;
-        }
+        RefreshPins();
 
         AutomationElement? root;
         try { root = AutomationElement.FromHandle(bar); }
