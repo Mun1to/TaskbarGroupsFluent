@@ -1,4 +1,4 @@
-; Inno Setup script for Taskbar Groups Fluent.
+﻿; Inno Setup script for Taskbar Groups Fluent.
 ; Builds a per-user, one-click installer that also ensures the .NET 10 Desktop
 ; Runtime is present (downloading it silently if missing). Pass the published
 ; app folder, output folder and version on the command line, e.g.:
@@ -58,6 +58,23 @@ RestartApplications=no
 [Languages]
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
+
+; The texts of our own: the page that fetches .NET and what it says when that fails.
+; This file is saved as UTF-8 with a BOM, which is how Inno Setup reads it as Unicode.
+[CustomMessages]
+en.RuntimeTitle=Preparing Taskbar Groups Fluent
+en.RuntimeText=Downloading the .NET 10 Desktop Runtime it needs to run…
+en.RuntimeNotStarted=The .NET 10 Desktop Runtime installer could not be started.
+en.RuntimeNotDownloaded=Could not download the .NET 10 Desktop Runtime. Install it from https://dotnet.microsoft.com/download/dotnet/10.0 and run setup again.
+es.RuntimeTitle=Preparando Taskbar Groups Fluent
+es.RuntimeText=Descargando el .NET 10 Desktop Runtime que necesita para funcionar…
+es.RuntimeNotStarted=No se pudo abrir el instalador del .NET 10 Desktop Runtime.
+es.RuntimeNotDownloaded=No se pudo descargar el .NET 10 Desktop Runtime. Instálalo desde https://dotnet.microsoft.com/download/dotnet/10.0 y vuelve a abrir el instalador.
+ru.RuntimeTitle=Подготовка Taskbar Groups Fluent
+ru.RuntimeText=Загрузка .NET 10 Desktop Runtime, необходимого для работы…
+ru.RuntimeNotStarted=Не удалось запустить установщик .NET 10 Desktop Runtime.
+ru.RuntimeNotDownloaded=Не удалось загрузить .NET 10 Desktop Runtime. Установите его с https://dotnet.microsoft.com/download/dotnet/10.0 и запустите установку снова.
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
@@ -154,8 +171,8 @@ end;
 procedure InitializeWizard;
 begin
   DownloadPage := CreateDownloadPage(
-    'Preparing Taskbar Groups Fluent',
-    'Downloading the .NET 10 Desktop Runtime it needs to run…',
+    CustomMessage('RuntimeTitle'),
+    CustomMessage('RuntimeText'),
     @OnDownloadProgress);
 end;
 
@@ -174,7 +191,7 @@ begin
   ExtractTemporaryFile('windowsdesktop-runtime-10-x64.exe');
   if not Exec(ExpandConstant('{tmp}\windowsdesktop-runtime-10-x64.exe'),
              '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-    Result := 'The .NET 10 Desktop Runtime installer could not be started.';
+    Result := CustomMessage('RuntimeNotStarted');
   Exit;
 #endif
 
@@ -187,13 +204,12 @@ begin
     try
       DownloadPage.Download;
     except
-      Result := 'Could not download the .NET 10 Desktop Runtime. Install it from ' +
-                'https://dotnet.microsoft.com/download/dotnet/10.0 and run setup again.';
+      Result := CustomMessage('RuntimeNotDownloaded');
       Exit;
     end;
     if not Exec(ExpandConstant('{tmp}\windowsdesktop-runtime-10-x64.exe'),
                '/install /quiet /norestart', '', SW_SHOW, ewWaitUntilTerminated, ResultCode) then
-      Result := 'The .NET 10 Desktop Runtime installer could not be started.';
+      Result := CustomMessage('RuntimeNotStarted');
   finally
     DownloadPage.Hide;
   end;
