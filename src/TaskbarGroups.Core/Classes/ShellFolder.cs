@@ -68,6 +68,9 @@ namespace TaskbarGroups.Core
             "shell:Personal",
             "shell:My Pictures",
             "shell:NetworkPlacesFolder",
+            // Issue #17: with "show by the clock", a group showing it is a recycle
+            // bin next to the clock, with the bin's own icon and its own menu.
+            "shell:RecycleBinFolder",
         };
 
         /// <summary>All Control Panel items, the view the issue asked for.</summary>
