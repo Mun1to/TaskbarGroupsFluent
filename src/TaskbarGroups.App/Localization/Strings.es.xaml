@@ -106,6 +106,10 @@
     <s:String x:Key="Loc_Editor_BadName">El nombre no puede terminar en punto ni contener: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Añade al menos un acceso directo al grupo.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">No se pudo guardar</s:String>
+    <s:String x:Key="Loc_Editor_RestartTitle">¿Actualizar el icono de la barra?</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows sigue enseñando el icono o el nombre de antes en la barra de tareas hasta que la recarga. Recargarla ahora la oculta unos segundos. Si lo dejas para luego, todo queda guardado y la barra se pone al día la próxima vez que inicies sesión.</s:String>
+    <s:String x:Key="Loc_Editor_RestartNow">Recargar ahora</s:String>
+    <s:String x:Key="Loc_Editor_RestartLater">Más tarde</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">Selecciona una carpeta</s:String>
     <s:String x:Key="Loc_Editor_PickImage">Selecciona una imagen para el grupo</s:String>
     <s:String x:Key="Loc_Editor_ImagesFilter">Imágenes</s:String>

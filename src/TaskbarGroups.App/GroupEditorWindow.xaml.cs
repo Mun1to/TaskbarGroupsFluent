@@ -23,6 +23,14 @@ public partial class GroupEditorWindow : FluentWindow
 {
     private readonly ObservableCollection<ShortcutEntry> _shortcuts = new();
     private DrawingImage? _groupImage;
+
+    /// <summary>
+    /// The icon the group had when the editor opened, to tell a real change from
+    /// one that only looks like it (issue #16): an icon made of the group's apps is
+    /// composed again whenever the list changes, even when the first four apps,
+    /// the ones it shows, stay the same.
+    /// </summary>
+    private Bitmap? _originalIcon;
     private readonly bool _isEditing;
     private readonly string? _originalName;
     private bool _iconChanged;
@@ -381,6 +389,7 @@ public partial class GroupEditorWindow : FluentWindow
         try
         {
             _groupImage = category.LoadIconImage();
+            _originalIcon = Normalized(_groupImage);
             GroupIconPreview.Source = _groupImage.ToImageSource();
             GroupIconPlaceholder.Visibility = Visibility.Collapsed;
         }
@@ -795,9 +804,20 @@ public partial class GroupEditorWindow : FluentWindow
                 && !string.Equals(_originalName, name, StringComparison.Ordinal);
 
             // Refresh the pinned taskbar button when the icon or the name changed
-            // (Windows caches it). Per the user's choice this restarts Explorer.
-            if (_iconChanged || renamed)
-                RefreshTaskbarIcon(name);
+            // (Windows caches it), which takes restarting Explorer: the taskbar goes
+            // away for a few seconds, so only for a change the taskbar would show,
+            // and only if the user says so (issue #16).
+            // The pinned shortcut is rewritten either way: after a rename it has to
+            // open the group by its new name.
+            bool iconChanged = _iconChanged && !SameIcon(_originalIcon, _groupImage);
+            if ((iconChanged || renamed) && UpdatePinnedButton(name)
+                && await ConfirmTaskbarRestartAsync())
+            {
+                // On a thread that keeps the app alive until the taskbar is back:
+                // opened from the pinned group, the app closes as soon as this
+                // window does.
+                TaskbarPin.RestartExplorerInBackground();
+            }
 
             // A rename writes a new config folder + .lnk; delete the old ones so the
             // group isn't duplicated.
@@ -818,6 +838,60 @@ public partial class GroupEditorWindow : FluentWindow
         Close();
     }
 
+    /// <summary>
+    /// Asks before restarting the taskbar. Saying no keeps every change; the pinned
+    /// button just shows the old look until Windows reloads it, at the next sign-in.
+    /// </summary>
+    private async System.Threading.Tasks.Task<bool> ConfirmTaskbarRestartAsync()
+    {
+        var choice = await new MessageBox
+        {
+            Title = Loc.Get("Loc_Editor_RestartTitle"),
+            Content = Loc.Get("Loc_Editor_RestartText"),
+            PrimaryButtonText = Loc.Get("Loc_Editor_RestartNow"),
+            CloseButtonText = Loc.Get("Loc_Editor_RestartLater")
+        }.ShowDialogAsync();
+        return choice == Wpf.Ui.Controls.MessageBoxResult.Primary;
+    }
+
+    /// <summary>The icon drawn at the size it is compared at, in one pixel format.</summary>
+    private static Bitmap? Normalized(DrawingImage? image)
+    {
+        if (image is null) return null;
+        try
+        {
+            var bmp = new Bitmap(64, 64, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using var g = Graphics.FromImage(bmp);
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.DrawImage(image, 0, 0, 64, 64);
+            return bmp;
+        }
+        catch { return null; }
+    }
+
+    /// <summary>
+    /// Whether two icons look the same on the taskbar. Anything that can't be
+    /// compared counts as different, so a real change is never skipped.
+    /// </summary>
+    private static bool SameIcon(Bitmap? original, DrawingImage? current)
+    {
+        if (original is null || current is null) return false;
+        // Through the same resize the saved icon went through, so an unchanged
+        // icon comes out bit for bit the same.
+        using DrawingImage saved = ImageFunctions.ResizeImage(current, 256, 256);
+        using Bitmap? now = Normalized(saved);
+        if (now is null) return false;
+        for (int y = 0; y < 64; y++)
+            for (int x = 0; x < 64; x++)
+            {
+                Color a = original.GetPixel(x, y), b = now.GetPixel(x, y);
+                if (Math.Abs(a.A - b.A) > 2 || Math.Abs(a.R - b.R) > 2
+                    || Math.Abs(a.G - b.G) > 2 || Math.Abs(a.B - b.B) > 2)
+                    return false;
+            }
+        return true;
+    }
+
     // Remove the previous group's config folder and shortcut after a rename.
     private static void DeleteOldGroup(string oldName)
     {
@@ -832,22 +906,24 @@ public partial class GroupEditorWindow : FluentWindow
         catch { /* a leftover old group is non-fatal; the user can delete it */ }
     }
 
-    private void RefreshTaskbarIcon(string currentName)
+    /// <summary>
+    /// Rewrites the pinned copy of the group's shortcut, if the group is pinned,
+    /// and says whether it was. Windows pins a copy, so the original alone would
+    /// leave the button with the old icon and, after a rename, the old name.
+    /// </summary>
+    private bool UpdatePinnedButton(string currentName)
     {
         try
         {
-            // The pin was created under the original name; find it by that, then
-            // overwrite it with the freshly built shortcut (carrying the new icon).
+            // The pin was created under the original name; find it by that.
             string? pinnedLnk = TaskbarPin.FindPinnedShortcut(
                 _originalName ?? currentName, Paths.PanelLauncher);
-            if (pinnedLnk is null) return; // not pinned — nothing to refresh
+            if (pinnedLnk is null) return false; // not pinned: nothing to refresh
 
             TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));
-            // On a thread that keeps the app alive until the taskbar is back: opened
-            // from the pinned group, the app closes as soon as this window does.
-            TaskbarPin.RestartExplorerInBackground();
+            return true;
         }
-        catch { /* never block saving on a refresh failure */ }
+        catch { return false; /* never block saving on a refresh failure */ }
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)

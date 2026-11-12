@@ -106,6 +106,10 @@
     <s:String x:Key="Loc_Editor_BadName">Название не может заканчиваться точкой или содержать символы: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Добавьте в группу хотя бы один ярлык.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">Не удалось сохранить</s:String>
+    <s:String x:Key="Loc_Editor_RestartTitle">Обновить значок на панели задач?</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows показывает на панели задач прежний значок или название, пока не перезагрузит её. Если перезагрузить сейчас, панель задач исчезнет на несколько секунд. Если отложить, всё уже сохранено, и панель обновится при следующем входе в систему.</s:String>
+    <s:String x:Key="Loc_Editor_RestartNow">Перезагрузить сейчас</s:String>
+    <s:String x:Key="Loc_Editor_RestartLater">Позже</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">Выберите папку</s:String>
     <s:String x:Key="Loc_Editor_PickImage">Выберите изображение для группы</s:String>
     <s:String x:Key="Loc_Editor_ImagesFilter">Изображения</s:String>

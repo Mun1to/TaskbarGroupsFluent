@@ -106,6 +106,10 @@
     <s:String x:Key="Loc_Editor_BadName">The name can't end in a dot or contain: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Add at least one shortcut to the group.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">Couldn't save</s:String>
+    <s:String x:Key="Loc_Editor_RestartTitle">Update the taskbar icon?</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows keeps showing the old icon or name on the taskbar until it reloads it. Reloading it now hides the taskbar for a few seconds. If you leave it for later, everything is saved and the taskbar updates the next time you sign in.</s:String>
+    <s:String x:Key="Loc_Editor_RestartNow">Reload now</s:String>
+    <s:String x:Key="Loc_Editor_RestartLater">Later</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">Select a folder</s:String>
     <s:String x:Key="Loc_Editor_PickImage">Select an image for the group</s:String>
     <s:String x:Key="Loc_Editor_ImagesFilter">Images</s:String>
