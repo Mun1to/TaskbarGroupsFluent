@@ -33,6 +33,34 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
+        /// Where a shortcut points and what it passes, without the AppUserModelID,
+        /// which costs a second trip to the shell. False if it does not read.
+        /// </summary>
+        public static bool TryReadTarget(string linkPath, out string target, out string arguments)
+        {
+            target = string.Empty;
+            arguments = string.Empty;
+            IShellLinkW link = null;
+            try
+            {
+                link = (IShellLinkW)new CShellLink();
+                ((IPersistFile)link).Load(linkPath, 0 /* STGM_READ */);
+
+                var buffer = new StringBuilder(1024);
+                link.GetPath(buffer, buffer.Capacity, IntPtr.Zero, 0);
+                target = buffer.ToString();
+
+                // Edge's web apps carry their address too, so leave room for it.
+                buffer = new StringBuilder(4096);
+                link.GetArguments(buffer, buffer.Capacity);
+                arguments = buffer.ToString();
+                return true;
+            }
+            catch { return false; }
+            finally { if (link != null) Marshal.ReleaseComObject(link); }
+        }
+
+        /// <summary>
         /// The AppUserModelID filed with a shortcut, or an empty string if it has
         /// none.
         ///

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using TaskbarGroups.App.Helpers;
@@ -17,16 +19,25 @@ namespace TaskbarGroups.App;
 public partial class AppOptionsWindow : FluentWindow
 {
     private readonly ProgramShortcut _shortcut;
+    private readonly string _defaultName;
+    private readonly bool _ready;
 
     // The icon picked here, kept as ProgramShortcut.CustomIcon keeps it, or null
     // for the app's own.
     private string? _customIcon;
+
+    // The browser web app the program and its arguments start (issue #15), looked
+    // up again only when the arguments name another one.
+    private string? _webAppKey;
+    private WebApp? _webApp;
+    private string? _webAppName;
 
     public AppOptionsWindow(ProgramShortcut shortcut, ImageSource? icon, string defaultName)
     {
         InitializeComponent();
         Helpers.AppTheme.Watch(this);
         _shortcut = shortcut;
+        _defaultName = defaultName;
         _customIcon = shortcut.CustomIcon;
 
         AppIcon.Source = icon;
@@ -56,11 +67,69 @@ public partial class AppOptionsWindow : FluentWindow
             IconSection.Visibility = Visibility.Collapsed;
         }
 
+        LookForWebApp(refreshIcon: false);
         UpdateIconButtons();
+        _ready = true;
     }
 
     private string CurrentArguments()
         => ProgramOnly.Visibility == Visibility.Visible ? (ArgsBox.Text ?? "").Trim() : (_shortcut.Arguments ?? "");
+
+    private void ArgsBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+    {
+        if (_ready) LookForWebApp(refreshIcon: true);
+    }
+
+    /// <summary>
+    /// A browser's launcher with a web app's id, typed or pasted into the
+    /// arguments, is that web app: the title and the name it gets without one of
+    /// its own become the app's, and so does the icon unless one was picked. The
+    /// launcher's own name, which a program picked with Browse… starts with, is
+    /// cleared so the app's shows instead.
+    /// </summary>
+    private void LookForWebApp(bool refreshIcon)
+    {
+        if (_shortcut.IsSeparator || _shortcut.IsGroup || _shortcut.isWindowsApp) return;
+
+        WebApp? app = WebApps.Parse(_shortcut.FilePath, CurrentArguments())
+                      ?? WebApps.FromShortcut(_shortcut.FilePath);
+        string? key = app?.Key;
+        if (key == _webAppKey) return;
+
+        _webAppKey = key;
+        _webApp = app;
+        _webAppName = app?.Name;
+        ShowWebAppName();
+        if (app is not null && app.Name is null && key is not null) FindWebAppName(app, key);
+
+        if (refreshIcon && _customIcon is null)
+            AppIcon.Source = AutomaticIcon();
+    }
+
+    // The name may have to be looked for through every shortcut in the Start menu,
+    // which can take seconds the first time, so the window does not wait for it.
+    private async void FindWebAppName(WebApp app, string key)
+    {
+        string? name = null;
+        try { name = await Task.Run(() => WebApps.FindName(app)); }
+        catch { }
+        if (name is null || _webAppKey != key) return;
+        _webAppName = name;
+        ShowWebAppName();
+    }
+
+    private void ShowWebAppName()
+    {
+        if (_webAppName is not null)
+        {
+            string own = Path.GetFileNameWithoutExtension(_shortcut.FilePath);
+            if (string.Equals((NameBox.Text ?? "").Trim(), own, StringComparison.OrdinalIgnoreCase))
+                NameBox.Text = "";
+        }
+        string shown = _webAppName ?? _defaultName;
+        AppTitle.Text = shown;
+        NameBox.PlaceholderText = shown;
+    }
 
     // What the entry wears without a picked icon, with the arguments as they are now.
     private ImageSource? AutomaticIcon()
@@ -130,7 +199,12 @@ public partial class AppOptionsWindow : FluentWindow
 
     private void Save_Click(object sender, RoutedEventArgs e)
     {
-        _shortcut.name = (NameBox.Text ?? "").Trim();
+        string name = (NameBox.Text ?? "").Trim();
+        // A web app is saved under its own name, so the panel shows it at once
+        // without looking for it in the browser's files.
+        if (name.Length == 0 && _webApp is not null)
+            name = _webAppName ?? WebApps.FindName(_webApp) ?? "";
+        _shortcut.name = name;
         if (!_shortcut.IsSeparator) _shortcut.CustomIcon = _customIcon;
         if (ProgramOnly.Visibility == Visibility.Visible)
         {

@@ -443,6 +443,13 @@ namespace TaskbarGroups.Core
                     catch { return GetErrorImage(); }
                 }
 
+                // A web app started through its browser's launcher, or a shortcut
+                // to one: its icon is in the browser's profile, and the launcher's
+                // own is just the browser's (issue #15).
+                Image webApp = WebApps.IconFor(programPath, shortcutObject.Arguments, size);
+                if (webApp != null)
+                    return webApp;
+
                 // High-resolution (256px) icon for files, folders and shortcuts,
                 // free of the shortcut-arrow overlay.
                 Image highRes = HighResIcon.GetIcon(programPath);

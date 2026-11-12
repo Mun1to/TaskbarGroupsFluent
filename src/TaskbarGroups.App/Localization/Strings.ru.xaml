@@ -262,5 +262,6 @@
     <s:String x:Key="Loc_IconPick_Title">Выбор значка</s:String>
     <s:String x:Key="Loc_IconPick_Hint">Выберите значок, который будет у приложения на панели.</s:String>
     <s:String x:Key="Loc_IconPick_Use">Использовать этот значок</s:String>
+    <s:String x:Key="Loc_Sub_WebApp">Веб-приложение</s:String>
 
 </ResourceDictionary>

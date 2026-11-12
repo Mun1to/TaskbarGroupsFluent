@@ -49,7 +49,7 @@
             <StackPanel x:Name="ProgramOnly">
                 <TextBlock Text="{DynamicResource Loc_AppOpt_Args}" FontSize="13" Margin="0,0,0,4"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                <ui:TextBox x:Name="ArgsBox" Margin="0,0,0,4" />
+                <ui:TextBox x:Name="ArgsBox" Margin="0,0,0,4" TextChanged="ArgsBox_TextChanged" />
                 <TextBlock Text="{DynamicResource Loc_AppOpt_ArgsHint}" FontSize="12" Margin="0,0,0,14"
                            TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
 

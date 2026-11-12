@@ -262,5 +262,6 @@
     <s:String x:Key="Loc_IconPick_Title">Choose icon</s:String>
     <s:String x:Key="Loc_IconPick_Hint">Pick the icon the app will have in the panel.</s:String>
     <s:String x:Key="Loc_IconPick_Use">Use this icon</s:String>
+    <s:String x:Key="Loc_Sub_WebApp">Web app</s:String>
 
 </ResourceDictionary>
