@@ -40,6 +40,10 @@ internal static class Program
         if (Array.Exists(args, arg => string.Equals(arg, Category.SeparatorArgument, StringComparison.OrdinalIgnoreCase)))
             return;
 
+        // The second click on a group's button closes its panel instead of opening
+        // it again: pressing the button already closed it (issue #17).
+        if (IsPlainClick(args) && ClickToggle.JustClosed(string.Join(" ", args))) return;
+
         if (HandOff(args)) return;
         RunWpf();
     }
@@ -60,11 +64,7 @@ internal static class Program
     /// </summary>
     private static bool HandOff(string[] args)
     {
-        // Only a click passes just the group name. The watcher, the right-click
-        // menu and the warm start all add a "--" switch and keep their own paths.
-        if (args.Length == 0) return false;
-        foreach (string a in args)
-            if (a.StartsWith("--", StringComparison.Ordinal)) return false;
+        if (!IsPlainClick(args)) return false;
 
         if (!FlyoutChannel.IsFlyoutReady()) return false;
 
@@ -95,6 +95,18 @@ internal static class Program
             Thread.Sleep(5);
         }
         return false;
+    }
+
+    /// <summary>
+    /// Only a click passes just the group name. The watcher, the right-click menu
+    /// and the warm start all add a "--" switch and keep their own paths.
+    /// </summary>
+    private static bool IsPlainClick(string[] args)
+    {
+        if (args.Length == 0) return false;
+        foreach (string a in args)
+            if (a.StartsWith("--", StringComparison.Ordinal)) return false;
+        return true;
     }
 
     private static bool OnScreen(IntPtr hwnd)

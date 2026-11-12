@@ -148,7 +148,23 @@ public partial class PopupWindow : Window
     {
         if (_closing || InFamily(GetForegroundWindow())) return;
         var root = Root;
-        if (!root.Reusable || !root.IsParked) root.CloseOnce();
+        if (!root.Reusable || !root.IsParked)
+        {
+            root.NoteTaskbarPress();
+            root.CloseOnce();
+        }
+    }
+
+    /// <summary>
+    /// Closing because the mouse went down on the taskbar: if that press was on this
+    /// group's button, the launch it is about to make must not open the panel again
+    /// (issue #17). A panel opened by hover is left out: its button was never
+    /// clicked to open it, so a click there means "open", not "close".
+    /// </summary>
+    private void NoteTaskbarPress()
+    {
+        if (_parent is not null || _anchor is not null) return;
+        if (ClickToggle.CursorOnTaskbar()) ClickToggle.Remember(_category.Name);
     }
 
     // Follow the Windows light/dark setting: a light panel with dark text under a
@@ -1217,7 +1233,7 @@ public partial class PopupWindow : Window
 
             // A subgroup open beside the panel counts as the panel itself.
             if (InFamily(GetForegroundWindow())) { _hadFocus = true; _cursorLeftAt = null; return; }
-            if (_hadFocus) { CloseOnce(); return; }
+            if (_hadFocus) { NoteTaskbarPress(); CloseOnce(); return; }
 
             bool pressed = (GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0
                         || (GetAsyncKeyState(VK_RBUTTON) & 0x8000) != 0;
@@ -1228,7 +1244,7 @@ public partial class PopupWindow : Window
                 // here, and it landed on the taskbar, which is outside us. Wait for
                 // the mouse to come up once so we never dismiss on the press that
                 // opened us.
-                if (_mouseWentUp && !CursorIsOverFamily(0)) CloseOnce();
+                if (_mouseWentUp && !CursorIsOverFamily(0)) { NoteTaskbarPress(); CloseOnce(); }
                 return;
             }
 
