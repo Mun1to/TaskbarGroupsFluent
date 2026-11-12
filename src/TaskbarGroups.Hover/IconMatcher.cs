@@ -202,7 +202,7 @@ internal static class IconMatcher
     /// For tests only: hands over a picture of the given area instead of reading the
     /// screen, so a taskbar drawn in memory can stand in for one on screen.
     /// </summary>
-    internal static Func<Rectangle, Bitmap>? PictureForTests;
+    internal static Func<Rectangle, Bitmap>? PictureForTests { get; set; }
 
     /// <summary>A copy of a piece of the screen, as 0xAARRGGBB values.</summary>
     private sealed class Screen

@@ -158,8 +158,13 @@ internal sealed class TaskbarWatcher : IDisposable
         }
 
         GroupButton? hit = null;
-        string under = ClassUnder(cursor);
-        if (DrawnByAnotherProgram(under))
+        string under = ClassUnder(cursor, bar);
+        if (under == Covered)
+        {
+            // Another program's window lies over the taskbar here, and the cursor
+            // is on that window, not on any icon of the taskbar.
+        }
+        else if (DrawnByAnotherProgram(under))
         {
             // Issue #12: Start11 draws its own taskbar over the one of Windows 11,
             // which stays underneath with its buttons squeezed out of place, so its
@@ -248,11 +253,19 @@ internal sealed class TaskbarWatcher : IDisposable
         "TrayNotifyWnd"
     };
 
-    /// <summary>The class of the window right under the cursor, or "" if there is none.</summary>
-    private static string ClassUnder(POINT cursor)
+    /// <summary>What <see cref="ClassUnder"/> says when the window under the cursor is not the taskbar's.</summary>
+    private const string Covered = "(covered)";
+
+    /// <summary>
+    /// The class of the window right under the cursor, "" if it can't be told, or
+    /// <see cref="Covered"/> if that window is not part of the taskbar
+    /// <paramref name="bar"/> at all: some window lying on top of it.
+    /// </summary>
+    private static string ClassUnder(POINT cursor, nint bar)
     {
         nint window = Native.WindowFromPoint(cursor);
         if (window == 0) return "";
+        if (Native.GetAncestor(window, Native.GA_ROOT) != bar) return Covered;
         var name = new System.Text.StringBuilder(128);
         return Native.GetClassName(window, name, name.Capacity) > 0 ? name.ToString() : "";
     }

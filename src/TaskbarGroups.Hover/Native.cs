@@ -42,6 +42,11 @@ internal static class Native
     [DllImport("user32.dll")]
     internal static extern nint WindowFromPoint(POINT p);
 
+    [DllImport("user32.dll")]
+    internal static extern nint GetAncestor(nint hWnd, uint flags);
+
+    internal const uint GA_ROOT = 2;
+
     [DllImport("user32.dll", CharSet = CharSet.Unicode)]
     internal static extern nint FindWindow(string? cls, string? title);
 
