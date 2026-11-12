@@ -51,6 +51,9 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <summary>Raised when the user has switched the feature off while we ran.</summary>
     public event Action? TurnedOff;
 
+    /// <summary>The settings file changed and was read again, with this program still wanted.</summary>
+    public event Action? SettingsChanged;
+
     private List<GroupButton> _buttons = new();
     private DateTime _cachedAt = DateTime.MinValue;
     private nint _cachedBar;
@@ -88,10 +91,14 @@ internal sealed class TaskbarWatcher : IDisposable
     {
         // Picks up a changed dwell time without anyone restarting us, and lets us
         // bow out if everything we run for was switched off behind our back.
-        if (_settings.TakeChange() && !HoverService.Wanted())
+        if (_settings.TakeChange())
         {
-            TurnedOff?.Invoke();
-            return;
+            if (!HoverService.Wanted())
+            {
+                TurnedOff?.Invoke();
+                return;
+            }
+            SettingsChanged?.Invoke();
         }
 
         // Since issue #11 this process also runs without hover-to-open: for groups

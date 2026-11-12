@@ -45,9 +45,13 @@ internal static class Program
         {
             Icon = LoadIcon(),
             Text = Trim(TrayText.Tooltip),
-            Visible = true,
+            Visible = !Settings.settingInfo.hideTrayIcon,
             ContextMenuStrip = FluentMenu.Create()
         };
+
+        // Issue #14: the icon can be hidden, from its own menu or the app's settings,
+        // and brought back from the app's settings without restarting anything.
+        watcher.SettingsChanged += () => tray.Visible = !Settings.settingInfo.hideTrayIcon;
 
         // Issue #10: a double click opens the app, as it does for most programs that
         // sit by the clock. The menu is built as it opens, so it only offers to turn
@@ -92,7 +96,22 @@ internal static class Program
         if (Settings.settingInfo.instantOpen)
             menu.Items.Add(TrayText.TurnOffInstant, null, (_, _) => TurnOff(hover: false));
 
+        menu.Items.Add(TrayText.HideIcon, null, (_, _) => HideIcon());
         menu.Items.Add(TrayText.Quit, null, (_, _) => Application.Exit());
+    }
+
+    /// <summary>
+    /// Hides this icon for good, as the switch in the app's settings does; the
+    /// watcher sees the settings file change and puts the icon away.
+    /// </summary>
+    private static void HideIcon()
+    {
+        try
+        {
+            Settings.settingInfo.hideTrayIcon = true;
+            Settings.writeXML();
+        }
+        catch { /* an unwritable settings file leaves the icon where it is */ }
     }
 
     /// <summary>

@@ -124,6 +124,36 @@
                     </Grid>
                 </ui:Card>
 
+                <!-- Issue #14: the program by the clock can do its job without its icon. -->
+                <ui:Card Padding="16" Margin="0,10,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <ui:SymbolIcon Grid.Column="0" Symbol="Eye24" FontSize="22"
+                                       VerticalAlignment="Center" Margin="0,0,14,0"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource Loc_Settings_TrayIconTitle}"
+                                       FontSize="14" FontWeight="SemiBold" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <TextBlock Text="{DynamicResource Loc_Settings_TrayIconSubtitle}"
+                                       FontSize="12" Margin="0,3,12,0" TextWrapping="Wrap"
+                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </StackPanel>
+
+                        <ui:ToggleSwitch Grid.Column="2" x:Name="TrayIconToggle"
+                                         VerticalAlignment="Center"
+                                         AutomationProperties.Name="{DynamicResource Loc_Settings_TrayIconTitle}"
+                                         Checked="TrayIconToggle_Changed"
+                                         Unchecked="TrayIconToggle_Changed" />
+                    </Grid>
+                </ui:Card>
+
                 <ui:Card Padding="16" Margin="0,10,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>

@@ -135,6 +135,14 @@ namespace TaskbarGroups.Core
         public bool instantOpen { get; set; } = false;
 
         /// <summary>
+        /// Hide the icon of the resident program by the clock (issue #14). The program
+        /// keeps doing whatever it runs for; only its icon goes, and the app's settings
+        /// are where it comes back.
+        /// </summary>
+        [XmlElement]
+        public bool hideTrayIcon { get; set; } = false;
+
+        /// <summary>
         /// How the panel comes and goes, one of <see cref="PanelAnimation"/>. None by
         /// default: it is a matter of taste, and the panel has always appeared at once.
         /// </summary>

@@ -35,6 +35,7 @@ public partial class SettingsWindow : FluentWindow
 
         HoverToggle.IsChecked = Settings.settingInfo.hoverToOpen;
         InstantToggle.IsChecked = Settings.settingInfo.instantOpen;
+        TrayIconToggle.IsChecked = !Settings.settingInfo.hideTrayIcon;
         DelayBox.SelectedIndex = ClosestDelayIndex(Settings.settingInfo.hoverDelayMs);
         AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimateNone"));
         AnimationBox.Items.Add(Loc.Get("Loc_Settings_AnimatePeek"));
@@ -137,11 +138,23 @@ public partial class SettingsWindow : FluentWindow
         Settings.writeXML();
     }
 
+    // Only stored: the program by the clock sees the file change and shows or
+    // hides its icon itself, without being restarted.
+    private void TrayIconToggle_Changed(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+
+        Settings.settingInfo.hideTrayIcon = TrayIconToggle.IsChecked != true;
+        Settings.writeXML();
+        UpdateHoverUi();
+    }
+
     private void UpdateHoverUi()
     {
         bool on = HoverToggle.IsChecked == true;
         DelayCard.Visibility = on ? Visibility.Visible : Visibility.Collapsed;
-        HoverNotice.IsOpen = on;
+        // It points at the icon by the clock, so not while the icon is hidden.
+        HoverNotice.IsOpen = on && TrayIconToggle.IsChecked == true;
     }
 
     private void Support_Click(object sender, RoutedEventArgs e) => SupportLink.Open();

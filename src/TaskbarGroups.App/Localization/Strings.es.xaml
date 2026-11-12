@@ -235,6 +235,8 @@
     <s:String x:Key="Loc_Settings_HoverMissing">No se encontró el programa que vigila el cursor. Vuelve a instalar la aplicación.</s:String>
     <s:String x:Key="Loc_Settings_InstantTitle">Abrir los grupos al instante</s:String>
     <s:String x:Key="Loc_Settings_InstantSubtitle">Deja un panel cargado en segundo plano, para que hasta el primer clic después de encender el PC abra al momento. Necesita el programa pequeño que se queda junto al reloj y arranca con Windows.</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconTitle">Mostrar el icono junto al reloj</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconSubtitle">El programa pequeño que se queda junto al reloj sigue funcionando sin él. Vuelve a encenderlo aquí para ver otra vez su icono y su menú.</s:String>
     <s:String x:Key="Loc_Settings_DelayTitle">Cuánto esperar</s:String>
     <s:String x:Key="Loc_Settings_DelaySubtitle">El tiempo que el cursor debe quedarse quieto sobre el icono antes de que se abra.</s:String>
     <s:String x:Key="Loc_Settings_DelayFast">Rápido</s:String>

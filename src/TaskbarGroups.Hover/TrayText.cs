@@ -27,6 +27,10 @@ internal static class TrayText
         ? "Desactivar la apertura al instante"
         : "Turn off instant opening";
 
+    internal static string HideIcon => Spanish
+        ? "Ocultar este icono (vuelve desde los ajustes de la app)"
+        : "Hide this icon (bring it back in the app's settings)";
+
     internal static string Quit => Spanish
         ? "Salir hasta el próximo inicio"
         : "Quit until next sign-in";

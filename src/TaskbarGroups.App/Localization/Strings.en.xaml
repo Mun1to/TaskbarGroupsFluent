@@ -235,6 +235,8 @@
     <s:String x:Key="Loc_Settings_HoverMissing">The program that watches the cursor was not found. Reinstall the app to restore it.</s:String>
     <s:String x:Key="Loc_Settings_InstantTitle">Open groups instantly</s:String>
     <s:String x:Key="Loc_Settings_InstantSubtitle">Keeps one panel loaded in the background, so even the first click after starting Windows opens at once. It needs the small program that sits by the clock and starts with Windows.</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconTitle">Show the icon by the clock</s:String>
+    <s:String x:Key="Loc_Settings_TrayIconSubtitle">The small program by the clock keeps working without it. Turn this back on here to see its icon and its menu again.</s:String>
     <s:String x:Key="Loc_Settings_DelayTitle">How long to wait</s:String>
     <s:String x:Key="Loc_Settings_DelaySubtitle">How long the cursor has to rest on the icon before the group opens.</s:String>
     <s:String x:Key="Loc_Settings_DelayFast">Fast</s:String>
