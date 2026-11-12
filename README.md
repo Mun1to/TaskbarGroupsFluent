@@ -57,7 +57,7 @@ Each group becomes **one taskbar button**. Click it and a small panel opens abov
 - **Right-click a pinned group** for **Open all**, **Edit group** or the app itself, or **an app in the panel** for its own Windows menu.
 - **Per-app options**: rename, launch arguments, run as administrator.
 - **Export, import and duplicate** groups, or bring them over from Taskbar Groups or AppGroup.
-- **Light or dark, English or Spanish**: follows Windows, or pick them in the quick bar.
+- **Light or dark, in English, Spanish or Russian**: follows Windows, or pick them in the quick bar.
 - **Updates itself** when a new version is out, if you say so.
 
 ## Screenshots

@@ -52,11 +52,11 @@ Make each group your own:
 
 Adding apps is easy: one searchable list of everything installed, desktop programs and Microsoft Store apps alike, with the right icons, or just drag files and shortcuts in from File Explorer. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
 
-It follows your Windows theme, accent colour and language (English or Spanish), or the ones you pick in its quick bar, installs for your user only without administrator rights, and has no account, no telemetry and no ads. It is free and open source (MIT).
+It follows your Windows theme, accent colour and language (English, Spanish or Russian), or the ones you pick in its quick bar, installs for your user only without administrator rights, and has no account, no telemetry and no ads. It is free and open source (MIT).
 
 **What's new in this version**
 
-A group can now sit by the clock as well, with its own icon in the notification area: a click opens its panel right there, and its right-click menu opens all its apps or its editor. A new setting, Open groups instantly, keeps one panel ready in the background, so even the first click after starting Windows opens at once. The right-click menu of a pinned group can now open Taskbar Groups Fluent itself, and so does a double click on the app's icon by the clock; if the app is already open, it comes to the front instead of opening a second window.
+Panels no longer wait for a hard disk that has gone to sleep, or a network or USB drive, to answer: they show at once with their saved icons and check the apps afterwards. The icon by the clock can now be hidden, from its own menu or with the new switch in Settings, and the right-click menus of the icons by the clock now look like the menus of Windows 11, light or dark. And Taskbar Groups Fluent now speaks Russian too.
 
 **Product features** (one per line, up to 20)
 
@@ -110,11 +110,11 @@ Haz cada grupo a tu manera:
 
 Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio y apps de la Microsoft Store, con sus iconos, o arrastra archivos y accesos directos desde el Explorador. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
 
-Sigue el tema, el color de énfasis y el idioma de Windows (español o inglés), o los que elijas en su barra rápida, se instala solo para tu usuario sin permisos de administrador y no tiene cuentas, ni telemetría, ni anuncios. Es gratis y de código abierto (MIT).
+Sigue el tema, el color de énfasis y el idioma de Windows (español, inglés o ruso), o los que elijas en su barra rápida, se instala solo para tu usuario sin permisos de administrador y no tiene cuentas, ni telemetría, ni anuncios. Es gratis y de código abierto (MIT).
 
 **Novedades de esta versión**
 
-Un grupo ahora puede estar también junto al reloj, con su propio icono en la zona de notificaciones: un clic abre su panel ahí mismo, y su menú del clic derecho abre todas sus apps o su editor. Un ajuste nuevo, «Abrir los grupos al instante», deja un panel preparado en segundo plano, para que hasta el primer clic después de encender Windows abra al momento. El menú del clic derecho de un grupo anclado ahora también abre Taskbar Groups Fluent, y un doble clic en el icono de la app junto al reloj, también; si la app ya estaba abierta, la trae delante en vez de abrir otra ventana.
+Los paneles ya no esperan a que conteste un disco duro que se ha dormido, o una unidad de red o USB: salen al momento con sus iconos guardados y comprueban las apps después. El icono junto al reloj ya se puede ocultar, desde su propio menú o con el interruptor nuevo de Ajustes, y los menús del clic derecho de los iconos junto al reloj tienen ya el aspecto de los de Windows 11, en claro y en oscuro. Y Taskbar Groups Fluent habla también ruso.
 
 **Características** (una por línea, hasta 20)
 

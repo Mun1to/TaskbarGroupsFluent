@@ -57,7 +57,7 @@ Cada grupo se convierte en **un solo botón de la barra de tareas**. Al pulsarlo
 - **Clic derecho en un grupo anclado** para **Abrir todas**, **Editar grupo** o la propia app, o **en una app del panel** para su menú de Windows.
 - **Opciones por app**: cambiarle el nombre, pasarle argumentos o abrirla como administrador.
 - **Exporta, importa y duplica** grupos, o tráelos de Taskbar Groups o de AppGroup.
-- **Claro u oscuro, español o inglés**: sigue a Windows, o lo eliges en la barra rápida.
+- **Claro u oscuro, en español, inglés o ruso**: sigue a Windows, o lo eliges en la barra rápida.
 - **Se actualiza sola** cuando sale una versión nueva, si tú le dices que sí.
 
 ## Capturas
