@@ -128,6 +128,7 @@
     <s:String x:Key="Loc_Editor_ShowHeader">Показывать название группы и карандаш для его изменения</s:String>
     <s:String x:Key="Loc_Editor_LayoutList">Список</s:String>
     <s:String x:Key="Loc_Editor_IconSize">Размер значков</s:String>
+    <s:String x:Key="Loc_Editor_IconTiny">Очень мелкие</s:String>
     <s:String x:Key="Loc_Editor_IconSmall">Мелкие</s:String>
     <s:String x:Key="Loc_Editor_IconNormal">Обычные</s:String>
     <s:String x:Key="Loc_Editor_IconLarge">Крупные</s:String>

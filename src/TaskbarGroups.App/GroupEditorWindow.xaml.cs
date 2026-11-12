@@ -77,6 +77,7 @@ public partial class GroupEditorWindow : FluentWindow
         ColumnsCombo.Items.Add(Loc.Get("Loc_Editor_ColumnsAuto"));
         for (int n = 1; n <= 8; n++) ColumnsCombo.Items.Add(n.ToString());
         // Same order as PanelLayouts.IconScales.
+        IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconTiny"));
         IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconSmall"));
         IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconNormal"));
         IconSizeCombo.Items.Add(Loc.Get("Loc_Editor_IconLarge"));
@@ -127,7 +128,8 @@ public partial class GroupEditorWindow : FluentWindow
 
         ColumnsCombo.SelectedIndex = Math.Clamp(category.Width, 0, ColumnsCombo.Items.Count - 1);
         int size = Array.IndexOf(PanelLayouts.IconScales, category.IconScale);
-        IconSizeCombo.SelectedIndex = size >= 0 ? size : 1;
+        IconSizeCombo.SelectedIndex = size >= 0 ? size
+            : Array.IndexOf(PanelLayouts.IconScales, PanelLayouts.NormalIconScale);
         LabelsToggle.IsChecked = category.ShowLabels;
         HeaderToggle.IsChecked = category.ShowHeader;
         HeaderPositionCombo.SelectedIndex = PanelLayouts.IsBottom(category.HeaderPosition) ? 1 : 0;

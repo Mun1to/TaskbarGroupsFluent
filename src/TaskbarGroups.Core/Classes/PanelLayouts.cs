@@ -21,8 +21,15 @@ namespace TaskbarGroups.Core
         public const string HeaderTop = "Top";
         public const string HeaderBottom = "Bottom";
 
-        /// <summary>Icon sizes offered to the user, as a percentage of the normal one.</summary>
-        public static readonly int[] IconScales = { 80, 100, 125 };
+        /// <summary>
+        /// Icon sizes offered to the user, as a percentage of the normal one. The
+        /// smallest packs icons about as tightly as the hidden icons by the clock
+        /// do (issue #17).
+        /// </summary>
+        public static readonly int[] IconScales = { 60, 80, 100, 125 };
+
+        /// <summary>The size a group has unless the user picks another.</summary>
+        public const int NormalIconScale = 100;
 
         // Width of one cell in each template, margins included. They have to match
         // the sizes in the flyout's XAML, or columns wrap a cell too early or late.

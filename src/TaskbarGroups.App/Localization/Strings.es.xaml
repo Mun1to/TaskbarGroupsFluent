@@ -128,6 +128,7 @@
     <s:String x:Key="Loc_Editor_ShowHeader">Mostrar el nombre del grupo, con un lápiz para editarlo</s:String>
     <s:String x:Key="Loc_Editor_LayoutList">Lista</s:String>
     <s:String x:Key="Loc_Editor_IconSize">Tamaño de los iconos</s:String>
+    <s:String x:Key="Loc_Editor_IconTiny">Muy pequeño</s:String>
     <s:String x:Key="Loc_Editor_IconSmall">Pequeño</s:String>
     <s:String x:Key="Loc_Editor_IconNormal">Normal</s:String>
     <s:String x:Key="Loc_Editor_IconLarge">Grande</s:String>
