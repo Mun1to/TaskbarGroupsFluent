@@ -15,7 +15,9 @@ namespace TaskbarGroups.Core
         //  v2: shell-generic fallback to the executable's PE icon (Obsidian/Brave fix).
         //  v3: shell icons were read as top-down, so every one was cached upside down.
         //  v4: v3 only fixed the small sizes; 256px icons were still flipped.
-        private const int CurrentVersion = 4;
+        //  v5: a browser's web app (chrome_proxy.exe --app-id=…) wears its own icon,
+        //      not the browser's (issue #15).
+        private const int CurrentVersion = 5;
 
         private static string MarkerPath => Path.Combine(Paths.ConfigPath, ".iconcache-version");
 

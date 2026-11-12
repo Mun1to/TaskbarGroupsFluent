@@ -397,7 +397,7 @@ namespace TaskbarGroups.Core
             {
                 ProgramShortcut ps = ShortcutList[i];
                 if (ps.IsSeparator) continue;
-                string savePath = Path.Combine(iconPath, generateMD5Hash(ps.FilePath + ps.Arguments) + ".png");
+                string savePath = generateCachePath(ps);
                 using (Image img = ResolveShortcutImage(ps))
                     img?.Save(savePath, ImageFormat.Png);
             }
@@ -412,6 +412,15 @@ namespace TaskbarGroups.Core
 
             try
             {
+                // The icon the user picked for this entry comes before anything the
+                // app itself has (issue #15). One that no longer reads falls back to
+                // the automatic icon rather than to an error.
+                if (shortcutObject.HasCustomIcon)
+                {
+                    Image picked = PickedIcon.Decode(shortcutObject.CustomIcon);
+                    if (picked != null) return picked;
+                }
+
                 // Another group: it wears that group's own icon.
                 if (shortcutObject.IsGroup)
                 {
@@ -433,6 +442,13 @@ namespace TaskbarGroups.Core
                     try { return handleWindowsApp.getWindowsAppIcon(programPath, true); }
                     catch { return GetErrorImage(); }
                 }
+
+                // A web app started through its browser's launcher, or a shortcut
+                // to one: its icon is in the browser's profile, and the launcher's
+                // own is just the browser's (issue #15).
+                Image webApp = WebApps.IconFor(programPath, shortcutObject.Arguments, size);
+                if (webApp != null)
+                    return webApp;
 
                 // High-resolution (256px) icon for files, folders and shortcuts,
                 // free of the shortcut-arrow overlay.
@@ -528,7 +544,7 @@ namespace TaskbarGroups.Core
                     // Checks if the original file even exists to make sure to not do any extra operations
 
                     // Same processing as above in cacheIcons()
-                    String path = Path.Combine(Paths.ConfigPath, this.Name, "Icons", generateMD5Hash(programPath + shortcutObject.Arguments) +".png");
+                    String path = generateCachePath(shortcutObject);
 
                     // Resolve the icon directly from the target (decoupled from UI)
                     Image finalImage = ResolveShortcutImage(shortcutObject);
@@ -556,8 +572,16 @@ namespace TaskbarGroups.Core
                         @Path.GetFileNameWithoutExtension(programPath)) + (Directory.Exists(programPath) ? "_FolderObjTSKGRoup.png" : ".png");
             */
 
-            return Path.Combine(Paths.ConfigPath, this.Name, "Icons",
-                        generateMD5Hash(ps.FilePath + ps.Arguments) + ".png");
+            // A picked icon is part of the name, so picking another one, or going
+            // back to the automatic one, is a different file and never shows the
+            // old picture; and the same app twice with two icons keeps both. An
+            // entry without one keeps the name it always had, so the icons already
+            // saved still count.
+            string key = ps.FilePath + ps.Arguments;
+            if (ps.HasCustomIcon)
+                key += "|icon:" + generateMD5Hash(ps.CustomIcon);
+
+            return Path.Combine(Paths.ConfigPath, this.Name, "Icons", generateMD5Hash(key) + ".png");
         }
 
         public static string GetMimeType(Image i)

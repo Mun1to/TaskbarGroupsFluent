@@ -21,7 +21,8 @@ namespace TaskbarGroups.App;
 
 /// <summary>
 /// Unified app picker backed by the shell AppsFolder catalog (UWP + Win32, already
-/// curated) plus a "Browse…" escape hatch for executables not in the catalog.
+/// curated), the browsers' web apps it misses, and a "Browse…" escape hatch for
+/// executables not in either.
 /// </summary>
 public partial class ProgramPickerWindow : FluentWindow
 {
@@ -29,6 +30,9 @@ public partial class ProgramPickerWindow : FluentWindow
     private const CompareOptions SearchOptions = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
 
     private readonly ObservableCollection<AppPickerItem> _allItems = new();
+
+    // Picked with Browse…: they stay at the top, where they were put.
+    private readonly HashSet<AppPickerItem> _browsed = new();
     private ICollectionView? _view;
     private CancellationTokenSource? _cts;
 
@@ -58,6 +62,11 @@ public partial class ProgramPickerWindow : FluentWindow
         _cts = new CancellationTokenSource();
         var token = _cts.Token;
 
+        // The browsers' web apps are looked for at the same time (issue #15): Windows'
+        // own list only has the ones with a shortcut in the Start menu. They join
+        // the list when they are found, so it never waits for them: a first look
+        // through the shortcuts can take seconds while Windows has not read them yet.
+        var webAppsTask = Task.Run(() => WebApps.Installed(), token);
         var entries = await Task.Run(AppCatalog.Enumerate, token);
         var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in entries.OrderBy(e => e.DisplayName, StringComparer.CurrentCultureIgnoreCase))
@@ -82,6 +91,47 @@ public partial class ProgramPickerWindow : FluentWindow
 
         LoadingRing.Visibility = Visibility.Collapsed;
         _ = Task.Run(() => LoadIcons(_allItems.ToList(), token), token);
+
+        await AddWebAppsAsync(entries, webAppsTask, token);
+    }
+
+    // The web apps the app list does not have, each in its place by name, started
+    // through the browser's launcher as their own shortcuts do.
+    private async Task AddWebAppsAsync(List<AppCatalogEntry> entries, Task<List<WebApp>> found, CancellationToken token)
+    {
+        var added = new List<AppPickerItem>();
+        try
+        {
+            var apps = WebApps.NotListed(entries, await found);
+            if (token.IsCancellationRequested) return;
+            foreach (var app in apps)
+            {
+                var item = new AppPickerItem
+                {
+                    Shortcut = new ProgramShortcut
+                    {
+                        FilePath = app.Launcher,
+                        Arguments = app.Arguments,
+                        name = app.Name,
+                        isWindowsApp = false
+                    }
+                };
+                if (_allItems.Any(i => i.Key.Equals(item.Key, StringComparison.OrdinalIgnoreCase))) continue;
+                item.PropertyChanged += Item_PropertyChanged;
+
+                int at = 0;
+                while (at < _allItems.Count
+                       && (_browsed.Contains(_allItems[at])
+                           || string.Compare(_allItems[at].DisplayName, item.DisplayName, StringComparison.CurrentCultureIgnoreCase) <= 0))
+                    at++;
+                _allItems.Insert(at, item);
+                added.Add(item);
+            }
+        }
+        catch { /* without them the list is what it always was */ }
+
+        if (added.Count > 0 && !token.IsCancellationRequested)
+            _ = Task.Run(() => LoadIcons(added, token), token);
     }
 
     private bool FilterApp(object obj)
@@ -225,6 +275,7 @@ public partial class ProgramPickerWindow : FluentWindow
                 continue;
             item.PropertyChanged += Item_PropertyChanged;
             _allItems.Insert(0, item);
+            _browsed.Add(item);
             added.Add(item);
         }
 

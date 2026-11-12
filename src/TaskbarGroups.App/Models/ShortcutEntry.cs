@@ -33,6 +33,7 @@ public class ShortcutEntry
         Shortcut.IsSeparator ? Loc.Get("Loc_Sub_Separator")
         : Shortcut.IsGroup ? Loc.Get("Loc_Sub_Group")
         : Shortcut.isWindowsApp ? Loc.Get("Loc_Sub_StoreApp")
+        : WebApps.IsWebApp(Shortcut.FilePath, Shortcut.Arguments) ? Loc.Get("Loc_Sub_WebApp")
         : Directory.Exists(Shortcut.FilePath) ? Loc.Get("Loc_Sub_Folder")
         : Loc.Get("Loc_Sub_Program");
 

@@ -32,7 +32,7 @@ namespace TaskbarGroups.Core
             ref SHFILEINFO psfi, uint cbFileInfo, uint uFlags);
 
         [DllImport("shell32.dll", EntryPoint = "#727")]
-        private static extern int SHGetImageList(int iImageList, ref Guid riid, out IImageList ppv);
+        private static extern int SHGetImageList(int iImageList, ref Guid riid, out IntPtr ppv);
 
         [DllImport("user32.dll")]
         private static extern bool DestroyIcon(IntPtr hIcon);
@@ -75,12 +75,21 @@ namespace TaskbarGroups.Core
             if (res == IntPtr.Zero)
                 return null;
 
-            if (SHGetImageList(imageListSize, ref IID_IImageList, out IImageList list) != 0 || list == null)
+            if (SHGetImageList(imageListSize, ref IID_IImageList, out IntPtr listPointer) != 0 || listPointer == IntPtr.Zero)
                 return null;
 
+            IImageList list = null;
             IntPtr hIcon = IntPtr.Zero;
             try
             {
+                // The system image list is one object for the whole process. Through
+                // the runtime's usual shared wrapper it belongs to the first thread
+                // that asked for it, and a thread of the other kind then cannot use
+                // it: measured, once the icon cache had been rebuilt in the
+                // background at startup, every program in the editor came out with
+                // the missing-app icon (E_NOINTERFACE). A wrapper of its own each
+                // time is tied to no thread.
+                list = (IImageList)Marshal.GetUniqueObjectForIUnknown(listPointer);
                 if (list.GetIcon(shfi.iIcon, ILD_TRANSPARENT, ref hIcon) != 0 || hIcon == IntPtr.Zero)
                     return null;
 
@@ -91,6 +100,8 @@ namespace TaskbarGroups.Core
             finally
             {
                 if (hIcon != IntPtr.Zero) DestroyIcon(hIcon);
+                if (list != null) Marshal.FinalReleaseComObject(list);
+                Marshal.Release(listPointer);
             }
         }
 

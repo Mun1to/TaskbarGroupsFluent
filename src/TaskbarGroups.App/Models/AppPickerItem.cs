@@ -15,8 +15,12 @@ public class AppPickerItem : INotifyPropertyChanged
 
     public string DisplayName => Shortcut.name;
 
-    /// <summary>Key used to dedupe and to load the icon on demand.</summary>
-    public string Key => (Shortcut.isWindowsApp ? "app:" : "file:") + Shortcut.FilePath;
+    /// <summary>
+    /// Key used to dedupe and to load the icon on demand. The arguments count: every
+    /// web app of a browser starts from the same launcher and only they tell them apart.
+    /// </summary>
+    public string Key => (Shortcut.isWindowsApp ? "app:" : "file:") + Shortcut.FilePath
+        + (string.IsNullOrWhiteSpace(Shortcut.Arguments) ? "" : " " + Shortcut.Arguments.Trim());
 
     private ImageSource? _icon;
     public ImageSource? Icon

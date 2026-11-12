@@ -13,6 +13,20 @@
         public bool RunAsAdmin { get; set; }
 
         /// <summary>
+        /// An icon the user picked for this entry instead of the one its app has
+        /// (issue #15): the picture itself, as a PNG in base64 made by
+        /// <see cref="PickedIcon.Encode"/>, so it travels with the group when it is
+        /// exported, copied or renamed and survives the file it came from being
+        /// deleted. Null for the automatic icon, and then the element is left out of
+        /// ObjectData.xml altogether, so a file saved before it existed reads the
+        /// same, and a version from before it ignores it and shows the automatic one.
+        /// </summary>
+        public string CustomIcon { get; set; }
+
+        // Read-only, so the XML serializer leaves it out of ObjectData.xml.
+        public bool HasCustomIcon => !string.IsNullOrEmpty(CustomIcon);
+
+        /// <summary>
         /// Marks an entry that is another group rather than a program: clicking it
         /// opens that group's own panel. Stored by name rather than by the path of
         /// the flyout, so it survives an export to another PC.
