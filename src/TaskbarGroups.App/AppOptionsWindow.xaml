@@ -32,6 +32,20 @@
             <TextBlock x:Name="NameHint" Text="{DynamicResource Loc_AppOpt_NameHint}" FontSize="12" Margin="0,0,0,14"
                        TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
 
+            <!-- The icon at the top is the preview: it changes as soon as one is picked. -->
+            <StackPanel x:Name="IconSection">
+                <TextBlock Text="{DynamicResource Loc_AppOpt_Icon}" FontSize="13" Margin="0,0,0,4"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <ui:Button Content="{DynamicResource Loc_AppOpt_PickIcon}" Icon="{ui:SymbolIcon Image24}"
+                               Click="PickIcon_Click" />
+                    <ui:Button x:Name="AutoIconButton" Content="{DynamicResource Loc_AppOpt_AutoIcon}"
+                               Icon="{ui:SymbolIcon ArrowUndo24}" Margin="8,0,0,0" Click="AutoIcon_Click" />
+                </StackPanel>
+                <TextBlock Text="{DynamicResource Loc_AppOpt_IconHint}" FontSize="12" Margin="0,0,0,14"
+                           TextWrapping="Wrap" Foreground="{DynamicResource TextFillColorTertiaryBrush}" />
+            </StackPanel>
+
             <StackPanel x:Name="ProgramOnly">
                 <TextBlock Text="{DynamicResource Loc_AppOpt_Args}" FontSize="13" Margin="0,0,0,4"
                            Foreground="{DynamicResource TextFillColorSecondaryBrush}" />

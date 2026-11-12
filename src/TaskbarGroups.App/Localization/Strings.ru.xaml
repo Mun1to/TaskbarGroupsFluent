@@ -251,4 +251,16 @@
     <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent распространяется бесплатно и не имеет платной версии. Если приложение экономит вам время, можете угостить меня кофе.</s:String>
     <s:String x:Key="Loc_Settings_SupportButton">Угостить кофе</s:String>
 
+    <!-- Свой значок приложения и веб-приложения браузеров (issue #15) -->
+    <s:String x:Key="Loc_AppOpt_Icon">Значок</s:String>
+    <s:String x:Key="Loc_AppOpt_PickIcon">Выбрать значок…</s:String>
+    <s:String x:Key="Loc_AppOpt_AutoIcon">Вернуть автоматический значок</s:String>
+    <s:String x:Key="Loc_AppOpt_IconHint">Изображение .png или .ico либо значок программы или библиотеки (.exe или .dll).</s:String>
+    <s:String x:Key="Loc_AppOpt_PickIconTitle">Выберите значок для приложения</s:String>
+    <s:String x:Key="Loc_AppOpt_IconFilter">Значки и изображения</s:String>
+    <s:String x:Key="Loc_AppOpt_IconLoadFail">Не удалось прочитать значок из этого файла.</s:String>
+    <s:String x:Key="Loc_IconPick_Title">Выбор значка</s:String>
+    <s:String x:Key="Loc_IconPick_Hint">Выберите значок, который будет у приложения на панели.</s:String>
+    <s:String x:Key="Loc_IconPick_Use">Использовать этот значок</s:String>
+
 </ResourceDictionary>

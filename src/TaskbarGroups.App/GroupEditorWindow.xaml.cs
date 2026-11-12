@@ -665,9 +665,10 @@ public partial class GroupEditorWindow : FluentWindow
         if (dialog.ShowDialog() != true) return;
 
         // ShortcutEntry doesn't raise change notifications, so swap the item to
-        // redraw its row and the preview with the new name.
+        // redraw its row and the preview with the new name and the icon the
+        // options may have changed.
         int i = _shortcuts.IndexOf(entry);
-        if (i >= 0) _shortcuts[i] = new ShortcutEntry { Shortcut = entry.Shortcut, Icon = entry.Icon };
+        if (i >= 0) _shortcuts[i] = BuildEntry(entry.Shortcut);
     }
 
     private void RemoveShortcut_Click(object sender, RoutedEventArgs e)

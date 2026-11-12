@@ -251,4 +251,16 @@
     <s:String x:Key="Loc_Settings_SupportSubtitle">Taskbar Groups Fluent es gratis y no tiene versión de pago. Si te ahorra tiempo, puedes invitarme a un café.</s:String>
     <s:String x:Key="Loc_Settings_SupportButton">Invitar a un café</s:String>
 
+    <!-- Icono propio de cada app y aplicaciones web de los navegadores (issue #15) -->
+    <s:String x:Key="Loc_AppOpt_Icon">Icono</s:String>
+    <s:String x:Key="Loc_AppOpt_PickIcon">Elegir icono…</s:String>
+    <s:String x:Key="Loc_AppOpt_AutoIcon">Usar el icono automático</s:String>
+    <s:String x:Key="Loc_AppOpt_IconHint">Una imagen .png o .ico, o el icono de un programa o una biblioteca (.exe o .dll).</s:String>
+    <s:String x:Key="Loc_AppOpt_PickIconTitle">Selecciona un icono para la app</s:String>
+    <s:String x:Key="Loc_AppOpt_IconFilter">Iconos e imágenes</s:String>
+    <s:String x:Key="Loc_AppOpt_IconLoadFail">No se pudo leer ningún icono de ese archivo.</s:String>
+    <s:String x:Key="Loc_IconPick_Title">Elegir icono</s:String>
+    <s:String x:Key="Loc_IconPick_Hint">Elige el que llevará la app en el panel.</s:String>
+    <s:String x:Key="Loc_IconPick_Use">Usar este icono</s:String>
+
 </ResourceDictionary>
