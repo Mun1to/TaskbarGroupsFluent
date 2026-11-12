@@ -468,6 +468,38 @@ namespace TaskbarGroups.Core
             return bmp;
         }
 
+        /// <summary>
+        /// The icon saved for <paramref name="ps"/> in this group's folder, or null if
+        /// there is none yet. Only the group's own folder is read, never the app, so a
+        /// panel can show at once even when an app lives on a drive that takes seconds
+        /// to answer: a hard disk that has spun down, a network share, a USB drive
+        /// (issue #14, measured: 22 s for a panel with one app on a share that does not
+        /// answer, against 0.8 s without it).
+        /// </summary>
+        public Image CachedIcon(ProgramShortcut ps)
+        {
+            try
+            {
+                string cached = generateCachePath(ps);
+                if (!File.Exists(cached)) return null;
+                using var stream = new MemoryStream(File.ReadAllBytes(cached));
+                using var loaded = Image.FromStream(stream);
+                return new Bitmap(loaded);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Whether the app, file or folder behind <paramref name="ps"/> is still there.
+        /// It asks the drive it lives on, so it can take seconds: never on the way to
+        /// showing a panel.
+        /// </summary>
+        public static bool TargetExists(ProgramShortcut ps)
+            => ps.isWindowsApp || ps.IsGroup || File.Exists(ps.FilePath) || Directory.Exists(ps.FilePath);
+
         // Try to load an iamge from the cache
         // Takes in a programPath (shortcut) and processes it to the proper file name
         public Image loadImageCache(ProgramShortcut shortcutObject)

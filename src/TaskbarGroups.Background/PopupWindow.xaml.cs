@@ -459,8 +459,14 @@ public partial class PopupWindow : Window
                     continue;
                 }
 
+                // The saved icon only: anything that asks the app's own drive waits
+                // for it, and a drive that has gone to sleep answers seconds later.
                 ImageSource? icon = null;
-                try { icon = _category.loadImageCache(ps).ToImageSource(); }
+                try
+                {
+                    using var cached = _category.CachedIcon(ps);
+                    icon = cached.ToImageSource();
+                }
                 catch { }
 
                 items.Add(new PopupItem
@@ -476,6 +482,71 @@ public partial class PopupWindow : Window
         }
         _itemCount = _category.AppCount;
         ItemsHost.ItemsSource = items;
+        CheckAppsLater(items);
+    }
+
+    /// <summary>
+    /// With the panel already up, looks at each app away from it: an icon that was
+    /// never saved is made and saved now, and an app that is no longer there gets
+    /// the missing icon, as it did before it was checked first. Each answer reaches
+    /// the panel as it comes, and none of them holds it up.
+    ///
+    /// One thread per drive, so a drive that takes seconds to answer only delays
+    /// the apps that live on it.
+    /// </summary>
+    private void CheckAppsLater(System.Collections.Generic.List<PopupItem> items)
+    {
+        var byDrive = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<(PopupItem Item, bool HasIcon)>>(StringComparer.OrdinalIgnoreCase);
+        foreach (var item in items)
+        {
+            if (item.IsSeparator) continue;
+            string drive = DriveOf(item.Shortcut);
+            if (!byDrive.TryGetValue(drive, out var list)) byDrive[drive] = list = new();
+            list.Add((item, item.Icon is not null));
+        }
+        foreach (var work in byDrive.Values) CheckApps(work);
+    }
+
+    /// <summary>Where an app lives, as far as waiting on it goes: its drive or share.</summary>
+    private static string DriveOf(ProgramShortcut ps)
+    {
+        if (ps.isWindowsApp || ps.IsGroup) return string.Empty;
+        try { return Path.GetPathRoot(ps.FilePath) ?? string.Empty; }
+        catch { return string.Empty; }
+    }
+
+    private void CheckApps(System.Collections.Generic.List<(PopupItem Item, bool HasIcon)> work)
+    {
+        int listing = _listing;
+        Category category = _category;
+
+        var thread = new System.Threading.Thread(() =>
+        {
+            foreach (var (item, hasIcon) in work)
+            {
+                if (_listing != listing) return;
+                ImageSource? icon = null;
+                try
+                {
+                    if (!hasIcon)
+                    {
+                        using var made = category.loadImageCache(item.Shortcut);
+                        icon = made.ToImageSource();
+                    }
+                    else if (!Category.TargetExists(item.Shortcut))
+                    {
+                        using var missing = Category.GetErrorImage();
+                        icon = missing.ToImageSource();
+                    }
+                }
+                catch { }
+                if (icon is not null)
+                    Dispatcher.BeginInvoke(() => { if (_listing == listing) item.Icon = icon; }, DispatcherPriority.Background);
+            }
+        })
+        { IsBackground = true, Name = "app-icons" };
+        thread.SetApartmentState(System.Threading.ApartmentState.STA);
+        thread.Start();
     }
 
     /// <summary>
