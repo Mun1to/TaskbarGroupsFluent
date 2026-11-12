@@ -149,7 +149,7 @@ internal sealed class TrayGroups : IDisposable
         {
             Icon = LoadIcon(name),
             Text = Trim(name),
-            ContextMenuStrip = new ContextMenuStrip()
+            ContextMenuStrip = FluentMenu.Create()
         };
 
         // A plain click, as on the taskbar. The second click of a double click does
@@ -177,7 +177,7 @@ internal sealed class TrayGroups : IDisposable
         menu.Items.Clear();
 
         var open = new ToolStripMenuItem(TrayText.OpenGroup, null, (_, _) => OpenGroup(name));
-        open.Font = new Font(open.Font, FontStyle.Bold);
+        open.Font = new Font(menu.Font, FontStyle.Bold);
         menu.Items.Add(open);
 
         bool folder = IsFolderGroup(name);

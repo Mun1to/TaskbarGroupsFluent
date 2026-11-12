@@ -46,7 +46,7 @@ internal static class Program
             Icon = LoadIcon(),
             Text = Trim(TrayText.Tooltip),
             Visible = true,
-            ContextMenuStrip = new ContextMenuStrip()
+            ContextMenuStrip = FluentMenu.Create()
         };
 
         // Issue #10: a double click opens the app, as it does for most programs that
@@ -83,7 +83,7 @@ internal static class Program
         menu.Items.Clear();
 
         var open = new ToolStripMenuItem(TrayText.OpenApp, null, (_, _) => TrayGroups.StartApp());
-        open.Font = new Font(open.Font, FontStyle.Bold);
+        open.Font = new Font(menu.Font, FontStyle.Bold);
         menu.Items.Add(open);
         menu.Items.Add(new ToolStripSeparator());
 
