@@ -20,25 +20,33 @@ internal static class TrayText
         "Abrir Taskbar Groups Fluent",
         "Открыть Taskbar Groups Fluent");
 
-    internal static string TurnOff => UiPreferences.Say(
-        "Turn off open on hover",
-        "Desactivar apertura al pasar el cursor",
-        "Отключить открытие при наведении");
+    // The card's header already names the app, so its first line just says what it does.
+    internal static string OpenTheApp => UiPreferences.Say("Open the app", "Abrir la app", "Открыть приложение");
 
-    internal static string TurnOffInstant => UiPreferences.Say(
-        "Turn off instant opening",
-        "Desactivar la apertura al instante",
-        "Отключить мгновенное открытие");
+    // The two switches, in the words of the app's settings, so they read as the same thing.
+    internal static string Hover => UiPreferences.Say(
+        "Open on hover",
+        "Abrir al pasar el cursor",
+        "Открывать при наведении");
 
-    internal static string HideIcon => UiPreferences.Say(
-        "Hide this icon (bring it back in the app's settings)",
-        "Ocultar este icono (vuelve desde los ajustes de la app)",
-        "Скрыть этот значок (вернуть можно в настройках приложения)");
+    internal static string Instant => UiPreferences.Say(
+        "Open groups instantly",
+        "Abrir los grupos al instante",
+        "Открывать группы мгновенно");
 
-    internal static string Quit => UiPreferences.Say(
-        "Quit until next sign-in",
-        "Salir hasta el próximo inicio",
-        "Выйти до следующего входа в систему");
+    internal static string HideIcon => UiPreferences.Say("Hide this icon", "Ocultar este icono", "Скрыть этот значок");
+
+    internal static string HideIconNote => UiPreferences.Say(
+        "Bring it back in the app's settings",
+        "Vuelve desde los ajustes de la app",
+        "Вернуть можно в настройках приложения");
+
+    internal static string Quit => UiPreferences.Say("Quit", "Salir", "Выйти");
+
+    internal static string QuitNote => UiPreferences.Say(
+        "Starts again at the next sign-in",
+        "Vuelve al iniciar sesión otra vez",
+        "Запустится при следующем входе в систему");
 
     internal static string OpenGroup => UiPreferences.Say("Open", "Abrir", "Открыть");
 

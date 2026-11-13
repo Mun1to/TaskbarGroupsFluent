@@ -59,7 +59,7 @@ internal static class Program
         {
             if (e.Button == MouseButtons.Left) TrayGroups.StartApp();
         };
-        NativeMenu.Attach(tray, FillMenu);
+        CardMenu.Attach(tray, menu => FillMenu(menu, tray.Icon));
 
         using var groups = new TrayGroups();
         groups.Emptied += () =>
@@ -74,18 +74,56 @@ internal static class Program
         tray.Visible = false;
     }
 
-    private static void FillMenu(NativeMenu menu)
+    private static void FillMenu(CardMenu menu, Icon? icon)
     {
-        menu.Add(TrayText.OpenApp, () => TrayGroups.StartApp(), isDefault: true);
+        menu.Header(icon, TrayText.Tooltip, AppVersion());
+        menu.Add(CardMenu.Glyphs.App, TrayText.OpenTheApp, () => TrayGroups.StartApp());
         menu.Separator();
 
-        if (Settings.settingInfo.hoverToOpen)
-            menu.Add(TrayText.TurnOff, () => TurnOff(hover: true));
-        if (Settings.settingInfo.instantOpen)
-            menu.Add(TrayText.TurnOffInstant, () => TurnOff(hover: false));
+        // Switches, as in the app's settings: each shows whether it is on, and either
+        // way round is one click.
+        menu.Toggle(CardMenu.Glyphs.Hover, TrayText.Hover, Settings.settingInfo.hoverToOpen, on => Switch(hover: true, on));
+        menu.Toggle(CardMenu.Glyphs.Instant, TrayText.Instant, Settings.settingInfo.instantOpen, on => Switch(hover: false, on));
+        menu.Separator();
 
-        menu.Add(TrayText.HideIcon, HideIcon);
-        menu.Add(TrayText.Quit, Application.Exit);
+        menu.Add(CardMenu.Glyphs.Hide, TrayText.HideIcon, HideIcon, TrayText.HideIconNote);
+        menu.Add(CardMenu.Glyphs.Quit, TrayText.Quit, Application.Exit, TrayText.QuitNote);
+    }
+
+    /// <summary>The app's version for the menu's header, without the commit the build adds after a +.</summary>
+    private static string? AppVersion()
+    {
+        try
+        {
+            string? version = FileVersionInfo.GetVersionInfo(Paths.MainApplication).ProductVersion;
+            if (string.IsNullOrWhiteSpace(version)) return null;
+            int plus = version.IndexOf('+');
+            return plus > 0 ? version[..plus] : version;
+        }
+        catch { return null; }
+    }
+
+    /// <summary>
+    /// A switch of the menu. Turning one on keeps this program and its startup entry,
+    /// which it already has since it is running; the watcher reads the setting on its
+    /// next tick. Turning one off is <see cref="TurnOff"/>.
+    /// </summary>
+    private static void Switch(bool hover, bool on)
+    {
+        if (!on)
+        {
+            TurnOff(hover);
+            return;
+        }
+
+        try
+        {
+            if (hover) Settings.settingInfo.hoverToOpen = true;
+            else Settings.settingInfo.instantOpen = true;
+            Settings.writeXML();
+            HoverService.RegisterStartup(true);
+        }
+        catch { /* an unwritable settings file leaves things as they were */ }
     }
 
     /// <summary>

@@ -160,30 +160,32 @@ internal sealed class TrayGroups : IDisposable
 
         // Built as it opens, so it is always in the current language and knows
         // whether the group shows a folder now.
-        NativeMenu.Attach(icon, menu => FillMenu(menu, name));
+        CardMenu.Attach(icon, menu => FillMenu(menu, name, icon.Icon));
         icon.Visible = true;
         return icon;
     }
 
-    private static void FillMenu(NativeMenu menu, string name)
+    private static void FillMenu(CardMenu menu, string name, Icon? icon)
     {
-        menu.Add(TrayText.OpenGroup, () => OpenGroup(name), isDefault: true);
+        // The header is the group itself, with its own icon, so it is clear whose menu this is.
+        menu.Header(icon, name);
+        menu.Add(CardMenu.Glyphs.Open, TrayText.OpenGroup, () => OpenGroup(name));
 
         string? source = FolderSource(name);
-        menu.Add(source is not null ? TrayText.OpenFolder : TrayText.OpenAll, () => StartPanel(name, "--open-all"));
+        if (source is not null) menu.Add(CardMenu.Glyphs.Folder, TrayText.OpenFolder, () => StartPanel(name, "--open-all"));
+        else menu.Add(CardMenu.Glyphs.OpenAll, TrayText.OpenAll, () => StartPanel(name, "--open-all"));
 
         // Issue #20: a bin by the clock does what the bin on the desktop does.
         if (RecycleBin.Is(source))
         {
             menu.Separator();
-            menu.Add(TrayText.EmptyBin, () => RecycleBin.Empty(IntPtr.Zero));
-            menu.Add(TrayText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, TrayText.RestoreAllQuestion, TrayText.RecycleBinTitle));
-            menu.Separator();
+            menu.Add(CardMenu.Glyphs.Empty, TrayText.EmptyBin, () => RecycleBin.Empty(IntPtr.Zero));
+            menu.Add(CardMenu.Glyphs.Restore, TrayText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, TrayText.RestoreAllQuestion, TrayText.RecycleBinTitle));
         }
 
-        menu.Add(TrayText.EditGroup, () => StartApp("--edit", name));
         menu.Separator();
-        menu.Add(TrayText.OpenApp, () => StartApp());
+        menu.Add(CardMenu.Glyphs.Edit, TrayText.EditGroup, () => StartApp("--edit", name));
+        menu.Add(CardMenu.Glyphs.App, TrayText.OpenApp, () => StartApp());
     }
 
     /// <summary>The folder the group shows, or null for a group of apps.</summary>
