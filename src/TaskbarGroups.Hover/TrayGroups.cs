@@ -169,17 +169,32 @@ internal sealed class TrayGroups : IDisposable
     {
         menu.Add(TrayText.OpenGroup, () => OpenGroup(name), isDefault: true);
 
-        bool folder = IsFolderGroup(name);
-        menu.Add(folder ? TrayText.OpenFolder : TrayText.OpenAll, () => StartPanel(name, "--open-all"));
+        string? source = FolderSource(name);
+        menu.Add(source is not null ? TrayText.OpenFolder : TrayText.OpenAll, () => StartPanel(name, "--open-all"));
+
+        // Issue #20: a bin by the clock does what the bin on the desktop does.
+        if (RecycleBin.Is(source))
+        {
+            menu.Separator();
+            menu.Add(TrayText.EmptyBin, () => RecycleBin.Empty(IntPtr.Zero));
+            menu.Add(TrayText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, TrayText.RestoreAllQuestion, TrayText.RecycleBinTitle));
+            menu.Separator();
+        }
+
         menu.Add(TrayText.EditGroup, () => StartApp("--edit", name));
         menu.Separator();
         menu.Add(TrayText.OpenApp, () => StartApp());
     }
 
-    private static bool IsFolderGroup(string name)
+    /// <summary>The folder the group shows, or null for a group of apps.</summary>
+    private static string? FolderSource(string name)
     {
-        try { return new Category(Path.Combine(Paths.ConfigPath, name)).IsFolderGroup; }
-        catch { return false; }
+        try
+        {
+            var category = new Category(Path.Combine(Paths.ConfigPath, name));
+            return category.IsFolderGroup ? category.FolderSource : null;
+        }
+        catch { return null; }
     }
 
     /// <summary>

@@ -41,9 +41,12 @@ internal static class ShellContextMenu
     /// Shows the menu for <paramref name="parsingName"/> at screen point
     /// (<paramref name="x"/>, <paramref name="y"/>), in physical pixels, and runs
     /// what the user picks. Returns true if a command ran, false if the menu was
-    /// dismissed or could not be built.
+    /// dismissed or could not be built. <paramref name="extra"/> are commands of
+    /// this app's own, put at the top above a line, as File Explorer puts its own
+    /// above the ones other programs add.
     /// </summary>
-    public static bool Show(IntPtr owner, string parsingName, int x, int y, bool dark)
+    public static bool Show(IntPtr owner, string parsingName, int x, int y, bool dark,
+        IReadOnlyList<(string Text, Action Run)>? extra = null)
     {
         Guid iidItem = typeof(IShellItem).GUID;
         IShellItem? item;
@@ -83,6 +86,13 @@ internal static class ShellContextMenu
             if ((GetKeyState(VK_SHIFT) & 0x8000) != 0) flags |= CMF_EXTENDEDVERBS;
             if (cm.QueryContextMenu(menu, 0, FirstCommand, LastCommand, flags) < 0) return false;
 
+            if (extra is { Count: > 0 })
+            {
+                InsertMenuW(menu, 0, MF_BYPOSITION | MF_SEPARATOR, UIntPtr.Zero, null);
+                for (int i = extra.Count - 1; i >= 0; i--)
+                    InsertMenuW(menu, 0, MF_BYPOSITION | MF_STRING, (UIntPtr)(ExtraFirst + i), extra[i].Text);
+            }
+
             // "Send to", "Open with" and a few others fill their submenus only when
             // they open, and they hear about it through these messages.
             var cm2 = handler as IContextMenu2;
@@ -112,7 +122,12 @@ internal static class ShellContextMenu
             // Without this, a menu opened from a window that was not in front can
             // need two clicks to go away (documented under TrackPopupMenu).
             PostMessage(owner, WM_NULL, IntPtr.Zero, IntPtr.Zero);
-            if (command < FirstCommand) return false;
+            if (extra is not null && command >= ExtraFirst && command < ExtraFirst + extra.Count)
+            {
+                extra[command - ExtraFirst].Run();
+                return true;
+            }
+            if (command < FirstCommand || command > LastCommand) return false;
 
             var info = new CMINVOKECOMMANDINFOEX
             {
@@ -239,6 +254,8 @@ internal static class ShellContextMenu
 
     private const uint FirstCommand = 1;
     private const uint LastCommand = 0x7FFF;
+    private const int ExtraFirst = 0x8000;
+    private const uint MF_STRING = 0x0, MF_SEPARATOR = 0x800, MF_BYPOSITION = 0x400;
     private const uint CMF_NORMAL = 0x0;
     private const uint CMF_EXTENDEDVERBS = 0x100;
     private const uint CMIC_MASK_UNICODE = 0x4000;
@@ -327,6 +344,8 @@ internal static class ShellContextMenu
     private static extern int SHCreateItemFromIDList(IntPtr pidl, ref Guid riid, out IShellItem? item);
     [DllImport("user32.dll")] private static extern IntPtr CreatePopupMenu();
     [DllImport("user32.dll")] private static extern bool DestroyMenu(IntPtr menu);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+    private static extern bool InsertMenuW(IntPtr menu, uint position, uint flags, UIntPtr id, string? text);
     [DllImport("user32.dll")] private static extern int TrackPopupMenuEx(IntPtr menu, uint flags, int x, int y, IntPtr hwnd, IntPtr tpm);
     [DllImport("user32.dll")] private static extern bool PostMessage(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam);
     [DllImport("user32.dll")] private static extern short GetKeyState(int key);

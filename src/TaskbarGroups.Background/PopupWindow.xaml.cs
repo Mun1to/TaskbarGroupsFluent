@@ -105,6 +105,7 @@ public partial class PopupWindow : Window
         Deactivated += (_, _) => Dispatcher.BeginInvoke(DismissIfFocusLeft, DispatcherPriority.Background);
         PreviewKeyDown += OnKey;
         ItemsHost.PreviewMouseRightButtonUp += Item_RightClick;
+        MouseRightButtonUp += Background_RightClick;
         AllowDrop = true;
         DragOver += OnDragOver;
         DragLeave += (_, _) => MarkDropTarget(false);
@@ -1489,13 +1490,37 @@ public partial class PopupWindow : Window
     }
 
     /// <summary>
+    /// A right click on the panel itself, past its entries, of a group showing a
+    /// folder: the folder's own menu, as on its icon in File Explorer (issue #20).
+    /// The Recycle Bin's has "Empty Recycle Bin" already, and gets "Restore all
+    /// items" too, which File Explorer has only on its bar.
+    /// </summary>
+    private void Background_RightClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.Handled || !_category.IsFolderGroup) return;
+
+        e.Handled = true;
+        if (!GetCursorPos(out POINT p)) return;
+
+        System.Collections.Generic.List<(string, Action)>? extra = null;
+        if (RecycleBin.Is(_category.FolderSource))
+            extra = new() { (RecycleBinText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, RecycleBinText.RestoreAllQuestion, RecycleBinText.Title)) };
+        ShowMenu(_category.FolderSource, p.X, p.Y, extra);
+    }
+
+    /// <summary>
     /// The app's own right-click menu, as File Explorer or the Start menu shows it.
     /// A command picked from it counts as using the panel, which then closes.
     /// </summary>
     private void ShowItemMenu(PopupItem item, int x, int y)
     {
         string? name = ShellContextMenu.ParsingName(item.Shortcut);
-        if (name is null || _menuOpen) return;
+        if (name is not null) ShowMenu(name, x, y, null);
+    }
+
+    private void ShowMenu(string name, int x, int y, System.Collections.Generic.IReadOnlyList<(string Text, Action Run)>? extra)
+    {
+        if (_menuOpen) return;
 
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
         if (hwnd == IntPtr.Zero) return;
@@ -1505,7 +1530,7 @@ public partial class PopupWindow : Window
 
         bool ran;
         _menuOpen = true;
-        try { ran = ShellContextMenu.Show(hwnd, name, x, y, _isDark); }
+        try { ran = ShellContextMenu.Show(hwnd, name, x, y, _isDark, extra); }
         finally { _menuOpen = false; }
 
         if (ran) { _ranCommand = true; Root.CloseOnce(); return; }

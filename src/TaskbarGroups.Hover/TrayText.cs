@@ -47,4 +47,10 @@ internal static class TrayText
     internal static string OpenFolder => UiPreferences.Say("Open the folder", "Abrir la carpeta", "Открыть папку");
 
     internal static string EditGroup => UiPreferences.Say("Edit group", "Editar grupo", "Изменить группу");
+
+    // A group showing the Recycle Bin (issue #20), in the words File Explorer uses.
+    internal static string EmptyBin => RecycleBinText.Empty;
+    internal static string RestoreAll => RecycleBinText.RestoreAll;
+    internal static string RestoreAllQuestion => RecycleBinText.RestoreAllQuestion;
+    internal static string RecycleBinTitle => RecycleBinText.Title;
 }
