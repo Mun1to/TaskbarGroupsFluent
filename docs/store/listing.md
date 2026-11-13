@@ -48,7 +48,7 @@ Make each group your own:
 • Or have the panel show a folder, read again each time it opens: any folder, or a Windows place like the Control Panel, This PC, the Recycle Bin or all your apps.
 • Set out a whole taskbar from one group: a group that holds groups pins them all, one after another, in its order and with its separators.
 • Keep a group by the clock too, with its own icon in the notification area, one click away from its panel.
-• Rename an app inside a group, give it launch arguments or run it as administrator.
+• Rename an app inside a group, give it an icon of its own or launch arguments, or run it as administrator.
 
 Adding apps is easy: one searchable list of everything installed, desktop programs, Microsoft Store apps and your browser's web apps alike, with the right icons, or just drag files and shortcuts in from File Explorer. Groups can be exported to a single file, imported on another PC, or duplicated. Coming from Taskbar Groups or AppGroup? Import your groups and carry on.
 
@@ -70,12 +70,12 @@ Each app in a group can wear an icon of its own, and a browser's web app, the ki
 - Apps, folders and groups that open like a submenu
 - Drag and drop files and shortcuts to add them
 - Open all the apps in a group at once
-- Rename apps, add arguments, run as administrator
+- Rename apps, give them their own icon, add arguments, run as administrator
 - Each app's own right-click menu, right in the panel
 - Optional animation: out from behind the taskbar, or a quick peek
 - Export, import and duplicate groups
 - Import from Taskbar Groups and AppGroup
-- Every installed app in one searchable list, Store apps included
+- Every installed app in one searchable list, Store and web apps included
 - Follows your theme, accent colour and language, or the ones you pick
 - A quick bar for theme, language and updates at a glance
 - No admin rights, no account, no telemetry
@@ -106,7 +106,7 @@ Haz cada grupo a tu manera:
 • O que el panel enseñe una carpeta, leída de nuevo cada vez que se abre: cualquier carpeta, o un lugar de Windows como el Panel de control, Este equipo, la Papelera o todas tus apps.
 • Monta toda una barra desde un grupo: un grupo que lleva grupos dentro los ancla todos, uno tras otro, en su orden y con sus separadores.
 • Ten un grupo también junto al reloj, con su propio icono en la zona de notificaciones, a un clic de su panel.
-• Cámbiale el nombre a una app dentro del grupo, pásale argumentos o ábrela como administrador.
+• Cámbiale el nombre o el icono a una app dentro del grupo, pásale argumentos o ábrela como administrador.
 
 Añadir apps es fácil: una lista con buscador de todo lo instalado, programas de escritorio, apps de la Microsoft Store y las web apps de tu navegador, con sus iconos, o arrastra archivos y accesos directos desde el Explorador. Los grupos se exportan a un solo archivo, se importan en otro PC o se duplican. ¿Vienes de Taskbar Groups o de AppGroup? Importa tus grupos y sigue como estabas.
 
@@ -128,12 +128,12 @@ Cada app de un grupo puede llevar su propio icono, y las web apps del navegador,
 - Apps, carpetas y grupos que se abren como un submenú
 - Arrastrar y soltar archivos y accesos directos para añadirlos
 - Abrir todas las apps del grupo de golpe
-- Cambiar el nombre, añadir argumentos, abrir como administrador
+- Cambiar el nombre o el icono, añadir argumentos, abrir como administrador
 - El menú del clic derecho de cada app, en el propio panel
 - Animación opcional: desde detrás de la barra o asomando
 - Exportar, importar y duplicar grupos
 - Importar desde Taskbar Groups y AppGroup
-- Todas tus apps en una lista con buscador, también las de la Store
+- Todas tus apps en una lista con buscador, también las de la Store y las web apps
 - Sigue tu tema, tu color de énfasis y tu idioma, o los que elijas
 - Una barra rápida para el tema, el idioma y las actualizaciones
 - Sin administrador, sin cuentas, sin telemetría
