@@ -98,4 +98,8 @@ internal static class Native
     internal static extern bool SetProcessDpiAwarenessContext(nint value);
 
     internal static readonly nint DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4;
+
+    /// <summary>The DPI of the monitor a window is on, 0 if the window is gone.</summary>
+    [DllImport("user32.dll")]
+    internal static extern uint GetDpiForWindow(nint hWnd);
 }

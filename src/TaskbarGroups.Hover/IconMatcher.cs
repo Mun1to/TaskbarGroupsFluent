@@ -45,19 +45,72 @@ internal static class IconMatcher
 
     /// <summary>
     /// The group whose icon is under <paramref name="cursor"/> on the taskbar
-    /// <paramref name="bar"/>, with the rectangle of its icon, or null when no
-    /// group's icon is clearly there.
+    /// <paramref name="bar"/>, with the rectangle of its icon and of the row of
+    /// the taskbar it sits in, or null when no group's icon is clearly there.
+    /// <paramref name="dpi"/> is the taskbar's, and tells how many rows it holds.
     /// </summary>
-    public static (string Group, RECT Icon)? GroupAt(POINT cursor, RECT bar, IReadOnlyList<PinnedGroup> pins)
-        => GroupAt(cursor, bar, pins, out _);
+    public static (string Group, RECT Icon, RECT Row)? GroupAt(POINT cursor, RECT bar, IReadOnlyList<PinnedGroup> pins, int dpi = 96)
+        => GroupAt(cursor, bar, pins, dpi, out _);
 
     /// <summary>As above, and with every group's best score, for tests and reports.</summary>
-    public static (string Group, RECT Icon)? GroupAt(POINT cursor, RECT bar, IReadOnlyList<PinnedGroup> pins,
-        out List<(string Group, double Score, RECT Icon)> scores)
+    public static (string Group, RECT Icon, RECT Row)? GroupAt(POINT cursor, RECT bar, IReadOnlyList<PinnedGroup> pins,
+        int dpi, out List<(string Group, double Score, RECT Icon)> scores)
     {
         scores = new();
         if (pins.Count == 0) return null;
 
+        // The older taskbar, as StartAllBack brings it back, can be stretched to two
+        // or three rows of icons (mihha's, issue #12: 86 pixels high, two rows of 43
+        // with 32 pixel icons). Its icons then sit in the middle of their row, not of
+        // the bar, so they are looked for in the row the cursor is in. If none is
+        // found there the bar is tried as a single row after all, which is what a
+        // tall bar of big icons is.
+        int rows = Rows(bar, dpi);
+        if (rows > 1)
+        {
+            RECT row = RowAt(cursor, bar, rows);
+            var found = Find(cursor, row, pins, scores, maxShare: 0.80, reachShare: 0.70);
+            if (found is not null) return found;
+            scores = new();
+        }
+        return Find(cursor, bar, pins, scores, maxShare: 0.70, reachShare: 0.50);
+    }
+
+    /// <summary>
+    /// How many rows of icons a taskbar this thick holds. A row of the older taskbar
+    /// is 40 pixels at 100% scale, 30 with small icons; the one of Windows 11 is 48.
+    /// Only a taskbar along the top or bottom is ever stretched to several rows.
+    /// </summary>
+    internal static int Rows(RECT bar, int dpi)
+    {
+        if (bar.Width < bar.Height) return 1;
+        double row = 40.0 * Math.Max(96, dpi) / 96.0;
+        return Math.Clamp((int)Math.Round(bar.Height / row), 1, 4);
+    }
+
+    /// <summary>The row of <paramref name="bar"/>, out of <paramref name="rows"/>, that the cursor is in.</summary>
+    internal static RECT RowAt(POINT cursor, RECT bar, int rows)
+    {
+        int thick = bar.Height;
+        int index = Math.Clamp((cursor.Y - bar.Top) * rows / Math.Max(1, thick), 0, rows - 1);
+        return new RECT
+        {
+            Left = bar.Left, Right = bar.Right,
+            Top = bar.Top + thick * index / rows,
+            Bottom = bar.Top + thick * (index + 1) / rows
+        };
+    }
+
+    /// <summary>
+    /// The search itself, in <paramref name="bar"/>, which is a whole taskbar or one
+    /// row of it. An icon can take up to <paramref name="maxShare"/> of its
+    /// thickness, and the cursor can be up to <paramref name="reachShare"/> of it
+    /// away from the icon's centre: half a button where buttons are square, as on
+    /// Windows 11, and more on the older taskbar, whose buttons are wider than high.
+    /// </summary>
+    private static (string Group, RECT Icon, RECT Row)? Find(POINT cursor, RECT bar, IReadOnlyList<PinnedGroup> pins,
+        List<(string Group, double Score, RECT Icon)> scores, double maxShare, double reachShare)
+    {
         bool across = bar.Width >= bar.Height;          // a taskbar along the top or bottom
         int thick = across ? bar.Height : bar.Width;
         if (thick < 16) return null;
@@ -66,7 +119,7 @@ internal static class IconMatcher
         // the bar, and close to the middle of the bar across it.
         int along = (int)Math.Round(thick * 0.75);
         int acrossSlack = Math.Max(2, (int)Math.Round(thick * 0.15));
-        int maxSize = (int)Math.Round(thick * 0.70);
+        int maxSize = (int)Math.Round(thick * maxShare);
         int pad = maxSize / 2 + 2;
 
         Rectangle area = across
@@ -85,7 +138,7 @@ internal static class IconMatcher
         {
             double best = double.MaxValue;
             RECT bestRect = default;
-            foreach (int size in Sizes(thick))
+            foreach (int size in Sizes(thick, maxShare))
             foreach (var template in Template.For(pin.GroupName, size))
             {
                 var (score, x, y) = Search(screen, template, across, cursor, bar, along, acrossSlack);
@@ -112,17 +165,17 @@ internal static class IconMatcher
             if (s.Score > Threshold) continue;
             double centre = across ? (s.Icon.Left + s.Icon.Right) / 2.0 : (s.Icon.Top + s.Icon.Bottom) / 2.0;
             double distance = Math.Abs(centre - (across ? cursor.X : cursor.Y));
-            if (distance > thick * 0.5) continue;
+            if (distance > thick * reachShare) continue;
             if (distance < pickDistance - 3) { pick = s; pickDistance = distance; }
         }
-        return pick is { } p ? (p.Group, p.Icon) : null;
+        return pick is { } p ? (p.Group, p.Icon, bar) : null;
     }
 
-    /// <summary>The icon sizes worth trying on a taskbar this thick.</summary>
-    private static IEnumerable<int> Sizes(int thick)
+    /// <summary>The icon sizes worth trying on a taskbar, or a row of one, this thick.</summary>
+    private static IEnumerable<int> Sizes(int thick, double maxShare)
     {
         int step = Math.Max(1, thick / 24);
-        for (int s = (int)Math.Round(thick * 0.30); s <= (int)Math.Round(thick * 0.70); s += step)
+        for (int s = (int)Math.Round(thick * 0.30); s <= (int)Math.Round(thick * maxShare); s += step)
             yield return s;
     }
 

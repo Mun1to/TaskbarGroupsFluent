@@ -169,7 +169,7 @@ internal sealed class TaskbarWatcher : IDisposable
             // Issue #12: Start11 draws its own taskbar over the one of Windows 11,
             // which stays underneath with its buttons squeezed out of place, so its
             // buttons would name the wrong group. The icon on screen is what counts.
-            hit = MatchByIcon(cursor, barRect);
+            hit = MatchByIcon(cursor, bar, barRect);
         }
         else
         {
@@ -187,7 +187,7 @@ internal sealed class TaskbarWatcher : IDisposable
             // The older taskbar's list of apps, as Windows 10 has it and as
             // StartAllBack brings back, may not say which button is which: then the
             // icon on screen does.
-            if (hit is null && under == TaskListClass) hit = MatchByIcon(cursor, barRect);
+            if (hit is null && under == TaskListClass) hit = MatchByIcon(cursor, bar, barRect);
         }
 
         if (hit is null)
@@ -301,7 +301,7 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <see cref="IconMatcher"/>). Looking costs tens of milliseconds, so it is
     /// done once the cursor has stopped, and once per stop.
     /// </summary>
-    private GroupButton? MatchByIcon(POINT cursor, RECT bar)
+    private GroupButton? MatchByIcon(POINT cursor, nint barWindow, RECT bar)
     {
         if (Math.Abs(cursor.X - _matchPoint.X) > 3 || Math.Abs(cursor.Y - _matchPoint.Y) > 3)
         {
@@ -316,17 +316,21 @@ internal sealed class TaskbarWatcher : IDisposable
 
         _matchDone = true;
         RefreshPins();
-        var found = IconMatcher.GroupAt(cursor, bar, _pins);
+        int dpi = 96;
+        try { dpi = (int)Native.GetDpiForWindow(barWindow); } catch { }
+        var found = IconMatcher.GroupAt(cursor, bar, _pins, dpi == 0 ? 96 : dpi);
         if (found is not { } f) return null;
 
-        // The button stretches across the bar around its icon, so the panel lines
-        // up with it as it does with a button read from Windows.
-        bool across = bar.Width >= bar.Height;
-        int thick = across ? bar.Height : bar.Width;
+        // The button stretches across its row of the bar around its icon (the whole
+        // bar unless it holds several rows), so the panel lines up with it as it
+        // does with a button read from Windows.
+        RECT row = f.Row;
+        bool across = row.Width >= row.Height;
+        int thick = across ? row.Height : row.Width;
         int mid = across ? (f.Icon.Left + f.Icon.Right) / 2 : (f.Icon.Top + f.Icon.Bottom) / 2;
         RECT button = across
-            ? new RECT { Left = mid - thick / 2, Right = mid + thick / 2, Top = bar.Top, Bottom = bar.Bottom }
-            : new RECT { Top = mid - thick / 2, Bottom = mid + thick / 2, Left = bar.Left, Right = bar.Right };
+            ? new RECT { Left = mid - thick / 2, Right = mid + thick / 2, Top = row.Top, Bottom = row.Bottom }
+            : new RECT { Top = mid - thick / 2, Bottom = mid + thick / 2, Left = row.Left, Right = row.Right };
         _matched = new GroupButton(f.Group, button);
         return _matched;
     }
