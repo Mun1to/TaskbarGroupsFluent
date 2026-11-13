@@ -64,6 +64,28 @@ internal sealed class TaskbarWatcher : IDisposable
     private DateTime _hoverStart;
     private string? _opened;
 
+    /// <summary>A right click started during this visit to <see cref="_hovered"/>.</summary>
+    private bool _clicked;
+
+    private bool _rightWasDown;
+
+    /// <summary>
+    /// Whether a right click started since the last tick: the button went down, or
+    /// went down and up again in between, as a quick click does. A button that was
+    /// already held does not count, so dragging onto a group still opens it. The
+    /// left button is left alone for the same reason: dragging a file onto a group
+    /// to drop it in the panel (issue #4) holds it down the whole way, and a left
+    /// click opens the panel by its own path anyway.
+    /// </summary>
+    private bool ButtonPressed()
+    {
+        short state = Native.GetAsyncKeyState(Native.VK_RBUTTON);
+        bool down = (state & 0x8000) != 0;
+        bool started = down ? !_rightWasDown : (state & 1) != 0;
+        _rightWasDown = down;
+        return started;
+    }
+
     public TaskbarWatcher()
     {
         _timer = new System.Windows.Forms.Timer { Interval = TickMs };
@@ -107,6 +129,10 @@ internal sealed class TaskbarWatcher : IDisposable
         bool hover = Settings.settingInfo.hoverToOpen;
         bool keep = Settings.settingInfo.instantOpen;
         if (keep) _warm.KeepReady(keep: true);
+
+        // Read on every tick, so that what it says is about this tick and not about
+        // a click somewhere else a while ago.
+        bool pressed = ButtonPressed();
 
         if (!Native.GetCursorPos(out POINT cursor)) return;
 
@@ -201,6 +227,7 @@ internal sealed class TaskbarWatcher : IDisposable
         {
             _hovered = hit.Group;
             _hoverStart = DateTime.UtcNow;
+            _clicked = pressed;
             Forget();
             return;
         }
@@ -208,6 +235,13 @@ internal sealed class TaskbarWatcher : IDisposable
         // Already opened for this visit. Without this the flyout would be relaunched
         // ten times a second for as long as the cursor stayed still.
         if (_opened == hit.Group) return;
+
+        // Issue #12 (mihha): a right click on the icon before the panel is up brings
+        // up the taskbar's own menu, and the panel showing up a moment later took it
+        // away. The user asked for that menu, so hovering has nothing left to do
+        // until the cursor leaves this icon and comes back.
+        if (pressed) _clicked = true;
+        if (_clicked) return;
 
         int delay = Math.Max(0, Settings.settingInfo.hoverDelayMs);
         double waited = (DateTime.UtcNow - _hoverStart).TotalMilliseconds;

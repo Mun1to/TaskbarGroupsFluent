@@ -99,6 +99,11 @@ internal static class Native
 
     internal static readonly nint DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = -4;
 
+    [DllImport("user32.dll")]
+    internal static extern short GetAsyncKeyState(int vKey);
+
+    internal const int VK_RBUTTON = 0x02;
+
     /// <summary>The DPI of the monitor a window is on, 0 if the window is gone.</summary>
     [DllImport("user32.dll")]
     internal static extern uint GetDpiForWindow(nint hWnd);
