@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using TaskbarGroups.App.Helpers;
 using TaskbarGroups.App.Models;
 using TaskbarGroups.App.Services;
@@ -505,6 +506,35 @@ public partial class MainWindow : FluentWindow
             Content = message,
             CloseButtonText = Loc.Get("Loc_Common_Close")
         }.ShowDialogAsync();
+
+    // ---- Pinning by dragging the group's icon onto the taskbar (issue #18) ----
+
+    private Point? _dragFrom;
+
+    private void GroupIcon_MouseDown(object sender, MouseButtonEventArgs e) => _dragFrom = e.GetPosition(this);
+
+    /// <summary>
+    /// Once the icon has been pulled past the usual drag distance, the group's
+    /// shortcut is dragged the way File Explorer drags one, and the taskbar pins
+    /// it where it is dropped, as it does a shortcut dragged from the desktop.
+    /// Windows lets no app pin by itself; a drag is the user pinning.
+    /// </summary>
+    private void GroupIcon_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (_dragFrom is not Point from || e.LeftButton != MouseButtonState.Pressed)
+        {
+            _dragFrom = null;
+            return;
+        }
+        Vector moved = e.GetPosition(this) - from;
+        if (Math.Abs(moved.X) < SystemParameters.MinimumHorizontalDragDistance
+            && Math.Abs(moved.Y) < SystemParameters.MinimumVerticalDragDistance) return;
+
+        _dragFrom = null;
+        if (sender is not FrameworkElement { Tag: GroupItem group } || !File.Exists(group.ShortcutPath)) return;
+        e.Handled = true;
+        ShellHelper.DragFile(new System.Windows.Interop.WindowInteropHelper(this).Handle, group.ShortcutPath);
+    }
 
     private async void PinToTaskbar_Click(object sender, RoutedEventArgs e)
     {

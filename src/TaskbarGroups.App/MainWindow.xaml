@@ -132,8 +132,13 @@
                                                 <ColumnDefinition Width="*" />
                                                 <ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
+                                            <!-- Issue #18: dragged onto the taskbar, it pins the group. -->
                                             <Border Grid.Column="0" Width="52" Height="52" CornerRadius="11"
-                                                    Background="{DynamicResource ControlFillColorSecondaryBrush}">
+                                                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                                    Tag="{Binding}" Cursor="Hand"
+                                                    ToolTip="{DynamicResource Loc_Main_DragToPin}"
+                                                    PreviewMouseLeftButtonDown="GroupIcon_MouseDown"
+                                                    PreviewMouseMove="GroupIcon_MouseMove">
                                                 <Grid>
                                                     <ui:SymbolIcon Symbol="AppsList24" FontSize="26"
                                                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"

@@ -22,6 +22,7 @@
     <s:String x:Key="Loc_Main_SeparatorFailTitle">No se pudo crear el separador</s:String>
     <s:String x:Key="Loc_Separator_DefaultName">Separador</s:String>
     <s:String x:Key="Loc_Main_Pin">Anclar a la barra de tareas</s:String>
+    <s:String x:Key="Loc_Main_DragToPin">Arrástralo a la barra de tareas para anclarlo</s:String>
     <s:String x:Key="Loc_Main_EmptyTitle">Aún no tienes grupos</s:String>
     <s:String x:Key="Loc_Main_EmptySubtitle">Crea tu primer grupo para empezar a organizar la barra de tareas</s:String>
     <s:String x:Key="Loc_Main_CreateFirst">Crear primer grupo</s:String>
