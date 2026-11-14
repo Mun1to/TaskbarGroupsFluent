@@ -281,6 +281,11 @@ public partial class PopupWindow : Window
         IntPtr hwnd = new WindowInteropHelper(this).Handle;
         bool glass = false;
 
+        // Out of Alt+Tab, like Windows' own flyouts (issue #21). Not being in the
+        // taskbar is not enough: Alt+Tab still listed the panel, and the warm one,
+        // waiting off every screen, showed there all the time and switched to nothing.
+        SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TOOLWINDOW);
+
         if (WindowsVersion.IsWindows11)
         {
             int dark = _isDark ? 1 : 0;
@@ -447,6 +452,15 @@ public partial class PopupWindow : Window
 
     [DllImport("dwmapi.dll")]
     private static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int value, int size);
+
+    private const int GWL_EXSTYLE = -20;
+    private const int WS_EX_TOOLWINDOW = 0x80;
+
+    [DllImport("user32.dll")]
+    private static extern int GetWindowLong(IntPtr hwnd, int index);
+
+    [DllImport("user32.dll")]
+    private static extern int SetWindowLong(IntPtr hwnd, int index, int value);
 
     private void LoadItems()
     {
