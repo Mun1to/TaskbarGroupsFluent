@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="TaskbarGroups.Core.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="KaitaiStruct.Runtime.CSharp" Version="0.10.0" />
     <PackageReference Include="TxFileManager" Version="1.5.0.1" />
     <!-- Colour-emoji rendering (Segoe UI Emoji): WPF's RenderTargetBitmap rasterises
