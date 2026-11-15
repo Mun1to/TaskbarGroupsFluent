@@ -370,3 +370,6 @@ GEMINI.md
 .cursor/rules/contexto.mdc
 AGENTS.md
 .agents/
+
+# Local design notes, specs and plans (kept out of the repository)
+docs/superpowers/

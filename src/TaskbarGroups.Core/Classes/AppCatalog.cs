@@ -251,7 +251,7 @@ namespace TaskbarGroups.Core
         public static Bitmap? GetIcon(string launchId, int size)
         {
             Bitmap? shell = GetShellImage("shell:AppsFolder\\" + launchId, size);
-            if (shell == null || IsGenericPlaceholder(shell))
+            if (shell == null || IsGenericPlaceholder(shell) || IsPaddedTile(shell))
             {
                 Bitmap? fromExe = GetIconFromTargetExe(launchId, size);
                 if (fromExe != null) { shell?.Dispose(); return fromExe; }
@@ -304,6 +304,46 @@ namespace TaskbarGroups.Core
                 double opaqueFrac = opaque / (48.0 * 48.0);
                 double colorfulFrac = (double)colorful / opaque;
                 return opaqueFrac < 0.22 && colorfulFrac < 0.03;
+            }
+            catch { return false; }
+        }
+
+        // The shell centres a small icon instead of scaling one up when the app has no
+        // image at the requested size, leaving a tiny logo in a big (often faintly-plated)
+        // canvas. A real icon's solid content fills most of it. Measured across apps: the
+        // padded case is 0.04 of the canvas, the lowest real icon 0.53 (9-app sample), so
+        // 0.30 separates them cleanly. Safe by construction: GetIcon only replaces the
+        // shell image when the .exe fallback actually yields one.
+        internal static bool IsPaddedTile(Bitmap icon)
+        {
+            try
+            {
+                int w = icon.Width, h = icon.Height;
+                if (w == 0 || h == 0) return false;
+                int minX = w, minY = h, maxX = -1, maxY = -1;
+
+                BitmapData data = icon.LockBits(new Rectangle(0, 0, w, h),
+                    ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                try
+                {
+                    int stride = data.Stride;
+                    byte[] bytes = new byte[stride * h];
+                    Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+                    for (int y = 0; y < h; y++)
+                        for (int x = 0; x < w; x++)
+                            if (bytes[y * stride + x * 4 + 3] > 200)
+                            {
+                                if (x < minX) minX = x;
+                                if (x > maxX) maxX = x;
+                                if (y < minY) minY = y;
+                                if (y > maxY) maxY = y;
+                            }
+                }
+                finally { icon.UnlockBits(data); }
+
+                if (maxX < minX || maxY < minY) return false; // nothing solid
+                double area = (double)(maxX - minX + 1) * (maxY - minY + 1);
+                return area / ((double)w * h) < 0.30;
             }
             catch { return false; }
         }
