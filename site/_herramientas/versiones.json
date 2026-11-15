@@ -1,0 +1,289 @@
+[
+  {
+    "version": "1.10.4",
+    "desde": "1.10.0",
+    "fecha": "2026-11-14",
+    "es": {
+      "titulo": "Ancla arrastrando y dale a cada app su icono",
+      "puntos": [
+        "<b>Cada app, con su icono</b>: en el editor le pones a cada app la imagen que quieras, o vuelves a la automática, y las apps web que instalas desde Chrome o Edge salen con su icono y su nombre, no con los del navegador, y ya aparecen en la lista de apps.",
+        "<b>Ancla arrastrando</b>: arrastra el icono de un grupo desde la ventana principal hasta la barra de tareas y queda anclado, sin clic derecho y sin pasar por el Explorador de archivos.",
+        "<b>La Papelera, en un grupo</b>: un grupo puede enseñar la Papelera, también junto al reloj, y con su clic derecho la vacías o devuelves cada cosa a su sitio.",
+        "<b>Nuevo menú junto al reloj</b>: el clic derecho en el icono de la app o de un grupo saca una tarjeta con el estilo de la app, un icono en cada línea e interruptores para abrir al pasar el cursor y abrir al instante, en claro u oscuro y con tu color de acento.",
+        "<b>Funciona con Start11 y StartAllBack</b>: abrir al pasar reconoce el grupo por su icono cuando el cursor se para, también con la barra en dos filas, y si haces clic derecho antes de que salga el panel, gana el clic derecho.",
+        "<b>Un segundo clic lo cierra</b>: pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Además, guardar un grupo ya no reinicia la barra si su icono y su nombre no cambian, y el panel ya no sale en Alt+Tab."
+      ]
+    },
+    "en": {
+      "titulo": "Pin by dragging and give every app its own icon",
+      "puntos": [
+        "<b>Each app, its own icon</b>: in the editor you give each app the picture you want, or go back to the automatic one, and web apps installed from Chrome or Edge show their own icon and name instead of the browser's, and now appear in the app list.",
+        "<b>Pin by dragging</b>: drag a group's icon from the main window onto the taskbar and it is pinned, with no right-click and no trip through File Explorer.",
+        "<b>A Recycle Bin group</b>: a group can show the Recycle Bin, by the clock too, and its right-click empties it or puts everything back where it was.",
+        "<b>New menu by the clock</b>: right-clicking the app's icon or a group's brings up a card in the app's own style, with an icon on every line and switches for open on hover and instant opening, light or dark and in your accent colour.",
+        "<b>Hover works on more taskbars</b>: with Start11 and StartAllBack it recognises the group by its icon once the cursor rests, also on a taskbar with two rows, and if you right-click before the panel shows, the right-click wins.",
+        "<b>A second click closes it</b>: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, and the panel no longer shows up in Alt+Tab."
+      ]
+    }
+  },
+  {
+    "version": "1.9.0",
+    "desde": "1.9.0",
+    "fecha": "2026-11-12",
+    "es": {
+      "titulo": "Los paneles salen al momento aunque un disco esté dormido",
+      "puntos": [
+        "<b>Los paneles ya no esperan</b>: si una app del grupo está en un disco que se había apagado, en una unidad de red o en un USB, el panel sale al momento con sus iconos y comprueba las apps después. Con una app en una unidad de red que no contesta, pasa de 22 s a 0,8 s.",
+        "<b>Esconde su icono</b>: haz clic derecho en el icono de la app junto al reloj y elige «Ocultar este icono», o apaga «Mostrar el icono junto al reloj» en Ajustes, que es donde vuelve. El programa sigue haciendo su trabajo sin él.",
+        "<b>Menús de Windows 11</b>: los del icono de la app y de los grupos junto al reloj tienen esquinas redondeadas, más aire y van en claro u oscuro, como la app.",
+        "<b>La app habla ruso</b>: la app, sus paneles y sus menús, según el idioma de Windows o eligiendo <b>RU</b> en la barra rápida. Es una primera traducción con ayuda automática: si un texto se lee mal, cuéntalo en GitHub."
+      ]
+    },
+    "en": {
+      "titulo": "Panels show at once even when a drive is asleep",
+      "puntos": [
+        "<b>Panels no longer wait</b>: if an app in the group lives on a hard disk that has spun down, a network drive or a USB drive, the panel shows at once with its saved icons and checks the apps afterwards. With an app on a network drive that does not answer, it goes from 22 s to 0.8 s.",
+        "<b>Hide its icon</b>: right-click the app's icon by the clock and pick “Hide this icon”, or switch off “Show the icon by the clock” in Settings, which is also where it comes back. The program keeps doing its job without it.",
+        "<b>Windows 11 menus</b>: the menus of the app's icon and of the groups by the clock get rounded corners, more room, and go light or dark like the app.",
+        "<b>The app speaks Russian</b>: the app, its panels and its menus, picked with Windows or with <b>RU</b> in the quick bar. It is a first, machine-assisted version: if a text reads wrong, say so on GitHub."
+      ]
+    }
+  },
+  {
+    "version": "1.8.0",
+    "desde": "1.8.0",
+    "fecha": "2026-11-11",
+    "es": {
+      "titulo": "Tus grupos junto al reloj y abiertos al instante",
+      "puntos": [
+        "<b>Un grupo junto al reloj</b>: en el editor enciende «Mostrarlo también junto al reloj» y el grupo tiene ahí su propio icono. Un clic abre su panel a su lado, y el clic derecho ofrece «Abrir», «Abrir todas» y «Editar grupo».",
+        "<b>El icono sigue al grupo</b>: si lo renombras, le cambias el icono o lo borras, el del reloj se pone al día. En Windows 11 un icono nuevo sale tras la flecha: arrástralo junto al reloj para tenerlo a la vista.",
+        "<b>Abre los grupos al instante</b>: un ajuste nuevo deja un panel cargado en segundo plano, y hasta el primer clic después de encender Windows abre al momento, no al cabo de un segundo. Viene apagado.",
+        "<b>La app, más a mano</b>: el clic derecho de un grupo anclado ofrece «Abrir Taskbar Groups Fluent», un doble clic en su icono junto al reloj la abre, y abrirla cuando ya está abierta trae su ventana delante en vez de abrir otra.",
+        "<b>Solo corre si hace falta</b>: el programa pequeño del reloj solo está en marcha mientras tiene trabajo (abrir al pasar, un grupo junto al reloj o abrir al instante), y su menú solo ofrece apagar lo que está encendido."
+      ]
+    },
+    "en": {
+      "titulo": "Your groups by the clock, and open in an instant",
+      "puntos": [
+        "<b>A group by the clock</b>: in the editor, switch on “Also show it by the clock” and the group gets its own icon there. A click opens its panel right by it, and a right-click offers “Open”, “Open all” and “Edit group”.",
+        "<b>The icon follows the group</b>: rename it, change its icon or delete it and the one by the clock keeps up. On Windows 11 a new icon starts behind the arrow: drag it next to the clock to keep it in sight.",
+        "<b>Open groups instantly</b>: a new setting keeps a panel loaded in the background, so even the first click after starting Windows opens at once, not after a second or so. It is off by default.",
+        "<b>The app closer at hand</b>: a pinned group's right-click offers “Open Taskbar Groups Fluent”, a double click on its icon by the clock opens it, and opening it while it is already open brings its window to the front instead of a second one.",
+        "<b>Running only when needed</b>: the small program by the clock runs only while it has a job (open on hover, a group by the clock or instant opening), and its menu only offers to switch off what is on."
+      ]
+    }
+  },
+  {
+    "version": "1.7.0",
+    "desde": "1.7.0",
+    "fecha": "2026-11-07",
+    "es": {
+      "titulo": "Haz un grupo de una carpeta y ancla toda una barra de una vez",
+      "puntos": [
+        "<b>Una carpeta como grupo</b>: en el editor elige «Lo que hay en una carpeta» y cualquier carpeta, o uno de los «Lugares de Windows» (el Panel de control, Herramientas de Windows, Este equipo, Todas las apps, el Escritorio, Descargas y algunos más). El panel enseña lo que tiene cada vez que se abre, así que siempre está al día.",
+        "<b>Subcarpetas como submenú</b>: las carpetas de dentro que tienen algo se abren junto al panel como un submenú, con su flecha, y cada cosa tiene su propio menú del clic derecho de Windows.",
+        "<b>Una barra entera de golpe</b>: pulsa «Anclar a la barra de tareas» en un grupo que tiene otros grupos y la app ofrece anclarlos todos, uno tras otro y en su orden, con un separador en la barra por cada línea separadora del grupo.",
+        "<b>Cada ancla, tu clic derecho</b>: Windows no deja que una app ancle nada por su cuenta, así que la app te deja seleccionado el siguiente acceso en el Explorador de archivos y pasa al otro en cuanto lo anclas.",
+        "<b>Grupos de dentro, con flecha</b>: los grupos que hay dentro de un grupo llevan una flecha en el panel, porque se abren a su lado.",
+        "<b>Mejor en Windows 10</b>: los pasos para anclar siguen su menú del clic derecho, el panel tiene bordes rectos como el resto de ventanas, abrir al pasar reconoce los grupos en más barras y esconde el globo de la barra clásica sobre el panel, y el instalador pide Windows 10 versión 1809 o posterior."
+      ]
+    },
+    "en": {
+      "titulo": "Turn a folder into a group and pin a whole taskbar in one go",
+      "puntos": [
+        "<b>A folder as a group</b>: in the editor pick “What is in a folder” and any folder, or one of the “Windows places” (Control Panel, Windows Tools, This PC, All apps, Desktop, Downloads and a few more). The panel lists what is in it every time it opens, so it is always current.",
+        "<b>Subfolders as submenus</b>: folders inside it that hold something open beside the panel like a submenu, with an arrow, and everything has its own Windows right-click menu.",
+        "<b>A whole taskbar at once</b>: click “Pin to taskbar” on a group that holds other groups and the app offers to pin them all, one after another in the group's order, with a taskbar separator for every separator line in it.",
+        "<b>Each pin is your right-click</b>: Windows does not let apps pin anything by themselves, so the app keeps the next shortcut selected in File Explorer and moves on as soon as you pin it.",
+        "<b>Arrows on groups inside</b>: groups inside a group show an arrow in the panel, as they open beside it.",
+        "<b>Better on Windows 10</b>: the pinning steps match its right-click menu, the panel has a square border like every other window, open on hover recognises groups on more taskbars and hides the classic tooltip over the panel, and the installer asks for Windows 10 version 1809 or later."
+      ]
+    }
+  },
+  {
+    "version": "1.6.10",
+    "desde": "1.6.7",
+    "fecha": "2026-11-03",
+    "es": {
+      "titulo": "Ordena tus grupos con submenús, separadores y arrastrando",
+      "puntos": [
+        "<b>Grupos como submenús</b>: un grupo dentro de otro abre su panel justo al lado del primero, que se queda abierto. Otro clic o Escape lo cierra, y abrir una app desde él cierra los dos.",
+        "<b>Separadores donde quieras</b>: el botón «Separador» del editor añade una línea al panel, con un título opcional, para repartir sus apps en secciones, y unos accesos vacíos dejan espacio entre los grupos anclados en la barra.",
+        "<b>Arrastra y suelta</b>: suelta archivos, carpetas y accesos directos desde el Explorador o el escritorio en el editor del grupo, o en un panel abierto para añadirlos. Con abrir al pasar, llévalos al icono del grupo en la barra, espera al panel y suéltalos ahí.",
+        "<b>Un buscador de apps mejor</b>: encuentra más apps instaladas, busca sin tener en cuenta las tildes y también por el nombre del programa, se maneja con el teclado y el doble clic, y carga los iconos sin hacerse pesado.",
+        "<b>Cada panel en su monitor</b>: con la barra en varias pantallas, el panel se abre sobre el icono que pulsas, también en una pantalla con otra escala, y la animación ya no se asoma a la pantalla de al lado.",
+        "<b>El cursor ya no parpadea</b>: con abrir al pasar encendido, la barra ya no enseña una y otra vez el cursor de «cargando»."
+      ]
+    },
+    "en": {
+      "titulo": "Sort your groups with submenus, separators and drag and drop",
+      "puntos": [
+        "<b>Groups as submenus</b>: a group inside another opens its panel right next to the first one, which stays open. Click it again or press Escape to close it, and launching an app from it closes both.",
+        "<b>Separators where you want</b>: the editor's “Separator” button adds a line across the panel, with an optional title, to split its apps into sections, and empty shortcuts put space between the groups pinned on the taskbar.",
+        "<b>Drag and drop</b>: drop files, folders and shortcuts from File Explorer or the desktop onto the group editor, or onto an open panel to add them. With open on hover on, take them to the group's taskbar icon, wait for the panel and drop them there.",
+        "<b>A better app picker</b>: it finds more installed apps, searches without caring about accents and by the program's name too, works with the keyboard and double-click, and loads icons more lightly.",
+        "<b>Each panel on its monitor</b>: with the taskbar on several screens, the panel opens over the icon you clicked, also on a screen at a different display scale, and its animation no longer shows on the screen next door.",
+        "<b>No more flickering cursor</b>: with open on hover on, the taskbar no longer keeps showing the loading cursor."
+      ]
+    }
+  },
+  {
+    "version": "1.6.6",
+    "desde": "1.6.1",
+    "fecha": "2026-10-17",
+    "es": {
+      "titulo": "Los grupos abren casi al instante",
+      "puntos": [
+        "<b>Abre casi al instante</b>: el panel se queda cargado un rato después de usarlo, y un clic en un grupo tarda de 0,1 a 0,2 s en vez de casi un segundo. Mientras espera ocupa unos 6 MB, y a los diez minutos sin uso se va solo.",
+        "<b>El menú de cada app</b>: haz clic derecho en una app del panel y sale el menú que Windows le da, con «Abrir la ubicación del archivo», «Propiedades», «Ejecutar como administrador» o «Desinstalar».",
+        "<b>Un panel con animación</b>: en Ajustes, «Animación del panel» ofrece «Ninguna» (la de siempre), «Asomar» o «Desde la barra», que lo saca de detrás de la barra de tareas como el menú Inicio.",
+        "<b>Una barra rápida abajo</b>: cambia el tema, el idioma y abrir al pasar sin entrar en Ajustes, y la versión lleva una marca verde si es la última o un botón «Actualizar ahora» si hay otra.",
+        "<b>Los grupos anclados, más útiles</b>: su clic derecho en la barra ofrece «Abrir todas» y «Editar grupo», y guardar un grupo anclado ya no te deja sin barra de tareas.",
+        "<b>Actualizar pesa menos</b>: ya no se bajan 60 MB en cada actualización, hay un instalador sin conexión para PCs sin internet, y la misma app funciona desde la Microsoft Store, que se encarga de actualizarla."
+      ]
+    },
+    "en": {
+      "titulo": "Groups open almost instantly",
+      "puntos": [
+        "<b>Opens almost instantly</b>: the panel stays loaded for a while after you use it, and a click on a group takes 0.1 to 0.2 s instead of nearly a second. While it waits it takes about 6 MB, and it goes away after ten minutes without use.",
+        "<b>Each app's own menu</b>: right-click an app in the panel for the menu Windows gives it, with “Open file location”, “Properties”, “Run as administrator” or “Uninstall”.",
+        "<b>An animated panel</b>: in Settings, “Panel animation” offers “None” (as before), “Peek” or “From the taskbar”, which slides it out from behind the taskbar like the Start menu.",
+        "<b>A quick bar</b>: at the bottom of the window, switch theme, language and open on hover without opening Settings, and the version shows a green tick when it is the latest, or an “Update now” button when there is a new one.",
+        "<b>Pinned groups do more</b>: their right-click on the taskbar offers “Open all” and “Edit group”, and saving a pinned group no longer leaves you without a taskbar.",
+        "<b>Lighter updates</b>: no more 60 MB download on every update, an offline installer for PCs without internet, and the same app runs from the Microsoft Store, which takes care of updating it."
+      ]
+    }
+  },
+  {
+    "version": "1.6.0",
+    "desde": "1.6.0",
+    "fecha": "2026-10-15",
+    "es": {
+      "titulo": "Paneles a tu gusto con el cristal de Windows 11",
+      "puntos": [
+        "<b>Cristal de Windows 11</b>: el panel deja ver lo que hay detrás, difuminado, en tema claro y oscuro y también al abrir al pasar. Antes salía como una lámina oscura y plana.",
+        "<b>Cuatro formas de panel</b>: cuadrícula, fila, columna o lista, con o sin el nombre de las apps, en tres tamaños de icono y con el nombre del grupo arriba o abajo. El editor te lo enseña en vivo.",
+        "<b>Todo desde el panel</b>: un lápiz junto al nombre del grupo abre su editor, y un botón abre todas sus apps a la vez.",
+        "<b>Un icono con tus apps</b>: un clic hace el icono de la barra con las cuatro primeras apps del grupo, y se pone al día cuando añades o quitas alguna.",
+        "<b>Grupos dentro de grupos</b>: mete un grupo en otro y se abre en su propio panel. Y a cada app le puedes cambiar el nombre, darle argumentos de arranque o abrirla como administrador.",
+        "<b>Exporta, importa y duplica</b>: un grupo viaja en un solo archivo .tbgroup, y si vienes de Taskbar Groups o de AppGroup, te traes tus grupos."
+      ]
+    },
+    "en": {
+      "titulo": "Panels your way, with real Windows 11 glass",
+      "puntos": [
+        "<b>Windows 11 glass</b>: the panel shows what is behind it, blurred, in dark and light themes and also when it opens on hover. Before, it came out as a flat dark sheet.",
+        "<b>Four panel layouts</b>: grid, horizontal row, vertical column or list, with or without app names, in three icon sizes and with the group's name above or below. The editor shows a live preview.",
+        "<b>All from the panel</b>: a pencil next to the group's name opens its editor, and a button opens every app in the group at once.",
+        "<b>An icon from your apps</b>: one click builds the taskbar icon from the first four apps in the group, and it keeps up as you add or remove them.",
+        "<b>Groups inside groups</b>: add a group to another and it opens in its own panel. And every app can be renamed, given launch arguments or run as administrator.",
+        "<b>Export, import and duplicate</b>: a group travels as a single .tbgroup file, and if you come from Taskbar Groups or AppGroup, you can bring your groups along."
+      ]
+    }
+  },
+  {
+    "version": "1.5.0",
+    "desde": "1.5.0",
+    "fecha": "2026-09-13",
+    "es": {
+      "titulo": "Abre un grupo con solo dejar el cursor encima",
+      "puntos": [
+        "<b>Abre un grupo sin clic</b>: deja el cursor sobre un grupo anclado y se abre en un tercio de segundo, sin quitarle el teclado a lo que estabas escribiendo, y se cierra solo en cuanto te alejas. El clic sigue funcionando igual.",
+        "<b>Tú eliges la espera</b>: en la nueva ventana de Ajustes (el engranaje de la ventana principal), «Abrir al pasar el cursor» espera «Rápido», «Normal» o «Relajado», para que barrer la barra no abra nada sin querer.",
+        "<b>Viene apagado</b>: necesita un programa pequeño que arranca con Windows y vive junto al reloj. Lo apagas desde su icono o desde Ajustes y desaparece, con su entrada de inicio incluida.",
+        "<b>El globo de Windows, apartado</b>: el nombre del botón que Windows enseña al dejar quieto el cursor ya no tapa el panel abierto, y el resto de botones de la barra lo conservan.",
+        "<b>Actualizar sin dejar restos</b>: el instalador cierra lo que la app tenga en marcha antes de tocar archivos, y desinstalar se lleva la carpeta entera y la entrada de inicio."
+      ]
+    },
+    "en": {
+      "titulo": "Open a group just by resting the cursor on it",
+      "puntos": [
+        "<b>Open a group without clicking</b>: rest the cursor on a pinned group and it opens in about a third of a second, without taking the keyboard from what you were typing, and it closes by itself as soon as you move away. Clicking works as before.",
+        "<b>You choose the wait</b>: in the new Settings window (the gear in the main window), “Open on hover” waits “Fast”, “Normal” or “Relaxed”, so sweeping across the taskbar never opens anything by accident.",
+        "<b>Off by default</b>: it needs a small program that starts with Windows and lives by the clock. Switch it off from its icon or from Settings and it is gone, startup entry included.",
+        "<b>Windows' tooltip steps aside</b>: the button name Windows shows when the cursor rests no longer covers an open panel, and every other taskbar button keeps its tooltip.",
+        "<b>Clean updates and uninstalls</b>: the installer stops what the app has running before touching files, and uninstalling removes the whole folder and the startup entry."
+      ]
+    }
+  },
+  {
+    "version": "1.4.5",
+    "desde": "1.4.0",
+    "fecha": "2026-08-17",
+    "es": {
+      "titulo": "Se instala con un clic y se actualiza sola",
+      "puntos": [
+        "<b>Instalador de un clic</b>: se instala para tu usuario, sin permisos de administrador, y descarga lo que le falte a tu PC para funcionar.",
+        "<b>Se actualiza sola</b>: al abrirse mira si hay versión nueva y se pone al día con un clic, y antes de instalarla guarda una copia de tus grupos (se quedan las tres últimas).",
+        "<b>El panel sigue tu tema</b>: claro u oscuro como Windows, translúcido y con esquinas redondeadas en Windows 11, y ya no se queda congelado enseñando una imagen vieja.",
+        "<b>Ya no se queda pegado</b>: el panel ya no se queda encima de todo. Se cierra con un clic fuera o con Escape, y abrir otro grupo quita el anterior, así que ya no se amontonan.",
+        "<b>Iconos del derecho</b>: la mitad de los iconos de la lista de apps salían del revés, y los guardados en los grupos también. Ya salen bien y se rehacen solos.",
+        "<b>Un icono propio</b>: la app estrena su marca, un panel que sale de un botón de la barra, nítida en la barra, el menú Inicio y el Explorador. Y ya tiene web: tbgf.munito.dev."
+      ]
+    },
+    "en": {
+      "titulo": "One-click install and updates that take care of themselves",
+      "puntos": [
+        "<b>One-click installer</b>: it installs for your user, without administrator rights, and downloads whatever your PC is missing to run it.",
+        "<b>It updates itself</b>: on launch it checks for a newer version and updates with one click, and before installing it backs up your groups (keeping the last three).",
+        "<b>The panel follows your theme</b>: light or dark like Windows, translucent and with rounded corners on Windows 11, and it no longer freezes on an old picture.",
+        "<b>No more stuck panel</b>: it no longer stays on top of every window. A click outside or Escape closes it, and opening a group clears any panel left behind, so they no longer stack up.",
+        "<b>Icons the right way up</b>: half the icons in the app list came out flipped, and so did the ones saved in groups. They come out right now and rebuild themselves.",
+        "<b>An icon of its own</b>: the app gets its own mark, a panel popping out of a taskbar button, sharp in the taskbar, the Start menu and File Explorer. And it now has a home page: tbgf.munito.dev."
+      ]
+    }
+  },
+  {
+    "version": "1.3.0",
+    "desde": "1.1.0",
+    "fecha": "2026-07-01",
+    "es": {
+      "titulo": "Elige tus apps de una lista y dale a cada grupo su icono",
+      "puntos": [
+        "<b>Elige de una lista</b>: todas las apps instaladas, de escritorio y de la Microsoft Store, en una sola lista con buscador, con sus iconos de verdad y sin herramientas del sistema de por medio. «Examinar…» sigue sirviendo para lo demás.",
+        "<b>Iconos a tu gusto</b>: coloca y recorta cualquier imagen antes de usarla como icono del grupo, o elige un emoji a color con el botón «Emoji».",
+        "<b>En español y en inglés</b>: la app sigue el idioma de Windows, y también su tema claro u oscuro y su color de acento.",
+        "<b>Logos de verdad</b>: Discord, Obsidian, Brave y otras apps ya no salen con un icono en blanco ni con un nombre que no es el suyo.",
+        "<b>Renombrar ya no duplica</b>: cambiar el nombre de un grupo ya no deja una copia detrás, y si estaba anclado sigue funcionando. Guardar un grupo que ya habías editado, o uno con un nombre de varias palabras, también funciona ya.",
+        "<b>La barra se refresca limpia</b>: el icono nuevo de un grupo anclado se ve al momento en la barra, y ya no deja en blanco los iconos de otras apps ancladas."
+      ]
+    },
+    "en": {
+      "titulo": "Pick your apps from a list and give each group its icon",
+      "puntos": [
+        "<b>Pick from a list</b>: every installed app, desktop and Microsoft Store alike, in one searchable list with their real icons and no system tools in the way. “Browse…” still covers anything else.",
+        "<b>Icons your way</b>: position and crop any image before using it as the group icon, or pick a colour emoji with the “Emoji” button.",
+        "<b>In English and Spanish</b>: the app follows your Windows language, and its light or dark theme and accent colour too.",
+        "<b>Real logos</b>: Discord, Obsidian, Brave and other apps no longer show a blank icon or a name that is not theirs.",
+        "<b>Renaming no longer duplicates</b>: renaming a group no longer leaves a copy behind, and a pinned group keeps working. Saving a group you edited again, or one with a name of several words, works now too.",
+        "<b>A clean taskbar refresh</b>: a pinned group's new icon shows on the taskbar right away, and it no longer blanks out the icons of other pinned apps."
+      ]
+    }
+  },
+  {
+    "version": "1.0.0",
+    "desde": "1.0.0",
+    "fecha": "2026-06-29",
+    "es": {
+      "titulo": "Tus apps agrupadas en la barra, con aspecto de Windows 11",
+      "puntos": [
+        "<b>Taskbar Groups, rehecho</b>: la herramienta para agrupar apps en la barra de tareas, escrita de nuevo con un aspecto moderno.",
+        "<b>Aspecto de Windows 11</b>: el fondo translúcido del sistema, esquinas redondeadas y el tema claro u oscuro de Windows.",
+        "<b>Apps de la Microsoft Store</b>: añade WhatsApp, Instagram, TikTok y otras que no tienen un programa al que apuntar.",
+        "<b>Iconos nítidos</b>: a 256 píxeles y sin la flechita de acceso directo encima.",
+        "<b>Ancla con un clic</b>: una ayuda para anclar cada grupo a la barra, y botones para editarlo o borrarlo."
+      ]
+    },
+    "en": {
+      "titulo": "Your apps grouped on the taskbar, with a Windows 11 look",
+      "puntos": [
+        "<b>Taskbar Groups, rebuilt</b>: the tool for grouping apps on the taskbar, written again with a modern look.",
+        "<b>A Windows 11 look</b>: the system's translucent backdrop, rounded corners and Windows' light or dark theme.",
+        "<b>Microsoft Store apps</b>: add WhatsApp, Instagram, TikTok and others that have no program file to point at.",
+        "<b>Crisp icons</b>: at 256 pixels and without the shortcut arrow on top.",
+        "<b>One-click pinning</b>: a helper to pin each group to the taskbar, plus buttons to edit or delete it."
+      ]
+    }
+  }
+]
