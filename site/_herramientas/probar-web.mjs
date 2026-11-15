@@ -78,7 +78,13 @@ for (const ancho of ANCHOS) {
       const page = await ctx.newPage();
       const donde = `/${pagina} a ${nombre} en ${tema === "light" ? "claro" : "oscuro"}`;
       const errores = [];
-      page.on("console", (m) => { if (m.type() === "error") errores.push(m.text()); });
+      // La API de GitHub corta a 60 peticiones por hora y la web sigue con las cifras que trae
+      // escritas: su 403 en la consola no es un fallo de la web (igual que abajo, al no llegar).
+      page.on("console", (m) => {
+        if (m.type() !== "error") return;
+        if ((m.location()?.url || "").startsWith("https://api.github.com")) return;
+        errores.push(m.text());
+      });
       page.on("pageerror", (e) => errores.push(e.message));
       // El vídeo se descarga a trozos y Chromium corta el que queda a medias al cerrar la página:
       // eso no es un fallo. Lo demás que no llega, sí.
@@ -167,6 +173,10 @@ console.log("\nComparativa, preguntas, menú, válvula e idioma");
   const ctx = await navegador.newContext({ viewport: { width: 1440, height: 900 }, locale: "es-ES" });
   const page = await ctx.newPage();
   await page.goto(BASE, { waitUntil: "load" });
+  // La comparativa lleva content-visibility: auto y no se dibuja hasta que se acerca; una
+  // persona la tiene delante cuando toca una pestaña, así que la prueba también.
+  await page.locator("#comparativa").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
   const pestanas = await page.locator('.rivales input[name="rival"]').evaluateAll((l) => l.map((i) => i.value));
   let todas = true;
   for (const valor of pestanas) {
