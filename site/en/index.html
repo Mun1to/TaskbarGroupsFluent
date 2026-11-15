@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en" data-otra="../">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taskbar Groups Fluent · Group your apps into one taskbar icon</title>
+<meta name="description" content="Group your shortcuts into a single taskbar button on Windows 10 and 11. Click it, or just hover, and a panel opens with all your apps, in Windows 11 glass. Free, open source, on WinGet and the Microsoft Store.">
+<link rel="canonical" href="https://tbgf.munito.dev/en/">
+<link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/">
+<link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/">
+<link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Taskbar Groups Fluent">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:url" content="https://tbgf.munito.dev/en/">
+<meta property="og:title" content="Taskbar Groups Fluent · Ten icons on the taskbar, now just one">
+<meta property="og:description" content="Group your apps into a single taskbar button on Windows. Click it, or just hover, and a panel opens with all of them. Free and open source.">
+<meta property="og:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Taskbar Groups Fluent: one taskbar icon that opens a panel with the apps in the group">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Taskbar Groups Fluent · Ten icons on the taskbar, now just one">
+<meta name="twitter:description" content="Group your apps into a single taskbar button on Windows. Click it, or just hover, and a panel opens with all of them. Free and open source.">
+<meta name="twitter:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<link rel="icon" href="../assets/icon-256.png?v=6fed70b9" type="image/png">
+<link rel="apple-touch-icon" href="../assets/icon-256.png?v=6fed70b9">
+<script>
+// Dos cosas antes de pintar nada. La política de movimiento de la casa: las animaciones se ven
+// siempre y lo que cambia es cuánto recorren, con un dial (`--motion-gain`): 1 de serie, 0,25
+// si el sistema pide reducir el movimiento y 0 con `?motion=off`, la válvula del pie. Y el
+// idioma que eligió el visitante: si pulsó «English» o «Español» otra vez, se le lleva a esa
+// versión (`data-otra`). Por el idioma del navegador no se redirige nunca: eso lo ofrece una
+// frase fina la primera vez (leer.js).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+  h.classList.toggle("suave", gain > 0 && gain < 1);
+  try {
+    var elegido = localStorage.getItem("tbgf-lang");
+    var otra = h.getAttribute("data-otra");
+    if (otra && (elegido === "es" || elegido === "en") && elegido !== h.lang) location.replace(otra + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../estilos.css?v=5f095350">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Taskbar Groups Fluent",
+  "alternateName": "Taskbar Groups",
+  "description": "Free and open source app that groups your shortcuts into a single taskbar button on Windows 10 and 11. Click it, or hover over it, and a panel in Windows 11 glass opens with every app in the group.",
+  "url": "https://tbgf.munito.dev/en/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Windows 10, Windows 11",
+  "softwareVersion": "1.10.4",
+  "downloadUrl": "https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe",
+  "installUrl": "https://apps.microsoft.com/detail/9PCZDXWFT6SN",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "screenshot": "https://tbgf.munito.dev/assets/shot-formas.webp",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+  "author": { "@type": "Person", "name": "Munir Torres", "url": "https://munito.dev" },
+  "sameAs": ["https://github.com/Mun1to/TaskbarGroupsFluent", "https://apps.microsoft.com/detail/9PCZDXWFT6SN"],
+  "featureList": [
+    "Groups desktop apps, Microsoft Store apps and browser web apps behind one taskbar icon",
+    "Opens the group on click or just by hovering over it",
+    "A group can show a folder, the Control Panel, This PC or the Recycle Bin",
+    "Groups inside groups, opening beside the panel like a submenu",
+    "Four panel shapes in Windows 11 glass: grid, row, column and list",
+    "Groups by the clock, in the notification area",
+    "Works on every monitor, above the icon you clicked",
+    "Installs per user, without administrator rights",
+    "Available on WinGet and the Microsoft Store"
+  ]
+}
+</script>
+<script type="application/ld+json" data-faq>
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "inLanguage": "en",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is it free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, all of it. It is open source under the MIT licence: no paid version, no accounts and no ads."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which versions of Windows does it run on?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Windows 11, and Windows 10 version 1809 or later, 64-bit. On Windows 10 the panel is opaque, like its own menus."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it need administrator rights?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. It installs for your user, not the whole system."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it need anything else installed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Microsoft's .NET 10 Desktop Runtime. If you don't have it, the installer downloads it; the offline installer already carries it inside, for a PC with no internet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why does Windows warn about an “unknown publisher”?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Because the installer is not signed with a paid certificate yet. Click More info, then Run anyway. All the code is on GitHub for anyone who wants to check it, and the Microsoft Store version is signed by Microsoft."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I install it with WinGet?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. It is in the official WinGet catalogue: winget install Mun1to.TaskbarGroupsFluent installs it and winget upgrade Mun1to.TaskbarGroupsFluent updates it."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it on the Microsoft Store?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, since 16 October 2026: apps.microsoft.com . It is the same app, signed by Microsoft and kept up to date by Windows itself. It can be one version behind the installer while Microsoft reviews each update."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I pin a group to the taskbar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Drag the group's icon from the main window onto the taskbar. Or click Pin to taskbar: the app opens the folder with its shortcut highlighted, and you right-click it and choose Pin to taskbar (on Windows 11 it is under Show more options). Windows does not let an app pin itself."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I make a group open on hover?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Switch it on in the quick bar at the bottom of the app window, or in the menu of its icon by the clock. It ships switched off: it relies on a small watcher by the clock, which you can turn off from the same places."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work with Start11 or StartAllBack?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Since version 1.10, open on hover recognises the group by its icon with those taskbars too, even with the taskbar in two rows."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I add a taskbar separator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Click Separator beside Settings in the app. It creates an empty separator entry: pin it like any group. Inside a panel, the Separator button in the group editor splits its apps into parts."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I bring my groups from Taskbar Groups or AppGroup?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Import, in the main window, brings them from Taskbar Groups and from AppGroup. You can also export, import and duplicate your own groups."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it update itself?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When it opens it checks GitHub for a new version and offers it to you: one click downloads it, installs it and reopens the app. The Store version is updated by the Store."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which languages does it speak?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Spanish, English and Russian. It follows your Windows language, and you can change it in the quick bar of the window."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- Los dibujos: el logo de GitHub es el oficial; los demás, de trazo como los de lucide. Las
+     apps de la demo usan su icono de verdad (assets/apps), sacado de Windows como lo saca la app. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+  <symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5 5.3 4.5h13.4L20 9.5"/><path d="M4 9.5a2.65 2.65 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0A2.65 2.65 0 0 0 20 9.5"/><path d="M5.5 12v8h13v-8"/><path d="M10 20v-5h4v5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L8 18l-4 1 1-4z"/><path d="m14.5 5.5 3 3"/></symbol>
+  <symbol id="i-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-arrow-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m6 13 6 6 6-6"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.6"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.6"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.6"/></symbol>
+  <symbol id="i-row" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="8" width="5.5" height="8" rx="1.4"/><rect x="9.25" y="8" width="5.5" height="8" rx="1.4"/><rect x="16.5" y="8" width="5.5" height="8" rx="1.4"/></symbol>
+  <symbol id="i-col" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2.5" width="14" height="5" rx="1.4"/><rect x="5" y="9.5" width="14" height="5" rx="1.4"/><rect x="5" y="16.5" width="14" height="5" rx="1.4"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6.5h11M9 12h11M9 17.5h11"/><rect x="3.5" y="5" width="3" height="3" rx="0.8"/><rect x="3.5" y="10.5" width="3" height="3" rx="0.8"/><rect x="3.5" y="16" width="3" height="3" rx="0.8"/></symbol>
+  <symbol id="i-pointer" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3.5 19 9.2l-6.2 2.1-2.1 6.2z"/><path d="m13.2 13.2 5.3 5.3"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/></symbol>
+  <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="9" cy="9.5" r="1.8"/><path d="m4 18 5.5-5.5 3.5 3.5 2.5-2.5L20 18"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11.5A8 8 0 0 0 5.6 7.2L4 9"/><path d="M4 4.5V9h4.5"/><path d="M4 12.5a8 8 0 0 0 14.4 4.3L20 15"/><path d="M20 19.5V15h-4.5"/></symbol>
+  <symbol id="i-layout" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M3 9h18M9.5 9v12"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="m7.5 9.5 3 2.5-3 2.5M13 15h4"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5Z"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4.5" height="16" rx="1.2"/><rect x="13.5" y="4" width="4.5" height="16" rx="1.2"/></symbol>
+  <symbol id="i-expand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></symbol>
+  <symbol id="i-languages" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></symbol>
+  <symbol id="i-monitor" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8M12 17v4"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/></symbol>
+  <symbol id="i-package" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><path d="M12 22V12"/><path d="m3.3 7 7.703 4.734a2 2 0 0 0 2.004 0L20.7 7"/><path d="m7.5 4.27 9 5.15"/></symbol>
+  <!-- Lo que se ve en la pantalla de la demo -->
+  <symbol id="g-carpeta" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" fill="#ffc83d" stroke="#e8a317"/><path d="M3 10h18" stroke="#e8a317"/></symbol>
+  <symbol id="w-inicio" viewBox="0 0 24 24"><rect x="3" y="3" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="12.6" y="3" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="3" y="12.6" width="8.4" height="8.4" rx="1.2" fill="currentColor"/><rect x="12.6" y="12.6" width="8.4" height="8.4" rx="1.2" fill="currentColor"/></symbol>
+  <symbol id="w-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 15 6-6 6 6"/></symbol>
+  <symbol id="w-wifi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 9a14 14 0 0 1 19 0"/><path d="M5.5 12.5a9.5 9.5 0 0 1 13 0"/><path d="M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1.2" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="w-volumen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></symbol>
+  <symbol id="w-bateria" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="7" width="17" height="10" rx="2"/><path d="M21.5 10.5v3"/><rect x="5" y="9.5" width="10" height="5" rx="1" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="w-papelera" viewBox="0 0 48 48"><path d="M12 14h24l-2.2 25.5a3 3 0 0 1-3 2.5H17.2a3 3 0 0 1-3-2.5z" fill="#d9ecff" fill-opacity=".85" stroke="#9cc8f0" stroke-width="1.5"/><path d="M9 14h30" stroke="#eef6ff" stroke-width="2.5" stroke-linecap="round"/><path d="M19 14v-3.5h10V14" fill="none" stroke="#eef6ff" stroke-width="2" stroke-linejoin="round"/><path d="M20 21v14M24 21v14M28 21v14" stroke="#7fb2e0" stroke-width="1.6" stroke-linecap="round"/></symbol>
+  <symbol id="i-abrir-todas" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4 11 13"/><path d="M18 14v4.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 18.5v-11A1.5 1.5 0 0 1 5.5 6H10"/></symbol>
+  <symbol id="i-pin-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16v5"/><path d="M9 3h6l-1 6 3.5 3.5V15h-11v-2.5L10 9z"/><path d="m3 3 18 18"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="./"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="#funciones">Features</a>
+      <a href="#pruebalo">Try it</a>
+      <a href="#comparativa">Compare</a>
+      <a href="changelog/">What's new</a>
+      <a href="support/">Support</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="../" hreflang="es" lang="es" data-corto="ES" aria-label="Español">Español</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span>Menu</span></summary>
+        <div class="menu-panel">
+          <a href="#funciones">Features</a>
+          <a href="#pruebalo">Try it</a>
+          <a href="#comparativa">Compare</a>
+          <a href="changelog/">What's new</a>
+          <a href="support/">Support</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span>The code, on GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<header class="portada">
+  <div class="env">
+    <h1>Ten icons on the taskbar. <em>Now just one.</em></h1>
+    <p class="bajada">Group your apps into a single taskbar button on Windows. Click it, or just hover, and a panel opens with all of them, in Windows 11 glass. <b>Free and open source.</b></p>
+    <div class="botones">
+      <a class="btn uno" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download for Windows</span></a>
+      <a class="btn dos" href="#pruebalo">Try it right here</a>
+    </div>
+    <p class="nota">Windows 10 and 11 · or from the terminal: <code>winget install Mun1to.TaskbarGroupsFluent</code></p>
+    <!-- La Store desde el 16 de octubre de 2026, y el instalador Offline, que lleva dentro el
+         .NET 10 Desktop Runtime para equipos sin internet. -->
+    <p class="nota">Also on the <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a>, or for a PC with no internet, the <a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe">offline installer</a></p>
+
+    <!-- Las notas giradas de los lados: lo que tiene la app que no tienen las otras, escrito a
+         mano. Todo lo que dicen sale del README y de la comparativa (_herramientas/comparativa.md):
+         abrir al pasar, gratis sin versión de pago, WinGet y Store, un grupo que es una carpeta. -->
+    <div class="fans">
+      <svg class="garabatos" aria-hidden="true"></svg>
+      <div class="fan f-a" data-flecha=".portada h1 em" data-punta="final" data-sale="arriba" data-curva="0.2"><p>It even opens <b>just by hovering</b>. No click.</p></div>
+      <div class="fan f-b"><p>Free for real: <b>no paid version</b> and no ads.</p></div>
+      <div class="fan f-c" data-flecha=".portada .nota" data-punta="inicio" data-sale="derecha" data-curva="0.1"><p>On <b>WinGet and the Store</b>. Take your pick.</p></div>
+      <div class="fan f-d"><p>A group can be <b>a whole folder</b>. Even the Recycle Bin.</p></div>
+    </div>
+  </div>
+</header>
+
+<!-- ======================= la demo, en vez de una foto ======================= -->
+<!-- Una pantalla de 1280 x 720 a tamaño real, reducida entera. Los botones de los grupos, el
+     panel y el menú del clic derecho los monta demo.js. En el móvil la pantalla se ve entera y
+     es un botón: tocarla la abre a pantalla completa, donde se maneja con el dedo. -->
+<section id="pruebalo" class="escaparate" aria-label="Try it">
+  <div class="env" aria-label="The Taskbar Groups Fluent demo">
+    <div class="capa-cabeza">
+      <p class="capa-titulo">The demo</p>
+      <button type="button" class="capa-boton" data-capa="cerrar"><svg aria-hidden="true"><use href="#i-x"/></svg><span>Close</span></button>
+    </div>
+    <div class="demo-cabeza">
+      <div class="pestanas" role="group" aria-label="Panel shape">
+        <button type="button" class="pestana" data-op="forma" data-val="cuadricula" aria-pressed="true"><svg aria-hidden="true"><use href="#i-grid"/></svg><span>Grid</span></button>
+        <button type="button" class="pestana" data-op="forma" data-val="fila" aria-pressed="false"><svg aria-hidden="true"><use href="#i-row"/></svg><span>Row</span></button>
+        <button type="button" class="pestana" data-op="forma" data-val="columna" aria-pressed="false"><svg aria-hidden="true"><use href="#i-col"/></svg><span>Column</span></button>
+        <button type="button" class="pestana" data-op="forma" data-val="lista" aria-pressed="false"><svg aria-hidden="true"><use href="#i-list"/></svg><span>List</span></button>
+      </div>
+      <div class="ajuste-demo solo-raton">
+        <span>Opens</span>
+        <div class="pestanas" role="group" aria-label="How it opens">
+          <button type="button" class="pestana" data-op="abrir" data-val="raton" aria-pressed="true"><span>on hover</span></button>
+          <button type="button" class="pestana" data-op="abrir" data-val="clic" aria-pressed="false"><span>with a click</span></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="hueco-demo">
+      <div class="monitor">
+        <div class="pantalla" id="pantalla">
+          <div class="escritorio" id="escritorio">
+            <div class="iconos-escritorio" aria-hidden="true">
+              <span class="ie"><svg><use href="#w-papelera"/></svg><span>Recycle Bin</span></span>
+              <span class="ie"><svg><use href="#g-carpeta"/></svg><span>Projects</span></span>
+            </div>
+            <div class="pista" aria-hidden="true">
+              <span id="pista-texto">Hover over a group on the taskbar</span>
+              <small id="pista-extra"></small>
+              <svg><use href="#i-arrow-down"/></svg>
+            </div>
+            <p class="aviso-demo" id="aviso-demo" role="status" aria-live="polite"></p>
+
+            <div class="panel" id="panel" role="group" aria-label="Group">
+              <div class="panel-cab">
+                <span class="panel-nombre" id="panel-nombre"></span>
+                <span class="panel-botones">
+                  <button type="button" class="pb" id="panel-todas" aria-label="Open all"><svg aria-hidden="true"><use href="#i-abrir-todas"/></svg></button>
+                  <button type="button" class="pb" id="panel-lapiz" aria-label="Edit the group"><svg aria-hidden="true"><use href="#i-pencil"/></svg></button>
+                </span>
+              </div>
+              <div class="panel-apps" id="panel-apps"></div>
+            </div>
+
+            <div class="salto" id="salto" role="menu"></div>
+
+            <div class="barra-tareas">
+              <div class="bt-centro">
+                <span class="bt inicio" aria-hidden="true"><svg><use href="#w-inicio"/></svg></span>
+                <span class="bt" aria-hidden="true"><svg><use href="#i-search"/></svg></span>
+                <span class="bt abierta" aria-hidden="true"><svg><use href="#g-carpeta"/></svg></span>
+                <span class="bt abierta" aria-hidden="true"><img src="../assets/apps/edge.webp?v=0f55cf89" alt=""></span>
+                <span class="zona-grupos" id="zona-grupos"></span>
+                <span class="bt abierta" aria-hidden="true"><img src="../assets/apps/terminal.webp?v=3e41aa4a" alt=""></span>
+              </div>
+              <div class="bandeja" aria-hidden="true">
+                <span class="ic"><svg><use href="#w-chevron"/></svg></span>
+                <span class="juntos"><svg><use href="#w-wifi"/></svg><svg><use href="#w-volumen"/></svg><svg><use href="#w-bateria"/></svg></span>
+                <span class="reloj" id="reloj">12:00<br>15/11/2026</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Los ajustes del editor de la app, en una fila, cada uno con su nombre. -->
+    <div class="ajustes-demo">
+      <div class="ajuste-demo">
+        <span>Names</span>
+        <div class="pestanas" role="group" aria-label="App names">
+          <button type="button" class="pestana" data-op="nombres" data-val="si" aria-pressed="true"><span>Show</span></button>
+          <button type="button" class="pestana" data-op="nombres" data-val="no" aria-pressed="false"><span>Hide</span></button>
+        </div>
+      </div>
+      <div class="ajuste-demo">
+        <span>Size</span>
+        <div class="pestanas" role="group" aria-label="Icon size">
+          <button type="button" class="pestana" data-op="tam" data-val="80" aria-pressed="false"><span>Small</span></button>
+          <button type="button" class="pestana" data-op="tam" data-val="100" aria-pressed="true"><span>Normal</span></button>
+          <button type="button" class="pestana" data-op="tam" data-val="125" aria-pressed="false"><span>Large</span></button>
+        </div>
+      </div>
+      <div class="ajuste-demo">
+        <span>Group name</span>
+        <div class="pestanas" role="group" aria-label="Group name">
+          <button type="button" class="pestana" data-op="cab" data-val="arriba" aria-pressed="true"><span>Top</span></button>
+          <button type="button" class="pestana" data-op="cab" data-val="abajo" aria-pressed="false"><span>Bottom</span></button>
+          <button type="button" class="pestana" data-op="cab" data-val="no" aria-pressed="false"><span>Hidden</span></button>
+        </div>
+      </div>
+      <div class="ajuste-demo">
+        <span>Theme</span>
+        <div class="pestanas" role="group" aria-label="Panel theme">
+          <button type="button" class="pestana" data-op="tema" data-val="oscuro" aria-pressed="true"><span>Dark</span></button>
+          <button type="button" class="pestana" data-op="tema" data-val="claro" aria-pressed="false"><span>Light</span></button>
+        </div>
+      </div>
+    </div>
+    <p class="demo-nota">Right-click a group on the taskbar for its menu. These are the options the app has; the apps are examples, on your PC you pick your own.</p>
+
+    <div class="demo-movil">
+      <button type="button" class="btn uno" data-capa="abrir"><svg aria-hidden="true"><use href="#i-expand"/></svg><span>Try it full screen</span></button>
+      <p>It opens big so you can use it with your finger. Back closes it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= lo que es de verdad ======================= -->
+<!-- Las dos cifras con id las pone al día leer.js con la API de GitHub; si no contesta, se
+     quedan estas, medidas el 15-nov-2026. -->
+<section class="pruebas" aria-label="In numbers">
+  <div class="env">
+    <div class="prueba"><b id="n-descargas">1,972</b><span>downloads from GitHub alone</span></div>
+    <div class="prueba"><b>WinGet</b><span>and on the <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></span></div>
+    <div class="prueba"><b id="n-versiones">35</b><span>versions published, <a href="changelog/">each one with its notes</a></span></div>
+    <div class="prueba"><b>MIT</b><span>open source, all of it in plain sight</span></div>
+  </div>
+</section>
+
+<!-- ======================= las funciones, paso a paso ======================= -->
+<!-- Un paso cada 260 px de rueda (GUSTOS, 8). En el móvil, los tres seguidos, cada uno con lo
+     suyo debajo. Lo que se ve es de verdad: la ventana de la app, la grabación del README en
+     una barra de tareas real y los cuatro paneles abiertos. -->
+<section id="funciones" class="momentos">
+  <div class="momentos-pista" id="momentos-pista">
+    <div class="env momentos-pegado">
+      <div class="momentos-izq">
+        <div class="pasos-momento" id="pasos-momento" aria-label="Features">
+          <button type="button" aria-current="step">Group</button>
+          <button type="button">Open</button>
+          <button type="button">Make it yours</button>
+        </div>
+        <div class="momentos-textos">
+          <article class="momento activo">
+            <svg class="ico-suelto" aria-hidden="true"><use href="#i-layers"/></svg>
+            <h2>Ten apps, one button</h2>
+            <p>Put the apps you want in a group and pin it to the taskbar. It takes the space of one icon and opens above it, with all of them inside.</p>
+            <ul class="lista">
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Desktop apps, Store apps and browser web apps</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>A folder as a group, or the Control Panel, This PC or the Recycle Bin</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Groups inside groups, opening beside it like a submenu</span></li>
+            </ul>
+            <img class="foto foto-movil" src="../assets/shot-main-en.webp?v=7467e8f3" width="940" height="620" loading="lazy" alt="The Taskbar Groups Fluent main window with four groups: Creative, Dev, Gaming and Office">
+          </article>
+          <article class="momento">
+            <svg class="ico-suelto" aria-hidden="true"><use href="#i-pointer"/></svg>
+            <h2>With a click, or without one</h2>
+            <p>It opens like any pinned app, or just by resting the mouse on it, and shows up above its icon, on whichever screen it is.</p>
+            <ul class="lista">
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Open on hover, off out of the box</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Right-click: open them all or edit the group</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>By the clock too, with its own icon</span></li>
+            </ul>
+            <div class="video-caja foto foto-movil">
+              <video src="../assets/panel-hover.mp4?v=2b256d31" width="500" height="480" muted loop playsinline preload="metadata" aria-label="Four groups pinned to a real Windows 11 taskbar, opening by themselves as the cursor rests on each one"></video>
+              <button type="button" class="video-pausa" aria-label="Pausar el vídeo" aria-pressed="false"><svg aria-hidden="true"><use href="#i-pause"/></svg></button>
+            </div>
+          </article>
+          <article class="momento">
+            <svg class="ico-suelto" aria-hidden="true"><use href="#i-pencil"/></svg>
+            <h2>Make it yours</h2>
+            <p>Four panel shapes in Windows 11 glass, and each app with its own name, icon and arguments.</p>
+            <ul class="lista">
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Grid, row, column or list</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>The group icon: an image, an emoji or its own apps</span></li>
+              <li><svg class="ok" aria-hidden="true"><use href="#i-check"/></svg><span>Light or dark, in Spanish, English or Russian</span></li>
+            </ul>
+            <img class="foto foto-movil" src="../assets/shot-formas.webp?v=39d49a94" width="1464" height="1120" loading="lazy" alt="The four panels open over a real taskbar: grid, list, column and row">
+          </article>
+        </div>
+      </div>
+      <div class="momentos-fotos">
+        <img class="foto activa" src="../assets/shot-main-en.webp?v=7467e8f3" width="940" height="620" loading="lazy" alt="">
+        <div class="video-caja foto">
+          <video src="../assets/panel-hover.mp4?v=2b256d31" width="500" height="480" muted loop playsinline preload="metadata" aria-label="Four groups pinned to a real Windows 11 taskbar, opening by themselves as the cursor rests on each one"></video>
+          <button type="button" class="video-pausa" aria-label="Pausar el vídeo" aria-pressed="false"><svg aria-hidden="true"><use href="#i-pause"/></svg></button>
+        </div>
+        <img class="foto" src="../assets/shot-formas.webp?v=39d49a94" width="1464" height="1120" loading="lazy" alt="">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= frente a frente ======================= -->
+<!-- La escribe _herramientas/generar-comparativa.mjs desde comparativa.mjs: no se toca a mano. -->
+<section id="comparativa" class="seccion comparativa">
+  <div class="env">
+    <div class="cabeza-seccion">
+      <h2>Head to head</h2>
+      <p class="entradilla">What Taskbar Groups Fluent does and the others do not, and where one of them wins. All of it comes from each one's website, code or release notes, linked below.</p>
+      <div class="fan suelta" style="--giro:3deg"><p>AppGroup has more stars. <b>Opening on hover, it doesn't.</b></p></div>
+    </div>
+
+    <p class="rival-pregunta" id="rival-pregunta">Which one do you use now?</p>
+    <div class="pestanas rivales" role="radiogroup" aria-labelledby="rival-pregunta">
+      <label class="pestana"><input type="radio" name="rival" value="appgroup" checked><span>AppGroup</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="windows11"><span>Windows 11</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="original"><span>Taskbar Groups</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="pike"><span>pike-beta</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="barras10"><span>Windows 10 toolbars</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="explorerpatcher"><span>ExplorerPatcher</span></label>
+      <label class="pestana"><input type="radio" name="rival" value="windhawk"><span>Windhawk</span></label>
+    </div>
+    <div class="frentes">
+      <div class="frente" id="frente-appgroup">
+        <h3 class="frente-nombre">AppGroup</h3>
+        <p class="frente-resumen">The best-known alternative that is still alive: free, MIT, with a release from 26 October 2026.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-pointer"/></svg><div><b>Opens just by hovering</b><span>AppGroup: no</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A group shows what is in a folder, or the Recycle Bin</b><span>AppGroup: no</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-terminal"/></svg><div><b>On WinGet and the Microsoft Store</b><span>AppGroup: on neither</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks Spanish, English and Russian</b><span>AppGroup: English only</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-shield"/></svg><div><b>Runs on .NET 10, supported until 2028</b><span>AppGroup: .NET 8, out of support since 10/11/2026</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where AppGroup wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-star"/></svg><div><b>More stars on GitHub</b><span>AppGroup: 788; this one, 38</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-package"/></svg><div><b>Has a portable version</b><span>AppGroup: a .zip</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-layout"/></svg><div><b>A «Card» layout, like Windows 11 Quick Settings</b><span>AppGroup: yes</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> groups inside groups; Microsoft Store apps; installing without administrator rights; its own pinned icon; and leaving the Windows taskbar as it is.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://github.com/iandiv/AppGroup#readme" rel="noopener">AppGroup's README</a> and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-windows11">
+        <h3 class="frente-nombre">Windows 11</h3>
+        <p class="frente-resumen">Pinning each app to the taskbar, or putting them together in a Start menu folder, made by dropping one app on top of another.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A group shows what is in a folder, or the Recycle Bin</b><span>Windows 11: its folders are made of apps, not of a folder on disk</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where Windows 11 alone wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-download"/></svg><div><b>Nothing to install</b><span>Windows 11: it comes with Windows</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A Start folder is made with one drag</b><span>Windows 11: yes</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks more languages</b><span>Windows 11: those of Windows</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> Microsoft Store apps.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://www.microsoft.com/en-us/windows/learning-center/start-menu-folders" rel="noopener">Microsoft's page on Start menu folders</a>; <a href="https://blogs.windows.com/windows-insider/2022/02/16/announcing-windows-11-insider-preview-build-22557/" rel="noopener">the Windows Insider blog for build 22557</a>; and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-original">
+        <h3 class="frente-nombre">Taskbar Groups</h3>
+        <p class="frente-resumen">The original by tjackenpacken, which this app comes from: free and MIT, with its last version, a pre-release, from January 2021.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-pointer"/></svg><div><b>Opens just by hovering</b><span>Taskbar Groups: with a click</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A group shows what is in a folder, or the Recycle Bin</b><span>Taskbar Groups: a folder goes in as one more shortcut</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-refresh"/></svg><div><b>Still alive, with new versions</b><span>Taskbar Groups: the last one, a pre-release, from January 2021</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-terminal"/></svg><div><b>On WinGet and the Microsoft Store</b><span>Taskbar Groups: on neither</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks Spanish, English and Russian</b><span>Taskbar Groups: English only</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-star"/></svg><div><b>More stars on GitHub</b><span>Taskbar Groups: 2,795; this one, 38</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-keyboard"/></svg><div><b>Opens the panel's apps with keys 1 to 0</b><span>Taskbar Groups: yes</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-download"/></svg><div><b>Needs no .NET installed</b><span>Taskbar Groups: uses the .NET Framework Windows already has</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-package"/></svg><div><b>Has a portable version</b><span>Taskbar Groups: a .zip</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> Microsoft Store apps; installing without administrator rights; its own pinned icon; and leaving the Windows taskbar as it is.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://github.com/tjackenpacken/taskbar-groups" rel="noopener">the Taskbar Groups repository</a> and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-pike">
+        <h3 class="frente-nombre">pike-beta</h3>
+        <p class="frente-resumen">PikeNote's fork, on WinGet, free and MIT, with its last version from January 2023.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-pointer"/></svg><div><b>Opens just by hovering</b><span>pike-beta: with a click</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A group shows what is in a folder, or the Recycle Bin</b><span>pike-beta: a folder goes in as one more shortcut</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-refresh"/></svg><div><b>Still alive, with new versions</b><span>pike-beta: the last one from January 2023</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-terminal"/></svg><div><b>On WinGet and the Microsoft Store</b><span>pike-beta: on WinGet, not on the Store</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks Spanish, English and Russian</b><span>pike-beta: English only</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups pike-beta wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-star"/></svg><div><b>More stars on GitHub</b><span>pike-beta: 165; this one, 38</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-keyboard"/></svg><div><b>Opens the panel's apps with keys 1 to 0</b><span>pike-beta: yes</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-download"/></svg><div><b>Needs no .NET installed</b><span>pike-beta: uses the .NET Framework Windows already has</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-package"/></svg><div><b>Has a portable version</b><span>pike-beta: a single .exe</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> Microsoft Store apps; installing without administrator rights; its own pinned icon; and leaving the Windows taskbar as it is.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://github.com/PikeNote/taskbar-groups-pike-beta" rel="noopener">the pike-beta repository</a> and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-barras10">
+        <h3 class="frente-nombre">Windows 10 toolbars</h3>
+        <p class="frente-resumen">What many people used before: a whole folder placed on the taskbar. Windows 11 no longer has them, and Windows 10 has been out of support since 14 October 2025.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-refresh"/></svg><div><b>Still alive, with new versions</b><span>Windows 10 toolbars: Windows 10 has been out of support since 14/10/2025</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-monitor"/></svg><div><b>Works on Windows 11</b><span>Windows 10 toolbars: Windows 11 no longer has them</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where the Windows 10 toolbars win</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-download"/></svg><div><b>Nothing to install</b><span>Windows 10 toolbars: they come with Windows 10</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>Leaves a whole folder in view on the taskbar</b><span>Windows 10 toolbars: yes</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks more languages</b><span>Windows 10 toolbars: those of Windows</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> a group that shows a folder.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://learn.microsoft.com/en-us/windows/win32/shell/taskbar" rel="noopener">Microsoft's taskbar documentation</a>; <a href="https://support.microsoft.com/en-us/windows/windows-10-support-has-ended-on-october-14-2025-2ca8b313-1946-43d3-b55c-2b95b107f281" rel="noopener">the Windows 10 end of support notice</a>; <a href="https://www.microsoft.com/en-us/windows/windows-11-specifications" rel="noopener">the Windows 11 specifications</a>; and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-explorerpatcher">
+        <h3 class="frente-nombre">ExplorerPatcher</h3>
+        <p class="frente-resumen">The free way to get the Windows 10 taskbar, with its toolbars, on Windows 11. GPL-2.0.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-folder"/></svg><div><b>A group shows what is in a folder, or the Recycle Bin</b><span>ExplorerPatcher: with a folder toolbar</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-shield"/></svg><div><b>Installs without administrator rights</b><span>ExplorerPatcher: asks for elevation to install</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-terminal"/></svg><div><b>On WinGet and the Microsoft Store</b><span>ExplorerPatcher: on WinGet, not on the Store</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-layout"/></svg><div><b>Does not replace the Windows taskbar</b><span>ExplorerPatcher: swaps it for the Windows 10 one; its wiki asks you not to use it on work machines</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where ExplorerPatcher wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-star"/></svg><div><b>More stars on GitHub</b><span>ExplorerPatcher: 34,326; this one, 38</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-layout"/></svg><div><b>Brings back the whole Windows 10 taskbar, with its Start menu</b><span>ExplorerPatcher: yes</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks more languages</b><span>ExplorerPatcher: 20 on its taskbar; this one, 3</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://github.com/valinet/ExplorerPatcher" rel="noopener">the ExplorerPatcher repository</a>; <a href="https://github.com/valinet/ExplorerPatcher/wiki/All-features" rel="noopener">its wiki</a>; and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+      <div class="frente" id="frente-windhawk">
+        <h3 class="frente-nombre">Windhawk</h3>
+        <p class="frente-resumen">A Windhawk mod that puts buttons on the Windows 11 taskbar that open a folder as a menu.</p>
+        <div class="frente-dos">
+          <div>
+            <h3 class="frente-sub">Where Taskbar Groups Fluent wins</h3>
+            <ul class="frente-lista">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-pointer"/></svg><div><b>Opens just by hovering</b><span>Windhawk: with a click; only subfolders open on hover</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-shield"/></svg><div><b>Installs without administrator rights</b><span>Windhawk: asks for elevation to install</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-monitor"/></svg><div><b>Works on Windows 10 too</b><span>Windhawk: the mod is Windows 11 only</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-monitor"/></svg><div><b>Shows on any monitor, above its icon</b><span>Windhawk: only on the main taskbar</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-image"/></svg><div><b>Each group is a pinned icon with its own picture</b><span>Windhawk: text or emoji buttons, all together in one spot on the taskbar</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-terminal"/></svg><div><b>On WinGet and the Microsoft Store</b><span>Windhawk: on WinGet, not on the Store</span></div></li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="frente-sub">Where Windhawk with its mod wins</h3>
+            <ul class="frente-lista pierde">
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-star"/></svg><div><b>More stars on GitHub</b><span>Windhawk: 9,842, Windhawk's; this one, 38</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-languages"/></svg><div><b>Speaks more languages</b><span>Windhawk: 28 in Windhawk; the mod, in English</span></div></li>
+              <li><svg aria-hidden="true" class="frente-ic"><use href="#i-pin-off"/></svg><div><b>Nothing to pin: the buttons appear by themselves</b><span>Windhawk: yes</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <p class="frente-empatan"><b>Both:</b> a group that shows a folder; groups inside groups; and leaving the Windows taskbar as it is.</p>
+        <p class="fuentes">Checked on 15 November 2026 in <a href="https://github.com/ramensoftware/windhawk-mods/blob/main/mods/taskbar-folder-menus.wh.cpp" rel="noopener">the Taskbar Folder Menus mod</a>; <a href="https://github.com/ramensoftware/windhawk" rel="noopener">Windhawk</a>; and <a href="https://github.com/Mun1to/TaskbarGroupsFluent#readme" rel="noopener">this app's README</a>. «No official info» counts neither for nor against. If something has changed, <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">tell me</a> and it gets fixed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= lo último ======================= -->
+<section id="novedades" class="seccion novedades-inicio">
+  <div class="env">
+    <div class="cabeza-seccion">
+      <h2>What's new</h2>
+      <p class="entradilla">It updates itself when a new version comes out, if you say yes. These are the last three.</p>
+    </div>
+    <!-- novedades:desde (lo escribe generar-novedades.mjs a partir de versiones.json) -->
+    <div class="novedades-portada">
+      <article class="novedad">
+        <p class="cuando">Versions 1.10.0 to 1.10.4 · 14 November 2026</p>
+        <h3><a href="changelog/#v1-10-4">Pin by dragging and give every app its own icon</a></h3>
+        <p><b>Each app, its own icon</b>: in the editor you give each app the picture you want, or go back to the automatic one, and web apps installed from Chrome or Edge show their own icon and name instead of the browser's, and now appear in the app list.</p>
+      </article>
+      <article class="novedad">
+        <p class="cuando">Version 1.9.0 · 12 November 2026</p>
+        <h3><a href="changelog/#v1-9-0">Panels show at once even when a drive is asleep</a></h3>
+        <p><b>Panels no longer wait</b>: if an app in the group lives on a hard disk that has spun down, a network drive or a USB drive, the panel shows at once with its saved icons and checks the apps afterwards. With an app on a network drive that does not answer, it goes from 22 s to 0.8 s.</p>
+      </article>
+      <article class="novedad">
+        <p class="cuando">Version 1.8.0 · 11 November 2026</p>
+        <h3><a href="changelog/#v1-8-0">Your groups by the clock, and open in an instant</a></h3>
+        <p><b>A group by the clock</b>: in the editor, switch on “Also show it by the clock” and the group gets its own icon there. A click opens its panel right by it, and a right-click offers “Open”, “Open all” and “Edit group”.</p>
+      </article>
+    </div>
+    <!-- novedades:hasta -->
+    <div class="novedades-mas"><a class="btn dos" href="changelog/">Every version</a></div>
+  </div>
+</section>
+
+<!-- ======================= preguntas ======================= -->
+<!-- El bloque FAQPage del <head> lo saca generar-en.mjs de estas mismas preguntas. -->
+<section id="preguntas" class="seccion preguntas">
+  <div class="env">
+    <div class="lateral">
+      <h2>What people usually ask</h2>
+      <p class="entradilla">Not here? Open an issue on GitHub and it gets answered and added.</p>
+      <div class="botones"><a class="btn dos" href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">Ask on GitHub</a></div>
+    </div>
+    <div class="faq">
+      <details>
+        <summary><h3>Is it free?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes, all of it. It is open source under the MIT licence: no paid version, no accounts and no ads.</p></div>
+      </details>
+      <details>
+        <summary><h3>Which versions of Windows does it run on?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Windows 11, and Windows 10 version 1809 or later, 64-bit. On Windows 10 the panel is opaque, like its own menus.</p></div>
+      </details>
+      <details>
+        <summary><h3>Does it need administrator rights?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>No. It installs for your user, not the whole system.</p></div>
+      </details>
+      <details>
+        <summary><h3>Does it need anything else installed?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Microsoft's .NET 10 Desktop Runtime. If you don't have it, the installer downloads it; the offline installer already carries it inside, for a PC with no internet.</p></div>
+      </details>
+      <details>
+        <summary><h3>Why does Windows warn about an “unknown publisher”?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Because the installer is not signed with a paid certificate yet. Click More info, then Run anyway. All the code is on GitHub for anyone who wants to check it, and the Microsoft Store version is signed by Microsoft.</p></div>
+      </details>
+      <details>
+        <summary><h3>Can I install it with WinGet?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes. It is in the official WinGet catalogue: <code>winget install Mun1to.TaskbarGroupsFluent</code> installs it and <code>winget upgrade Mun1to.TaskbarGroupsFluent</code> updates it.</p></div>
+      </details>
+      <details>
+        <summary><h3>Is it on the Microsoft Store?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes, since 16 October 2026: <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">apps.microsoft.com</a>. It is the same app, signed by Microsoft and kept up to date by Windows itself. It can be one version behind the installer while Microsoft reviews each update.</p></div>
+      </details>
+      <details>
+        <summary><h3>How do I pin a group to the taskbar?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Drag the group's icon from the main window onto the taskbar. Or click Pin to taskbar: the app opens the folder with its shortcut highlighted, and you right-click it and choose Pin to taskbar (on Windows 11 it is under Show more options). Windows does not let an app pin itself.</p></div>
+      </details>
+      <details>
+        <summary><h3>How do I make a group open on hover?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Switch it on in the quick bar at the bottom of the app window, or in the menu of its icon by the clock. It ships switched off: it relies on a small watcher by the clock, which you can turn off from the same places.</p></div>
+      </details>
+      <details>
+        <summary><h3>Does it work with Start11 or StartAllBack?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes. Since version 1.10, open on hover recognises the group by its icon with those taskbars too, even with the taskbar in two rows.</p></div>
+      </details>
+      <details>
+        <summary><h3>How do I add a taskbar separator?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Click Separator beside Settings in the app. It creates an empty separator entry: pin it like any group. Inside a panel, the Separator button in the group editor splits its apps into parts.</p></div>
+      </details>
+      <details>
+        <summary><h3>Can I bring my groups from Taskbar Groups or AppGroup?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes. Import, in the main window, brings them from Taskbar Groups and from AppGroup. You can also export, import and duplicate your own groups.</p></div>
+      </details>
+      <details>
+        <summary><h3>Does it update itself?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Yes. When it opens it checks GitHub for a new version and offers it to you: one click downloads it, installs it and reopens the app. The Store version is updated by the Store.</p></div>
+      </details>
+      <details>
+        <summary><h3>Which languages does it speak?</h3><svg class="faq-chevron" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <div class="faq-cajon"><p>Spanish, English and Russian. It follows your Windows language, and you can change it in the quick bar of the window.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= de dónde sale ======================= -->
+<!-- Los créditos van tal cual (regla AG): el original y su fork, los dos MIT, y WPF-UI. -->
+<section id="historia" class="seccion historia">
+  <div class="env">
+    <h2>I wanted this, and it wasn't done right</h2>
+    <p class="story">I wanted my shortcuts packed into a single taskbar button. I looked for it first: something existed, but it still wore the <b>Windows 10 interface</b>, it was <b>awkward to use</b> and nobody was maintaining it.</p>
+    <p class="story">So I rewrote it from scratch in WPF and .NET 10, with the Windows 11 look and none of the rough edges that made me give up on it the first time. <b>This is that app.</b></p>
+    <p class="story-credits">Some code comes from <a href="https://github.com/tjackenpacken/taskbar-groups" target="_blank" rel="noopener">taskbar-groups</a> and its fork <a href="https://github.com/PikeNote/taskbar-groups-pike-beta" target="_blank" rel="noopener">pike-beta</a>, both MIT. The Fluent controls are <a href="https://github.com/lepoco/wpfui" target="_blank" rel="noopener">WPF-UI</a>.</p>
+  </div>
+</section>
+
+<!-- ======================= el cierre ======================= -->
+<section class="seccion cierre">
+  <div class="env centrado">
+    <h2>Tidy up your taskbar</h2>
+    <p class="entradilla">Free and open source. No sign-ups, no accounts and no ads.</p>
+    <div class="botones">
+      <a class="btn uno" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download for Windows</span></a>
+      <a class="btn dos" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">See the code</a>
+      <a class="btn dos" href="https://buymeacoffee.com/munito" rel="noopener"><svg aria-hidden="true"><use href="#i-coffee"/></svg><span>Buy me a coffee</span></a>
+    </div>
+    <p class="letra-chica">It is free and has no paid version. If it is useful to you, a <a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">star on GitHub</a> helps more people find it, and a coffee helps me keep it going.</p>
+  </div>
+</section>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="./"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p>Your apps grouped into a single taskbar icon. Free, open source and with no account.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Product</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">Download</a></li>
+          <li><a href="changelog/">What's new</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe">Offline installer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Help</h2>
+        <ul>
+          <li><a href="support/">Support</a></li>
+          <li><a href="#preguntas">Questions</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">Report a bug</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Code</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener">MIT licence</a></li>
+          <li><a href="#historia">Credits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">More</h2>
+        <ul>
+          <li><a href="privacy/">Privacy</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener">Buy me a coffee</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off">Fewer animations</a><a class="valvula con-mov" href="./">All animations</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span>Taskbar Groups Fluent · MIT · Made by <a href="https://munito.dev">Munir Torres</a></span>
+      <span>Not affiliated with Microsoft. Windows is a trademark of its owner.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../leer.js?v=551e57d4"></script>
+<script src="../demo.js?v=77a23228"></script>
+</body>
+</html>
