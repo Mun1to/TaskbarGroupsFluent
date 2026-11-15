@@ -1,0 +1,1046 @@
+/* La hoja de estilos de toda la web (portada, novedades, soporte, privacidad y la 404).
+   El patrón es el de winshotx.com (la barra en píldora que se compacta, el menú del móvil
+   que crece de ella, la demo que se encoge al bajar, las notas a mano, la comparativa por
+   pestañas, el pie por grupos); los colores, los de Taskbar Groups Fluent: el azul de su
+   logo, que es el acento de Windows 11. */
+
+:root, .marco {
+  /* El azul claro del logo, para texto y acentos sobre el fondo oscuro (9,5 de contraste). */
+  --azul: #4cc2ff;
+  --azul-claro: #7dd3ff;
+  /* El azul fuerte del logo: con texto blanco encima da 5,7. Los rellenos van con este. */
+  --azul-boton: #0067c0;
+  --azul-boton-vivo: #005aa8;
+  --fondo: #0b0b0d;
+  --panel: #141418;
+  --borde: #ffffff14;
+  --texto: #e9e9ee;
+  /* El texto que se lee no va en gris apagado: este da 9,3 sobre el fondo. */
+  --suave: #abacb8;
+  --apagado: #8e8e9a;
+  --radio: 16px;
+
+  /* Los colores por su oficio, como en winshotx: el tema claro es un bloque de abajo. */
+  --panel-vivo: #17171c;
+  --linea: #ffffff1a;
+  --linea-viva: #ffffff33;
+  --realce: #ffffff08;
+  --realce-medio: #ffffff12;
+  --realce-fuerte: #ffffff1f;
+  --vidrio: #14141ccc;
+  --sombra-barra: 0 14px 34px #00000059;
+  --sombra-boton-fuerte: #0067c0aa;
+  --halo: #4cc2ff21;               /* la luz azul de detrás del titular */
+  --brillo-icono: #4cc2ff73;       /* el resplandor de un icono suelto */
+  --sombra-foto: 0 40px 90px -30px #000000cc, 0 0 0 1px #ffffff14;
+  --brillo-demo: .30;              /* la luz azul de detrás de la demo */
+  --no-barra: #5a5a66;             /* la barra de la otra herramienta en la comparativa */
+  color-scheme: dark;
+}
+
+/* Tema claro: lo decide el sistema, sin botón y sin JavaScript (skill smart-defaults, Tier A).
+   La demo se queda con su escritorio de Windows (lleva su propio tema, que se elige debajo). */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    /* El azul claro del logo sobre blanco no llega a 2: para texto, el fuerte (5,4). */
+    --azul: #0067c0;
+    --azul-claro: #005ba9;
+    --fondo: #f7f7f9;
+    --panel: #ffffff;
+    --borde: #0000001a;
+    --texto: #16161a;
+    --suave: #45454f;
+    --apagado: #5c5c68;
+    --panel-vivo: #f3f7fc;
+    --linea: #00000021;
+    --linea-viva: #0000003d;
+    --realce: #0000000a;
+    --realce-medio: #00000012;
+    --realce-fuerte: #0000001a;
+    --vidrio: #ffffffd9;
+    --sombra-barra: 0 12px 30px #0000001a;
+    --sombra-boton-fuerte: #0067c080;
+    --halo: #4cc2ff2e;
+    --brillo-icono: #0067c040;
+    --sombra-foto: 0 40px 80px -36px #1b2a4a73, 0 0 0 1px #00000017;
+    --brillo-demo: .22;
+    --no-barra: #a3a3ad;
+  }
+}
+
+/* Las letras de Windows 11: la app es Fluent, y la web habla con la misma voz. La de las notas
+   giradas es la de escribir a mano que trae Windows (Ink Free). */
+:root {
+  --letra: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --letra-titulo: "Segoe UI Variable Display", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --letra-mono: ui-monospace, "Cascadia Code", Consolas, monospace;
+  --letra-mano: "Ink Free", "Segoe Print", "Bradley Hand", "Chalkboard SE", "Comic Sans MS", cursive;
+  --nav-alto: 90px;
+  --aire: clamp(48px, 7.5vh, 104px);
+  --ease: cubic-bezier(.22, 1, .36, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+[hidden] { display: none !important; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: var(--nav-alto); }
+html.quieto { scroll-behavior: auto; }
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font: 17px/1.6 var(--letra);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+/* Ancho de pantalla grande de verdad: 1080 como poco, el 80 % de la ventana y 1480 como mucho. */
+.env { width: min(100% - 40px, clamp(1080px, 80vw, 1480px)); margin-inline: auto; }
+.centrado { text-align: center; }
+.centrado .entradilla { margin-inline: auto; }
+a { color: var(--azul); text-decoration: none; }
+a:hover { text-decoration: underline; }
+button { font-family: inherit; }
+img, video { display: block; max-width: 100%; height: auto; }
+code { font-family: var(--letra-mono); font-size: .9em; }
+h1, h2, h3 { font-family: var(--letra-titulo); text-wrap: balance; }
+p { text-wrap: pretty; }
+b, strong { font-weight: 680; }
+::selection { background: #4cc2ff55; }
+.solo-lector {
+  position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ---------- la barra de arriba: una pieza flotante con el logo, el menú y descargar ---------- */
+/* Su alto en la página es fijo (`--nav-alto`): al compactarse cambia la píldora de dentro, y
+   la página no se mueve ni un píxel. */
+nav.barra { position: sticky; top: 0; z-index: 50; height: var(--nav-alto); padding: 14px 0; contain: layout size; }
+.barra-dentro {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+  --alto: 62px;
+  position: relative;
+  height: var(--alto); padding: 0 10px 0 16px; border-radius: 16px;
+  background: var(--vidrio); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
+  box-shadow: 0 0 0 1px var(--linea), var(--sombra-barra);
+  --lleno: min(100% - 40px, clamp(1080px, 80vw, 1480px));
+  max-width: var(--lleno);
+}
+/* Al bajar se compacta, como la de cattory.co/es y la de winshotx: pasados 40 px de scroll,
+   la píldora se estrecha hasta lo justo de su contenido (`--justo`, lo mide leer.js), pierde
+   8 px de alto y sube 4. El dial de la casa encoge el recorrido. */
+nav.barra.anima .barra-dentro {
+  transition: max-width .55s var(--ease), height .55s var(--ease),
+    translate .55s var(--ease), border-radius .55s var(--ease), background-color .3s;
+}
+nav.barra.compacta .barra-dentro {
+  max-width: calc(var(--lleno) - (var(--lleno) - var(--justo, var(--lleno))) * var(--motion-gain, 1));
+  --alto: calc(62px - 8px * var(--motion-gain, 1));
+  translate: 0 calc(-4px * var(--motion-gain, 1));
+}
+.logo-nombre {
+  justify-self: start; display: inline-flex; align-items: center; gap: 10px;
+  font: 700 18px/1 var(--letra-titulo); letter-spacing: -0.015em; color: var(--texto); white-space: nowrap;
+}
+.logo-nombre:hover { text-decoration: none; }
+.logo-nombre img { width: 30px; height: 30px; flex: none; }
+.barra .enlaces { justify-self: center; display: flex; gap: 2px; font-size: 15.5px; }
+.barra .enlaces a {
+  padding: 8px 14px; border-radius: 10px; color: var(--suave); white-space: nowrap;
+  transition: background .18s, color .18s;
+}
+.barra .enlaces a:hover { color: var(--texto); background: var(--realce-medio); text-decoration: none; }
+@media (max-width: 1160px) { .barra .enlaces a { padding-inline: 10px; } }
+/* La página en la que estás: en texto y con su raya, no en una píldora quieta. */
+.barra .enlaces a.aqui { color: var(--texto); text-decoration: underline 2px var(--azul); text-underline-offset: 9px; }
+.barra .acciones { justify-self: end; display: flex; align-items: center; gap: 6px; }
+.barra .gh {
+  display: grid; place-items: center; width: 42px; height: 42px; border-radius: 10px;
+  color: var(--suave); transition: background .18s, color .18s;
+}
+.barra .gh svg { width: 21px; height: 21px; }
+.barra .idioma {
+  padding: 9px 14px; border-radius: 10px; font-size: 15px; font-weight: 600; color: var(--texto);
+  transition: background .18s; white-space: nowrap;
+}
+.barra .gh:hover, .barra .idioma:hover { background: var(--realce-medio); color: var(--texto); text-decoration: none; }
+.barra .baja { height: 42px; padding: 0 16px; font-size: 15px; border-radius: 10px; }
+.barra .baja svg { width: 17px; height: 17px; }
+@media (max-width: 1080px) {
+  .barra .enlaces { display: none; }
+  .barra-dentro { grid-template-columns: 1fr auto; }
+  .logo-nombre { min-height: 44px; }
+  .barra .idioma { padding-block: 10px; }
+  .barra .gh { width: 44px; height: 44px; }
+  .barra .baja { height: 44px; }
+}
+/* En el móvil no se descarga un programa de Windows: ahí sobra el botón. */
+@media (max-width: 640px) { .barra .baja { display: none; } }
+
+/* El menú del móvil y la tableta: la misma píldora de la barra crece hacia abajo con las
+   páginas dentro, cada una con su zona de dedo de 48 px («que se desplegase el header entero,
+   como que se expande hacia abajo», Munito, 15-nov, en winshotx). Sin JavaScript es un
+   <details>; con él, leer.js lo deja abierto por dentro y manda la clase `menu-abierto`. */
+.menu { display: none; }
+@media (max-width: 1080px) {
+  .menu { display: block; }
+  .barra-dentro { grid-template-rows: var(--alto); align-content: start; overflow: clip; }
+  nav.barra.anima .barra-dentro {
+    transition: max-width .5s cubic-bezier(.4, 0, .2, 1), height .5s cubic-bezier(.4, 0, .2, 1),
+      translate .55s var(--ease), border-radius .5s cubic-bezier(.4, 0, .2, 1), background-color .3s;
+  }
+  nav.barra.menu-abierto .barra-dentro,
+  nav.barra:has(.menu[open]:not(.con-js)) .barra-dentro {
+    height: calc(var(--alto) + var(--menu-alto, 330px));
+    max-width: var(--lleno); border-radius: 22px;
+    background-color: var(--panel);
+  }
+  .menu > summary {
+    display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px;
+    border-radius: 10px; list-style: none; cursor: pointer; user-select: none;
+    font: 600 15px/1 var(--letra); color: var(--texto); transition: background .18s;
+  }
+  .menu > summary::-webkit-details-marker { display: none; }
+  .menu > summary:hover, .menu:is(.abierto, [open]:not(.con-js)) > summary { background: var(--realce-medio); }
+  .menu > summary:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+  .menu > summary svg { width: 20px; height: 20px; }
+  .menu .cierra, .menu:is(.abierto, [open]:not(.con-js)) .abre { display: none; }
+  .menu:is(.abierto, [open]:not(.con-js)) .cierra { display: block; }
+  .menu-panel {
+    position: absolute; top: var(--alto); left: 0; right: 0;
+    display: grid; gap: 2px 8px; padding: 0 10px 12px; text-align: left;
+    visibility: hidden; transition: visibility 0s .55s;
+  }
+  nav.barra.menu-abierto .menu-panel,
+  .menu[open]:not(.con-js) .menu-panel { visibility: visible; transition-delay: 0s; }
+  .menu-panel a {
+    display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 0 14px;
+    border-radius: 10px; font-size: 17px; font-weight: 550; color: var(--texto);
+    opacity: 0; translate: 0 calc(-10px * var(--motion-gain, 1));
+    transition: opacity .16s, translate .16s, background .18s;
+  }
+  nav.barra.menu-abierto .menu-panel a,
+  .menu[open]:not(.con-js) .menu-panel a {
+    opacity: 1; translate: 0 0;
+    transition: opacity .32s ease calc(70ms + var(--n, 0) * 40ms), translate .45s var(--ease) calc(70ms + var(--n, 0) * 40ms), background .18s;
+  }
+  .menu-panel a:nth-child(2) { --n: 1; }
+  .menu-panel a:nth-child(3) { --n: 2; }
+  .menu-panel a:nth-child(4) { --n: 3; }
+  .menu-panel a:nth-child(5) { --n: 4; }
+  .menu-panel a:nth-child(6) { --n: 5; }
+  .menu-panel a:hover { background: var(--realce-medio); text-decoration: none; }
+  .menu-panel a.aqui { box-shadow: inset 3px 0 0 var(--azul); }
+  .menu-panel svg { width: 20px; height: 20px; flex: none; color: var(--suave); }
+  .menu-panel .menu-gh { display: none; margin-top: 6px; border-top: 1px solid var(--linea); border-radius: 0 0 10px 10px; color: var(--suave); font-size: 16px; }
+}
+@media (min-width: 641px) and (max-width: 1080px) {
+  .menu-panel { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .menu-panel a { padding: 0 10px; font-size: 16px; white-space: nowrap; }
+}
+@media (max-width: 520px) {
+  .barra .gh { display: none; }
+  .menu-panel .menu-gh { display: flex; }
+}
+@media (max-width: 400px) {
+  .logo-nombre { font-size: 16px; gap: 8px; }
+  .logo-nombre img { width: 26px; height: 26px; }
+  .barra .idioma { padding-inline: 10px; }
+}
+/* «Taskbar Groups Fluent» es largo: en lo más estrecho, el idioma se queda en sus dos letras
+   (el lector de pantalla sigue diciendo «English», por su aria-label) para que quepa el menú. */
+@media (max-width: 440px) {
+  .barra-dentro { gap: 8px; padding-left: 12px; }
+  .barra .idioma[data-corto] { font-size: 0; min-width: 44px; text-align: center; }
+  .barra .idioma[data-corto]::after { content: attr(data-corto); font-size: 15px; }
+}
+/* En lo más estrecho no caben el logo, «English» y «Menú» con su nombre: el botón se queda con
+   el dibujo, y el nombre sigue ahí para el lector de pantalla. */
+@media (max-width: 379px) {
+  .menu > summary { width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .menu > summary span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+}
+
+/* La línea fina que ofrece la otra versión de la página a quien tiene el navegador en otro
+   idioma, solo la primera vez (leer.js). No es una franja: es una frase con su enlace. */
+.otro-idioma {
+  display: flex; justify-content: center; align-items: center; gap: 4px 14px; flex-wrap: wrap;
+  margin: -4px auto 0; padding: 0 20px; min-height: 28px; font-size: 15px; color: var(--suave);
+}
+.otro-idioma a { font-weight: 650; }
+.otro-idioma button {
+  display: grid; place-items: center; width: 32px; height: 32px; border: 0; border-radius: 8px;
+  background: none; color: var(--suave); cursor: pointer;
+}
+.otro-idioma button:hover { background: var(--realce-medio); color: var(--texto); }
+.otro-idioma svg { width: 15px; height: 15px; }
+@media (pointer: coarse) { .otro-idioma button { width: 44px; height: 44px; } }
+
+/* ---------- botones: el principal relleno y vivo, el segundo con fondo suave y el mismo tamaño ---------- */
+.botones { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  height: 54px; padding: 0 26px; border: 0; border-radius: 12px; cursor: pointer;
+  font: 650 17px/1 var(--letra); white-space: nowrap;
+  transition: transform .18s, background .18s, box-shadow .18s;
+}
+.btn:hover { text-decoration: none; }
+.btn svg { width: 19px; height: 19px; flex: none; }
+.btn.uno {
+  background: var(--azul-boton); color: #fff;
+  box-shadow: 0 12px 30px -12px var(--sombra-boton-fuerte), inset 0 1px 0 #ffffff33;
+}
+/* Se oscurece al pasar por encima (aclarar tumbaría el contraste del texto blanco) y el
+   movimiento lo marca la sombra. */
+.btn.uno:hover {
+  background: var(--azul-boton-vivo); transform: translateY(calc(-2px * var(--motion-gain, 1)));
+  box-shadow: 0 18px 38px -14px var(--sombra-boton-fuerte), inset 0 1px 0 #ffffff33;
+}
+.btn.dos { background: var(--realce-medio); color: var(--texto); box-shadow: inset 0 0 0 1.5px var(--linea); }
+.btn.dos:hover { background: var(--realce-fuerte); }
+.btn:focus-visible, .barra a:focus-visible, a:focus-visible { outline: 2px solid var(--azul); outline-offset: 3px; }
+@media (max-width: 520px) {
+  .botones:has(.btn + .btn) { flex-direction: column; align-items: stretch; width: min(100%, 340px); }
+  .portada .botones, .cierre .botones, .perdida .botones { margin-inline: auto; }
+}
+
+.letra-chica { margin-top: 14px; font-size: 15px; color: var(--suave); }
+.letra-chica a { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.letra-chica a:hover { color: var(--texto); }
+
+/* ---------- títulos y secciones ---------- */
+h1 { font-size: clamp(40px, 5.2vw, 84px); line-height: 1.03; letter-spacing: -0.035em; font-weight: 750; }
+h1 em { font-style: normal; color: var(--azul); }
+h2 { font-size: clamp(32px, 3.2vw, 54px); line-height: 1.08; letter-spacing: -0.03em; font-weight: 720; }
+.entradilla { color: var(--suave); max-width: 62ch; font-size: clamp(18px, 1.25vw, 21px); margin-top: 16px; }
+.seccion { padding: var(--aire) 0; scroll-margin-top: 0; }
+.cabeza-seccion { max-width: 760px; }
+.cabeza-seccion.centrado { margin-inline: auto; }
+
+/* ---------- portada ---------- */
+.portada { position: relative; padding: clamp(28px, 5vh, 72px) 0 clamp(30px, 4.5vh, 56px); text-align: center; }
+.portada::before {
+  content: ""; position: absolute; inset: -220px 0 auto; height: 980px; z-index: -1; pointer-events: none;
+  background: radial-gradient(58% 48% at 50% 32%, var(--halo), transparent 72%);
+}
+.portada > .env { position: relative; z-index: 1; }
+.bajada { font-size: clamp(19px, 1.4vw, 24px); line-height: 1.5; color: var(--suave); max-width: 48ch; margin: 24px auto 0; }
+.bajada b { color: var(--texto); }
+.portada .botones { justify-content: center; margin-top: 34px; }
+.nota { color: var(--suave); font-size: 15.5px; margin-top: 18px; }
+.nota + .nota { margin-top: 6px; }
+.nota code { color: var(--texto); font-size: 14.5px; white-space: nowrap; }
+.nota a { color: var(--texto); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.nota a:hover { color: var(--azul); }
+
+/* ---------- las notas giradas de los lados ----------
+   Texto suelto, girado y como escrito a mano, sin caja, con lo que tiene la app que no tienen
+   las otras (la pidió Munito en winshotx el 14-nov, «estilo gracioso fanberro»). En pantalla
+   ancha van en los huecos de los lados del titular; en la estrecha, en una fila debajo. */
+.fans { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px 40px; margin: 34px auto 0; max-width: 760px; }
+.fan {
+  position: relative; max-width: 15em; color: var(--azul);
+  font: 400 20px/1.18 var(--letra-mano); text-wrap: balance;
+  transform: rotate(var(--giro, -4deg));
+}
+.fan b { font-weight: 700; color: var(--texto); }
+.garabatos { display: none; }
+@media (min-width: 1180px) {
+  .portada > .env {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 640px) minmax(0, 1fr);
+    align-items: center;
+  }
+  .portada > .env > * { grid-column: 2; }
+  .portada > .env > h1 { grid-column: 1 / -1; grid-row: 1; }
+  .portada h1 em { display: block; }
+  .portada > .env > .bajada { grid-row: 2; }
+  .portada > .env > .botones { grid-row: 3; }
+  .portada > .env > .nota { grid-row: 4; text-wrap: balance; }
+  .portada > .env > .nota + .nota { grid-row: 5; }
+  .fans { display: contents; }
+  .fan { width: 11em; max-width: 100%; font-size: clamp(20px, 1.45vw, 26px); }
+  .garabatos {
+    display: block; position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; overflow: visible;
+    pointer-events: none; fill: none; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .garabatos .trazo { stroke: var(--azul); stroke-width: 3px; }
+  .garabatos .halo, .garabatos .halo-luz { stroke: var(--fondo); stroke-width: 13px; }
+  .garabatos .halo-luz { stroke: url(#garabatos-luz); }
+  .garabatos:not(.con-luz) .halo-luz { display: none; }
+  .garabatos .luz, .garabatos .luz-fin { stop-color: var(--halo); }
+  .garabatos .luz-fin { stop-opacity: 0; }
+  .fan.f-b { grid-column: 1; grid-row: 2; justify-self: start; margin-top: 20px; --giro: -7deg; }
+  .fan.f-a { grid-column: 3; grid-row: 2; justify-self: end; margin-top: 34px; --giro: 6deg; }
+  .fan.f-c { grid-column: 1; grid-row: 4 / 6; justify-self: end; max-width: calc(100% - 84px); margin-right: 84px; --giro: 4deg; }
+  .fan.f-d { grid-column: 3; grid-row: 3 / 6; justify-self: end; --giro: -5deg; }
+}
+@media (min-width: 1600px) { .fan.f-b, .fan.f-d { margin-inline: 3%; } }
+
+/* ---------- el escaparate: la demo, debajo del titular ---------- */
+.escaparate { position: relative; padding: 4px 0 clamp(48px, 7vh, 96px); scroll-margin-top: 4px; }
+/* La luz de detrás: un solo brillo, el de la pieza principal, y en los dos azules del logo. */
+.escaparate::before {
+  content: ""; position: absolute; inset: 16% 12% 12%; z-index: -1; pointer-events: none;
+  background: linear-gradient(120deg, #4cc2ff, #0067c0); filter: blur(80px);
+  opacity: var(--brillo-demo); border-radius: 60px;
+}
+.escaparate > .env { max-width: 1240px; }
+.demo-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 28px; flex-wrap: wrap; margin-bottom: 16px; }
+.demo-cabeza > .pestanas { border-bottom: 0; }
+/* «Se abre al pasar el ratón» no se puede probar con el dedo: ahí la demo abre al tocar. */
+@media (hover: none) { .solo-raton { display: none !important; } }
+.pista-demo { color: var(--suave); font-size: 16.5px; min-height: 1.6em; text-align: center; margin-bottom: 14px; }
+.pista-demo b { color: var(--texto); }
+
+/* Pestañas de texto con su raya debajo, no un control segmentado con la activa rellena:
+   «pestañas y filtros en texto, nunca en píldora» (GUSTOS-DE-DISENO, 6). La misma pieza vale
+   para la forma del panel, las funciones y la comparativa. */
+.pestanas { display: flex; gap: 24px; flex: none; border-bottom: 1px solid var(--borde); }
+.pestana {
+  display: inline-flex; align-items: center; gap: 8px; margin-bottom: -1px; padding: 6px 0 10px;
+  font: 650 16px/1.3 var(--letra); cursor: pointer; white-space: nowrap;
+  background: transparent; border: 0; border-bottom: 3px solid transparent; color: var(--suave);
+  transition: color .14s, border-color .14s;
+}
+.pestana svg { width: 17px; height: 17px; flex: none; }
+.pestana:hover { color: var(--texto); }
+.pestana[aria-pressed="true"], .pestana[aria-selected="true"] { color: var(--texto); border-bottom-color: var(--azul); }
+.pestana:focus-visible { outline: 2px solid var(--azul); outline-offset: 4px; border-radius: 4px; }
+@media (max-width: 860px) { .pestana { min-height: 44px; } }
+@media (max-width: 520px) { .pestanas { gap: 18px; } .pestana { font-size: 15px; } }
+
+/* Lo de debajo de la demo: los ajustes que tiene la app, en una fila, cada uno con su nombre
+   y sus opciones en texto, la elegida con su raya. */
+.ajustes-demo { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 36px; margin-top: 22px; }
+.ajuste-demo { display: flex; align-items: baseline; gap: 14px; }
+.ajuste-demo > span { color: var(--suave); font-size: 15px; white-space: nowrap; }
+.ajuste-demo .pestanas { border-bottom: 0; gap: 14px; }
+.ajuste-demo .pestana { font-size: 15px; padding: 4px 0 6px; }
+.demo-nota { margin: 16px auto 0; max-width: 70ch; text-align: center; font-size: 15px; color: var(--suave); }
+
+/* ---------- LA DEMO: una pantalla de 1280 x 720 dibujada a tamaño real y reducida entera ----------
+   Medidas del panel copiadas de PopupWindow.xaml: radio 8, relleno 10, borde 1; baldosa con
+   nombre de 80 x 88 e icono de 44; solo icono de 52 con icono de 32; línea de 44 con icono de
+   28; celda de lista de 200; cabecera de 32 con «abrir todas» y el lápiz. El panel queda 8 px
+   por encima de la barra, que mide 48. Las apps son de verdad, con el icono que les saca Windows. */
+.monitor {
+  position: relative; padding: 9px; border-radius: 18px;
+  background: linear-gradient(180deg, #2a2a30, #17171b);
+  border: 1px solid #ffffff1c;
+  box-shadow: 0 40px 100px #000b, inset 0 1px 0 #ffffff17;
+}
+@media (prefers-color-scheme: light) {
+  .monitor { border-color: #00000029; box-shadow: 0 34px 80px #1b2a4a59, inset 0 1px 0 #ffffff17; }
+}
+.pantalla {
+  position: relative; overflow: hidden; border-radius: 10px;
+  aspect-ratio: 16 / 9; background: #0a1024;
+}
+/* Anclado abajo y al centro: fuera de la capa se ve entero (la pantalla mide 16:9 justo), y a
+   pantalla completa en el móvil la pantalla se recorta por arriba y por los lados, y lo que
+   queda es la barra y el panel, que es donde pasa todo. */
+.escritorio {
+  position: absolute; left: 50%; bottom: 0; width: 1280px; height: 720px; margin-left: -640px;
+  transform-origin: 50% 100%; transform: scale(var(--escala, 0.5));
+  overflow: hidden; isolation: isolate;
+  font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  color: #fff; user-select: none; -webkit-user-select: none;
+  /* Fondo de escritorio: el meme de los gatos babeando, elegido por Munir (16/10/2026)
+     sabiendo que es una imagen de terceros. Si su autor lo pide, se quita. */
+  background:
+    url("assets/fondo-gatos.webp") center / cover no-repeat,
+    radial-gradient(42% 52% at 28% 34%, #4cc2ff8c, transparent 70%),
+    radial-gradient(60% 50% at 58% 92%, #0067c0b3, transparent 72%),
+    linear-gradient(160deg, #0b1a36 0%, #0a1024 58%, #0b1430 100%);
+  touch-action: manipulation;
+}
+.iconos-escritorio { position: absolute; left: 4px; top: 6px; display: grid; gap: 2px; }
+.ie {
+  display: grid; justify-items: center; gap: 3px; width: 78px; padding: 6px 2px 4px;
+  font-size: 12px; line-height: 1.25; text-align: center; color: #fff;
+  text-shadow: 0 1px 3px #000, 0 0 8px #0009;
+}
+.ie svg { width: 42px; height: 42px; filter: drop-shadow(0 2px 4px #0007); }
+.pista {
+  position: absolute; left: 50%; bottom: 150px; translate: -50% 0;
+  display: grid; justify-items: center; gap: 4px; width: max-content; max-width: 460px;
+  padding: 10px 18px; border-radius: 12px; background: #00000052;
+  color: #fff; font-size: 18px; text-align: center; text-shadow: 0 1px 6px #0009;
+  transition: opacity .3s var(--ease); pointer-events: none;
+}
+.pista small { font-size: 14px; color: #ffffffb8; }
+.pista small:empty { display: none; }
+.escritorio.con-panel .pista { opacity: 0; }
+.pista svg { width: 22px; height: 22px; }
+html.motion .pista svg { animation: baja 1.9s ease-in-out 5; }
+@keyframes baja {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(calc(6px * var(--motion-gain, 1))); }
+}
+.aviso-demo {
+  position: absolute; top: 16px; left: 50%; translate: -50% 0; z-index: 7;
+  max-width: 520px; padding: 9px 18px; border-radius: 999px;
+  background: #202024e6; border: 1px solid #ffffff1c;
+  box-shadow: 0 10px 30px #0007;
+  font-size: 15px; color: #f2f2f5; text-align: center;
+  opacity: 0; transform: translateY(calc(-8px * var(--motion-gain, 1)));
+  transition: opacity .22s var(--ease), transform .3s var(--ease);
+  pointer-events: none;
+}
+.aviso-demo.visible { opacity: 1; transform: none; }
+.panel {
+  --dy: 14px; --k: 1;
+  position: absolute; left: 0; bottom: 56px; z-index: 5;
+  display: flex; flex-direction: column;
+  padding: 10px; border-radius: 8px;
+  background: #202020a3; color: #fff;
+  backdrop-filter: blur(30px) saturate(160%); -webkit-backdrop-filter: blur(30px) saturate(160%);
+  border: 1px solid #ffffff22;
+  box-shadow: 0 16px 48px #0000008c, 0 0 0 1px #0000004d;
+  transform-origin: 0 100%;
+  transform: translate3d(0, calc(var(--dy) * var(--motion-gain, 1)), 0) scale(var(--fit, 1));
+  opacity: 0; visibility: hidden;
+  transition: opacity .16s ease, transform .24s var(--ease), visibility 0s linear .24s;
+}
+.panel.visible {
+  --dy: 0px; opacity: 1; visibility: visible;
+  transition: opacity .2s ease, transform .34s var(--ease), visibility 0s;
+}
+.panel.sin-trans { transition: none !important; }
+.panel.claro { background: #f3f3f3c8; color: #1a1a1a; border-color: #00000022; box-shadow: 0 16px 48px #00000059; }
+.panel-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 32px; margin: 0 0 4px 8px; }
+.panel.cab-abajo .panel-cab { order: 2; margin: 4px 0 0 8px; }
+.panel.sin-cab .panel-cab { display: none; }
+.panel-nombre { font-size: 14px; font-weight: 600; max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.panel-botones { display: flex; flex: none; }
+.pb {
+  display: grid; place-items: center; width: 32px; height: 32px; padding: 0;
+  border: 0; border-radius: 8px; background: transparent; color: inherit; cursor: pointer;
+  transition: background .1s;
+}
+.pb svg { width: 14px; height: 14px; }
+.panel-apps { display: grid; zoom: var(--k); }
+.p-cuadricula { grid-template-columns: repeat(var(--cols, 3), auto); }
+.p-fila { grid-auto-flow: column; }
+.p-columna { grid-template-columns: auto; justify-items: center; }
+.p-columna.t-linea { justify-items: stretch; }
+.app {
+  display: flex; align-items: center; margin: 2px; padding: 6px;
+  border: 0; border-radius: 8px; background: transparent; color: inherit;
+  font: inherit; cursor: pointer; text-align: left; transition: background .1s;
+}
+.pb:hover, .app:hover { background: #ffffff22; }
+.pb:active, .app:active { background: #ffffff11; }
+.panel.claro .pb:hover, .panel.claro .app:hover { background: #00000014; }
+.panel.claro .pb:active, .panel.claro .app:active { background: #00000022; }
+.ico-app { display: block; flex: none; width: 44px; height: 44px; object-fit: contain; }
+.app-nombre { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.t-nombre .app { flex-direction: column; justify-content: center; width: 80px; height: 88px; gap: 6px; padding: 6px 4px; }
+.t-nombre .app-nombre { font-size: 11px; max-width: 68px; }
+.t-icono .app { width: 52px; height: 52px; justify-content: center; }
+.t-icono .ico-app { width: 32px; height: 32px; }
+.t-icono .app-nombre { display: none; }
+.t-linea .app, .t-celda .app { height: 44px; margin: 1px; gap: 12px; }
+.t-linea .app { min-width: 190px; }
+.t-celda .app { width: 200px; }
+.t-linea .ico-app, .t-celda .ico-app { width: 28px; height: 28px; }
+.t-linea .app-nombre, .t-celda .app-nombre { font-size: 13px; }
+.t-linea .app-nombre { max-width: 220px; margin-right: 8px; }
+.t-celda .app-nombre { max-width: 140px; }
+.salto {
+  position: absolute; left: 0; bottom: 56px; z-index: 6; width: 272px; padding: 4px;
+  border-radius: 8px; background: #2c2c2ff2; border: 1px solid #ffffff1c;
+  backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%);
+  box-shadow: 0 16px 48px #0000008c; color: #fff; font-size: 14px;
+  opacity: 0; visibility: hidden; transform: translateY(calc(10px * var(--motion-gain, 1)));
+  transition: opacity .14s ease, transform .2s var(--ease), visibility 0s linear .2s;
+}
+.salto.visible { opacity: 1; visibility: visible; transform: none; transition: opacity .16s ease, transform .24s var(--ease), visibility 0s; }
+.salto-titulo { padding: 8px 12px 4px; font-size: 12px; font-weight: 600; color: #ffffff99; }
+.salto button {
+  display: flex; align-items: center; gap: 12px; width: 100%; height: 36px; padding: 0 12px;
+  border: 0; border-radius: 4px; background: transparent; color: inherit;
+  font: inherit; text-align: left; cursor: pointer;
+}
+.salto button:hover { background: #ffffff14; }
+.salto button svg { width: 16px; height: 16px; flex: none; }
+.salto hr { border: 0; border-top: 1px solid #ffffff1a; margin: 4px 0; }
+.barra-tareas {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; height: 48px;
+  background: #1c1c1fe0; border-top: 1px solid #ffffff14;
+  backdrop-filter: blur(30px) saturate(150%); -webkit-backdrop-filter: blur(30px) saturate(150%);
+}
+.bt-centro { position: absolute; left: 0; right: 0; top: 4px; display: flex; justify-content: center; gap: 4px; }
+.zona-grupos { display: contents; }
+.bt {
+  position: relative; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
+  border: 0; border-radius: 4px; background: transparent; color: #fff; transition: background .1s;
+}
+.bt svg, .bt img { width: 24px; height: 24px; }
+.bt.inicio svg { width: 22px; height: 22px; color: #4cc2ff; }
+.bt::after {
+  content: ""; position: absolute; left: 50%; bottom: 1px; translate: -50% 0;
+  width: 0; height: 3px; border-radius: 3px; background: #ffffff80;
+  transition: width .25s var(--ease), background .2s;
+}
+.bt.abierta::after { width: 6px; }
+.bt.grupo { cursor: pointer; }
+.bt.grupo:hover { background: #ffffff12; }
+.bt.grupo.activo { background: #ffffff17; }
+.bt.grupo.activo::after { width: 16px; background: #4cc2ff; }
+.mini { display: grid; grid-template-columns: repeat(2, 11px); grid-auto-rows: 11px; gap: 2px; pointer-events: none; }
+.mini img { display: block; width: 11px; height: 11px; object-fit: contain; }
+.mini.peq { grid-template-columns: repeat(2, 7px); grid-auto-rows: 7px; gap: 1px; }
+.mini.peq img { width: 7px; height: 7px; }
+.emoji { font-size: 23px; line-height: 1; pointer-events: none; font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif; }
+.emoji.peq { font-size: 15px; width: 16px; text-align: center; }
+.bandeja { position: absolute; right: 6px; top: 0; height: 48px; display: flex; align-items: center; color: #fff; }
+.bandeja .ic { display: grid; place-items: center; width: 30px; height: 40px; }
+.bandeja .juntos { display: flex; align-items: center; gap: 9px; height: 40px; padding: 0 9px; }
+.bandeja svg { width: 16px; height: 16px; }
+.reloj { padding: 0 8px; font-size: 12px; line-height: 1.35; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* ---------- la demo en el móvil: el escritorio entero, encogido, y a pantalla completa al tocarlo ----------
+   Como la de winshotx, Orquio y Adeorq («que se pueda ver todo bien… que haya un botón de
+   expandir y verlo en pantalla completa», Munito, 9-nov). Por debajo de 861 px el escritorio
+   se ve entero y la caja es un botón; a pantalla completa (`.en-grande`) se maneja con el dedo. */
+.capa-cabeza, .demo-movil { display: none; }
+@media (max-width: 860px) {
+  .monitor { padding: 6px; border-radius: 14px; }
+  .pantalla { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .escaparate:not(.en-grande) .escritorio { pointer-events: none; }
+  .escaparate:not(.en-grande) .pista-demo, .escaparate:not(.en-grande) .ajustes-demo, .escaparate:not(.en-grande) .demo-nota { display: none; }
+  .demo-cabeza { justify-content: center; }
+  .demo-movil { display: grid; justify-items: center; gap: 12px; margin-top: 18px; }
+  .demo-movil .btn { width: min(100%, 440px); }
+  .demo-movil p { color: var(--suave); font-size: 15.5px; text-align: center; }
+  .escaparate.en-grande > .env {
+    position: fixed; inset: 0; z-index: 100; width: auto; max-width: none; margin: 0;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: max(10px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right))
+      max(14px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+    background: var(--fondo); overflow: auto; overscroll-behavior: contain;
+    animation: none !important; scale: none !important;
+  }
+  .en-grande .capa-cabeza { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+  .en-grande .capa-titulo { font: 700 17px/1.2 var(--letra-titulo); }
+  .en-grande .demo-cabeza { justify-content: center; margin-bottom: 8px; }
+  .en-grande .demo-movil { display: none; }
+  /* La demo se queda con lo que dejan libre la cabecera y los ajustes; su tamaño lo mide
+     demo.js con lo que mide este hueco. */
+  .en-grande .hueco-demo { flex: 1 1 0; min-height: 0; display: grid; place-items: center; }
+  .en-grande .monitor { width: max-content; max-width: 100%; }
+  .en-grande .pantalla { cursor: auto; aspect-ratio: auto; }
+  .en-grande .ajustes-demo { gap: 4px 22px; margin-top: 10px; }
+  .en-grande .demo-nota { display: none; }
+  /* Tumbado no cabe todo en columna: la demo a la izquierda y lo demás a su derecha. */
+  @media (orientation: landscape) {
+    .escaparate.en-grande > .env {
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(200px, 34%);
+      grid-template-rows: auto auto minmax(0, 1fr); column-gap: 18px;
+      grid-template-areas: "cabeza cabeza" "demo forma" "demo ajustes";
+    }
+    .en-grande .capa-cabeza { grid-area: cabeza; }
+    .en-grande .hueco-demo { grid-area: demo; }
+    .en-grande .demo-cabeza { grid-area: forma; justify-content: flex-start; }
+    .en-grande .demo-cabeza .pestanas { flex: 1 1 auto; min-width: 0; flex-wrap: wrap; gap: 0 16px; }
+    .en-grande .ajuste-demo { flex-wrap: wrap; gap: 0 12px; }
+    .en-grande .ajuste-demo .pestanas { flex-wrap: wrap; }
+    .en-grande .ajustes-demo { grid-area: ajustes; flex-direction: column; flex-wrap: nowrap; align-items: flex-start; justify-content: flex-start; margin-top: 0; overflow-y: auto; }
+  }
+  .capa-boton {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px;
+    border: 0; border-radius: 10px; cursor: pointer; white-space: nowrap;
+    font: 650 15px/1 var(--letra); background: var(--azul-boton); color: #fff;
+  }
+  .capa-boton svg { width: 17px; height: 17px; flex: none; }
+}
+html.capa-abierta { overflow: hidden; overscroll-behavior: none; }
+
+/* ---------- la demo se encoge y se redondea al bajar, como la portada de cattory.co/es ----------
+   Desde que su cabeza llega bajo la barra hasta que su final pasa por el mismo sitio, la
+   demo entera va de su tamaño a un 85 % y sus esquinas se redondean, ligado al scroll sin
+   una línea de JavaScript. Con «reducir movimiento», un cuarto; con ?motion=off, nada. */
+@supports (animation-timeline: view()) {
+  html.motion:not([data-ligero]) .escaparate:not(.en-grande) > .env {
+    transform-origin: 50% 0;
+    view-timeline: --vitrina block;
+    view-timeline-inset: var(--nav-alto) 0px;
+    animation: vitrina-encoge linear both;
+    animation-timeline: --vitrina;
+    animation-range: exit-crossing 0% exit-crossing 100%;
+  }
+  html.motion.suave:not([data-ligero]) .escaparate:not(.en-grande) > .env { animation-name: vitrina-encoge-suave; }
+  html.motion:not([data-ligero]) .escaparate:not(.en-grande) .monitor {
+    animation: vitrina-redondea steps(18, end) both;
+    animation-timeline: --vitrina;
+    animation-range: exit-crossing 0% exit-crossing 100%;
+  }
+  @media (max-width: 860px) {
+    html.motion:not([data-ligero]) .escaparate:not(.en-grande) > .env { animation-name: vitrina-encoge-movil; }
+    html.motion.suave:not([data-ligero]) .escaparate:not(.en-grande) > .env { animation-name: vitrina-encoge-movil-suave; }
+  }
+}
+@keyframes vitrina-encoge { to { scale: .85; } }
+@keyframes vitrina-encoge-suave { to { scale: .9625; } }
+@keyframes vitrina-encoge-movil { to { scale: .92; } }
+@keyframes vitrina-encoge-movil-suave { to { scale: .98; } }
+@keyframes vitrina-redondea { to { border-radius: 36px; } }
+
+/* ---------- lo que es de verdad: cuatro cifras sueltas, sin cajas ---------- */
+.pruebas { padding: clamp(36px, 5vh, 72px) 0 var(--aire); }
+.pruebas .env { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.prueba b {
+  display: block; font: 750 clamp(34px, 2.9vw, 50px)/1.05 var(--letra-titulo);
+  letter-spacing: -0.035em; color: var(--texto); font-variant-numeric: tabular-nums;
+}
+.prueba span { display: block; margin-top: 8px; color: var(--suave); font-size: 16.5px; line-height: 1.45; }
+.prueba a { color: inherit; text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.prueba a:hover { color: var(--texto); }
+@media (max-width: 860px) { .pruebas .env { grid-template-columns: 1fr 1fr; row-gap: 30px; } }
+
+/* ---------- las funciones: un paso cada 2 o 3 golpes de rueda ----------
+   La pista mide una pantalla más 260 px por paso y lo de dentro se queda pegado: el texto
+   cambia a la izquierda y lo que se ve de la app, a la derecha. La rueda es la del navegador,
+   nadie la secuestra; solo se mira por dónde va. */
+.momentos { --paso: 260px; position: relative; }
+@media (min-width: 861px) {
+  .momentos { margin-block: calc(-1 * var(--momentos-sube, 0px)) calc(-1 * var(--momentos-baja, 0px)); }
+  .momentos-pegado { pointer-events: none; }
+  .momentos-pegado > * { pointer-events: auto; }
+}
+.momentos-pista { height: calc(100svh + 2 * var(--paso) + 40px); }
+.momentos-pegado {
+  position: sticky; top: 0; height: 100svh; padding-top: var(--nav-alto);
+  display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: center;
+}
+.momentos-textos { display: grid; }
+.momento { grid-area: 1 / 1; transition: opacity .45s, transform .55s cubic-bezier(.2, .7, .2, 1), visibility .45s; }
+.momento:not(.activo) { opacity: 0; visibility: hidden; transform: translateY(calc(18px * var(--motion-gain, 1))); }
+.pasos-momento { display: flex; gap: 22px; margin-bottom: 30px; border-bottom: 1px solid var(--linea); }
+.pasos-momento button {
+  margin-bottom: -1px; padding: 4px 0 10px; border: 0; border-bottom: 3px solid transparent;
+  background: none; color: var(--suave); font: 650 16px/1.3 var(--letra); cursor: pointer;
+  transition: color .18s, border-color .18s;
+}
+.pasos-momento button:hover { color: var(--texto); }
+.pasos-momento button[aria-current="step"] { color: var(--texto); border-bottom-color: var(--azul); }
+.ico-suelto { display: block; width: 34px; height: 34px; color: var(--azul); filter: drop-shadow(0 0 12px var(--brillo-icono)); }
+.momento h2 { margin-top: 18px; }
+.momento p { margin-top: 16px; max-width: 40ch; color: var(--suave); font-size: clamp(18px, 1.25vw, 21px); }
+.lista { list-style: none; display: grid; gap: 12px; margin-top: 26px; font-size: 17.5px; }
+.lista li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 12px; align-items: start; }
+.lista .ok { width: 20px; height: 20px; margin-top: 4px; color: var(--azul); }
+/* Lo que se ve de la app: las tres en el mismo sitio, del mismo tamaño, cada una centrada. */
+.momentos-fotos { position: relative; aspect-ratio: 4 / 3; }
+.momentos-fotos > * {
+  position: absolute; inset: 0; margin: auto; width: auto; height: auto; max-width: 100%; max-height: 100%;
+  transition: opacity .5s, transform .6s cubic-bezier(.2, .7, .2, 1);
+}
+.momentos-fotos > :not(.activa) {
+  opacity: 0; visibility: hidden; transform: translateY(calc(26px * var(--motion-gain, 1))) scale(.985);
+  transition: opacity .5s, transform .6s cubic-bezier(.2, .7, .2, 1), visibility 0s .5s;
+}
+/* La grabación del panel, con su botón de pausa (va en bucle y dura más de 5 s: WCAG 2.2.2).
+   Mide lo que el vídeo, 500 x 480, y no crece más que eso. */
+.video-caja { position: relative; overflow: hidden; aspect-ratio: 500 / 480; }
+.video-caja video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.momentos-fotos > .video-caja { width: auto; height: min(100%, 480px); max-height: none; }
+.video-pausa {
+  position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center;
+  width: 44px; height: 44px; border: 0; border-radius: 50%; cursor: pointer;
+  background: #000000a6; color: #fff; opacity: .78; transition: opacity .18s, background .18s;
+}
+.video-pausa:hover, .video-pausa:focus-visible { opacity: 1; background: #000000d9; }
+.video-pausa:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.video-pausa svg { width: 18px; height: 18px; }
+/* Una foto de la app es contenido: lleva su esquina, su sombra y su borde fino. */
+.foto { border-radius: 12px; box-shadow: var(--sombra-foto); background: #111; }
+.momento .foto-movil { display: none; }
+@media (max-width: 860px) {
+  .momentos { padding: var(--aire) 0; }
+  .momentos-pista { height: auto; }
+  .momentos-pegado { position: static; height: auto; padding-top: 0; display: block; }
+  .momentos-textos { gap: 64px; }
+  .momento { grid-area: auto; }
+  .momento:not(.activo) { opacity: 1; visibility: visible; transform: none; }
+  .momento .foto-movil { display: block; margin-top: 28px; width: 100%; }
+  .momento .video-caja.foto-movil { max-width: 500px; }
+  .momentos-fotos, .pasos-momento { display: none; }
+}
+
+/* ---------- las órdenes para la terminal se copian con un clic (leer.js) ---------- */
+.copiable {
+  position: relative; cursor: copy; border-radius: 7px;
+  transition: background .18s, color .18s; -webkit-tap-highlight-color: transparent;
+}
+.copiable.en-frase { padding: 2px 6px; margin-inline: -2px; white-space: nowrap; }
+.copiable:hover { background: var(--realce-fuerte); }
+.copiable:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.copiable svg {
+  display: inline-block; width: 1em; height: 1em; margin-left: .45em; vertical-align: -.14em;
+  color: var(--suave); transition: color .18s;
+}
+.copiable:hover .ico-copiar, .copiable:focus-visible .ico-copiar { color: var(--texto); }
+.copiable .ico-hecho, .copiable[data-copiado="si"] .ico-copiar { display: none; }
+.copiable[data-copiado="si"] .ico-hecho { display: inline-block; color: var(--azul); }
+.copiado {
+  position: absolute; z-index: 60; padding: 6px 10px; border-radius: 8px; white-space: nowrap;
+  pointer-events: none; font: 600 13.5px/1 var(--letra); color: var(--texto);
+  background: var(--panel); box-shadow: 0 0 0 1px var(--linea), 0 10px 24px #00000040;
+  opacity: 0; transition: opacity .18s, transform .22s cubic-bezier(.2, .7, .2, 1);
+}
+.copiado-globo { top: 0; left: 0; translate: -50% calc(-100% - 8px); transform: translateY(calc(5px * var(--motion-gain, 1))); }
+.copiado-globo[data-visible] { opacity: 1; transform: none; }
+@media (hover: none) { .copiable.en-frase { background: var(--realce-medio); } }
+.nota .copiable.en-frase { padding: 3px 7px; }
+/* La orden de winget de esta app es larga: en el móvil puede partirse antes que salirse. */
+@media (max-width: 440px) {
+  .nota code { font-size: 13px; white-space: normal; }
+  .nota .copiable.en-frase { white-space: normal; overflow-wrap: anywhere; }
+}
+@media (pointer: coarse) { .copiable.en-frase::after { content: ""; position: absolute; inset: -11px -4px; } }
+
+/* ---------- novedades: las tres últimas, las escribe generar-novedades.mjs ---------- */
+.novedades-portada { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(28px, 3vw, 56px); margin-top: 44px; }
+.novedad { border-top: 2px solid var(--linea); padding-top: 22px; }
+.novedad .cuando { color: var(--suave); font-size: 15px; }
+.novedad h3 { margin-top: 8px; font-size: clamp(21px, 1.5vw, 25px); line-height: 1.2; letter-spacing: -0.02em; font-weight: 700; }
+.novedad h3 a { color: var(--texto); }
+.novedad h3 a:hover { color: var(--azul); text-decoration: none; }
+.novedad p { margin-top: 10px; color: var(--suave); font-size: 16.5px; }
+.novedad p b { color: var(--texto); }
+.novedades-mas { margin-top: 36px; }
+@media (max-width: 860px) { .novedades-portada { grid-template-columns: 1fr; } }
+
+/* ---------- preguntas frecuentes ----------
+   Sueltas, una por fila con su raya, sin caja alrededor, una abierta a la vez. */
+.preguntas .env { display: grid; grid-template-columns: 4fr 8fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
+.preguntas .lateral { position: sticky; top: calc(var(--nav-alto) + 20px); }
+.preguntas .lateral .botones { margin-top: 26px; }
+.faq { --faq-ms: 380ms; display: flex; flex-direction: column; border-bottom: 1px solid var(--linea); }
+.faq details { border-top: 1px solid var(--linea); padding: 0 6px; transition: background .18s; }
+.faq details:hover { background: var(--realce); }
+.faq summary {
+  cursor: pointer; list-style: none; display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; padding: 22px 0; font-size: clamp(18px, 1.3vw, 21px); font-weight: 650; letter-spacing: -0.01em;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:focus-visible { outline: 2px solid var(--azul); outline-offset: 4px; border-radius: 4px; }
+.faq summary h3 { font: inherit; letter-spacing: inherit; margin: 0; }
+.faq-chevron { width: 20px; height: 20px; color: var(--azul); flex: none; transition: transform var(--faq-ms) cubic-bezier(.4, 0, .2, 1); }
+.faq details[data-abierta] .faq-chevron { transform: rotate(180deg); }
+.faq-cajon {
+  display: grid; grid-template-rows: 0fr; opacity: 0;
+  transition: grid-template-rows var(--faq-ms) ease-in-out, opacity calc(var(--faq-ms) * .75) ease-in-out;
+}
+.faq details[data-abierta] .faq-cajon { grid-template-rows: 1fr; opacity: 1; }
+.faq-cajon > p { overflow: hidden; padding-bottom: 0; font-size: 17px; color: var(--suave); max-width: 64ch; margin: 0; transition: padding-bottom var(--faq-ms) ease-in-out; }
+.faq details[data-abierta] .faq-cajon > p { padding-bottom: 24px; }
+.faq code { color: var(--texto); }
+@media (scripting: none) {
+  .faq details[open] .faq-cajon { grid-template-rows: 1fr; opacity: 1; }
+  .faq details[open] .faq-cajon > p { padding-bottom: 24px; }
+  .faq details[open] .faq-chevron { transform: rotate(180deg); }
+}
+@media (max-width: 860px) {
+  .preguntas .env { grid-template-columns: 1fr; gap: 28px; }
+  .preguntas .lateral { position: static; }
+}
+
+/* ---------- la comparativa ----------
+   «¿Cuál usas ahora?»: una pestaña por alternativa y, debajo, la app frente a esa. Las
+   pestañas son botones de radio dentro de su etiqueta: cambian de panel sin JavaScript (con
+   :has()), con el dedo y con las flechas del teclado. */
+.rival-pregunta { margin-top: 44px; font: 700 clamp(20px, 1.4vw, 24px)/1.3 var(--letra-titulo); }
+.rivales {
+  margin-top: 14px; gap: 26px; border-bottom: 0; box-shadow: inset 0 -1px var(--borde);
+  overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain;
+}
+.rivales::-webkit-scrollbar { display: none; }
+.rivales .pestana { position: relative; margin-bottom: 0; font-size: 17px; }
+.rivales input { position: absolute; inset: 0; margin: 0; opacity: 0; cursor: pointer; appearance: none; }
+.rivales .pestana:has(:checked) { color: var(--texto); border-bottom-color: var(--azul); }
+.rivales .pestana:has(:focus-visible) { outline: 2px solid var(--azul); outline-offset: -2px; border-radius: 6px; }
+@supports selector(:has(*)) {
+  .frente { display: none; }
+  .comparativa:has([value="appgroup"]:checked) #frente-appgroup,
+  .comparativa:has([value="windows11"]:checked) #frente-windows11,
+  .comparativa:has([value="original"]:checked) #frente-original,
+  .comparativa:has([value="pike"]:checked) #frente-pike,
+  .comparativa:has([value="barras10"]:checked) #frente-barras10,
+  .comparativa:has([value="explorerpatcher"]:checked) #frente-explorerpatcher,
+  .comparativa:has([value="windhawk"]:checked) #frente-windhawk { display: block; }
+}
+/* Sin :has(), las siete seguidas, cada una con su nombre. */
+.frente-nombre { display: none; }
+@supports not selector(:has(*)) { .frente-nombre { display: block; margin-top: 48px; font: 700 22px/1.2 var(--letra-titulo); } }
+.cabeza-seccion .fan.suelta { display: inline-block; margin-top: 18px; max-width: 18em; }
+/* En pantalla ancha la nota a mano va en el hueco de la derecha del titular, no debajo. */
+@media (min-width: 1180px) {
+  .comparativa .cabeza-seccion { max-width: none; display: grid; grid-template-columns: minmax(0, 760px) auto; column-gap: 72px; align-items: center; }
+  .comparativa .cabeza-seccion > :not(.fan) { grid-column: 1; }
+  .comparativa .cabeza-seccion .fan.suelta { grid-column: 2; grid-row: 1 / 3; margin-top: 0; font-size: clamp(22px, 1.6vw, 28px); }
+}
+.frente-lista .frente-nada { display: block; color: var(--suave); }
+html.motion .frente { animation: frente-entra .32s cubic-bezier(.4, 0, .2, 1); }
+@keyframes frente-entra { from { opacity: 0; translate: 0 calc(8px * var(--motion-gain, 1)); } }
+.frente-resumen { margin-top: 36px; max-width: 70ch; font-size: clamp(18px, 1.25vw, 21px); color: var(--suave); }
+.frente-resumen b { color: var(--texto); }
+.frente-dos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(32px, 4vw, 72px); }
+.frente-sub { margin: 48px 0 22px; font: 700 clamp(22px, 1.6vw, 28px)/1.2 var(--letra-titulo); letter-spacing: -0.02em; }
+.frente-lista { list-style: none; display: grid; gap: 18px; }
+.frente-lista li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 14px; align-items: start; }
+.frente-ic { width: 22px; height: 22px; margin-top: 2px; color: var(--azul); }
+.frente-lista.pierde .frente-ic { color: var(--suave); }
+.frente-lista b { display: block; font: 700 18px/1.3 var(--letra-titulo); }
+.frente-lista span { display: block; margin-top: 3px; color: var(--suave); font-size: 16px; }
+.frente-empatan { margin-top: 40px; max-width: 90ch; color: var(--suave); font-size: 16.5px; }
+.frente-empatan b { color: var(--texto); }
+.fuentes { margin-top: 30px; color: var(--suave); font-size: 15px; max-width: 90ch; }
+.fuentes a { color: var(--suave); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.fuentes a:hover { color: var(--texto); }
+@media (max-width: 860px) {
+  .frente-dos { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .rivales { margin-inline: -20px; padding-inline: 20px; }
+}
+@media (max-width: 520px) { .rivales { gap: 22px; } .rivales .pestana { font-size: 16px; } }
+
+/* ---------- de dónde sale: texto para leer, sin cajas ---------- */
+.historia .env { max-width: 760px; text-align: center; }
+.historia h2 { margin-bottom: 22px; }
+.story { font-size: clamp(18px, 1.3vw, 21px); color: var(--suave); }
+.story b { color: var(--texto); }
+.story + .story { margin-top: 18px; }
+.story-credits { margin-top: 32px; font-size: 15.5px; color: var(--suave); }
+.story-credits a { white-space: nowrap; color: var(--suave); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.story-credits a:hover { color: var(--texto); }
+
+/* ---------- el cierre ---------- */
+.cierre .botones { justify-content: center; margin-top: 30px; }
+.cierre .entradilla { margin-inline: auto; }
+
+/* ---------- el pie, por grupos con nombre ---------- */
+.pie { border-top: 1px solid var(--linea); padding: 64px 0 40px; margin-top: 24px; color: var(--suave); }
+.pie-rejilla { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 32px; }
+.pie .quien p { margin-top: 14px; font-size: 15.5px; max-width: 30ch; }
+.pie-titulo { font: 700 16px/1.3 var(--letra); color: var(--texto); margin-bottom: 14px; letter-spacing: 0; }
+.pie ul { list-style: none; display: grid; gap: 10px; font-size: 15.5px; }
+.pie li a { color: var(--suave); }
+.pie li a:hover { color: var(--texto); }
+.pie-abajo { display: flex; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-top: 52px; font-size: 15px; }
+.pie-abajo a { color: var(--suave); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.pie-abajo a:hover { color: var(--texto); }
+@media (max-width: 860px) {
+  .pie-rejilla { grid-template-columns: 1fr 1fr; }
+  .pie .quien { grid-column: 1 / -1; }
+  .pie ul { gap: 0; }
+  .pie li a { display: inline-flex; align-items: center; min-height: 44px; }
+  .pie-titulo { margin-bottom: 4px; }
+}
+/* La válvula del movimiento: un enlace normal, y el que se ve depende de si ya está puesta. */
+.valvula.con-mov, html.quieto .valvula.sin-mov { display: none; }
+html.quieto .valvula.con-mov { display: inline-flex; }
+
+/* ---------- las páginas de leer: novedades, soporte y privacidad ---------- */
+.leer { position: relative; padding: clamp(36px, 6vh, 72px) 0 clamp(56px, 8vh, 96px); }
+.leer::before {
+  content: ""; position: absolute; inset: -180px 0 auto; height: 760px; z-index: -1; pointer-events: none;
+  background: radial-gradient(46% 50% at 22% 30%, var(--halo), transparent 72%);
+}
+.leer-cabeza { max-width: 900px; }
+.leer-cabeza h1 { font-size: clamp(40px, 4.4vw, 72px); }
+.leer-cabeza .entradilla { margin-top: 18px; }
+.leer-rejilla {
+  display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: clamp(36px, 4.5vw, 84px);
+  align-items: start; margin-top: clamp(36px, 6vh, 60px);
+}
+.leer-indice {
+  position: sticky; top: calc(var(--nav-alto) + 12px); display: grid; align-content: start;
+  max-height: calc(100vh - var(--nav-alto) - 32px); overflow-y: auto; scrollbar-width: none;
+}
+.leer-indice::-webkit-scrollbar { display: none; }
+.leer-indice a {
+  display: block; padding: 7px 0 7px 16px; border-left: 2px solid var(--linea);
+  color: var(--suave); font-size: 16px; font-weight: 600; line-height: 1.35;
+  transition: color .18s, border-color .18s;
+}
+.leer-indice a:hover { color: var(--texto); text-decoration: none; }
+.leer-indice a[aria-current="true"] { color: var(--texto); border-left: 3px solid var(--azul); padding-left: 15px; }
+.texto { min-width: 0; font-size: 17.5px; overflow-wrap: break-word; }
+.texto > section { scroll-margin-top: calc(var(--nav-alto) + 18px); }
+.texto > section + section { margin-top: clamp(64px, 9vh, 104px); }
+.texto h2 { font-size: clamp(30px, 2.3vw, 40px); }
+.texto h3 { margin-top: 34px; font-size: clamp(19px, 1.35vw, 22px); line-height: 1.3; letter-spacing: -0.015em; font-weight: 700; }
+.texto p, .texto .lista { max-width: 68ch; }
+.texto p { margin-top: 16px; }
+.texto h2 + p, .texto h2 + .lista { margin-top: 20px; }
+.texto h3 + p { margin-top: 8px; }
+.texto b, .texto strong { font-weight: 700; }
+.texto code {
+  padding: 2px 6px; border-radius: 6px; background: var(--realce-medio);
+  font-family: var(--letra-mono); font-size: .86em; overflow-wrap: anywhere;
+}
+.texto .lista { margin-top: 18px; }
+.texto .lista li { display: block; position: relative; padding-left: 32px; }
+.texto .lista li::before {
+  content: ""; position: absolute; left: 2px; top: .3em; width: 19px; height: 19px; background: var(--azul);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m20 6-11 11-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m20 6-11 11-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.texto .botones { margin-top: 24px; }
+.texto .faq { margin-top: 24px; }
+.texto .faq summary { font-size: clamp(18px, 1.25vw, 20px); }
+.leer-lado { display: none; }
+@media (min-width: 1600px) {
+  .leer-rejilla.con-lado { grid-template-columns: 230px minmax(0, 1fr) clamp(300px, 30%, 520px); }
+  .leer-lado { display: block; position: sticky; top: calc(var(--nav-alto) + 18px); margin-top: 8px; }
+  .leer-lado img { width: 100%; height: auto; border-radius: 12px; box-shadow: var(--sombra-foto); }
+  .leer-lado figcaption { margin-top: 12px; font-size: 15px; color: var(--suave); }
+}
+@media (max-width: 900px) {
+  .leer-rejilla { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .leer-indice {
+    position: relative; top: auto; min-width: 0; max-height: none; display: flex; gap: 4px 22px; overflow-x: auto;
+    margin: 0 -20px 36px; padding: 0 20px 8px; border-bottom: 1px solid var(--linea);
+  }
+  .leer-indice a { flex: none; border-left: 0; padding: 11px 0; }
+  .leer-indice a[aria-current="true"] { border-left: 0; padding-left: 0; text-decoration: underline 3px var(--azul); text-underline-offset: 10px; }
+  .texto { font-size: 17px; }
+}
+.novedades .version { margin-top: 8px; color: var(--suave); font-size: 16px; }
+.novedades .version a { font-weight: 650; }
+.novedades .texto > section + section { margin-top: clamp(48px, 7vh, 72px); }
+.novedades .texto h2 { font-size: clamp(24px, 1.8vw, 30px); }
+
+/* ---------- la 404 ---------- */
+.perdida { padding: clamp(64px, 14vh, 160px) 0 clamp(64px, 12vh, 140px); text-align: center; }
+.perdida img { display: block; width: 72px; height: 72px; margin: 0 auto 28px; }
+.perdida h1 { font-size: clamp(40px, 5vw, 76px); }
+.perdida .entradilla { margin-inline: auto; }
+.perdida .botones { justify-content: center; margin-top: 32px; }
+
+/* ---------- entradas al aparecer ----------
+   El bloque sube un poco y se enciende. La subida va por el dial; la opacidad no. Lo que ya
+   está a la vista se enciende siempre, aunque el observador no diga nada (leer.js). */
+html.motion [data-reveal] {
+  opacity: 0; transform: translate3d(0, calc(24px * var(--motion-gain, 1)), 0);
+  transition: opacity .7s var(--ease), transform .85s var(--ease);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+html.motion [data-reveal].in { opacity: 1; transform: none; }
+
+/* ---------- sin tarjeta gráfica: el modo ligero (html[data-ligero], lo pone leer.js) ----------
+   Sin aceleración por hardware cada desenfoque se recalcula al bajar. Con gráfica nada de esto
+   se pone. Las animaciones no se tocan: la política de la casa es que se vean siempre. */
+html[data-ligero] *,
+html[data-ligero] *::before,
+html[data-ligero] *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+html[data-ligero] .barra-dentro { background: var(--fondo); }
+html[data-ligero] .panel { background: #202020f0; }
+html[data-ligero] .panel.claro { background: #f3f3f3f2; }
+html[data-ligero] .escaparate::before {
+  filter: none; border-radius: 0;
+  inset: calc(16% - min(110px, 6vw)) calc(12% - min(120px, 6vw)) calc(12% - min(80px, 4vw));
+  background:
+    radial-gradient(closest-side, #4cc2ff 0 58%, #4cc2ff80 73%, #4cc2ff1a 88%, transparent) 0 50% / 60% 100% no-repeat,
+    radial-gradient(closest-side, #0067c0 0 58%, #0067c080 73%, #0067c01a 88%, transparent) 100% 50% / 60% 100% no-repeat;
+}
