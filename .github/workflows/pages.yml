@@ -25,6 +25,19 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # The English pages, the changelog, the comparison and the fingerprints are generated
+      # from the Spanish source: if running the generator changes anything, someone forgot to
+      # run it before committing, and the site would go out half updated.
+      - name: Check the generated pages are up to date
+        run: |
+          node site/_herramientas/generar-en.mjs
+          git diff --exit-code -- site
+      # The tools stay in the repository, not on the website.
+      - name: Leave the tools out of the site
+        run: rm -rf site/_herramientas
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
