@@ -382,6 +382,14 @@ h2 { font-size: clamp(32px, 3.2vw, 54px); line-height: 1.08; letter-spacing: -0.
   background: linear-gradient(120deg, #4cc2ff, #0067c0); filter: blur(80px);
   opacity: var(--brillo-demo); border-radius: 60px;
 }
+/* La demo arranca quieta (demo.js le pone .dormida y se la quita cuando la página está
+   tranquila): sin el brillo ni los cristales en el primer dibujado, que es lo que más le cuesta
+   a la gráfica. Al encenderse, el brillo entra con un fundido. */
+.escaparate:not(.dormida)::before { transition: opacity .8s var(--ease); }
+.escaparate.dormida::before { opacity: 0; }
+.escaparate.dormida *,
+.escaparate.dormida *::before,
+.escaparate.dormida *::after { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 .escaparate > .env { max-width: 1240px; }
 .demo-cabeza { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 28px; flex-wrap: wrap; margin-bottom: 16px; }
 .demo-cabeza > .pestanas { border-bottom: 0; }

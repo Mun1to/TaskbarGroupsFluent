@@ -17,6 +17,11 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
   const seccion = document.getElementById("pruebalo");
   const pantalla = document.getElementById("pantalla");
   if (!seccion || !pantalla) return;
+  // La demo arranca quieta: sin el brillo de detrás ni los cristales, que son lo que más le
+  // cuesta a la gráfica en el primer dibujado. Se enciende cuando la página está tranquila
+  // (el evento tbgf:quieta de leer.js) o en cuanto alguien la toca.
+  seccion.classList.add("dormida");
+  function despierta() { seccion.classList.remove("dormida"); }
   const env = seccion.querySelector(".env");
   const hueco = seccion.querySelector(".hueco-demo");
   const monitor = seccion.querySelector(".monitor");
@@ -242,6 +247,7 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
   }
 
   function abrir(g, forzar) {
+    despierta();
     cerrarMenu();
     if (abierto && abierto !== g) {
       abierto.btn.classList.remove("activo");
@@ -434,6 +440,7 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
 
   function abrirCapa(e) {
     if (capa || !movil.matches) return;
+    despierta();
     quien = e && e.currentTarget instanceof HTMLElement ? e.currentTarget : null;
     capa = true;
     // La sección se queda con su alto: la página de debajo no se mueve ni un píxel.
@@ -522,8 +529,20 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
   vigia.observe(pantalla);
   if (hueco) vigia.observe(hueco);
 
-  // Al llegar, el primer grupo se abre solo para que se vea qué hace la app.
-  setTimeout(() => { if (!tocado) abrir(GRUPOS[0]); }, 900);
+  // Al llegar, la demo se enciende cuando la página está tranquila y medio segundo después el
+  // primer grupo se abre solo, para que se vea qué hace la app. Si leer.js no estuviera, a los 4 s.
+  let encendida = false;
+  const encender = () => {
+    if (encendida) return;
+    encendida = true;
+    despierta();
+    setTimeout(() => { if (!tocado) abrir(GRUPOS[0]); }, 500);
+  };
+  if (window.tbgfQuieta) encender();
+  else {
+    document.addEventListener("tbgf:quieta", encender, { once: true });
+    setTimeout(encender, 4000);
+  }
 })();
 
 /* ================================================== las funciones, paso a paso === */

@@ -6,6 +6,31 @@
 
 const INGLES = document.documentElement.lang === "en";
 
+/* ------------------------------------------------- cuando la página está tranquila */
+// Lo que no hace falta para el primer vistazo (encender la demo, mirar si hay tarjeta gráfica)
+// espera a que la página haya cargado y lleve medio segundo sin bajar (como mucho 5 s después
+// de cargar): así no se pelea con el primer dibujado ni con el scroll. Avisa con el evento
+// `tbgf:quieta` en document y deja `window.tbgfQuieta` en true para quien llegue tarde.
+(function () {
+  const TIPOS = ["scroll", "wheel", "touchmove", "keydown"];
+  let hecho = false, espera = 0;
+  const ir = () => {
+    if (hecho) return;
+    hecho = true;
+    TIPOS.forEach((t) => removeEventListener(t, otraVez, true));
+    const avisar = () => { window.tbgfQuieta = true; document.dispatchEvent(new Event("tbgf:quieta")); };
+    if ("requestIdleCallback" in window) requestIdleCallback(avisar, { timeout: 1000 }); else avisar();
+  };
+  const otraVez = () => { clearTimeout(espera); espera = setTimeout(ir, 500); };
+  const empezar = () => {
+    TIPOS.forEach((t) => addEventListener(t, otraVez, { capture: true, passive: true }));
+    otraVez();
+    setTimeout(ir, 5000);
+  };
+  if (document.readyState === "complete") empezar();
+  else addEventListener("load", empezar, { once: true });
+})();
+
 /* ------------------------------------------------- sin tarjeta gráfica, más ligera */
 // Sin aceleración por hardware (el ordenador de clase de Munito, muchos de empresa y los
 // viejos), el procesador hace lo que hacía la tarjeta: cada desenfoque se recalcula al bajar.
@@ -73,26 +98,12 @@ const INGLES = document.documentElement.lang === "en";
     w.onerror = () => { w.terminate(); aqui(); };
   };
   // Aun en el Worker, el contexto lo crea el proceso de la gráfica, y ahí compite con el primer
-  // dibujado de la página y con el scroll. Se espera a que haya cargado y pintado, y a que lleve
-  // un momento sin bajar (como mucho 6 s): sin gráfica, el modo ligero llega un segundo después.
-  const cuandoQuieta = (hacer) => {
-    let hecho = false, espera = 0;
-    const ir = () => {
-      if (hecho) return;
-      hecho = true;
-      ["scroll", "wheel", "touchmove", "keydown"].forEach((t) => removeEventListener(t, otraVez, true));
-      if ("requestIdleCallback" in window) requestIdleCallback(hacer, { timeout: 1000 }); else hacer();
-    };
-    const otraVez = () => { clearTimeout(espera); espera = setTimeout(ir, 500); };
-    const empezar = () => setTimeout(() => {
-      ["scroll", "wheel", "touchmove", "keydown"].forEach((t) => addEventListener(t, otraVez, { capture: true, passive: true }));
-      otraVez();
-      setTimeout(ir, 5000);
-    }, 1000);
-    if (document.readyState === "complete") empezar();
-    else addEventListener("load", empezar, { once: true });
-  };
-  cuandoQuieta(enWorker);
+  // dibujado de la página y con el scroll. Se espera a que la página esté tranquila, y 800 ms
+  // más para no coincidir con la demo, que se enciende entonces: sin gráfica, el modo ligero
+  // llega un par de segundos después de cargar.
+  const luego = () => setTimeout(enWorker, 800);
+  if (window.tbgfQuieta) luego();
+  else document.addEventListener("tbgf:quieta", luego, { once: true });
 })();
 
 /* ---------------------------------------------------------- el otro idioma */
