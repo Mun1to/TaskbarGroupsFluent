@@ -34,6 +34,7 @@ internal sealed class CardMenu
         public bool On;
         public Action? Run;
         public Action<bool>? Set;
+        public bool Off;
     }
 
     private readonly List<Line> _lines = new();
@@ -44,9 +45,12 @@ internal sealed class CardMenu
     public void Header(Icon? icon, string title, string? detail = null)
         => _lines.Add(new Line { Kind = Kind.Header, Icon = icon, Text = title, Note = detail });
 
-    /// <summary>A line that does something and closes the menu.</summary>
-    public void Add(string glyph, string text, Action run, string? note = null)
-        => _lines.Add(new Line { Kind = Kind.Item, Glyph = glyph, Text = text, Note = note, Run = run });
+    /// <summary>
+    /// A line that does something and closes the menu. One that can do nothing
+    /// right now is shown greyed and can't be picked, as in Windows' own menus.
+    /// </summary>
+    public void Add(string glyph, string text, Action run, string? note = null, bool enabled = true)
+        => _lines.Add(new Line { Kind = Kind.Item, Glyph = glyph, Text = text, Note = note, Run = run, Off = !enabled });
 
     /// <summary>A line with a switch. It flips in place and the menu stays open.</summary>
     public void Toggle(string glyph, string text, bool on, Action<bool> set, string? note = null)
@@ -432,7 +436,7 @@ internal sealed class CardMenuWindow : Form
         int x = r.Left + S(RowX);
         bool lit = line.Kind == CardMenu.Kind.Toggle && line.On;
         var gr = new Rectangle(x, r.Top, S(GlyphBox), r.Height);
-        TextRenderer.DrawText(g, line.Glyph, _glyph, gr, lit ? _p.Accent : _p.Glyph, back,
+        TextRenderer.DrawText(g, line.Glyph, _glyph, gr, line.Off ? _p.Off : lit ? _p.Accent : _p.Glyph, back,
             TextFormatFlags.NoPrefix | TextFormatFlags.SingleLine | TextFormatFlags.HorizontalCenter
             | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding);
         x += S(GlyphBox + Gap);
@@ -445,19 +449,20 @@ internal sealed class CardMenuWindow : Form
             right = sw.Left - S(16);
         }
 
+        Color text = line.Off ? _p.Off : _p.Text;
         if (line.Note is null)
         {
             TextRenderer.DrawText(g, line.Text, _label, new Rectangle(x, r.Top, right - x, r.Height),
-                _p.Text, back, Flags | TextFormatFlags.EndEllipsis);
+                text, back, Flags | TextFormatFlags.EndEllipsis);
             return;
         }
 
         int labelH = _label.Height, noteH = _note.Height, both = labelH + S(1) + noteH;
         int top = r.Top + (r.Height - both) / 2;
         TextRenderer.DrawText(g, line.Text, _label, new Rectangle(x, top, right - x, labelH),
-            _p.Text, back, Flags | TextFormatFlags.EndEllipsis);
+            text, back, Flags | TextFormatFlags.EndEllipsis);
         TextRenderer.DrawText(g, line.Note, _note, new Rectangle(x, top + labelH + S(1), right - x, noteH),
-            _p.Note, back, Flags | TextFormatFlags.EndEllipsis);
+            line.Off ? _p.Off : _p.Note, back, Flags | TextFormatFlags.EndEllipsis);
     }
 
     /// <summary>The switch of the app's settings: the accent with a white knob when on, an outline when off.</summary>
@@ -496,7 +501,7 @@ internal sealed class CardMenuWindow : Form
 
     // ---- Mouse and keyboard ------------------------------------------------------
 
-    private bool Pickable(int i) => i >= 0 && i < _lines.Count && _lines[i].Kind is CardMenu.Kind.Item or CardMenu.Kind.Toggle;
+    private bool Pickable(int i) => i >= 0 && i < _lines.Count && _lines[i].Kind is CardMenu.Kind.Item or CardMenu.Kind.Toggle && !_lines[i].Off;
 
     private int LineAt(Point p)
     {
@@ -578,7 +583,7 @@ internal sealed class CardMenuWindow : Form
     // ---- Colours -----------------------------------------------------------------
 
     internal sealed record Palette(Color Back, Color Text, Color Note, Color Glyph, Color Hot, Color Line,
-        Color Border, Color SwitchOff, Color Accent)
+        Color Border, Color SwitchOff, Color Accent, Color Off)
     {
         /// <summary>Light or dark as the app is, with the Windows accent for what is on.</summary>
         public static Palette Current()
@@ -591,13 +596,13 @@ internal sealed class CardMenuWindow : Form
                     Note: Color.FromArgb(0x55, 0x55, 0x55), Glyph: Color.FromArgb(0x40, 0x40, 0x40),
                     Hot: Color.FromArgb(0xEA, 0xEA, 0xEA), Line: Color.FromArgb(0xE3, 0xE3, 0xE3),
                     Border: Color.FromArgb(0xD5, 0xD5, 0xD5), SwitchOff: Color.FromArgb(0x6E, 0x6E, 0x6E),
-                    Accent: accent)
+                    Accent: accent, Off: Color.FromArgb(0xA0, 0xA0, 0xA0))
                 : new Palette(
                     Back: Color.FromArgb(0x2B, 0x2B, 0x2B), Text: Color.FromArgb(0xFF, 0xFF, 0xFF),
                     Note: Color.FromArgb(0xC2, 0xC2, 0xC2), Glyph: Color.FromArgb(0xD6, 0xD6, 0xD6),
                     Hot: Color.FromArgb(0x3A, 0x3A, 0x3A), Line: Color.FromArgb(0x3D, 0x3D, 0x3D),
                     Border: Color.FromArgb(0x46, 0x46, 0x46), SwitchOff: Color.FromArgb(0xA8, 0xA8, 0xA8),
-                    Accent: accent);
+                    Accent: accent, Off: Color.FromArgb(0x78, 0x78, 0x78));
         }
 
         /// <summary>

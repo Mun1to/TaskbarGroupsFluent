@@ -175,12 +175,14 @@ internal sealed class TrayGroups : IDisposable
         if (source is not null) menu.Add(CardMenu.Glyphs.Folder, TrayText.OpenFolder, () => StartPanel(name, "--open-all"));
         else menu.Add(CardMenu.Glyphs.OpenAll, TrayText.OpenAll, () => StartPanel(name, "--open-all"));
 
-        // Issue #20: a bin by the clock does what the bin on the desktop does.
+        // Issue #20: a bin by the clock does what the bin on the desktop does, and,
+        // as there, an empty bin greys both out (issue #24).
         if (RecycleBin.Is(source))
         {
+            bool full = !RecycleBin.LooksEmpty();
             menu.Separator();
-            menu.Add(CardMenu.Glyphs.Empty, TrayText.EmptyBin, () => RecycleBin.Empty(IntPtr.Zero));
-            menu.Add(CardMenu.Glyphs.Restore, TrayText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, TrayText.RestoreAllQuestion, TrayText.RecycleBinTitle));
+            menu.Add(CardMenu.Glyphs.Empty, TrayText.EmptyBin, () => RecycleBin.Empty(IntPtr.Zero), enabled: full);
+            menu.Add(CardMenu.Glyphs.Restore, TrayText.RestoreAll, () => RecycleBin.RestoreAll(IntPtr.Zero, TrayText.RestoreAllQuestion, TrayText.RecycleBinTitle), enabled: full);
         }
 
         menu.Separator();

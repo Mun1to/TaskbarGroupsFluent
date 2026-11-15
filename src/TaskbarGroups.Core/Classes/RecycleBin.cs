@@ -34,6 +34,22 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
+        /// Whether the bin is known to be empty, asked for a moment only: with a
+        /// drive asleep the answer can take seconds, and a menu must not wait for
+        /// it. Not knowing in time counts as not empty, and <see cref="Empty"/> and
+        /// <see cref="RestoreAll"/> look again before doing anything.
+        /// </summary>
+        public static bool LooksEmpty(int waitMs = 150)
+        {
+            try
+            {
+                var ask = System.Threading.Tasks.Task.Run(Count);
+                return ask.Wait(waitMs) && ask.Result == 0;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
         /// Empties the bin. Windows asks first, in its own words, and shows its
         /// progress; nothing happens if the bin is already empty.
         /// </summary>
