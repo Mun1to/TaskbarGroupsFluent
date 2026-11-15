@@ -17,7 +17,9 @@ namespace TaskbarGroups.Core
         //  v4: v3 only fixed the small sizes; 256px icons were still flipped.
         //  v5: a browser's web app (chrome_proxy.exe --app-id=…) wears its own icon,
         //      not the browser's (issue #15).
-        private const int CurrentVersion = 5;
+        //  v6: the shell's padded app tile (a small logo centred in a large canvas)
+        //      now falls back to the .exe icon.
+        private const int CurrentVersion = 6;
 
         private static string MarkerPath => Path.Combine(Paths.ConfigPath, ".iconcache-version");
 

@@ -251,7 +251,7 @@ namespace TaskbarGroups.Core
         public static Bitmap? GetIcon(string launchId, int size)
         {
             Bitmap? shell = GetShellImage("shell:AppsFolder\\" + launchId, size);
-            if (shell == null || IsGenericPlaceholder(shell))
+            if (shell == null || IsGenericPlaceholder(shell) || IsPaddedTile(shell))
             {
                 Bitmap? fromExe = GetIconFromTargetExe(launchId, size);
                 if (fromExe != null) { shell?.Dispose(); return fromExe; }
