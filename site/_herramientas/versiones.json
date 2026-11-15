@@ -1,8 +1,8 @@
 [
   {
-    "version": "1.10.4",
+    "version": "1.10.5",
     "desde": "1.10.0",
-    "fecha": "2026-11-14",
+    "fecha": "2026-11-16",
     "es": {
       "titulo": "Ancla arrastrando y dale a cada app su icono",
       "puntos": [
@@ -11,7 +11,8 @@
         "<b>La Papelera, en un grupo</b>: un grupo puede enseñar la Papelera, también junto al reloj, y con su clic derecho la vacías o devuelves cada cosa a su sitio.",
         "<b>Nuevo menú junto al reloj</b>: el clic derecho en el icono de la app o de un grupo saca una tarjeta con el estilo de la app, un icono en cada línea e interruptores para abrir al pasar el cursor y abrir al instante, en claro u oscuro y con tu color de acento.",
         "<b>Funciona con Start11 y StartAllBack</b>: abrir al pasar reconoce el grupo por su icono cuando el cursor se para, también con la barra en dos filas, y si haces clic derecho antes de que salga el panel, gana el clic derecho.",
-        "<b>Un segundo clic lo cierra</b>: pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Además, guardar un grupo ya no reinicia la barra si su icono y su nombre no cambian, y el panel ya no sale en Alt+Tab."
+        "<b>Un segundo clic lo cierra</b>: pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Además, guardar un grupo ya no reinicia la barra si su icono y su nombre no cambian, y el panel ya no sale en Alt+Tab.",
+        "<b>Iconos nítidos</b>: las apps que solo traen un icono pequeño, como RustDesk, ya no salen diminutas en un grupo (lo arregló g3ck0), y con la Papelera vacía su menú junto al reloj deja Vaciar y Restaurar en gris."
       ]
     },
     "en": {
@@ -22,7 +23,8 @@
         "<b>A Recycle Bin group</b>: a group can show the Recycle Bin, by the clock too, and its right-click empties it or puts everything back where it was.",
         "<b>New menu by the clock</b>: right-clicking the app's icon or a group's brings up a card in the app's own style, with an icon on every line and switches for open on hover and instant opening, light or dark and in your accent colour.",
         "<b>Hover works on more taskbars</b>: with Start11 and StartAllBack it recognises the group by its icon once the cursor rests, also on a taskbar with two rows, and if you right-click before the panel shows, the right-click wins.",
-        "<b>A second click closes it</b>: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, and the panel no longer shows up in Alt+Tab."
+        "<b>A second click closes it</b>: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, and the panel no longer shows up in Alt+Tab.",
+        "<b>Sharp icons</b>: apps that only ship a small icon, like RustDesk, no longer look tiny in a group (fixed by g3ck0), and with the Recycle Bin empty its menu by the clock greys out Empty and Restore."
       ]
     }
   },
