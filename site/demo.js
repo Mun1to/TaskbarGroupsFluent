@@ -514,9 +514,10 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
   marcar();
   pistas();
   ponerPapel();
-  medir();
   tic();
   setInterval(tic, 30000);
+  // medir() no se llama aquí: el ResizeObserver la llama en el primer diseño, antes de pintar,
+  // y llamarla a mitad de la página forzaba un diseño de más en el arranque.
   const vigia = new ResizeObserver(medir);
   vigia.observe(pantalla);
   if (hueco) vigia.observe(hueco);
@@ -620,11 +621,21 @@ const limitar = (n, a, b) => Math.min(b, Math.max(a, n));
   });
   const todo = () => cajas.forEach(toca);
 
+  // El vídeo viene con preload="none": pedirlo al cargar la página arrancaba el descodificador
+  // de vídeo de la gráfica justo mientras pintaba lo primero (medido el 15-nov: unos 55 ms en la
+  // gráfica y 170 en el hilo de medios, antes del primer pintado). Se pide cuando se acerca.
+  const cerca = new IntersectionObserver((vistos) => vistos.forEach((e) => {
+    if (!e.isIntersecting) return;
+    const v = e.target.querySelector("video");
+    if (v.preload === "none") v.preload = "auto";
+    cerca.unobserve(e.target);
+  }), { rootMargin: "100% 0px" });
   const ojo = new IntersectionObserver((vistos) => {
     vistos.forEach((e) => estado.set(e.target, e.isIntersecting));
     todo();
   }, { threshold: 0.35 });
   cajas.forEach((caja) => {
+    cerca.observe(caja);
     ojo.observe(caja);
     caja.querySelector(".video-pausa").addEventListener("click", () => {
       pausado = !pausado;

@@ -1028,6 +1028,31 @@ html.motion [data-reveal] {
 }
 html.motion [data-reveal].in { opacity: 1; transform: none; }
 
+/* ---------- lo de abajo no se diseña hasta que se acerca ----------
+   El primer diseño de la portada entera costaba ~500 ms en un Chrome recién abierto (medido el
+   15-nov, con el <body> oculto hasta el load para cronometrarlo solo), frente a ~300 la web
+   anterior y winshotx.com. Con esto, lo que queda por debajo de la primera pantalla se diseña
+   cuando se acerca, y el arranque baja a lo mismo que ellas. Cada alto es el de esa sección a
+   1440 px; «auto» hace que, una vez vista, guarde la suya. Ninguna lleva nada fijo ni nada que
+   se salga de su caja: el recorte que trae no se ve. */
+#funciones { content-visibility: auto; contain-intrinsic-size: auto 1460px; }
+#comparativa { content-visibility: auto; contain-intrinsic-size: auto 1080px; }
+#novedades { content-visibility: auto; contain-intrinsic-size: auto 680px; }
+#preguntas { content-visibility: auto; contain-intrinsic-size: auto 1190px; }
+#historia { content-visibility: auto; contain-intrinsic-size: auto 460px; }
+.seccion.cierre { content-visibility: auto; contain-intrinsic-size: auto 350px; }
+.pie { content-visibility: auto; contain-intrinsic-size: auto 350px; }
+/* En el móvil y la tableta todo va en una columna y crece: entre lo medido a 390 y a 768 px. */
+@media (max-width: 860px) {
+  #funciones { contain-intrinsic-size: auto 2600px; }
+  #comparativa { contain-intrinsic-size: auto 1550px; }
+  #novedades { contain-intrinsic-size: auto 1130px; }
+  #preguntas { contain-intrinsic-size: auto 1500px; }
+  #historia { contain-intrinsic-size: auto 530px; }
+  .seccion.cierre { contain-intrinsic-size: auto 470px; }
+  .pie { contain-intrinsic-size: auto 800px; }
+}
+
 /* ---------- sin tarjeta gráfica: el modo ligero (html[data-ligero], lo pone leer.js) ----------
    Sin aceleración por hardware cada desenfoque se recalcula al bajar. Con gráfica nada de esto
    se pone. Las animaciones no se tocan: la política de la casa es que se vean siempre. */

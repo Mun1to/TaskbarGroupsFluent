@@ -9,31 +9,90 @@ const INGLES = document.documentElement.lang === "en";
 /* ------------------------------------------------- sin tarjeta gráfica, más ligera */
 // Sin aceleración por hardware (el ordenador de clase de Munito, muchos de empresa y los
 // viejos), el procesador hace lo que hacía la tarjeta: cada desenfoque se recalcula al bajar.
-// Se mira UNA vez, después del primer pintado: un contexto WebGL con
-// `failIfMajorPerformanceCaveat` se niega cuando solo se dibujaría por software. Entonces se
-// pone <html data-ligero> y el CSS quita lo que pesa sin cambiar el diseño. `?ligero=1` lo
-// fuerza y `?ligero=0` lo quita. Las animaciones no se tocan.
+// Se mira UNA vez por página: un contexto WebGL con `failIfMajorPerformanceCaveat` se niega
+// cuando solo se dibujaría por software. Entonces se pone <html data-ligero> y el CSS quita lo
+// que pesa sin cambiar el diseño. `?ligero=1` lo fuerza y `?ligero=0` lo quita. Las
+// animaciones no se tocan.
+// Pedir ese contexto en frío tarda 280 a 400 ms y deja el hilo principal parado (medido el
+// 15-nov en un portátil con Intel Arc: era el mayor parón del arranque). Por eso se pide en un
+// Worker, con un OffscreenCanvas, y la página sigue a lo suyo; solo si el navegador no deja
+// WebGL en un Worker se mira aquí, cuando la página ya está quieta.
 (function () {
-  const porSoftware = () => {
-    const q = new URLSearchParams(location.search).get("ligero");
-    if (q === "1") return true;
-    if (q === "0") return false;
+  const raiz = document.documentElement;
+  const q = new URLSearchParams(location.search).get("ligero");
+  if (q === "1") { raiz.setAttribute("data-ligero", ""); return; }
+  if (q === "0") return;
+  // Una vez por visita: lo que salió se guarda para las demás páginas de esta pestaña.
+  const CLAVE = "tbgf-ligero";
+  let visto = null;
+  try { visto = sessionStorage.getItem(CLAVE); } catch (e) { /* sin almacenamiento */ }
+  if (visto === "1") { raiz.setAttribute("data-ligero", ""); return; }
+  if (visto === "0") return;
+  const guardar = (v) => { try { sessionStorage.setItem(CLAVE, v); } catch (e) { /* sin almacenamiento */ } };
+  const ligero = () => raiz.setAttribute("data-ligero", "");
+
+  // Lo mismo en los dos sitios: «1» es dibujo por software, «0» hay gráfica y «?» no se pudo mirar.
+  const mirar = (Lienzo) => {
     try {
-      if (typeof WebGLRenderingContext === "undefined") return false;
-      const lienzo = document.createElement("canvas");
+      if (typeof WebGLRenderingContext === "undefined") return "?";
+      const lienzo = Lienzo();
       const op = { failIfMajorPerformanceCaveat: true };
       const gl = lienzo.getContext("webgl2", op) || lienzo.getContext("webgl", op);
-      if (!gl) return true;
+      if (!gl) return "1";
       const soltar = gl.getExtension("WEBGL_lose_context");
       if (soltar) soltar.loseContext();
-      return false;
+      return "0";
     } catch (e) {
-      return false;
+      return "?";
     }
   };
-  requestAnimationFrame(() => setTimeout(() => {
-    if (porSoftware()) document.documentElement.setAttribute("data-ligero", "");
-  }, 0));
+  const aqui = () => {
+    const ir = () => {
+      const v = mirar(() => document.createElement("canvas"));
+      if (v !== "?") guardar(v);
+      if (v === "1") ligero();
+    };
+    if ("requestIdleCallback" in window) requestIdleCallback(ir, { timeout: 3000 });
+    else setTimeout(ir, 1500);
+  };
+  const enWorker = () => {
+    let w;
+    try {
+      const codigo = `const mirar = ${mirar};
+        postMessage(typeof OffscreenCanvas === "undefined" ? "?" : mirar(() => new OffscreenCanvas(1, 1)));`;
+      w = new Worker(URL.createObjectURL(new Blob([codigo], { type: "text/javascript" })));
+    } catch (e) {
+      return aqui();
+    }
+    w.onmessage = (e) => {
+      w.terminate();
+      if (e.data === "?") return aqui();
+      guardar(e.data);
+      if (e.data === "1") ligero();
+    };
+    w.onerror = () => { w.terminate(); aqui(); };
+  };
+  // Aun en el Worker, el contexto lo crea el proceso de la gráfica, y ahí compite con el primer
+  // dibujado de la página y con el scroll. Se espera a que haya cargado y pintado, y a que lleve
+  // un momento sin bajar (como mucho 6 s): sin gráfica, el modo ligero llega un segundo después.
+  const cuandoQuieta = (hacer) => {
+    let hecho = false, espera = 0;
+    const ir = () => {
+      if (hecho) return;
+      hecho = true;
+      ["scroll", "wheel", "touchmove", "keydown"].forEach((t) => removeEventListener(t, otraVez, true));
+      if ("requestIdleCallback" in window) requestIdleCallback(hacer, { timeout: 1000 }); else hacer();
+    };
+    const otraVez = () => { clearTimeout(espera); espera = setTimeout(ir, 500); };
+    const empezar = () => setTimeout(() => {
+      ["scroll", "wheel", "touchmove", "keydown"].forEach((t) => addEventListener(t, otraVez, { capture: true, passive: true }));
+      otraVez();
+      setTimeout(ir, 5000);
+    }, 1000);
+    if (document.readyState === "complete") empezar();
+    else addEventListener("load", empezar, { once: true });
+  };
+  cuandoQuieta(enWorker);
 })();
 
 /* ---------------------------------------------------------- el otro idioma */
@@ -191,8 +250,9 @@ document.querySelectorAll("details.menu").forEach((menu) => {
     medido = alto;
     pildora.style.setProperty("--menu-alto", `${alto}px`);
   };
-  medir();
+  // El ResizeObserver lo mide en el primer diseño: medirlo aquí forzaba otro a mitad del arranque.
   if ("ResizeObserver" in window) new ResizeObserver(medir).observe(panel);
+  else medir();
   const abierto = () => nav.classList.contains("menu-abierto");
   const poner = (abrir, foco) => {
     if (abrir) medir();
