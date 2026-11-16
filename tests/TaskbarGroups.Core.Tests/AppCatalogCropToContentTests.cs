@@ -44,6 +44,21 @@ public class AppCatalogCropToContentTests
         Assert.Equal(255, crop.GetPixel(0, 0).A);
     }
 
+    [Fact] // A wide logo is letterboxed: Category.CreateConfig resizes ignoring aspect.
+    public void NonSquareContent_IsLetterboxedToASquare()
+    {
+        using var bmp = new Bitmap(256, 256, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        using (var g = Graphics.FromImage(bmp))
+        using (var brush = new SolidBrush(Color.FromArgb(255, 30, 120, 220)))
+            g.FillRectangle(brush, 88, 118, 80, 20);   // 80x20, +2px margin -> 84x24
+
+        using var crop = AppCatalog.CropToSolidContent(bmp);
+        Assert.Equal(84, crop.Width);
+        Assert.Equal(84, crop.Height);
+        Assert.Equal(0, crop.GetPixel(42, 2).A);       // above the band
+        Assert.Equal(255, crop.GetPixel(42, 35).A);    // the band, centred
+    }
+
     [Fact] // Review Focus 2: nothing solid -> no crop.
     public void FullyTransparent_ReturnsNull()
     {

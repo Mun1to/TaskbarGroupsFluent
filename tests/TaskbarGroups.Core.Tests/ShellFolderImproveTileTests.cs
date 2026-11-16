@@ -67,4 +67,22 @@ public class ShellFolderImproveTileTests
         using var result = ShellFolder.ImproveTile(bmp, "  shell:AppsFolder\\does.not.exist  ", null, 96);
         Assert.Equal(52, result.Width);
     }
+
+    [Fact] // A blank "real" icon must not replace the tile the user can see.
+    public void BlankRealIcon_IsRejected_AndShellIsCropped()
+    {
+        using var shell = Canvas(256, 48);
+        using var blank = new Bitmap(96, 96, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+        using var result = ShellFolder.FinishTile(shell, blank);
+        Assert.NotSame(blank, result);
+        Assert.Equal(52, result.Width);
+    }
+
+    [Fact]
+    public void SolidRealIcon_IsAccepted()
+    {
+        using var shell = Canvas(256, 48);
+        using var real = Canvas(96, 90);
+        Assert.Same(real, ShellFolder.FinishTile(shell, real));
+    }
 }

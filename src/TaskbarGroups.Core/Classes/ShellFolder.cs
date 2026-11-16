@@ -226,10 +226,17 @@ namespace TaskbarGroups.Core
                      && filePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
                 real = AppCatalog.IconFromFile(filePath, size);
 
+            return FinishTile(shell, real);
+        }
+
+        // Accept the re-resolved icon only when it has something to show and is not
+        // itself a plate; a mask-only resource would otherwise blank a visible tile.
+        internal static Bitmap FinishTile(Bitmap shell, Bitmap? real)
+        {
             if (real != null)
             {
-                if (!AppCatalog.IsPaddedTile(real)) return real;
-                real.Dispose(); // still a plate (e.g. an icon that is itself padded)
+                if (!AppCatalog.IsPaddedTile(real) && AppCatalog.HasSolidContent(real)) return real;
+                real.Dispose();
             }
 
             return AppCatalog.CropToSolidContent(shell) ?? shell;
