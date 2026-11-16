@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://tbgf.munito.dev/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/en/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/novedades/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/novedades/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/novedades/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/en/changelog/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/novedades/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/changelog/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/novedades/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/soporte/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/soporte/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/en/support/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/soporte/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/soporte/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/privacidad/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/privacidad/"/>
+  </url>
+  <url>
+    <loc>https://tbgf.munito.dev/en/privacy/</loc>
+    <lastmod>2026-11-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/privacidad/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/privacidad/"/>
+  </url>
+</urlset>

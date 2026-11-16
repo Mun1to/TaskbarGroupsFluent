@@ -1,0 +1,13 @@
+{
+  "name": "tbgf-web-herramientas",
+  "private": true,
+  "type": "module",
+  "description": "Lo que genera y prueba la web de Taskbar Groups Fluent. No se publica: pages.yml lo quita antes de subir.",
+  "scripts": {
+    "generar": "node generar-en.mjs",
+    "probar": "node probar-web.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

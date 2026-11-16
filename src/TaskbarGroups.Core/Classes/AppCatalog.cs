@@ -103,6 +103,10 @@ namespace TaskbarGroups.Core
 
         private static readonly Guid IID_IShellItem = new("43826d1e-e718-42ee-bc55-a1e261c37bfe");
         private static readonly Guid IID_IShellItem2 = new("7e9fb0d3-919f-4307-ab2e-9b1860310c93");
+        // PKEY_Link_Arguments: what an AppsFolder entry passes to the path it launches.
+        private static readonly PROPERTYKEY PKEY_Link_Arguments =
+            new() { fmtid = new Guid("436F2667-14E2-4FEB-B30A-146C53B5B674"), pid = 100 };
+
         // PKEY_Link_TargetParsingPath: the target path an AppsFolder entry launches.
         private static readonly PROPERTYKEY PKEY_Link_TargetParsingPath =
             new() { fmtid = new Guid("B9B4B3FC-2B51-4A42-B5D8-324146AFCF25"), pid = 2 };
@@ -251,7 +255,7 @@ namespace TaskbarGroups.Core
         public static Bitmap? GetIcon(string launchId, int size)
         {
             Bitmap? shell = GetShellImage("shell:AppsFolder\\" + launchId, size);
-            if (shell == null || IsGenericPlaceholder(shell) || IsPaddedTile(shell))
+            if (shell == null || IsGenericPlaceholder(shell) || (IsPaddedTile(shell) && !LaunchesWithArguments(launchId)))
             {
                 Bitmap? fromExe = GetIconFromTargetExe(launchId, size);
                 if (fromExe != null) { shell?.Dispose(); return fromExe; }
@@ -344,6 +348,25 @@ namespace TaskbarGroups.Core
                 if (maxX < minX || maxY < minY) return false; // nothing solid
                 double area = (double)(maxX - minX + 1) * (maxY - minY + 1);
                 return area / ((double)w * h) < 0.30;
+            }
+            catch { return false; }
+        }
+
+        // Whether the entry hands its .exe arguments. Then the .exe is a host that starts
+        // something else, and its icon is the host's: every Linux app of WSL starts
+        // through wslg.exe ("-d <distro> -- <app>") and would turn into the same penguin.
+        // Their small icon stays, as before; an app's own .exe takes no arguments.
+        private static bool LaunchesWithArguments(string launchId)
+        {
+            try
+            {
+                Guid iid = IID_IShellItem2;
+                SHCreateItemFromParsingName("shell:AppsFolder\\" + launchId, IntPtr.Zero, in iid, out object obj);
+                var item = (IShellItem2)obj;
+                PROPERTYKEY key = PKEY_Link_Arguments;
+                int hr = item.GetString(in key, out string val);
+                Marshal.ReleaseComObject(item);
+                return hr == 0 && !string.IsNullOrWhiteSpace(val);
             }
             catch { return false; }
         }

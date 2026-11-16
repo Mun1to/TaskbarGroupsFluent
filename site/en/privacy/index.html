@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en" data-otra="../../privacidad/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy · Taskbar Groups Fluent</title>
+<meta name="description" content="Taskbar Groups Fluent collects no personal data: no accounts, no telemetry, no ads. The only thing it does online is ask GitHub whether there is a new version.">
+<link rel="canonical" href="https://tbgf.munito.dev/en/privacy/">
+<link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/privacidad/">
+<link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/privacy/">
+<link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/privacidad/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskbar Groups Fluent">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:url" content="https://tbgf.munito.dev/en/privacy/">
+<meta property="og:title" content="Taskbar Groups Fluent privacy">
+<meta property="og:description" content="It collects no personal data. The only thing it does online is ask GitHub whether there is a new version.">
+<meta property="og:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<link rel="icon" href="../../assets/icon-256.png?v=6fed70b9" type="image/png">
+<link rel="apple-touch-icon" href="../../assets/icon-256.png?v=6fed70b9">
+<script>
+// El dial de movimiento y el idioma elegido, igual que en la portada (ver index.html).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+  try {
+    var elegido = localStorage.getItem("tbgf-lang");
+    var otra = h.getAttribute("data-otra");
+    if (otra && (elegido === "es" || elegido === "en") && elegido !== h.lang) location.replace(otra + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../../estilos.css?v=68223800">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Taskbar Groups Fluent", "item": "https://tbgf.munito.dev/en/" },
+    { "@type": "ListItem", "position": 2, "name": "Privacy", "item": "https://tbgf.munito.dev/en/privacy/" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- La barra, el pie y los dibujos los pone cromo.mjs (desde generar-en.mjs), copiados de la portada. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="../"><img src="../../assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="../#funciones">Features</a>
+      <a href="../#pruebalo">Try it</a>
+      <a href="../#comparativa">Compare</a>
+      <a href="../changelog/">What's new</a>
+      <a href="../support/">Support</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="../../privacidad/" hreflang="es" lang="es" data-corto="ES" aria-label="Español">Español</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span>Menu</span></summary>
+        <div class="menu-panel">
+          <a href="../#funciones">Features</a>
+          <a href="../#pruebalo">Try it</a>
+          <a href="../#comparativa">Compare</a>
+          <a href="../changelog/">What's new</a>
+          <a href="../support/">Support</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span>The code, on GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<!-- El texto es el de la política del 15 de octubre de 2026 (privacy.html, que enlaza la ficha
+     de la Microsoft Store), tal cual. Solo cambia una cosa, porque la web nueva guarda otra
+     cifra: las de GitHub son descargas y versiones, ya no estrellas (leer.js, «tbgf-gh2»). -->
+<main class="leer">
+  <div class="env">
+    <header class="leer-cabeza">
+      <h1>Privacy</h1>
+      <p class="entradilla">Taskbar Groups Fluent does not collect personal data. It has no accounts, no telemetry and no ads. The only thing it does online is ask GitHub whether there is a new version.</p>
+      <p class="letra-chica">Last updated on 15 November 2026</p>
+    </header>
+
+    <div class="leer-rejilla">
+      <nav class="leer-indice" aria-label="On this page">
+        <a href="#en-tu-pc">On your PC</a>
+        <a href="#internet">Online</a>
+        <a href="#web">This website</a>
+        <a href="#contacto">Contact</a>
+      </nav>
+
+      <div class="texto">
+        <section id="en-tu-pc">
+          <h2>What stays on your PC</h2>
+          <p>Your groups, their icons and your settings are stored on your computer, in <code>%APPDATA%\Jack Schierbeck\taskbar-groups</code>, and the groups' shortcuts in that same folder. They never leave it. If you export a group, the <code>.tbgroup</code> file is created wherever you choose, and only you decide who to share it with.</p>
+          <p>The open-on-hover feature reads, on your computer, where the taskbar buttons are, to know which group is under the mouse. It neither stores nor sends any of it.</p>
+        </section>
+
+        <section id="internet">
+          <h2>What goes online</h2>
+          <ul class="lista">
+            <li><b>Checking for updates.</b> When it opens, the app queries GitHub's public API (<code>api.github.com</code>) for the latest version. If you accept an update, it downloads the installer from GitHub. GitHub receives what any web request carries, such as your IP address, and handles it under its <a href="https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">privacy statement</a>.</li>
+            <li><b>The .NET runtime.</b> If your computer is missing the .NET Desktop Runtime, the installer downloads it from Microsoft, which handles it under its <a href="https://privacy.microsoft.com/privacystatement" rel="noopener">privacy statement</a>.</li>
+          </ul>
+          <p>Nothing else: the app does not send your groups, your apps or any identifier anywhere.</p>
+        </section>
+
+        <section id="web">
+          <h2>This website</h2>
+          <p>tbgf.munito.dev is served by GitHub Pages through Cloudflare, which may log technical data about the visit, such as the IP address, to serve and protect it. The site uses no cookies and no analytics tools. Your browser keeps two things in its local storage: the language you pick and, for 15 minutes, the public GitHub figures (downloads and versions) the page shows.</p>
+        </section>
+
+        <section id="contacto">
+          <h2>Contact</h2>
+          <p>The app is made by <a href="https://munito.dev" rel="noopener">Munir Torres</a>. For any privacy question, open an issue on <a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">GitHub</a>. The code is open source (MIT licence), so everything on this page can be checked against it.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="../"><img src="../../assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p>Your apps grouped into a single taskbar icon. Free, open source and with no account.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Product</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">Download</a></li>
+          <li><a href="../changelog/">What's new</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe">Offline installer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Help</h2>
+        <ul>
+          <li><a href="../support/">Support</a></li>
+          <li><a href="../#preguntas">Questions</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">Report a bug</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Code</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener">MIT licence</a></li>
+          <li><a href="../#historia">Credits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">More</h2>
+        <ul>
+          <li><a href="../privacy/">Privacy</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener">Buy me a coffee</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off">Fewer animations</a><a class="valvula con-mov" href="./">All animations</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span>Taskbar Groups Fluent · MIT · Made by <a href="https://munito.dev">Munir Torres</a></span>
+      <span>Not affiliated with Microsoft. Windows is a trademark of its owner.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../../leer.js?v=f4751175"></script>
+</body>
+</html>

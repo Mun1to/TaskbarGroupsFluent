@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="es" data-otra="../en/changelog/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="What's new in Taskbar Groups Fluent, version by version">Novedades de Taskbar Groups Fluent, versión a versión</title>
+<meta name="description" content="Lo que trae cada versión de Taskbar Groups Fluent, de la más nueva a la primera, con el enlace a su publicación en GitHub.">
+<link rel="canonical" href="https://tbgf.munito.dev/novedades/">
+<link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/novedades/">
+<link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/changelog/">
+<link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/novedades/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskbar Groups Fluent">
+<meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://tbgf.munito.dev/novedades/">
+<meta property="og:title" content="Novedades de Taskbar Groups Fluent">
+<meta property="og:description" content="Lo que trae cada versión de Taskbar Groups Fluent, de la más nueva a la primera, con el enlace a su publicación en GitHub.">
+<meta property="og:image" content="https://tbgf.munito.dev/social.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tbgf.munito.dev/social.png?v=1">
+<link rel="icon" href="../assets/icon-256.png?v=6fed70b9" type="image/png">
+<link rel="apple-touch-icon" href="../assets/icon-256.png?v=6fed70b9">
+<script>
+// El dial de movimiento y el idioma elegido, igual que en la portada (ver index.html).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+  try {
+    var elegido = localStorage.getItem("tbgf-lang");
+    var otra = h.getAttribute("data-otra");
+    if (otra && (elegido === "es" || elegido === "en") && elegido !== h.lang) location.replace(otra + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../estilos.css?v=68223800">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Taskbar Groups Fluent", "item": "https://tbgf.munito.dev/" },
+    { "@type": "ListItem", "position": 2, "name": "Novedades", "item": "https://tbgf.munito.dev/novedades/" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- Esta página la escribe _herramientas/generar-novedades.mjs a partir de versiones.json: no se
+     edita a mano, que se pisa la próxima vez. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="../"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="../#funciones" data-en="Features">Funciones</a>
+      <a href="../#pruebalo" data-en="Try it">Pruébalo</a>
+      <a href="../#comparativa" data-en="Compare">Comparativa</a>
+      <a class="aqui" aria-current="page" href="../novedades/" data-en="What's new">Novedades</a>
+      <a href="../soporte/" data-en="Support">Soporte</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="../en/changelog/" hreflang="en" lang="en" data-corto="EN" aria-label="English">English</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-en="Download">Descargar</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span data-en="Menu">Menú</span></summary>
+        <div class="menu-panel">
+          <a href="../#funciones" data-en="Features">Funciones</a>
+          <a href="../#pruebalo" data-en="Try it">Pruébalo</a>
+          <a href="../#comparativa" data-en="Compare">Comparativa</a>
+          <a class="aqui" aria-current="page" href="../novedades/" data-en="What's new">Novedades</a>
+          <a href="../soporte/" data-en="Support">Soporte</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span data-en="The code, on GitHub">El código, en GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<main class="leer novedades">
+  <div class="env">
+    <header class="leer-cabeza">
+      <h1 data-en="What's new">Novedades</h1>
+      <p class="entradilla" data-html data-en="What each version brings, newest first. The app updates itself when a new one is out, if you say yes, and the latest is &lt;b&gt;1.10.5&lt;/b&gt;.">Lo que trae cada versión, de la más nueva a la primera. La app se actualiza sola cuando sale una nueva, si tú le dices que sí, y la última es la <b>1.10.5</b>.</p>
+    </header>
+
+    <div class="leer-rejilla con-lado">
+      <nav class="leer-indice" aria-label="Versiones" data-aria-en="Versions">
+        <a href="#v1-10-5" data-en="1.10.0 to 1.10.5">1.10.0 a 1.10.5</a>
+        <a href="#v1-9-0">1.9.0</a>
+        <a href="#v1-8-0">1.8.0</a>
+        <a href="#v1-7-0">1.7.0</a>
+        <a href="#v1-6-10" data-en="1.6.7 to 1.6.10">1.6.7 a 1.6.10</a>
+        <a href="#v1-6-6" data-en="1.6.1 to 1.6.6">1.6.1 a 1.6.6</a>
+        <a href="#v1-6-0">1.6.0</a>
+        <a href="#v1-5-0">1.5.0</a>
+        <a href="#v1-4-5" data-en="1.4.0 to 1.4.5">1.4.0 a 1.4.5</a>
+        <a href="#v1-3-0" data-en="1.1.0 to 1.3.0">1.1.0 a 1.3.0</a>
+        <a href="#v1-0-0">1.0.0</a>
+      </nav>
+
+      <div class="texto">
+<section id="v1-10-5">
+  <h2 data-en="Pin by dragging and give every app its own icon">Ancla arrastrando y dale a cada app su icono</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.10.5&quot; rel=&quot;noopener&quot;&gt;Versions 1.10.0 to 1.10.5&lt;/a&gt; · 16 November 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.10.5" rel="noopener">Versiones 1.10.0 a 1.10.5</a> · 16 de noviembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Each app, its own icon&lt;/b&gt;: in the editor you give each app the picture you want, or go back to the automatic one, and web apps installed from Chrome or Edge show their own icon and name instead of the browser's, and now appear in the app list."><b>Cada app, con su icono</b>: en el editor le pones a cada app la imagen que quieras, o vuelves a la automática, y las apps web que instalas desde Chrome o Edge salen con su icono y su nombre, no con los del navegador, y ya aparecen en la lista de apps.</li>
+    <li data-html data-en="&lt;b&gt;Pin by dragging&lt;/b&gt;: drag a group's icon from the main window onto the taskbar and it is pinned, with no right-click and no trip through File Explorer."><b>Ancla arrastrando</b>: arrastra el icono de un grupo desde la ventana principal hasta la barra de tareas y queda anclado, sin clic derecho y sin pasar por el Explorador de archivos.</li>
+    <li data-html data-en="&lt;b&gt;A Recycle Bin group&lt;/b&gt;: a group can show the Recycle Bin, by the clock too, and its right-click empties it or puts everything back where it was."><b>La Papelera, en un grupo</b>: un grupo puede enseñar la Papelera, también junto al reloj, y con su clic derecho la vacías o devuelves cada cosa a su sitio.</li>
+    <li data-html data-en="&lt;b&gt;New menu by the clock&lt;/b&gt;: right-clicking the app's icon or a group's brings up a card in the app's own style, with an icon on every line and switches for open on hover and instant opening, light or dark and in your accent colour."><b>Nuevo menú junto al reloj</b>: el clic derecho en el icono de la app o de un grupo saca una tarjeta con el estilo de la app, un icono en cada línea e interruptores para abrir al pasar el cursor y abrir al instante, en claro u oscuro y con tu color de acento.</li>
+    <li data-html data-en="&lt;b&gt;Hover works on more taskbars&lt;/b&gt;: with Start11 and StartAllBack it recognises the group by its icon once the cursor rests, also on a taskbar with two rows, and if you right-click before the panel shows, the right-click wins."><b>Funciona con Start11 y StartAllBack</b>: abrir al pasar reconoce el grupo por su icono cuando el cursor se para, también con la barra en dos filas, y si haces clic derecho antes de que salga el panel, gana el clic derecho.</li>
+    <li data-html data-en="&lt;b&gt;A second click closes it&lt;/b&gt;: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, and the panel no longer shows up in Alt+Tab."><b>Un segundo clic lo cierra</b>: pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Además, guardar un grupo ya no reinicia la barra si su icono y su nombre no cambian, y el panel ya no sale en Alt+Tab.</li>
+    <li data-html data-en="&lt;b&gt;Sharp icons&lt;/b&gt;: apps that only ship a small icon, like RustDesk, no longer look tiny in a group (fixed by g3ck0), and with the Recycle Bin empty its menu by the clock greys out Empty and Restore."><b>Iconos nítidos</b>: las apps que solo traen un icono pequeño, como RustDesk, ya no salen diminutas en un grupo (lo arregló g3ck0), y con la Papelera vacía su menú junto al reloj deja Vaciar y Restaurar en gris.</li>
+  </ul>
+</section>
+
+<section id="v1-9-0">
+  <h2 data-en="Panels show at once even when a drive is asleep">Los paneles salen al momento aunque un disco esté dormido</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.9.0&quot; rel=&quot;noopener&quot;&gt;Version 1.9.0&lt;/a&gt; · 12 November 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.9.0" rel="noopener">Versión 1.9.0</a> · 12 de noviembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Panels no longer wait&lt;/b&gt;: if an app in the group lives on a hard disk that has spun down, a network drive or a USB drive, the panel shows at once with its saved icons and checks the apps afterwards. With an app on a network drive that does not answer, it goes from 22 s to 0.8 s."><b>Los paneles ya no esperan</b>: si una app del grupo está en un disco que se había apagado, en una unidad de red o en un USB, el panel sale al momento con sus iconos y comprueba las apps después. Con una app en una unidad de red que no contesta, pasa de 22 s a 0,8 s.</li>
+    <li data-html data-en="&lt;b&gt;Hide its icon&lt;/b&gt;: right-click the app's icon by the clock and pick “Hide this icon”, or switch off “Show the icon by the clock” in Settings, which is also where it comes back. The program keeps doing its job without it."><b>Esconde su icono</b>: haz clic derecho en el icono de la app junto al reloj y elige «Ocultar este icono», o apaga «Mostrar el icono junto al reloj» en Ajustes, que es donde vuelve. El programa sigue haciendo su trabajo sin él.</li>
+    <li data-html data-en="&lt;b&gt;Windows 11 menus&lt;/b&gt;: the menus of the app's icon and of the groups by the clock get rounded corners, more room, and go light or dark like the app."><b>Menús de Windows 11</b>: los del icono de la app y de los grupos junto al reloj tienen esquinas redondeadas, más aire y van en claro u oscuro, como la app.</li>
+    <li data-html data-en="&lt;b&gt;The app speaks Russian&lt;/b&gt;: the app, its panels and its menus, picked with Windows or with &lt;b&gt;RU&lt;/b&gt; in the quick bar. It is a first, machine-assisted version: if a text reads wrong, say so on GitHub."><b>La app habla ruso</b>: la app, sus paneles y sus menús, según el idioma de Windows o eligiendo <b>RU</b> en la barra rápida. Es una primera traducción con ayuda automática: si un texto se lee mal, cuéntalo en GitHub.</li>
+  </ul>
+</section>
+
+<section id="v1-8-0">
+  <h2 data-en="Your groups by the clock, and open in an instant">Tus grupos junto al reloj y abiertos al instante</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.8.0&quot; rel=&quot;noopener&quot;&gt;Version 1.8.0&lt;/a&gt; · 11 November 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.8.0" rel="noopener">Versión 1.8.0</a> · 11 de noviembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;A group by the clock&lt;/b&gt;: in the editor, switch on “Also show it by the clock” and the group gets its own icon there. A click opens its panel right by it, and a right-click offers “Open”, “Open all” and “Edit group”."><b>Un grupo junto al reloj</b>: en el editor enciende «Mostrarlo también junto al reloj» y el grupo tiene ahí su propio icono. Un clic abre su panel a su lado, y el clic derecho ofrece «Abrir», «Abrir todas» y «Editar grupo».</li>
+    <li data-html data-en="&lt;b&gt;The icon follows the group&lt;/b&gt;: rename it, change its icon or delete it and the one by the clock keeps up. On Windows 11 a new icon starts behind the arrow: drag it next to the clock to keep it in sight."><b>El icono sigue al grupo</b>: si lo renombras, le cambias el icono o lo borras, el del reloj se pone al día. En Windows 11 un icono nuevo sale tras la flecha: arrástralo junto al reloj para tenerlo a la vista.</li>
+    <li data-html data-en="&lt;b&gt;Open groups instantly&lt;/b&gt;: a new setting keeps a panel loaded in the background, so even the first click after starting Windows opens at once, not after a second or so. It is off by default."><b>Abre los grupos al instante</b>: un ajuste nuevo deja un panel cargado en segundo plano, y hasta el primer clic después de encender Windows abre al momento, no al cabo de un segundo. Viene apagado.</li>
+    <li data-html data-en="&lt;b&gt;The app closer at hand&lt;/b&gt;: a pinned group's right-click offers “Open Taskbar Groups Fluent”, a double click on its icon by the clock opens it, and opening it while it is already open brings its window to the front instead of a second one."><b>La app, más a mano</b>: el clic derecho de un grupo anclado ofrece «Abrir Taskbar Groups Fluent», un doble clic en su icono junto al reloj la abre, y abrirla cuando ya está abierta trae su ventana delante en vez de abrir otra.</li>
+    <li data-html data-en="&lt;b&gt;Running only when needed&lt;/b&gt;: the small program by the clock runs only while it has a job (open on hover, a group by the clock or instant opening), and its menu only offers to switch off what is on."><b>Solo corre si hace falta</b>: el programa pequeño del reloj solo está en marcha mientras tiene trabajo (abrir al pasar, un grupo junto al reloj o abrir al instante), y su menú solo ofrece apagar lo que está encendido.</li>
+  </ul>
+</section>
+
+<section id="v1-7-0">
+  <h2 data-en="Turn a folder into a group and pin a whole taskbar in one go">Haz un grupo de una carpeta y ancla toda una barra de una vez</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.7.0&quot; rel=&quot;noopener&quot;&gt;Version 1.7.0&lt;/a&gt; · 7 November 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.7.0" rel="noopener">Versión 1.7.0</a> · 7 de noviembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;A folder as a group&lt;/b&gt;: in the editor pick “What is in a folder” and any folder, or one of the “Windows places” (Control Panel, Windows Tools, This PC, All apps, Desktop, Downloads and a few more). The panel lists what is in it every time it opens, so it is always current."><b>Una carpeta como grupo</b>: en el editor elige «Lo que hay en una carpeta» y cualquier carpeta, o uno de los «Lugares de Windows» (el Panel de control, Herramientas de Windows, Este equipo, Todas las apps, el Escritorio, Descargas y algunos más). El panel enseña lo que tiene cada vez que se abre, así que siempre está al día.</li>
+    <li data-html data-en="&lt;b&gt;Subfolders as submenus&lt;/b&gt;: folders inside it that hold something open beside the panel like a submenu, with an arrow, and everything has its own Windows right-click menu."><b>Subcarpetas como submenú</b>: las carpetas de dentro que tienen algo se abren junto al panel como un submenú, con su flecha, y cada cosa tiene su propio menú del clic derecho de Windows.</li>
+    <li data-html data-en="&lt;b&gt;A whole taskbar at once&lt;/b&gt;: click “Pin to taskbar” on a group that holds other groups and the app offers to pin them all, one after another in the group's order, with a taskbar separator for every separator line in it."><b>Una barra entera de golpe</b>: pulsa «Anclar a la barra de tareas» en un grupo que tiene otros grupos y la app ofrece anclarlos todos, uno tras otro y en su orden, con un separador en la barra por cada línea separadora del grupo.</li>
+    <li data-html data-en="&lt;b&gt;Each pin is your right-click&lt;/b&gt;: Windows does not let apps pin anything by themselves, so the app keeps the next shortcut selected in File Explorer and moves on as soon as you pin it."><b>Cada ancla, tu clic derecho</b>: Windows no deja que una app ancle nada por su cuenta, así que la app te deja seleccionado el siguiente acceso en el Explorador de archivos y pasa al otro en cuanto lo anclas.</li>
+    <li data-html data-en="&lt;b&gt;Arrows on groups inside&lt;/b&gt;: groups inside a group show an arrow in the panel, as they open beside it."><b>Grupos de dentro, con flecha</b>: los grupos que hay dentro de un grupo llevan una flecha en el panel, porque se abren a su lado.</li>
+    <li data-html data-en="&lt;b&gt;Better on Windows 10&lt;/b&gt;: the pinning steps match its right-click menu, the panel has a square border like every other window, open on hover recognises groups on more taskbars and hides the classic tooltip over the panel, and the installer asks for Windows 10 version 1809 or later."><b>Mejor en Windows 10</b>: los pasos para anclar siguen su menú del clic derecho, el panel tiene bordes rectos como el resto de ventanas, abrir al pasar reconoce los grupos en más barras y esconde el globo de la barra clásica sobre el panel, y el instalador pide Windows 10 versión 1809 o posterior.</li>
+  </ul>
+</section>
+
+<section id="v1-6-10">
+  <h2 data-en="Sort your groups with submenus, separators and drag and drop">Ordena tus grupos con submenús, separadores y arrastrando</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.10&quot; rel=&quot;noopener&quot;&gt;Versions 1.6.7 to 1.6.10&lt;/a&gt; · 3 November 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.10" rel="noopener">Versiones 1.6.7 a 1.6.10</a> · 3 de noviembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Groups as submenus&lt;/b&gt;: a group inside another opens its panel right next to the first one, which stays open. Click it again or press Escape to close it, and launching an app from it closes both."><b>Grupos como submenús</b>: un grupo dentro de otro abre su panel justo al lado del primero, que se queda abierto. Otro clic o Escape lo cierra, y abrir una app desde él cierra los dos.</li>
+    <li data-html data-en="&lt;b&gt;Separators where you want&lt;/b&gt;: the editor's “Separator” button adds a line across the panel, with an optional title, to split its apps into sections, and empty shortcuts put space between the groups pinned on the taskbar."><b>Separadores donde quieras</b>: el botón «Separador» del editor añade una línea al panel, con un título opcional, para repartir sus apps en secciones, y unos accesos vacíos dejan espacio entre los grupos anclados en la barra.</li>
+    <li data-html data-en="&lt;b&gt;Drag and drop&lt;/b&gt;: drop files, folders and shortcuts from File Explorer or the desktop onto the group editor, or onto an open panel to add them. With open on hover on, take them to the group's taskbar icon, wait for the panel and drop them there."><b>Arrastra y suelta</b>: suelta archivos, carpetas y accesos directos desde el Explorador o el escritorio en el editor del grupo, o en un panel abierto para añadirlos. Con abrir al pasar, llévalos al icono del grupo en la barra, espera al panel y suéltalos ahí.</li>
+    <li data-html data-en="&lt;b&gt;A better app picker&lt;/b&gt;: it finds more installed apps, searches without caring about accents and by the program's name too, works with the keyboard and double-click, and loads icons more lightly."><b>Un buscador de apps mejor</b>: encuentra más apps instaladas, busca sin tener en cuenta las tildes y también por el nombre del programa, se maneja con el teclado y el doble clic, y carga los iconos sin hacerse pesado.</li>
+    <li data-html data-en="&lt;b&gt;Each panel on its monitor&lt;/b&gt;: with the taskbar on several screens, the panel opens over the icon you clicked, also on a screen at a different display scale, and its animation no longer shows on the screen next door."><b>Cada panel en su monitor</b>: con la barra en varias pantallas, el panel se abre sobre el icono que pulsas, también en una pantalla con otra escala, y la animación ya no se asoma a la pantalla de al lado.</li>
+    <li data-html data-en="&lt;b&gt;No more flickering cursor&lt;/b&gt;: with open on hover on, the taskbar no longer keeps showing the loading cursor."><b>El cursor ya no parpadea</b>: con abrir al pasar encendido, la barra ya no enseña una y otra vez el cursor de «cargando».</li>
+  </ul>
+</section>
+
+<section id="v1-6-6">
+  <h2 data-en="Groups open almost instantly">Los grupos abren casi al instante</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.6&quot; rel=&quot;noopener&quot;&gt;Versions 1.6.1 to 1.6.6&lt;/a&gt; · 17 October 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.6" rel="noopener">Versiones 1.6.1 a 1.6.6</a> · 17 de octubre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Opens almost instantly&lt;/b&gt;: the panel stays loaded for a while after you use it, and a click on a group takes 0.1 to 0.2 s instead of nearly a second. While it waits it takes about 6 MB, and it goes away after ten minutes without use."><b>Abre casi al instante</b>: el panel se queda cargado un rato después de usarlo, y un clic en un grupo tarda de 0,1 a 0,2 s en vez de casi un segundo. Mientras espera ocupa unos 6 MB, y a los diez minutos sin uso se va solo.</li>
+    <li data-html data-en="&lt;b&gt;Each app's own menu&lt;/b&gt;: right-click an app in the panel for the menu Windows gives it, with “Open file location”, “Properties”, “Run as administrator” or “Uninstall”."><b>El menú de cada app</b>: haz clic derecho en una app del panel y sale el menú que Windows le da, con «Abrir la ubicación del archivo», «Propiedades», «Ejecutar como administrador» o «Desinstalar».</li>
+    <li data-html data-en="&lt;b&gt;An animated panel&lt;/b&gt;: in Settings, “Panel animation” offers “None” (as before), “Peek” or “From the taskbar”, which slides it out from behind the taskbar like the Start menu."><b>Un panel con animación</b>: en Ajustes, «Animación del panel» ofrece «Ninguna» (la de siempre), «Asomar» o «Desde la barra», que lo saca de detrás de la barra de tareas como el menú Inicio.</li>
+    <li data-html data-en="&lt;b&gt;A quick bar&lt;/b&gt;: at the bottom of the window, switch theme, language and open on hover without opening Settings, and the version shows a green tick when it is the latest, or an “Update now” button when there is a new one."><b>Una barra rápida abajo</b>: cambia el tema, el idioma y abrir al pasar sin entrar en Ajustes, y la versión lleva una marca verde si es la última o un botón «Actualizar ahora» si hay otra.</li>
+    <li data-html data-en="&lt;b&gt;Pinned groups do more&lt;/b&gt;: their right-click on the taskbar offers “Open all” and “Edit group”, and saving a pinned group no longer leaves you without a taskbar."><b>Los grupos anclados, más útiles</b>: su clic derecho en la barra ofrece «Abrir todas» y «Editar grupo», y guardar un grupo anclado ya no te deja sin barra de tareas.</li>
+    <li data-html data-en="&lt;b&gt;Lighter updates&lt;/b&gt;: no more 60 MB download on every update, an offline installer for PCs without internet, and the same app runs from the Microsoft Store, which takes care of updating it."><b>Actualizar pesa menos</b>: ya no se bajan 60 MB en cada actualización, hay un instalador sin conexión para PCs sin internet, y la misma app funciona desde la Microsoft Store, que se encarga de actualizarla.</li>
+  </ul>
+</section>
+
+<section id="v1-6-0">
+  <h2 data-en="Panels your way, with real Windows 11 glass">Paneles a tu gusto con el cristal de Windows 11</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.0&quot; rel=&quot;noopener&quot;&gt;Version 1.6.0&lt;/a&gt; · 15 October 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.0" rel="noopener">Versión 1.6.0</a> · 15 de octubre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Windows 11 glass&lt;/b&gt;: the panel shows what is behind it, blurred, in dark and light themes and also when it opens on hover. Before, it came out as a flat dark sheet."><b>Cristal de Windows 11</b>: el panel deja ver lo que hay detrás, difuminado, en tema claro y oscuro y también al abrir al pasar. Antes salía como una lámina oscura y plana.</li>
+    <li data-html data-en="&lt;b&gt;Four panel layouts&lt;/b&gt;: grid, horizontal row, vertical column or list, with or without app names, in three icon sizes and with the group's name above or below. The editor shows a live preview."><b>Cuatro formas de panel</b>: cuadrícula, fila, columna o lista, con o sin el nombre de las apps, en tres tamaños de icono y con el nombre del grupo arriba o abajo. El editor te lo enseña en vivo.</li>
+    <li data-html data-en="&lt;b&gt;All from the panel&lt;/b&gt;: a pencil next to the group's name opens its editor, and a button opens every app in the group at once."><b>Todo desde el panel</b>: un lápiz junto al nombre del grupo abre su editor, y un botón abre todas sus apps a la vez.</li>
+    <li data-html data-en="&lt;b&gt;An icon from your apps&lt;/b&gt;: one click builds the taskbar icon from the first four apps in the group, and it keeps up as you add or remove them."><b>Un icono con tus apps</b>: un clic hace el icono de la barra con las cuatro primeras apps del grupo, y se pone al día cuando añades o quitas alguna.</li>
+    <li data-html data-en="&lt;b&gt;Groups inside groups&lt;/b&gt;: add a group to another and it opens in its own panel. And every app can be renamed, given launch arguments or run as administrator."><b>Grupos dentro de grupos</b>: mete un grupo en otro y se abre en su propio panel. Y a cada app le puedes cambiar el nombre, darle argumentos de arranque o abrirla como administrador.</li>
+    <li data-html data-en="&lt;b&gt;Export, import and duplicate&lt;/b&gt;: a group travels as a single .tbgroup file, and if you come from Taskbar Groups or AppGroup, you can bring your groups along."><b>Exporta, importa y duplica</b>: un grupo viaja en un solo archivo .tbgroup, y si vienes de Taskbar Groups o de AppGroup, te traes tus grupos.</li>
+  </ul>
+</section>
+
+<section id="v1-5-0">
+  <h2 data-en="Open a group just by resting the cursor on it">Abre un grupo con solo dejar el cursor encima</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.5.0&quot; rel=&quot;noopener&quot;&gt;Version 1.5.0&lt;/a&gt; · 13 September 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.5.0" rel="noopener">Versión 1.5.0</a> · 13 de septiembre de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Open a group without clicking&lt;/b&gt;: rest the cursor on a pinned group and it opens in about a third of a second, without taking the keyboard from what you were typing, and it closes by itself as soon as you move away. Clicking works as before."><b>Abre un grupo sin clic</b>: deja el cursor sobre un grupo anclado y se abre en un tercio de segundo, sin quitarle el teclado a lo que estabas escribiendo, y se cierra solo en cuanto te alejas. El clic sigue funcionando igual.</li>
+    <li data-html data-en="&lt;b&gt;You choose the wait&lt;/b&gt;: in the new Settings window (the gear in the main window), “Open on hover” waits “Fast”, “Normal” or “Relaxed”, so sweeping across the taskbar never opens anything by accident."><b>Tú eliges la espera</b>: en la nueva ventana de Ajustes (el engranaje de la ventana principal), «Abrir al pasar el cursor» espera «Rápido», «Normal» o «Relajado», para que barrer la barra no abra nada sin querer.</li>
+    <li data-html data-en="&lt;b&gt;Off by default&lt;/b&gt;: it needs a small program that starts with Windows and lives by the clock. Switch it off from its icon or from Settings and it is gone, startup entry included."><b>Viene apagado</b>: necesita un programa pequeño que arranca con Windows y vive junto al reloj. Lo apagas desde su icono o desde Ajustes y desaparece, con su entrada de inicio incluida.</li>
+    <li data-html data-en="&lt;b&gt;Windows' tooltip steps aside&lt;/b&gt;: the button name Windows shows when the cursor rests no longer covers an open panel, and every other taskbar button keeps its tooltip."><b>El globo de Windows, apartado</b>: el nombre del botón que Windows enseña al dejar quieto el cursor ya no tapa el panel abierto, y el resto de botones de la barra lo conservan.</li>
+    <li data-html data-en="&lt;b&gt;Clean updates and uninstalls&lt;/b&gt;: the installer stops what the app has running before touching files, and uninstalling removes the whole folder and the startup entry."><b>Actualizar sin dejar restos</b>: el instalador cierra lo que la app tenga en marcha antes de tocar archivos, y desinstalar se lleva la carpeta entera y la entrada de inicio.</li>
+  </ul>
+</section>
+
+<section id="v1-4-5">
+  <h2 data-en="One-click install and updates that take care of themselves">Se instala con un clic y se actualiza sola</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.4.5&quot; rel=&quot;noopener&quot;&gt;Versions 1.4.0 to 1.4.5&lt;/a&gt; · 17 August 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.4.5" rel="noopener">Versiones 1.4.0 a 1.4.5</a> · 17 de agosto de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;One-click installer&lt;/b&gt;: it installs for your user, without administrator rights, and downloads whatever your PC is missing to run it."><b>Instalador de un clic</b>: se instala para tu usuario, sin permisos de administrador, y descarga lo que le falte a tu PC para funcionar.</li>
+    <li data-html data-en="&lt;b&gt;It updates itself&lt;/b&gt;: on launch it checks for a newer version and updates with one click, and before installing it backs up your groups (keeping the last three)."><b>Se actualiza sola</b>: al abrirse mira si hay versión nueva y se pone al día con un clic, y antes de instalarla guarda una copia de tus grupos (se quedan las tres últimas).</li>
+    <li data-html data-en="&lt;b&gt;The panel follows your theme&lt;/b&gt;: light or dark like Windows, translucent and with rounded corners on Windows 11, and it no longer freezes on an old picture."><b>El panel sigue tu tema</b>: claro u oscuro como Windows, translúcido y con esquinas redondeadas en Windows 11, y ya no se queda congelado enseñando una imagen vieja.</li>
+    <li data-html data-en="&lt;b&gt;No more stuck panel&lt;/b&gt;: it no longer stays on top of every window. A click outside or Escape closes it, and opening a group clears any panel left behind, so they no longer stack up."><b>Ya no se queda pegado</b>: el panel ya no se queda encima de todo. Se cierra con un clic fuera o con Escape, y abrir otro grupo quita el anterior, así que ya no se amontonan.</li>
+    <li data-html data-en="&lt;b&gt;Icons the right way up&lt;/b&gt;: half the icons in the app list came out flipped, and so did the ones saved in groups. They come out right now and rebuild themselves."><b>Iconos del derecho</b>: la mitad de los iconos de la lista de apps salían del revés, y los guardados en los grupos también. Ya salen bien y se rehacen solos.</li>
+    <li data-html data-en="&lt;b&gt;An icon of its own&lt;/b&gt;: the app gets its own mark, a panel popping out of a taskbar button, sharp in the taskbar, the Start menu and File Explorer. And it now has a home page: tbgf.munito.dev."><b>Un icono propio</b>: la app estrena su marca, un panel que sale de un botón de la barra, nítida en la barra, el menú Inicio y el Explorador. Y ya tiene web: tbgf.munito.dev.</li>
+  </ul>
+</section>
+
+<section id="v1-3-0">
+  <h2 data-en="Pick your apps from a list and give each group its icon">Elige tus apps de una lista y dale a cada grupo su icono</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.3.0&quot; rel=&quot;noopener&quot;&gt;Versions 1.1.0 to 1.3.0&lt;/a&gt; · 1 July 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.3.0" rel="noopener">Versiones 1.1.0 a 1.3.0</a> · 1 de julio de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Pick from a list&lt;/b&gt;: every installed app, desktop and Microsoft Store alike, in one searchable list with their real icons and no system tools in the way. “Browse…” still covers anything else."><b>Elige de una lista</b>: todas las apps instaladas, de escritorio y de la Microsoft Store, en una sola lista con buscador, con sus iconos de verdad y sin herramientas del sistema de por medio. «Examinar…» sigue sirviendo para lo demás.</li>
+    <li data-html data-en="&lt;b&gt;Icons your way&lt;/b&gt;: position and crop any image before using it as the group icon, or pick a colour emoji with the “Emoji” button."><b>Iconos a tu gusto</b>: coloca y recorta cualquier imagen antes de usarla como icono del grupo, o elige un emoji a color con el botón «Emoji».</li>
+    <li data-html data-en="&lt;b&gt;In English and Spanish&lt;/b&gt;: the app follows your Windows language, and its light or dark theme and accent colour too."><b>En español y en inglés</b>: la app sigue el idioma de Windows, y también su tema claro u oscuro y su color de acento.</li>
+    <li data-html data-en="&lt;b&gt;Real logos&lt;/b&gt;: Discord, Obsidian, Brave and other apps no longer show a blank icon or a name that is not theirs."><b>Logos de verdad</b>: Discord, Obsidian, Brave y otras apps ya no salen con un icono en blanco ni con un nombre que no es el suyo.</li>
+    <li data-html data-en="&lt;b&gt;Renaming no longer duplicates&lt;/b&gt;: renaming a group no longer leaves a copy behind, and a pinned group keeps working. Saving a group you edited again, or one with a name of several words, works now too."><b>Renombrar ya no duplica</b>: cambiar el nombre de un grupo ya no deja una copia detrás, y si estaba anclado sigue funcionando. Guardar un grupo que ya habías editado, o uno con un nombre de varias palabras, también funciona ya.</li>
+    <li data-html data-en="&lt;b&gt;A clean taskbar refresh&lt;/b&gt;: a pinned group's new icon shows on the taskbar right away, and it no longer blanks out the icons of other pinned apps."><b>La barra se refresca limpia</b>: el icono nuevo de un grupo anclado se ve al momento en la barra, y ya no deja en blanco los iconos de otras apps ancladas.</li>
+  </ul>
+</section>
+
+<section id="v1-0-0">
+  <h2 data-en="Your apps grouped on the taskbar, with a Windows 11 look">Tus apps agrupadas en la barra, con aspecto de Windows 11</h2>
+  <p class="version" data-html data-en="&lt;a href=&quot;https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.0.0&quot; rel=&quot;noopener&quot;&gt;Version 1.0.0&lt;/a&gt; · 29 June 2026"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.0.0" rel="noopener">Versión 1.0.0</a> · 29 de junio de 2026</p>
+  <ul class="lista">
+    <li data-html data-en="&lt;b&gt;Taskbar Groups, rebuilt&lt;/b&gt;: the tool for grouping apps on the taskbar, written again with a modern look."><b>Taskbar Groups, rehecho</b>: la herramienta para agrupar apps en la barra de tareas, escrita de nuevo con un aspecto moderno.</li>
+    <li data-html data-en="&lt;b&gt;A Windows 11 look&lt;/b&gt;: the system's translucent backdrop, rounded corners and Windows' light or dark theme."><b>Aspecto de Windows 11</b>: el fondo translúcido del sistema, esquinas redondeadas y el tema claro u oscuro de Windows.</li>
+    <li data-html data-en="&lt;b&gt;Microsoft Store apps&lt;/b&gt;: add WhatsApp, Instagram, TikTok and others that have no program file to point at."><b>Apps de la Microsoft Store</b>: añade WhatsApp, Instagram, TikTok y otras que no tienen un programa al que apuntar.</li>
+    <li data-html data-en="&lt;b&gt;Crisp icons&lt;/b&gt;: at 256 pixels and without the shortcut arrow on top."><b>Iconos nítidos</b>: a 256 píxeles y sin la flechita de acceso directo encima.</li>
+    <li data-html data-en="&lt;b&gt;One-click pinning&lt;/b&gt;: a helper to pin each group to the taskbar, plus buttons to edit or delete it."><b>Ancla con un clic</b>: una ayuda para anclar cada grupo a la barra, y botones para editarlo o borrarlo.</li>
+  </ul>
+</section>
+      </div>
+
+      <figure class="leer-lado">
+        <img src="../assets/shot-formas.webp?v=39d49a94" width="1464" height="1120" loading="lazy" alt="Los cuatro paneles abiertos sobre una barra de tareas real: cuadrícula, lista, columna y fila" data-alt-en="The four panels open over a real taskbar: grid, list, column and row">
+        <figcaption data-en="The four panel shapes, on a real taskbar. Each version arrives by itself: when it opens, the app offers you the new one.">Las cuatro formas del panel, en una barra de tareas real. Cada versión llega sola: al abrirse, la app te ofrece la nueva.</figcaption>
+      </figure>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="../"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p data-en="Your apps grouped into a single taskbar icon. Free, open source and with no account.">Tus apps agrupadas en un solo icono de la barra de tareas. Gratis, de código abierto y sin cuenta.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Product">Producto</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe" data-en="Download">Descargar</a></li>
+          <li><a href="../novedades/" data-en="What's new">Novedades</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe" data-en="Offline installer">Instalador Offline</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Help">Ayuda</h2>
+        <ul>
+          <li><a href="../soporte/" data-en="Support">Soporte</a></li>
+          <li><a href="../#preguntas" data-en="Questions">Preguntas</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener" data-en="Report a bug">Avisar de un fallo</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Code">Código</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener" data-en="MIT licence">Licencia MIT</a></li>
+          <li><a href="../#historia" data-en="Credits">Créditos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="More">Más</h2>
+        <ul>
+          <li><a href="../privacidad/" data-en="Privacy">Privacidad</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener" data-en="Buy me a coffee">Invítame a un café</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off" data-en="Fewer animations">Menos animaciones</a><a class="valvula con-mov" href="./" data-en="All animations">Con animaciones</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span data-html data-en="Taskbar Groups Fluent · MIT · Made by &lt;a href=&quot;https://munito.dev&quot;&gt;Munir Torres&lt;/a&gt;">Taskbar Groups Fluent · MIT · Hecho por <a href="https://munito.dev">Munir Torres</a></span>
+      <span data-en="Not affiliated with Microsoft. Windows is a trademark of its owner.">Sin vínculo con Microsoft. Windows es marca de su propietario.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../leer.js?v=f4751175"></script>
+</body>
+</html>

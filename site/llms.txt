@@ -1,0 +1,54 @@
+# Taskbar Groups Fluent
+
+> Free and open source app for Windows 10 and 11 that groups your shortcuts into a single
+> taskbar button. Click it, or just hover over it, and a panel in Windows 11 glass opens with
+> every app in the group. A modern rewrite in WPF and .NET 10 of Taskbar Groups. MIT licence,
+> no account, no telemetry, no ads.
+
+## Facts
+
+- Latest version: 1.10.5 (16 November 2026). 36 stable versions published on GitHub.
+- Windows 11, and Windows 10 version 1809 or later, 64-bit.
+- Installs per user, so Windows does not ask for administrator rights. Needs the .NET 10
+  Desktop Runtime: the installer downloads it if missing; the offline installer carries it.
+- WinGet: `winget install Mun1to.TaskbarGroupsFluent`
+- Microsoft Store (signed by Microsoft, updated by the Store): https://apps.microsoft.com/detail/9PCZDXWFT6SN
+- Installer: https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe
+- Offline installer: https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe
+- Source code: https://github.com/Mun1to/TaskbarGroupsFluent
+- Languages: English, Spanish and Russian.
+
+## What it does
+
+- Each group becomes one taskbar button; clicking it opens a panel above it with the group's apps.
+- Opens on hover too, without clicking (off out of the box). Works with Start11 and StartAllBack since 1.10.
+- Any installed app: desktop apps, Microsoft Store apps and browser web apps, plus folders and other groups.
+- A group can show a folder: the panel lists what is in it each time it opens, including Windows
+  places such as the Control Panel, This PC, the Recycle Bin or all your apps.
+- Groups inside groups, opening beside the panel like a submenu.
+- Four panel shapes in Windows 11 glass: grid, row, column and list. On Windows 10 the panel is opaque.
+- Groups by the clock too, with their own icon in the notification area.
+- Every monitor: the panel opens above the icon you clicked, on that screen.
+- Right-click a pinned group for Open all and Edit group; right-click an app in the panel for its Windows menu.
+- Per-app options: name, icon, arguments, run as administrator.
+- Export, import and duplicate groups, or bring them from Taskbar Groups or AppGroup.
+- Updates itself when a new version is out, if you say yes.
+
+## Compared with the alternatives (checked 15 November 2026 in each one's official sources)
+
+- Taskbar Groups (the original, tjackenpacken): opens on click only, a folder is just another
+  shortcut, last version a pre-release from January 2021, English only, not on WinGet or the Store.
+- Taskbar Groups pike-beta (PikeNote): opens on click only, last version January 2023, on WinGet.
+- AppGroup (iandiv): no open on hover and no folder groups; has a portable version; not on WinGet or the Store; .NET 8.
+- Windhawk with the Taskbar Folder Menus mod: folder menus opened with a click, Windows 11 only,
+  main taskbar only, Windhawk asks for administrator rights.
+- ExplorerPatcher: brings back the Windows 10 taskbar and its toolbars on Windows 11; asks for elevation.
+
+## Pages
+
+- Home: https://tbgf.munito.dev/en/ (Spanish: https://tbgf.munito.dev/)
+- What's new: https://tbgf.munito.dev/en/changelog/
+- Support: https://tbgf.munito.dev/en/support/
+- Privacy: https://tbgf.munito.dev/en/privacy/
+
+Made by Munir Torres (https://munito.dev). Some code comes from taskbar-groups and its fork pike-beta, both MIT.

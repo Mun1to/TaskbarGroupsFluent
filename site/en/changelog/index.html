@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en" data-otra="../../novedades/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What's new in Taskbar Groups Fluent, version by version</title>
+<meta name="description" content="What each version of Taskbar Groups Fluent brings, newest first, with a link to its release on GitHub.">
+<link rel="canonical" href="https://tbgf.munito.dev/en/changelog/">
+<link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/novedades/">
+<link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/changelog/">
+<link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/novedades/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskbar Groups Fluent">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="es_ES">
+<meta property="og:url" content="https://tbgf.munito.dev/en/changelog/">
+<meta property="og:title" content="What's new in Taskbar Groups Fluent">
+<meta property="og:description" content="What each version of Taskbar Groups Fluent brings, newest first, with a link to its release on GitHub.">
+<meta property="og:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tbgf.munito.dev/social-en.png?v=1">
+<link rel="icon" href="../../assets/icon-256.png?v=6fed70b9" type="image/png">
+<link rel="apple-touch-icon" href="../../assets/icon-256.png?v=6fed70b9">
+<script>
+// El dial de movimiento y el idioma elegido, igual que en la portada (ver index.html).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+  try {
+    var elegido = localStorage.getItem("tbgf-lang");
+    var otra = h.getAttribute("data-otra");
+    if (otra && (elegido === "es" || elegido === "en") && elegido !== h.lang) location.replace(otra + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../../estilos.css?v=68223800">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Taskbar Groups Fluent", "item": "https://tbgf.munito.dev/en/" },
+    { "@type": "ListItem", "position": 2, "name": "What's new", "item": "https://tbgf.munito.dev/en/changelog/" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- Esta página la escribe _herramientas/generar-novedades.mjs a partir de versiones.json: no se
+     edita a mano, que se pisa la próxima vez. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="../"><img src="../../assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="../#funciones">Features</a>
+      <a href="../#pruebalo">Try it</a>
+      <a href="../#comparativa">Compare</a>
+      <a class="aqui" aria-current="page" href="../changelog/">What's new</a>
+      <a href="../support/">Support</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="../../novedades/" hreflang="es" lang="es" data-corto="ES" aria-label="Español">Español</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span>Download</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span>Menu</span></summary>
+        <div class="menu-panel">
+          <a href="../#funciones">Features</a>
+          <a href="../#pruebalo">Try it</a>
+          <a href="../#comparativa">Compare</a>
+          <a class="aqui" aria-current="page" href="../changelog/">What's new</a>
+          <a href="../support/">Support</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span>The code, on GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<main class="leer novedades">
+  <div class="env">
+    <header class="leer-cabeza">
+      <h1>What's new</h1>
+      <p class="entradilla">What each version brings, newest first. The app updates itself when a new one is out, if you say yes, and the latest is <b>1.10.5</b>.</p>
+    </header>
+
+    <div class="leer-rejilla con-lado">
+      <nav class="leer-indice" aria-label="Versions">
+        <a href="#v1-10-5">1.10.0 to 1.10.5</a>
+        <a href="#v1-9-0">1.9.0</a>
+        <a href="#v1-8-0">1.8.0</a>
+        <a href="#v1-7-0">1.7.0</a>
+        <a href="#v1-6-10">1.6.7 to 1.6.10</a>
+        <a href="#v1-6-6">1.6.1 to 1.6.6</a>
+        <a href="#v1-6-0">1.6.0</a>
+        <a href="#v1-5-0">1.5.0</a>
+        <a href="#v1-4-5">1.4.0 to 1.4.5</a>
+        <a href="#v1-3-0">1.1.0 to 1.3.0</a>
+        <a href="#v1-0-0">1.0.0</a>
+      </nav>
+
+      <div class="texto">
+<section id="v1-10-5">
+  <h2>Pin by dragging and give every app its own icon</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.10.5" rel="noopener">Versions 1.10.0 to 1.10.5</a> · 16 November 2026</p>
+  <ul class="lista">
+    <li><b>Each app, its own icon</b>: in the editor you give each app the picture you want, or go back to the automatic one, and web apps installed from Chrome or Edge show their own icon and name instead of the browser's, and now appear in the app list.</li>
+    <li><b>Pin by dragging</b>: drag a group's icon from the main window onto the taskbar and it is pinned, with no right-click and no trip through File Explorer.</li>
+    <li><b>A Recycle Bin group</b>: a group can show the Recycle Bin, by the clock too, and its right-click empties it or puts everything back where it was.</li>
+    <li><b>New menu by the clock</b>: right-clicking the app's icon or a group's brings up a card in the app's own style, with an icon on every line and switches for open on hover and instant opening, light or dark and in your accent colour.</li>
+    <li><b>Hover works on more taskbars</b>: with Start11 and StartAllBack it recognises the group by its icon once the cursor rests, also on a taskbar with two rows, and if you right-click before the panel shows, the right-click wins.</li>
+    <li><b>A second click closes it</b>: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, and the panel no longer shows up in Alt+Tab.</li>
+    <li><b>Sharp icons</b>: apps that only ship a small icon, like RustDesk, no longer look tiny in a group (fixed by g3ck0), and with the Recycle Bin empty its menu by the clock greys out Empty and Restore.</li>
+  </ul>
+</section>
+
+<section id="v1-9-0">
+  <h2>Panels show at once even when a drive is asleep</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.9.0" rel="noopener">Version 1.9.0</a> · 12 November 2026</p>
+  <ul class="lista">
+    <li><b>Panels no longer wait</b>: if an app in the group lives on a hard disk that has spun down, a network drive or a USB drive, the panel shows at once with its saved icons and checks the apps afterwards. With an app on a network drive that does not answer, it goes from 22 s to 0.8 s.</li>
+    <li><b>Hide its icon</b>: right-click the app's icon by the clock and pick “Hide this icon”, or switch off “Show the icon by the clock” in Settings, which is also where it comes back. The program keeps doing its job without it.</li>
+    <li><b>Windows 11 menus</b>: the menus of the app's icon and of the groups by the clock get rounded corners, more room, and go light or dark like the app.</li>
+    <li><b>The app speaks Russian</b>: the app, its panels and its menus, picked with Windows or with <b>RU</b> in the quick bar. It is a first, machine-assisted version: if a text reads wrong, say so on GitHub.</li>
+  </ul>
+</section>
+
+<section id="v1-8-0">
+  <h2>Your groups by the clock, and open in an instant</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.8.0" rel="noopener">Version 1.8.0</a> · 11 November 2026</p>
+  <ul class="lista">
+    <li><b>A group by the clock</b>: in the editor, switch on “Also show it by the clock” and the group gets its own icon there. A click opens its panel right by it, and a right-click offers “Open”, “Open all” and “Edit group”.</li>
+    <li><b>The icon follows the group</b>: rename it, change its icon or delete it and the one by the clock keeps up. On Windows 11 a new icon starts behind the arrow: drag it next to the clock to keep it in sight.</li>
+    <li><b>Open groups instantly</b>: a new setting keeps a panel loaded in the background, so even the first click after starting Windows opens at once, not after a second or so. It is off by default.</li>
+    <li><b>The app closer at hand</b>: a pinned group's right-click offers “Open Taskbar Groups Fluent”, a double click on its icon by the clock opens it, and opening it while it is already open brings its window to the front instead of a second one.</li>
+    <li><b>Running only when needed</b>: the small program by the clock runs only while it has a job (open on hover, a group by the clock or instant opening), and its menu only offers to switch off what is on.</li>
+  </ul>
+</section>
+
+<section id="v1-7-0">
+  <h2>Turn a folder into a group and pin a whole taskbar in one go</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.7.0" rel="noopener">Version 1.7.0</a> · 7 November 2026</p>
+  <ul class="lista">
+    <li><b>A folder as a group</b>: in the editor pick “What is in a folder” and any folder, or one of the “Windows places” (Control Panel, Windows Tools, This PC, All apps, Desktop, Downloads and a few more). The panel lists what is in it every time it opens, so it is always current.</li>
+    <li><b>Subfolders as submenus</b>: folders inside it that hold something open beside the panel like a submenu, with an arrow, and everything has its own Windows right-click menu.</li>
+    <li><b>A whole taskbar at once</b>: click “Pin to taskbar” on a group that holds other groups and the app offers to pin them all, one after another in the group's order, with a taskbar separator for every separator line in it.</li>
+    <li><b>Each pin is your right-click</b>: Windows does not let apps pin anything by themselves, so the app keeps the next shortcut selected in File Explorer and moves on as soon as you pin it.</li>
+    <li><b>Arrows on groups inside</b>: groups inside a group show an arrow in the panel, as they open beside it.</li>
+    <li><b>Better on Windows 10</b>: the pinning steps match its right-click menu, the panel has a square border like every other window, open on hover recognises groups on more taskbars and hides the classic tooltip over the panel, and the installer asks for Windows 10 version 1809 or later.</li>
+  </ul>
+</section>
+
+<section id="v1-6-10">
+  <h2>Sort your groups with submenus, separators and drag and drop</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.10" rel="noopener">Versions 1.6.7 to 1.6.10</a> · 3 November 2026</p>
+  <ul class="lista">
+    <li><b>Groups as submenus</b>: a group inside another opens its panel right next to the first one, which stays open. Click it again or press Escape to close it, and launching an app from it closes both.</li>
+    <li><b>Separators where you want</b>: the editor's “Separator” button adds a line across the panel, with an optional title, to split its apps into sections, and empty shortcuts put space between the groups pinned on the taskbar.</li>
+    <li><b>Drag and drop</b>: drop files, folders and shortcuts from File Explorer or the desktop onto the group editor, or onto an open panel to add them. With open on hover on, take them to the group's taskbar icon, wait for the panel and drop them there.</li>
+    <li><b>A better app picker</b>: it finds more installed apps, searches without caring about accents and by the program's name too, works with the keyboard and double-click, and loads icons more lightly.</li>
+    <li><b>Each panel on its monitor</b>: with the taskbar on several screens, the panel opens over the icon you clicked, also on a screen at a different display scale, and its animation no longer shows on the screen next door.</li>
+    <li><b>No more flickering cursor</b>: with open on hover on, the taskbar no longer keeps showing the loading cursor.</li>
+  </ul>
+</section>
+
+<section id="v1-6-6">
+  <h2>Groups open almost instantly</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.6" rel="noopener">Versions 1.6.1 to 1.6.6</a> · 17 October 2026</p>
+  <ul class="lista">
+    <li><b>Opens almost instantly</b>: the panel stays loaded for a while after you use it, and a click on a group takes 0.1 to 0.2 s instead of nearly a second. While it waits it takes about 6 MB, and it goes away after ten minutes without use.</li>
+    <li><b>Each app's own menu</b>: right-click an app in the panel for the menu Windows gives it, with “Open file location”, “Properties”, “Run as administrator” or “Uninstall”.</li>
+    <li><b>An animated panel</b>: in Settings, “Panel animation” offers “None” (as before), “Peek” or “From the taskbar”, which slides it out from behind the taskbar like the Start menu.</li>
+    <li><b>A quick bar</b>: at the bottom of the window, switch theme, language and open on hover without opening Settings, and the version shows a green tick when it is the latest, or an “Update now” button when there is a new one.</li>
+    <li><b>Pinned groups do more</b>: their right-click on the taskbar offers “Open all” and “Edit group”, and saving a pinned group no longer leaves you without a taskbar.</li>
+    <li><b>Lighter updates</b>: no more 60 MB download on every update, an offline installer for PCs without internet, and the same app runs from the Microsoft Store, which takes care of updating it.</li>
+  </ul>
+</section>
+
+<section id="v1-6-0">
+  <h2>Panels your way, with real Windows 11 glass</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.6.0" rel="noopener">Version 1.6.0</a> · 15 October 2026</p>
+  <ul class="lista">
+    <li><b>Windows 11 glass</b>: the panel shows what is behind it, blurred, in dark and light themes and also when it opens on hover. Before, it came out as a flat dark sheet.</li>
+    <li><b>Four panel layouts</b>: grid, horizontal row, vertical column or list, with or without app names, in three icon sizes and with the group's name above or below. The editor shows a live preview.</li>
+    <li><b>All from the panel</b>: a pencil next to the group's name opens its editor, and a button opens every app in the group at once.</li>
+    <li><b>An icon from your apps</b>: one click builds the taskbar icon from the first four apps in the group, and it keeps up as you add or remove them.</li>
+    <li><b>Groups inside groups</b>: add a group to another and it opens in its own panel. And every app can be renamed, given launch arguments or run as administrator.</li>
+    <li><b>Export, import and duplicate</b>: a group travels as a single .tbgroup file, and if you come from Taskbar Groups or AppGroup, you can bring your groups along.</li>
+  </ul>
+</section>
+
+<section id="v1-5-0">
+  <h2>Open a group just by resting the cursor on it</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.5.0" rel="noopener">Version 1.5.0</a> · 13 September 2026</p>
+  <ul class="lista">
+    <li><b>Open a group without clicking</b>: rest the cursor on a pinned group and it opens in about a third of a second, without taking the keyboard from what you were typing, and it closes by itself as soon as you move away. Clicking works as before.</li>
+    <li><b>You choose the wait</b>: in the new Settings window (the gear in the main window), “Open on hover” waits “Fast”, “Normal” or “Relaxed”, so sweeping across the taskbar never opens anything by accident.</li>
+    <li><b>Off by default</b>: it needs a small program that starts with Windows and lives by the clock. Switch it off from its icon or from Settings and it is gone, startup entry included.</li>
+    <li><b>Windows' tooltip steps aside</b>: the button name Windows shows when the cursor rests no longer covers an open panel, and every other taskbar button keeps its tooltip.</li>
+    <li><b>Clean updates and uninstalls</b>: the installer stops what the app has running before touching files, and uninstalling removes the whole folder and the startup entry.</li>
+  </ul>
+</section>
+
+<section id="v1-4-5">
+  <h2>One-click install and updates that take care of themselves</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.4.5" rel="noopener">Versions 1.4.0 to 1.4.5</a> · 17 August 2026</p>
+  <ul class="lista">
+    <li><b>One-click installer</b>: it installs for your user, without administrator rights, and downloads whatever your PC is missing to run it.</li>
+    <li><b>It updates itself</b>: on launch it checks for a newer version and updates with one click, and before installing it backs up your groups (keeping the last three).</li>
+    <li><b>The panel follows your theme</b>: light or dark like Windows, translucent and with rounded corners on Windows 11, and it no longer freezes on an old picture.</li>
+    <li><b>No more stuck panel</b>: it no longer stays on top of every window. A click outside or Escape closes it, and opening a group clears any panel left behind, so they no longer stack up.</li>
+    <li><b>Icons the right way up</b>: half the icons in the app list came out flipped, and so did the ones saved in groups. They come out right now and rebuild themselves.</li>
+    <li><b>An icon of its own</b>: the app gets its own mark, a panel popping out of a taskbar button, sharp in the taskbar, the Start menu and File Explorer. And it now has a home page: tbgf.munito.dev.</li>
+  </ul>
+</section>
+
+<section id="v1-3-0">
+  <h2>Pick your apps from a list and give each group its icon</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.3.0" rel="noopener">Versions 1.1.0 to 1.3.0</a> · 1 July 2026</p>
+  <ul class="lista">
+    <li><b>Pick from a list</b>: every installed app, desktop and Microsoft Store alike, in one searchable list with their real icons and no system tools in the way. “Browse…” still covers anything else.</li>
+    <li><b>Icons your way</b>: position and crop any image before using it as the group icon, or pick a colour emoji with the “Emoji” button.</li>
+    <li><b>In English and Spanish</b>: the app follows your Windows language, and its light or dark theme and accent colour too.</li>
+    <li><b>Real logos</b>: Discord, Obsidian, Brave and other apps no longer show a blank icon or a name that is not theirs.</li>
+    <li><b>Renaming no longer duplicates</b>: renaming a group no longer leaves a copy behind, and a pinned group keeps working. Saving a group you edited again, or one with a name of several words, works now too.</li>
+    <li><b>A clean taskbar refresh</b>: a pinned group's new icon shows on the taskbar right away, and it no longer blanks out the icons of other pinned apps.</li>
+  </ul>
+</section>
+
+<section id="v1-0-0">
+  <h2>Your apps grouped on the taskbar, with a Windows 11 look</h2>
+  <p class="version"><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/tag/v1.0.0" rel="noopener">Version 1.0.0</a> · 29 June 2026</p>
+  <ul class="lista">
+    <li><b>Taskbar Groups, rebuilt</b>: the tool for grouping apps on the taskbar, written again with a modern look.</li>
+    <li><b>A Windows 11 look</b>: the system's translucent backdrop, rounded corners and Windows' light or dark theme.</li>
+    <li><b>Microsoft Store apps</b>: add WhatsApp, Instagram, TikTok and others that have no program file to point at.</li>
+    <li><b>Crisp icons</b>: at 256 pixels and without the shortcut arrow on top.</li>
+    <li><b>One-click pinning</b>: a helper to pin each group to the taskbar, plus buttons to edit or delete it.</li>
+  </ul>
+</section>
+      </div>
+
+      <figure class="leer-lado">
+        <img src="../../assets/shot-formas.webp?v=39d49a94" width="1464" height="1120" loading="lazy" alt="The four panels open over a real taskbar: grid, list, column and row">
+        <figcaption>The four panel shapes, on a real taskbar. Each version arrives by itself: when it opens, the app offers you the new one.</figcaption>
+      </figure>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="../"><img src="../../assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p>Your apps grouped into a single taskbar icon. Free, open source and with no account.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Product</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe">Download</a></li>
+          <li><a href="../changelog/">What's new</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe">Offline installer</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Help</h2>
+        <ul>
+          <li><a href="../support/">Support</a></li>
+          <li><a href="../#preguntas">Questions</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener">Report a bug</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">Code</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener">MIT licence</a></li>
+          <li><a href="../#historia">Credits</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo">More</h2>
+        <ul>
+          <li><a href="../privacy/">Privacy</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener">Buy me a coffee</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off">Fewer animations</a><a class="valvula con-mov" href="./">All animations</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span>Taskbar Groups Fluent · MIT · Made by <a href="https://munito.dev">Munir Torres</a></span>
+      <span>Not affiliated with Microsoft. Windows is a trademark of its owner.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../../leer.js?v=f4751175"></script>
+</body>
+</html>

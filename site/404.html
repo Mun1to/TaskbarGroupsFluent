@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Page not found · Taskbar Groups Fluent">Página no encontrada · Taskbar Groups Fluent</title>
+<meta name="robots" content="noindex">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<link rel="icon" href="/assets/icon-256.png?v=6fed70b9" type="image/png">
+<script>
+// El dial de movimiento de la casa, igual que en la portada (ver index.html).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+})();
+</script>
+<!-- Esta página se sirve en cualquier dirección que no exista, a cualquier profundidad: por
+     eso todo va desde la raíz del dominio. La barra y el pie los pone cromo.mjs. -->
+<link rel="stylesheet" href="/estilos.css?v=68223800">
+</head>
+<body>
+
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="/"><img src="/assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="/#funciones" data-en="Features">Funciones</a>
+      <a href="/#pruebalo" data-en="Try it">Pruébalo</a>
+      <a href="/#comparativa" data-en="Compare">Comparativa</a>
+      <a href="/novedades/" data-en="What's new">Novedades</a>
+      <a href="/soporte/" data-en="Support">Soporte</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="/en/" hreflang="en" lang="en" data-corto="EN" aria-label="English">English</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-en="Download">Descargar</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span data-en="Menu">Menú</span></summary>
+        <div class="menu-panel">
+          <a href="/#funciones" data-en="Features">Funciones</a>
+          <a href="/#pruebalo" data-en="Try it">Pruébalo</a>
+          <a href="/#comparativa" data-en="Compare">Comparativa</a>
+          <a href="/novedades/" data-en="What's new">Novedades</a>
+          <a href="/soporte/" data-en="Support">Soporte</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span data-en="The code, on GitHub">El código, en GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<main class="perdida">
+  <div class="env">
+    <img src="/assets/logo.png?v=6fed70b9" alt="" width="72" height="72">
+    <h1 data-en="This page does not exist">Esta página no existe</h1>
+    <p class="entradilla" data-en="The link you followed does not lead anywhere on this site. It may have moved: the home page and the support page have everything.">El enlace que has seguido no lleva a ningún sitio de esta web. Puede que se haya movido: en la portada y en el soporte está todo.</p>
+    <div class="botones">
+      <a class="btn uno" href="/" data-en="Go to the home page">Ir a la portada</a>
+      <a class="btn dos" href="/soporte/" data-en="Open support">Abrir el soporte</a>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="/"><img src="/assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p data-en="Your apps grouped into a single taskbar icon. Free, open source and with no account.">Tus apps agrupadas en un solo icono de la barra de tareas. Gratis, de código abierto y sin cuenta.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Product">Producto</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe" data-en="Download">Descargar</a></li>
+          <li><a href="/novedades/" data-en="What's new">Novedades</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe" data-en="Offline installer">Instalador Offline</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Help">Ayuda</h2>
+        <ul>
+          <li><a href="/soporte/" data-en="Support">Soporte</a></li>
+          <li><a href="/#preguntas" data-en="Questions">Preguntas</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener" data-en="Report a bug">Avisar de un fallo</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Code">Código</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener" data-en="MIT licence">Licencia MIT</a></li>
+          <li><a href="/#historia" data-en="Credits">Créditos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="More">Más</h2>
+        <ul>
+          <li><a href="/privacidad/" data-en="Privacy">Privacidad</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener" data-en="Buy me a coffee">Invítame a un café</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off" data-en="Fewer animations">Menos animaciones</a><a class="valvula con-mov" href="./" data-en="All animations">Con animaciones</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span data-html data-en="Taskbar Groups Fluent · MIT · Made by &lt;a href=&quot;https://munito.dev&quot;&gt;Munir Torres&lt;/a&gt;">Taskbar Groups Fluent · MIT · Hecho por <a href="https://munito.dev">Munir Torres</a></span>
+      <span data-en="Not affiliated with Microsoft. Windows is a trademark of its owner.">Sin vínculo con Microsoft. Windows es marca de su propietario.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Quien se pierde dentro de /en/ lee inglés: se le cambian los textos (los mismos data-en que
+// traduce generar-en.mjs en las demás páginas) y los enlaces, a su versión inglesa.
+(function () {
+  if (!/^\/en(\/|$)/.test(location.pathname)) return;
+  document.documentElement.lang = "en";
+  document.querySelectorAll("[data-en]").forEach(function (el) {
+    if (el.hasAttribute("data-html")) el.innerHTML = el.getAttribute("data-en");
+    else el.textContent = el.getAttribute("data-en");
+  });
+  document.querySelectorAll("[data-aria-en]").forEach(function (el) { el.setAttribute("aria-label", el.getAttribute("data-aria-en")); });
+  var ingles = { "/novedades/": "/en/changelog/", "/privacidad/": "/en/privacy/", "/soporte/": "/en/support/" };
+  document.querySelectorAll('a[href^="/"]').forEach(function (a) {
+    var href = a.getAttribute("href");
+    if (/^\/en\//.test(href)) return;
+    a.setAttribute("href", ingles[href] || "/en" + href);
+  });
+  var idioma = document.getElementById("idioma");
+  if (idioma) { idioma.setAttribute("href", "/"); idioma.textContent = "Español"; idioma.lang = "es"; idioma.hreflang = "es"; idioma.setAttribute("aria-label", "Español"); idioma.setAttribute("data-corto", "ES"); }
+})();
+</script>
+<script src="/leer.js?v=f4751175"></script>
+</body>
+</html>

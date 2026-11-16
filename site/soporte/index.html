@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es" data-otra="../en/support/">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-en="Taskbar Groups Fluent support: help, bugs and uninstalling">Soporte de Taskbar Groups Fluent: ayuda, fallos y desinstalar</title>
+<meta name="description" content="Cómo pedir ayuda o avisar de un fallo de Taskbar Groups Fluent, lo que se pregunta siempre, dónde guarda tus grupos y cómo se desinstala del todo.">
+<link rel="canonical" href="https://tbgf.munito.dev/soporte/">
+<link rel="alternate" hreflang="es" href="https://tbgf.munito.dev/soporte/">
+<link rel="alternate" hreflang="en" href="https://tbgf.munito.dev/en/support/">
+<link rel="alternate" hreflang="x-default" href="https://tbgf.munito.dev/soporte/">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0b0b0d" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f7f9" media="(prefers-color-scheme: light)">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Taskbar Groups Fluent">
+<meta property="og:locale" content="es_ES">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:url" content="https://tbgf.munito.dev/soporte/">
+<meta property="og:title" content="Soporte de Taskbar Groups Fluent">
+<meta property="og:description" content="Pedir ayuda, avisar de un fallo, dónde están tus grupos y cómo se desinstala.">
+<meta property="og:image" content="https://tbgf.munito.dev/social.png?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://tbgf.munito.dev/social.png?v=1">
+<link rel="icon" href="../assets/icon-256.png?v=6fed70b9" type="image/png">
+<link rel="apple-touch-icon" href="../assets/icon-256.png?v=6fed70b9">
+<script>
+// El dial de movimiento y el idioma elegido, igual que en la portada (ver index.html).
+(function () {
+  var h = document.documentElement;
+  var q = new URLSearchParams(location.search).get("motion");
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var gain = q === "off" ? 0 : q === "full" ? 1 : reduce ? 0.25 : 1;
+  h.style.setProperty("--motion-gain", String(gain));
+  h.classList.toggle("motion", gain > 0);
+  h.classList.toggle("quieto", gain === 0);
+  try {
+    var elegido = localStorage.getItem("tbgf-lang");
+    var otra = h.getAttribute("data-otra");
+    if (otra && (elegido === "es" || elegido === "en") && elegido !== h.lang) location.replace(otra + location.search + location.hash);
+  } catch (e) {}
+})();
+</script>
+<link rel="stylesheet" href="../estilos.css?v=68223800">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Taskbar Groups Fluent", "item": "https://tbgf.munito.dev/" },
+    { "@type": "ListItem", "position": 2, "name": "Soporte", "item": "https://tbgf.munito.dev/soporte/" }
+  ]
+}
+</script>
+</head>
+<body>
+
+<!-- La barra, el pie y los dibujos los pone cromo.mjs (desde generar-en.mjs), copiados de la portada. -->
+<svg style="display:none" xmlns="http://www.w3.org/2000/svg">
+<symbol id="i-github" viewBox="0 0 16 16"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11"/><path d="m7 10 5 5 5-5"/><path d="M4 19.5h16"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-coffee" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2v2"/><path d="M14 2v2"/><path d="M6 2v2"/><path d="M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1"/></symbol>
+</svg>
+
+<nav class="barra">
+  <div class="env barra-dentro">
+    <a class="logo-nombre" href="../"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30">Taskbar Groups Fluent</a>
+    <span class="enlaces">
+      <a href="../#funciones" data-en="Features">Funciones</a>
+      <a href="../#pruebalo" data-en="Try it">Pruébalo</a>
+      <a href="../#comparativa" data-en="Compare">Comparativa</a>
+      <a href="../novedades/" data-en="What's new">Novedades</a>
+      <a class="aqui" aria-current="page" href="../soporte/" data-en="Support">Soporte</a>
+    </span>
+    <span class="acciones">
+      <a class="gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener" aria-label="GitHub"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg></a>
+      <a class="idioma" id="idioma" href="../en/support/" hreflang="en" lang="en" data-corto="EN" aria-label="English">English</a>
+      <a class="btn uno baja" href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe"><svg aria-hidden="true"><use href="#i-download"/></svg><span data-en="Download">Descargar</span></a>
+      <!-- El menú del móvil y la tableta: un <details> que se abre sin JavaScript; con leer.js
+           la píldora de la barra crece hacia abajo con las páginas dentro. -->
+      <details class="menu">
+        <summary><svg class="abre" aria-hidden="true"><use href="#i-menu"/></svg><svg class="cierra" aria-hidden="true"><use href="#i-x"/></svg><span data-en="Menu">Menú</span></summary>
+        <div class="menu-panel">
+          <a href="../#funciones" data-en="Features">Funciones</a>
+          <a href="../#pruebalo" data-en="Try it">Pruébalo</a>
+          <a href="../#comparativa" data-en="Compare">Comparativa</a>
+          <a href="../novedades/" data-en="What's new">Novedades</a>
+          <a class="aqui" aria-current="page" href="../soporte/" data-en="Support">Soporte</a>
+          <a class="menu-gh" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><use href="#i-github"/></svg><span data-en="The code, on GitHub">El código, en GitHub</span></a>
+        </div>
+      </details>
+    </span>
+  </div>
+</nav>
+
+<!-- Lo que se cuenta aquí sale del código de la app, no de memoria: los grupos viven en
+     %APPDATA%\Jack Schierbeck\taskbar-groups (AppPackage.ClassicDataRoot, la carpeta de todos
+     los forks de Taskbar Groups), o en el LocalState del paquete si es la de la Store; el
+     instalador va a %LOCALAPPDATA%\Programs (PrivilegesRequired=lowest) y su desinstalador no
+     borra los grupos (no tiene [UninstallDelete]). -->
+<main class="leer">
+  <div class="env">
+    <header class="leer-cabeza">
+      <h1 data-en="Support">Soporte</h1>
+      <p class="entradilla" data-en="Something not working as it should? Here is how to get help and report a bug, the questions that always come up, where your groups live, how to remove the app completely and, if it is useful to you, how to buy me a coffee.">¿Algo no va como debería? Aquí está cómo pedir ayuda y avisar de un fallo, lo que se pregunta siempre, dónde viven tus grupos, cómo quitar la app del todo y, si te resulta útil, cómo invitarme a un café.</p>
+    </header>
+
+    <div class="leer-rejilla">
+      <nav class="leer-indice" aria-label="En esta página" data-aria-en="On this page">
+        <a href="#ayuda" data-en="Get help">Pedir ayuda</a>
+        <a href="#dudas" data-en="Questions">Preguntas</a>
+        <a href="#datos" data-en="Your groups">Tus grupos</a>
+        <a href="#desinstalar" data-en="Uninstall">Desinstalar</a>
+        <a href="#apoyar" data-en="Buy me a coffee">Invítame a un café</a>
+      </nav>
+
+      <div class="texto">
+        <section id="ayuda">
+          <h2 data-en="Get help or report a bug">Pedir ayuda o avisar de un fallo</h2>
+          <p data-en="Everything goes through the GitHub issues, which are public: that way anyone with the same problem finds the answer. Check first whether it is already there; if not, open a new one. They get answered, in Spanish or in English.">Todo va por las incidencias de GitHub, que son públicas: así quien tenga el mismo problema encuentra la respuesta. Mira antes si ya está contado; si no, abre uno nuevo. Se contestan, en español o en inglés.</p>
+          <p class="botones">
+            <a class="btn uno" href="https://github.com/Mun1to/TaskbarGroupsFluent/issues/new" rel="noopener"><svg aria-hidden="true"><use href="#i-github"/></svg><span data-en="Report a bug">Contar un fallo</span></a>
+            <a class="btn dos" href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener"><span data-en="See the ones already reported">Ver los que ya están contados</span></a>
+          </p>
+          <p data-en="So it can be fixed the first time, include:">Para que se pueda arreglar a la primera, cuenta:</p>
+          <ul class="lista">
+            <li data-html data-en="&lt;b&gt;The app version.&lt;/b&gt; It is at the bottom right of the main window, in the quick bar."><b>La versión de la app.</b> Sale abajo a la derecha de la ventana principal, en la barra rápida.</li>
+            <li data-html data-en="&lt;b&gt;Your Windows&lt;/b&gt;: 10 or 11, and its version (&lt;kbd&gt;Win&lt;/kbd&gt; + &lt;kbd&gt;R&lt;/kbd&gt;, type &lt;code&gt;winver&lt;/code&gt; and press Enter)."><b>Tu Windows</b>: si es 10 u 11, y su versión (<kbd>Win</kbd> + <kbd>R</kbd>, escribe <code>winver</code> e Intro).</li>
+            <li data-html data-en="&lt;b&gt;Your taskbar&lt;/b&gt;: the Windows one, or Start11, StartAllBack or ExplorerPatcher, which draw their own."><b>Tu barra de tareas</b>: la de Windows, o Start11, StartAllBack o ExplorerPatcher, que pintan la suya.</li>
+            <li data-html data-en="&lt;b&gt;How you installed it&lt;/b&gt;: from this website, with WinGet or from the Microsoft Store."><b>Cómo la instalaste</b>: desde esta web, con WinGet o desde la Microsoft Store.</li>
+            <li data-html data-en="&lt;b&gt;What you did, what you expected and what happened&lt;/b&gt;, step by step, so it can be repeated."><b>Qué hiciste, qué esperabas y qué pasó</b>, paso a paso, para poder repetirlo.</li>
+            <li data-html data-en="&lt;b&gt;Your screens&lt;/b&gt;, if the panel shows up in the wrong place: how many you have and the scale of each one (Settings → System → Display)."><b>Tus pantallas</b>, si el panel sale donde no toca: cuántas tienes y a qué escala va cada una (Configuración → Sistema → Pantalla).</li>
+          </ul>
+        </section>
+
+        <section id="dudas">
+          <h2 data-en="The questions that always come up">Lo que se pregunta siempre</h2>
+
+          <h3 data-en="The group does not open on hover">El grupo no se abre al pasar el ratón</h3>
+          <p data-html data-en="It ships switched off. Turn it on in the quick bar at the bottom of the main window, or in the menu of its icon by the clock. With Start11 or StartAllBack you need version 1.10 or later, which recognises the group by its icon.">Viene apagado de fábrica. Enciéndelo en la barra rápida, abajo en la ventana principal, o en el menú de su icono junto al reloj. Con Start11 o StartAllBack hace falta la versión 1.10 o posterior, que reconoce el grupo por su icono.</p>
+
+          <h3 data-en="Windows says «unknown publisher»">Windows dice «editor desconocido»</h3>
+          <p data-html data-en="The installer is not signed with a paid certificate yet: click &lt;b&gt;More info&lt;/b&gt; and then &lt;b&gt;Run anyway&lt;/b&gt;. If you would rather not, the &lt;a href=&quot;https://apps.microsoft.com/detail/9PCZDXWFT6SN&quot; rel=&quot;noopener&quot;&gt;Microsoft Store&lt;/a&gt; version is signed by Microsoft.">El instalador todavía no está firmado con un certificado de pago: pulsa <b>Más información</b> y luego <b>Ejecutar de todas formas</b>. Si prefieres no hacerlo, la versión de la <a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a> la firma Microsoft.</p>
+
+          <h3 data-en="How do I update it?">¿Cómo la actualizo?</h3>
+          <p data-html data-en="It updates itself: when it opens it asks GitHub whether there is a new version and offers it to you. With WinGet, &lt;code&gt;winget upgrade Mun1to.TaskbarGroupsFluent&lt;/code&gt;; the Microsoft Store one is updated by the Store. What each version brings, in &lt;a href=&quot;../novedades/&quot;&gt;what's new&lt;/a&gt;.">Sola: al abrirse le pregunta a GitHub si hay versión nueva y te la ofrece. Con WinGet, <code>winget upgrade Mun1to.TaskbarGroupsFluent</code>; la de la Microsoft Store la actualiza la Store. Lo que trae cada una, en <a href="../novedades/">las novedades</a>.</p>
+
+          <p class="letra-chica" data-html data-en="Not here? The rest of the questions are on &lt;a href=&quot;../#preguntas&quot;&gt;the home page&lt;/a&gt;.">¿No está aquí? Las demás preguntas, en <a href="../#preguntas">la portada</a>.</p>
+        </section>
+
+        <section id="datos">
+          <h2 data-en="Where your groups live">Dónde viven tus grupos</h2>
+          <p data-html data-en="Nothing leaves your computer (the &lt;a href=&quot;../privacidad/&quot;&gt;privacy page&lt;/a&gt; explains it). This is what it writes, and where:">Nada sale de tu ordenador (lo cuenta <a href="../privacidad/">la privacidad</a>). Esto es lo que escribe, y dónde:</p>
+          <ul class="lista">
+            <li data-html data-en="&lt;b&gt;Your groups, their icons and your settings&lt;/b&gt;, in &lt;code&gt;%APPDATA%\Jack Schierbeck\taskbar-groups&lt;/code&gt;. It is the folder of the original Taskbar Groups, kept on purpose so your groups carry over between it and its forks."><b>Tus grupos, sus iconos y tus ajustes</b>, en <code>%APPDATA%\Jack Schierbeck\taskbar-groups</code>. Es la carpeta del Taskbar Groups original, a propósito: así tus grupos pasan de él y de sus forks a esta app.</li>
+            <li data-html data-en="&lt;b&gt;The app itself&lt;/b&gt;, in &lt;code&gt;%LOCALAPPDATA%\Programs\TaskbarGroupsFluent&lt;/code&gt;: it installs for your user, not the system."><b>La app en sí</b>, en <code>%LOCALAPPDATA%\Programs\TaskbarGroupsFluent</code>: se instala en tu usuario, no en el sistema.</li>
+          </ul>
+          <p data-html data-en="To open one of those folders, paste its name, &lt;code&gt;%&lt;/code&gt; signs included, into the File Explorer address bar. In the Microsoft Store version, Windows keeps your groups inside the app's package, and deletes them when you uninstall it.">Para abrir una de esas carpetas, pega su nombre, con los <code>%</code>, en la barra de direcciones del Explorador. En la versión de la Microsoft Store, Windows guarda tus grupos dentro del paquete de la app, y los borra al desinstalarla.</p>
+        </section>
+
+        <section id="desinstalar">
+          <h2 data-en="How to uninstall it">Cómo se desinstala</h2>
+          <p data-html data-en="&lt;b&gt;First, unpin your groups from the taskbar&lt;/b&gt; (right-click → Unpin from taskbar): without the app they open nothing."><b>Antes, desancla tus grupos de la barra</b> (clic derecho → Desanclar de la barra de tareas): sin la app no abren nada.</p>
+          <ul class="lista">
+            <li data-html data-en="&lt;b&gt;From this website or with WinGet:&lt;/b&gt; Settings → Apps → Installed apps → Taskbar Groups Fluent → Uninstall (on Windows 10, Apps and features)."><b>Desde esta web o con WinGet:</b> Configuración → Aplicaciones → Aplicaciones instaladas → Taskbar Groups Fluent → Desinstalar (en Windows 10, Aplicaciones y características).</li>
+            <li data-html data-en="&lt;b&gt;From the Microsoft Store:&lt;/b&gt; right-click Taskbar Groups Fluent in the Start menu → Uninstall. Windows removes your groups with it."><b>Desde la Microsoft Store:</b> clic derecho en Taskbar Groups Fluent en el menú Inicio → Desinstalar. Windows se lleva con ella tus grupos.</li>
+          </ul>
+          <p data-en="With WinGet, from the terminal too:">Con WinGet, también desde la terminal:</p>
+          <p><code>winget uninstall Mun1to.TaskbarGroupsFluent</code></p>
+          <p data-html data-en="&lt;b&gt;The uninstaller does not touch your groups&lt;/b&gt;: they stay in their folder, ready if you install it again. To remove them too, delete &lt;code&gt;%APPDATA%\Jack Schierbeck\taskbar-groups&lt;/code&gt;."><b>El desinstalador no toca tus grupos</b>: se quedan en su carpeta, listos si la vuelves a instalar. Para quitarlos también, borra <code>%APPDATA%\Jack Schierbeck\taskbar-groups</code>.</p>
+        </section>
+
+        <section id="apoyar">
+          <h2 data-en="Buy me a coffee">Invítame a un café</h2>
+          <p data-en="Taskbar Groups Fluent is free and there is no paid version, no ads and no data to sell: a coffee is the only way to support it. You pay once, you choose the amount, and you need no account.">Taskbar Groups Fluent es gratis y no tiene versión de pago, ni anuncios, ni datos que vender: el café es la única forma de apoyarla. Se paga una vez, la cantidad la pones tú, y no hace falta cuenta.</p>
+          <p class="botones">
+            <a class="btn uno" href="https://buymeacoffee.com/munito" rel="noopener"><svg aria-hidden="true"><use href="#i-coffee"/></svg><span data-en="Buy me a coffee">Invítame a un café</span></a>
+            <a class="btn dos" href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener"><svg aria-hidden="true"><use href="#i-github"/></svg><span data-en="Star it on GitHub">Dale una estrella en GitHub</span></a>
+          </p>
+          <p data-html data-en="A star on GitHub helps too: that way more people find it. From the app, the same coffee is behind the &lt;b&gt;Support&lt;/b&gt; button in the bottom bar and at the end of &lt;b&gt;Settings&lt;/b&gt;.">Una estrella en GitHub también ayuda: así la encuentra más gente. Desde la app, el mismo café está en el botón <b>Apoyar</b> de la barra de abajo y al final de <b>Ajustes</b>.</p>
+          <p class="letra-chica" data-en="Last updated: 15 November 2026.">Última actualización: 15 de noviembre de 2026.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="pie">
+  <div class="env">
+    <div class="pie-rejilla">
+      <div class="quien">
+        <a class="logo-nombre" href="../"><img src="../assets/logo.png?v=6fed70b9" alt="" width="30" height="30" loading="lazy">Taskbar Groups Fluent</a>
+        <p data-en="Your apps grouped into a single taskbar icon. Free, open source and with no account.">Tus apps agrupadas en un solo icono de la barra de tareas. Gratis, de código abierto y sin cuenta.</p>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Product">Producto</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe" data-en="Download">Descargar</a></li>
+          <li><a href="../novedades/" data-en="What's new">Novedades</a></li>
+          <li><a href="https://apps.microsoft.com/detail/9PCZDXWFT6SN" rel="noopener">Microsoft Store</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe" data-en="Offline installer">Instalador Offline</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Help">Ayuda</h2>
+        <ul>
+          <li><a href="../soporte/" data-en="Support">Soporte</a></li>
+          <li><a href="../#preguntas" data-en="Questions">Preguntas</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/issues" rel="noopener" data-en="Report a bug">Avisar de un fallo</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="Code">Código</h2>
+        <ul>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/Mun1to/TaskbarGroupsFluent/blob/main/LICENSE" rel="noopener" data-en="MIT licence">Licencia MIT</a></li>
+          <li><a href="../#historia" data-en="Credits">Créditos</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="pie-titulo" data-en="More">Más</h2>
+        <ul>
+          <li><a href="../privacidad/" data-en="Privacy">Privacidad</a></li>
+          <li><a href="https://buymeacoffee.com/munito" rel="noopener" data-en="Buy me a coffee">Invítame a un café</a></li>
+          <li><a class="valvula sin-mov" href="?motion=off" data-en="Fewer animations">Menos animaciones</a><a class="valvula con-mov" href="./" data-en="All animations">Con animaciones</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="pie-abajo">
+      <span data-html data-en="Taskbar Groups Fluent · MIT · Made by &lt;a href=&quot;https://munito.dev&quot;&gt;Munir Torres&lt;/a&gt;">Taskbar Groups Fluent · MIT · Hecho por <a href="https://munito.dev">Munir Torres</a></span>
+      <span data-en="Not affiliated with Microsoft. Windows is a trademark of its owner.">Sin vínculo con Microsoft. Windows es marca de su propietario.</span>
+    </div>
+  </div>
+</footer>
+
+<script src="../leer.js?v=f4751175"></script>
+</body>
+</html>
