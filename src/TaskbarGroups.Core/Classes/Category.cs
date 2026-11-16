@@ -509,6 +509,35 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
+        /// The group's taskbar icon rebuilt from the apps it holds: the first four
+        /// non-separator entries whose icon is already cached, composed two by two.
+        /// Cache only on purpose — opening the editor must not touch a drive that may
+        /// be asleep, and an uninstalled app must not contribute an error tile — so a
+        /// group with nothing cached keeps the image it has. Null when there is nothing
+        /// to build from, and for a folder group, whose icon is the folder's own.
+        /// </summary>
+        public Bitmap BuildAutoIcon(int size = 256)
+        {
+            if (IsFolderGroup || ShortcutList is null) return null;
+
+            var icons = new List<Image>();
+            try
+            {
+                foreach (ProgramShortcut ps in ShortcutList.Where(ps => !ps.IsSeparator).Take(4))
+                {
+                    Image cached = CachedIcon(ps);
+                    if (cached is not null) icons.Add(cached);
+                }
+
+                return icons.Count == 0 ? null : GroupIconGrid.Compose(icons, size);
+            }
+            finally
+            {
+                foreach (Image icon in icons) icon.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Whether the app, file or folder behind <paramref name="ps"/> is still there.
         /// It asks the drive it lives on, so it can take seconds: never on the way to
         /// showing a panel.
