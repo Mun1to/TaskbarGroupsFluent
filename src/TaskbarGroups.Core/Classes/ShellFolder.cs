@@ -195,7 +195,11 @@ namespace TaskbarGroups.Core
                 if (item is not IShellItemImageFactory factory) return null;
                 if (factory.GetImage(new SIZE { cx = size, cy = size }, SIIGBF_ICONONLY, out hbitmap) != 0
                     || hbitmap == IntPtr.Zero) return null;
-                return AppCatalog.BitmapFromHBitmap(hbitmap);
+                Bitmap? shell = AppCatalog.BitmapFromHBitmap(hbitmap);
+                if (shell is null) return null;
+                Bitmap improved = ImproveTile(shell, source, FileSystemPath(item), size);
+                if (!ReferenceEquals(improved, shell)) shell.Dispose();
+                return improved;
             }
             catch { return null; }
             finally
@@ -203,6 +207,40 @@ namespace TaskbarGroups.Core
                 if (hbitmap != IntPtr.Zero) DeleteObject(hbitmap);
                 Marshal.ReleaseComObject(item);
             }
+        }
+
+        private const string AppsFolderPrefix = @"shell:AppsFolder\";
+
+        // The shell centres a small logo when it has no image at the requested size
+        // (see AppCatalog.IsPaddedTile). Use the item's real icon when there is one;
+        // otherwise crop the logo out of the tile so it fills its slot.
+        internal static Bitmap ImproveTile(Bitmap shell, string source, string? filePath, int size)
+        {
+            if (!AppCatalog.IsPaddedTile(shell)) return shell;
+
+            string trimmed = (source ?? "").Trim();
+            Bitmap? real = null;
+            if (trimmed.StartsWith(AppsFolderPrefix, StringComparison.OrdinalIgnoreCase))
+                real = AppCatalog.GetIcon(trimmed.Substring(AppsFolderPrefix.Length), size);
+            else if (!string.IsNullOrEmpty(filePath)
+                     && filePath.EndsWith(".exe", StringComparison.OrdinalIgnoreCase))
+                real = AppCatalog.IconFromFile(filePath, size);
+
+            if (real != null)
+            {
+                if (!AppCatalog.IsPaddedTile(real)) return real;
+                real.Dispose(); // still a plate (e.g. an icon that is itself padded)
+            }
+
+            return AppCatalog.CropToSolidContent(shell) ?? shell;
+        }
+
+        private const uint SIGDN_FILESYSPATH = 0x80058000;
+
+        private static string? FileSystemPath(IShellItem item)
+        {
+            try { return item.GetDisplayName(SIGDN_FILESYSPATH, out string? path) == 0 ? path : null; }
+            catch { return null; }
         }
 
         /// <summary>
