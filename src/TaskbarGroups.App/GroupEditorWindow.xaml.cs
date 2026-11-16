@@ -35,6 +35,14 @@ public partial class GroupEditorWindow : FluentWindow
     private readonly string? _originalName;
     private bool _iconChanged;
 
+    // Where the icon came from, and what this visit did to it: a group saved before
+    // that was recorded (Unset) or one whose icon the app composes (Auto) is rebuilt
+    // when its editor opens; an image, emoji or folder icon the user chose is never
+    // touched again.
+    private bool _iconPicked;
+    private bool _iconAutoBuilt;
+    private IconOrigin _loadedOrigin;
+
     // The taskbar icon is the group's own apps, two by two, and follows them: every
     // add or remove rebuilds it until the user picks an image or an emoji instead.
     private bool _gridIcon;
@@ -99,6 +107,23 @@ public partial class GroupEditorWindow : FluentWindow
             LoadExistingIcon(existing);
             LoadExistingShortcuts(existing);
             _gridIcon = existing.GridIcon;
+
+            // A group saved by an older build wears an icon drawn from icons that
+            // build resolved; rebuild it from the icons cached now, unless the user
+            // picked it. Only the preview changes here — Save is what writes it.
+            _loadedOrigin = existing.GroupIconOrigin;
+            if (existing.ShouldRebuildIcon)
+            {
+                Bitmap? rebuilt = existing.BuildAutoIcon();
+                if (rebuilt is not null && !SameIcon(_originalIcon, rebuilt))
+                {
+                    _groupImage = rebuilt;
+                    _iconAutoBuilt = true;
+                    _iconChanged = true;
+                    GroupIconPreview.Source = _groupImage.ToImageSource();
+                    GroupIconPlaceholder.Visibility = Visibility.Collapsed;
+                }
+            }
             if (existing.IsFolderGroup)
             {
                 SourceFolderRadio.IsChecked = true;
@@ -331,6 +356,7 @@ public partial class GroupEditorWindow : FluentWindow
             {
                 _groupImage = new Bitmap(big);
                 _iconChanged = true;
+                _iconPicked = true;
                 _iconFromFolder = true;
                 _gridIcon = false;
                 GroupIconPreview.Source = _groupImage.ToImageSource();
@@ -720,6 +746,7 @@ public partial class GroupEditorWindow : FluentWindow
 
         _groupImage = editor.Result;
         _iconChanged = true;
+        _iconPicked = true;
         _gridIcon = false;
         _iconFromFolder = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
@@ -733,6 +760,7 @@ public partial class GroupEditorWindow : FluentWindow
 
         _groupImage = picker.Result;
         _iconChanged = true;
+        _iconPicked = true;
         _gridIcon = false;
         _iconFromFolder = false;
         GroupIconPreview.Source = _groupImage.ToImageSource();
@@ -778,9 +806,18 @@ public partial class GroupEditorWindow : FluentWindow
             HeaderPosition = SelectedHeaderPosition(),
             IconScale = SelectedIconScale(),
             GridIcon = _gridIcon,
+            GroupIconOrigin = _loadedOrigin,
             FolderSource = FolderMode ? _folderSource : "",
             ShowInTray = TrayToggle.IsChecked == true
         };
+
+        // What this visit did to the icon decides what the next one may do to it: a
+        // picked image (or the folder's own) is never rebuilt, a grid or a rebuild
+        // done above stays automatic, and a visit that touched neither keeps the
+        // origin the file came with.
+        bool picked = _iconPicked || _iconFromFolder;
+        category.GroupIconOrigin = category.OriginToSave(
+            gridIcon: !picked && (_gridIcon || _iconAutoBuilt), manualIcon: picked);
 
         DrawingImage groupImage = _groupImage ?? GenerateDefaultGroupImage(name);
         try
