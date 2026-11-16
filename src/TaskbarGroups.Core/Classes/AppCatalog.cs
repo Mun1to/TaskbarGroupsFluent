@@ -413,19 +413,27 @@ namespace TaskbarGroups.Core
             catch { return false; }
         }
 
+        // Extracts a file's embedded icon from its PE resources at the requested
+        // size, or the nearest size it carries. Null when there is nothing to
+        // extract, so callers can fall back to another source.
+        internal static Bitmap? IconFromFile(string path, int size)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+            foreach (int s in new[] { size, 256, 48, 32 })
+            {
+                Bitmap? bmp = IconFromPE(path, s);
+                if (bmp != null) return bmp;
+            }
+            return null;
+        }
+
         // Resolves the app's target .exe (via the AppsFolder property store) and
         // extracts its embedded icon from the PE resources. Returns null for UWP
         // apps (no .exe target) and anything we can't extract.
         private static Bitmap? GetIconFromTargetExe(string launchId, int size)
         {
             string? exe = ResolveTargetPath(launchId);
-            if (string.IsNullOrEmpty(exe) || !File.Exists(exe)) return null;
-            foreach (int s in new[] { size, 256, 48, 32 })
-            {
-                Bitmap? bmp = IconFromPE(exe, s);
-                if (bmp != null) return bmp;
-            }
-            return null;
+            return string.IsNullOrEmpty(exe) ? null : IconFromFile(exe, size);
         }
 
         /// <summary>
