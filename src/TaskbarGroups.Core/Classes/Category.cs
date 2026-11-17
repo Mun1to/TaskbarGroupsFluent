@@ -11,18 +11,6 @@ using System.Xml.Serialization;
 
 namespace TaskbarGroups.Core
 {
-    /// <summary>
-    /// Where a group's taskbar icon came from, so a later build only refreshes the
-    /// icons it made itself. <see cref="Unset"/> is every file written before this
-    /// existed; it is treated as auto once, then stamped on the next save.
-    /// </summary>
-    public enum IconOrigin
-    {
-        Unset,
-        Auto,
-        Manual
-    }
-
     public class Category
     {
         public string Name = "";
@@ -78,14 +66,6 @@ namespace TaskbarGroups.Core
         /// picked by the user, so it has to be rebuilt whenever those apps change.
         /// </summary>
         public bool GridIcon = false;
-
-        /// <summary>
-        /// Whether the taskbar icon was composed from the group's apps
-        /// (<see cref="IconOrigin.Auto"/>), chosen by the user
-        /// (<see cref="IconOrigin.Manual"/>), or saved before this was recorded
-        /// (<see cref="IconOrigin.Unset"/>). Only auto icons are ever rebuilt.
-        /// </summary>
-        public IconOrigin GroupIconOrigin = IconOrigin.Unset;
 
         /// <summary>
         /// The folder whose contents the panel shows instead of a list of apps
@@ -182,7 +162,6 @@ namespace TaskbarGroups.Core
                 this.HeaderPosition = category.HeaderPosition;
                 this.IconScale = category.IconScale;
                 this.GridIcon = category.GridIcon;
-                this.GroupIconOrigin = category.GroupIconOrigin;
                 this.FolderSource = category.FolderSource ?? "";
                 this.ShowInTray = category.ShowInTray;
             }
@@ -533,8 +512,9 @@ namespace TaskbarGroups.Core
         /// The group's taskbar icon rebuilt from the apps it holds: the first four
         /// non-separator entries whose icon is already cached, composed two by two.
         /// Cache only on purpose — opening the editor must not touch a drive that may
-        /// be asleep, and an uninstalled app must not contribute an error tile — so a
-        /// group with nothing cached keeps the image it has. Null when there is nothing
+        /// be asleep — so a group with nothing cached keeps the image it has. (An app
+        /// that failed to resolve is cached as the error tile, and shows as one here,
+        /// as it does in the grid the editor composes.) Null when there is nothing
         /// to build from, and for a folder group, whose icon is the folder's own.
         /// </summary>
         public Bitmap BuildAutoIcon(int size = 256)
@@ -560,17 +540,12 @@ namespace TaskbarGroups.Core
 
         /// <summary>
         /// Whether opening the editor may replace this group's icon with one built
-        /// from its apps: never a folder group (its icon is the folder's own) and
-        /// never an icon the user picked.
+        /// from its apps: only an icon the app composed from them (<see cref="GridIcon"/>,
+        /// recorded since 1.6.0, when the grid icon came in). An image, an emoji, the
+        /// default initial or a folder's icon is the user's and is never touched; a
+        /// file without the field reads as false, so no group saved before is either.
         /// </summary>
-        public bool ShouldRebuildIcon => !IsFolderGroup && GroupIconOrigin != IconOrigin.Manual;
-
-        /// <summary>
-        /// The origin to save: a grid icon is auto, a picked one is manual, and a
-        /// visit that chose neither leaves the file as it was.
-        /// </summary>
-        public IconOrigin OriginToSave(bool gridIcon, bool manualIcon)
-            => gridIcon ? IconOrigin.Auto : manualIcon ? IconOrigin.Manual : GroupIconOrigin;
+        public bool ShouldRebuildIcon => !IsFolderGroup && GridIcon;
 
         /// <summary>
         /// Whether the app, file or folder behind <paramref name="ps"/> is still there.
