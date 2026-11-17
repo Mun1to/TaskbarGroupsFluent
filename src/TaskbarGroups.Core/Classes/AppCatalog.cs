@@ -352,6 +352,76 @@ namespace TaskbarGroups.Core
             catch { return false; }
         }
 
+        // The padded tile still holds the real logo, just small and centred. When
+        // there is no source to re-resolve it from (UWP, .lnk, shell-only items),
+        // cropping to the solid box makes the logo fill its slot instead of
+        // floating on a plate. The result is square: the editor saves a folder
+        // group's icon through a resize that ignores aspect, so a wide or tall
+        // crop would be squashed there (it is letterboxed instead).
+        internal static Bitmap? CropToSolidContent(Bitmap icon, int margin = 2)
+        {
+            try
+            {
+                Rectangle? box = SolidBounds(icon);
+                if (box is null) return null;
+
+                int left = Math.Max(0, box.Value.X - margin);
+                int top = Math.Max(0, box.Value.Y - margin);
+                int right = Math.Min(icon.Width - 1, box.Value.Right - 1 + margin);
+                int bottom = Math.Min(icon.Height - 1, box.Value.Bottom - 1 + margin);
+                Bitmap tight = icon.Clone(new Rectangle(left, top, right - left + 1, bottom - top + 1),
+                    PixelFormat.Format32bppArgb);
+
+                int side = Math.Max(tight.Width, tight.Height);
+                if (tight.Width == side && tight.Height == side) return tight;
+                try
+                {
+                    var square = new Bitmap(side, side, PixelFormat.Format32bppArgb);
+                    using var g = Graphics.FromImage(square);
+                    g.DrawImageUnscaled(tight, (side - tight.Width) / 2, (side - tight.Height) / 2);
+                    return square;
+                }
+                finally { tight.Dispose(); }
+            }
+            catch { return null; }
+        }
+
+        // Whether the icon has any solid pixel; a mask-only resource has none.
+        internal static bool HasSolidContent(Bitmap icon)
+        {
+            try { return SolidBounds(icon) != null; }
+            catch { return false; }
+        }
+
+        private static Rectangle? SolidBounds(Bitmap icon)
+        {
+            int w = icon.Width, h = icon.Height;
+            if (w == 0 || h == 0) return null;
+            int minX = w, minY = h, maxX = -1, maxY = -1;
+
+            BitmapData data = icon.LockBits(new Rectangle(0, 0, w, h),
+                ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+            try
+            {
+                int stride = data.Stride;
+                byte[] bytes = new byte[stride * h];
+                Marshal.Copy(data.Scan0, bytes, 0, bytes.Length);
+                for (int y = 0; y < h; y++)
+                    for (int x = 0; x < w; x++)
+                        if (bytes[y * stride + x * 4 + 3] > 200)
+                        {
+                            if (x < minX) minX = x;
+                            if (x > maxX) maxX = x;
+                            if (y < minY) minY = y;
+                            if (y > maxY) maxY = y;
+                        }
+            }
+            finally { icon.UnlockBits(data); }
+
+            if (maxX < minX || maxY < minY) return null;
+            return new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+        }
+
         // Whether the entry hands its .exe arguments. Then the .exe is a host that starts
         // something else, and its icon is the host's: every Linux app of WSL starts
         // through wslg.exe ("-d <distro> -- <app>") and would turn into the same penguin.
@@ -371,19 +441,27 @@ namespace TaskbarGroups.Core
             catch { return false; }
         }
 
+        // Extracts a file's embedded icon from its PE resources at the requested
+        // size, or the nearest size it carries. Null when there is nothing to
+        // extract, so callers can fall back to another source.
+        internal static Bitmap? IconFromFile(string path, int size)
+        {
+            if (string.IsNullOrWhiteSpace(path) || !File.Exists(path)) return null;
+            foreach (int s in new[] { size, 256, 48, 32 })
+            {
+                Bitmap? bmp = IconFromPE(path, s);
+                if (bmp != null) return bmp;
+            }
+            return null;
+        }
+
         // Resolves the app's target .exe (via the AppsFolder property store) and
         // extracts its embedded icon from the PE resources. Returns null for UWP
         // apps (no .exe target) and anything we can't extract.
         private static Bitmap? GetIconFromTargetExe(string launchId, int size)
         {
             string? exe = ResolveTargetPath(launchId);
-            if (string.IsNullOrEmpty(exe) || !File.Exists(exe)) return null;
-            foreach (int s in new[] { size, 256, 48, 32 })
-            {
-                Bitmap? bmp = IconFromPE(exe, s);
-                if (bmp != null) return bmp;
-            }
-            return null;
+            return string.IsNullOrEmpty(exe) ? null : IconFromFile(exe, size);
         }
 
         /// <summary>
