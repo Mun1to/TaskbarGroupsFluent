@@ -44,3 +44,10 @@ jobs:
           path: site
       - id: deployment
         uses: actions/deploy-pages@v4
+      # IndexNow: tell Bing and the other engines which pages to read again. The tools were
+      # removed above, so the script comes back from git; a failure here never fails the deploy.
+      - name: Tell the search engines
+        continue-on-error: true
+        run: |
+          git checkout HEAD -- site/_herramientas/avisar-buscadores.mjs
+          node site/_herramientas/avisar-buscadores.mjs
