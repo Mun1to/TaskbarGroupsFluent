@@ -33,15 +33,18 @@ namespace TaskbarGroups.Core
         /// <summary>
         /// Notes one click: how it was served ("warm" by the panel kept loaded, or
         /// "cold" by starting one), how long Windows took to start this process
-        /// (<paramref name="startMs"/>) and how long it took in all.
+        /// (<paramref name="startMs"/>) and how long it took in all. A cold one
+        /// also says why no loaded panel took it (<paramref name="detail"/>), which
+        /// the times alone could not tell in issue #20.
         /// </summary>
-        public static void Note(string how, double startMs, double totalMs)
+        public static void Note(string how, double startMs, double totalMs, string detail = null)
         {
             try
             {
                 string line = string.Format(CultureInfo.InvariantCulture,
                     "{0:yyyy-MM-dd HH:mm:ss} {1} start={2:0}ms total={3:0}ms",
                     DateTime.Now, how, startMs, totalMs);
+                if (!string.IsNullOrEmpty(detail)) line += " " + detail;
                 string path = FilePath;
                 var lines = File.Exists(path) ? File.ReadAllLines(path).ToList() : new System.Collections.Generic.List<string>();
                 lines.Add(line);

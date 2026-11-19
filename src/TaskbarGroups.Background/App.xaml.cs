@@ -147,8 +147,11 @@ public partial class App : Application
         w.Show();
 
         // Issue #17: how long this click took, noted once the panel is painted.
+        // Issue #20: and why no loaded panel took it, with whether the program
+        // that keeps one loaded was running.
         if (anchor is null && Program.StartMs >= 0)
-            w.ContentRendered += (_, _) => OpenTimes.Note("cold", Program.StartMs, SinceStart());
+            w.ContentRendered += (_, _) => OpenTimes.Note("cold", Program.StartMs, SinceStart(),
+                $"why={Program.ColdWhy} watcher={(HoverService.IsRunning() ? "on" : "off")}");
 
         // A click from cold pays for loading everything, and the next one should
         // not. Looked at once the panel is up, so the check is never part of the wait.

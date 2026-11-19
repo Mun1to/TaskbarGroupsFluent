@@ -21,11 +21,18 @@ namespace TaskbarGroups.Background;
 internal static class Program
 {
     /// <summary>
-    /// How long the hand-off waits to see the panel on screen before giving up on
-    /// the warm flyout and opening one the ordinary way. A warm flyout shows in
-    /// about fifty milliseconds, so this only runs out if it is stuck.
+    /// How long a click waits to reach the warm flyout. It answers at once unless
+    /// it is in the middle of the request before this one, and then it is about to.
     /// </summary>
-    private const int HandOffTimeoutMs = 700;
+    private const int ReachMs = 2000;
+
+    /// <summary>
+    /// Why this click was not served by a warm flyout, for <see cref="OpenTimes"/>:
+    /// "no-panel" (none was loaded), "no-answer" (one was, and could not be
+    /// reached), "panel-gone" (it went away while showing) or "panel-slow" (it was
+    /// still there and had not shown when the patience ran out).
+    /// </summary>
+    internal static string ColdWhy = "no-panel";
 
     /// <summary>
     /// Anything left of this is the parking spot of a warm flyout. Far past any screen:
@@ -80,6 +87,7 @@ internal static class Program
     {
         if (!IsPlainClick(args)) return false;
 
+        ColdWhy = "no-panel";
         if (!FlyoutChannel.IsFlyoutReady()) return false;
 
         IntPtr warm = FindWindow(null, PopupWindow.WarmWindowTitle);
@@ -96,18 +104,20 @@ internal static class Program
 
         // The pinned shortcut passes the name unquoted, so a name with spaces
         // arrives split across several args.
-        if (!FlyoutChannel.Click(string.Join(" ", args))) return false;
+        ColdWhy = "no-answer";
+        if (!FlyoutChannel.Click(string.Join(" ", args), ReachMs)) return false;
 
         // Already showing a group (opened by hover): it takes the new one in place,
         // and there is nothing to wait for.
         if (wasOnScreen) return true;
 
+        // Issue #20: waited for as long as it is still there. See HandOffWait.
         var clock = Stopwatch.StartNew();
-        while (clock.ElapsedMilliseconds < HandOffTimeoutMs)
-        {
-            if (OnScreen(warm)) return true;
-            Thread.Sleep(5);
-        }
+        if (HandOffWait.ForPanel(() => OnScreen(warm), () => IsWindow(warm),
+                () => clock.ElapsedMilliseconds, () => Thread.Sleep(5)))
+            return true;
+
+        ColdWhy = IsWindow(warm) ? "panel-slow" : "panel-gone";
         return false;
     }
 
@@ -137,6 +147,9 @@ internal static class Program
 
     [DllImport("user32.dll")]
     private static extern bool AllowSetForegroundWindow(uint pid);
+
+    [DllImport("user32.dll")]
+    private static extern bool IsWindow(IntPtr hWnd);
 
     [DllImport("user32.dll")]
     private static extern bool GetWindowRect(IntPtr hWnd, out RECT rect);
