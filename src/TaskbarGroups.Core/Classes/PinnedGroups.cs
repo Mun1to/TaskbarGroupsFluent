@@ -3,6 +3,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace TaskbarGroups.Core
 {
@@ -79,6 +81,32 @@ namespace TaskbarGroups.Core
             }
 
             return found;
+        }
+
+        /// <summary>
+        /// What the taskbar's shortcuts look like right now: each one's name, size
+        /// and last change, from a single listing of the folder. No shortcut is
+        /// opened, so it costs next to nothing beside <see cref="Scan"/>, and it
+        /// tells when a reading of that has gone stale: a group pinned, unpinned or
+        /// renamed changes it.
+        /// </summary>
+        public static string Stamp() => Stamp(PinFolder);
+
+        /// <summary>As <see cref="Stamp()"/>, for the shortcuts in <paramref name="folder"/>.</summary>
+        public static string Stamp(string folder)
+        {
+            try
+            {
+                var dir = new DirectoryInfo(folder);
+                if (!dir.Exists) return string.Empty;
+
+                var stamp = new StringBuilder();
+                foreach (FileInfo link in dir.EnumerateFiles("*.lnk").OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase))
+                    stamp.Append(link.Name).Append('|').Append(link.Length).Append('|')
+                         .Append(link.LastWriteTimeUtc.Ticks).Append(';');
+                return stamp.ToString();
+            }
+            catch { return string.Empty; }
         }
 
         /// <summary>

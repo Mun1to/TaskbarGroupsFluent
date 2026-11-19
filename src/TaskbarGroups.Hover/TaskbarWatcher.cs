@@ -38,9 +38,10 @@ internal sealed class TaskbarWatcher : IDisposable
     private static readonly TimeSpan CacheLife = TimeSpan.FromSeconds(2);
 
     /// <summary>
-    /// How long the pinned-shortcut lookup stays valid. Far longer than the button
-    /// rectangles because it only changes when a group is pinned, unpinned or
-    /// renamed, and reading it means opening every shortcut on the taskbar.
+    /// How long the pinned-shortcut lookup stays valid with the taskbar's shortcuts
+    /// untouched. Far longer than the button rectangles because reading it means
+    /// opening every shortcut on the taskbar; a group pinned, unpinned or renamed
+    /// is noticed at once all the same (see <see cref="PinnedGroupsCache"/>).
     /// </summary>
     private static readonly TimeSpan PinCacheLife = TimeSpan.FromSeconds(30);
 
@@ -57,8 +58,8 @@ internal sealed class TaskbarWatcher : IDisposable
     private List<GroupButton> _buttons = new();
     private DateTime _cachedAt = DateTime.MinValue;
     private nint _cachedBar;
-    private List<PinnedGroup> _pins = new();
-    private DateTime _pinsAt = DateTime.MinValue;
+    private readonly PinnedGroupsCache _pinCache = new(PinCacheLife);
+    private IReadOnlyList<PinnedGroup> _pins = Array.Empty<PinnedGroup>();
 
     private string? _hovered;
     private DateTime _hoverStart;
@@ -329,6 +330,7 @@ internal sealed class TaskbarWatcher : IDisposable
     private DateTime _matchSince;
     private bool _matchDone;
     private GroupButton? _matched;
+    private int _matchPins = -1;
 
     /// <summary>
     /// The group whose icon the cursor rests on, told by the icon itself (see
@@ -345,11 +347,16 @@ internal sealed class TaskbarWatcher : IDisposable
             _matched = null;
             return null;
         }
-        if (_matchDone) return _matched;
+        // Looked at already for this stop, unless the pinned groups have changed
+        // since: a group dropped on the taskbar leaves the cursor resting right on
+        // its new icon (issue #28), and that icon was nobody's a moment ago.
+        RefreshPins();
+        if (_matchDone && _pinCache.Changes == _matchPins) return _matched;
         if (DateTime.UtcNow - _matchSince < MatchAfter) return null;
 
         _matchDone = true;
-        RefreshPins();
+        _matchPins = _pinCache.Changes;
+        _matched = null;
         int dpi = 96;
         try { dpi = (int)Native.GetDpiForWindow(barWindow); } catch { }
         var found = IconMatcher.GroupAt(cursor, bar, _pins, dpi == 0 ? 96 : dpi);
@@ -372,13 +379,7 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <summary>How still the cursor has to be before its icon is looked at.</summary>
     private static readonly TimeSpan MatchAfter = TimeSpan.FromMilliseconds(80);
 
-    private void RefreshPins()
-    {
-        if (DateTime.UtcNow - _pinsAt <= PinCacheLife) return;
-        try { _pins = PinnedGroups.Scan(); }
-        catch { /* keep the previous map rather than losing every group */ }
-        _pinsAt = DateTime.UtcNow;
-    }
+    private void RefreshPins() => _pins = _pinCache.Read();
 
     /// <summary>
     /// Forgets the open panel, and with it the reason to keep hiding the
