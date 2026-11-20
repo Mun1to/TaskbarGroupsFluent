@@ -55,9 +55,10 @@ New-Item -ItemType Directory -Force (Join-Path $paquete "Assets") | Out-Null
 # --- Los binarios ---------------------------------------------------------------------
 foreach ($proyecto in @("TaskbarGroups.App", "TaskbarGroups.Background", "TaskbarGroups.Hover")) {
     Write-Host "Publicando $proyecto"
-    # Incluir los recursos de WPF que usa la app y omitir los de otros idiomas.
+    # Incluir los recursos de WPF de los idiomas de la app (en, es, ru, zh-Hans) y omitir
+    # los de otros idiomas. El ruso faltaba desde la 1.9.0.
     $log = dotnet publish (Join-Path $raiz "src\$proyecto") -c Release -r win-x64 --self-contained true `
-        "-p:SatelliteResourceLanguages=en%3Bes%3Bzh-Hans" -o $paquete -nologo -v q 2>&1
+        "-p:SatelliteResourceLanguages=en%3Bes%3Bru%3Bzh-Hans" -o $paquete -nologo -v q 2>&1
     if ($LASTEXITCODE -ne 0) { $log | Out-Host; throw "Fallo el publish de $proyecto." }
 }
 
