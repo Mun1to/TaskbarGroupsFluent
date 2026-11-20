@@ -7,7 +7,7 @@ namespace TaskbarGroups.App.Helpers;
 
 /// <summary>
 /// Runtime access to localized strings for code-behind (XAML uses DynamicResource
-/// directly). Strings live in Localization/Strings.{es,en}.xaml; the matching
+/// directly). Strings live in Localization/Strings.{language}.xaml; the matching
 /// dictionary is merged at startup, and swapped when the user picks another
 /// language in the quick bar.
 /// </summary>
@@ -23,8 +23,7 @@ public static class Loc
 
     /// <summary>
     /// Merges the dictionary of the language <see cref="UiPreferences"/> settles on:
-    /// TBG_LANG, then the user's choice, then Windows' own language. Spanish
-    /// systems get Spanish; everything else falls back to English.
+    /// TBG_LANG, then the user's choice, then Windows' own language.
     /// </summary>
     public static void ApplyLanguage(Application app)
     {

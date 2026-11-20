@@ -50,6 +50,7 @@
   <Resources>
     <Resource Language="en-us" />
     <Resource Language="es-es" />
+    <Resource Language="zh-Hans" />
   </Resources>
 
   <Applications>

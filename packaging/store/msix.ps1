@@ -55,10 +55,9 @@ New-Item -ItemType Directory -Force (Join-Path $paquete "Assets") | Out-Null
 # --- Los binarios ---------------------------------------------------------------------
 foreach ($proyecto in @("TaskbarGroups.App", "TaskbarGroups.Background", "TaskbarGroups.Hover")) {
     Write-Host "Publicando $proyecto"
-    # Solo los recursos en ingles y espannol, los dos idiomas de la app: WPF trae los de
-    # trece idiomas mas que nadie veria nunca.
+    # Incluir los recursos de WPF que usa la app y omitir los de otros idiomas.
     $log = dotnet publish (Join-Path $raiz "src\$proyecto") -c Release -r win-x64 --self-contained true `
-        "-p:SatelliteResourceLanguages=en%3Bes" -o $paquete -nologo -v q 2>&1
+        "-p:SatelliteResourceLanguages=en%3Bes%3Bzh-Hans" -o $paquete -nologo -v q 2>&1
     if ($LASTEXITCODE -ne 0) { $log | Out-Host; throw "Fallo el publish de $proyecto." }
 }
 

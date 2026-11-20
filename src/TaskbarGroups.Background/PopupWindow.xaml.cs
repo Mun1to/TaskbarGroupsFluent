@@ -228,13 +228,13 @@ public partial class PopupWindow : Window
         HeaderBar.Margin = bottom ? new Thickness(8, 4, 0, 0) : new Thickness(8, 0, 0, 4);
         HeaderBar.Visibility = _category.ShowHeader ? Visibility.Visible : Visibility.Collapsed;
         HeaderText.Text = _category.Name;
-        EditButton.ToolTip = UiPreferences.Say("Edit group", "Editar grupo", "Изменить группу");
+        EditButton.ToolTip = UiPreferences.Say("Edit group", "Editar grupo", "Изменить группу", "编辑分组");
         // A folder's panel opens the folder itself here: opening everything in the
         // Control Panel at once is nobody's idea of a shortcut.
         bool folder = _category.IsFolderGroup;
         OpenAllButton.ToolTip = folder
-            ? UiPreferences.Say("Open the folder", "Abrir la carpeta", "Открыть папку")
-            : UiPreferences.Say("Open all", "Abrir todas", "Открыть все");
+            ? UiPreferences.Say("Open the folder", "Abrir la carpeta", "Открыть папку", "打开文件夹")
+            : UiPreferences.Say("Open all", "Abrir todas", "Открыть все", "全部打开");
         OpenAllGlyph.Text = folder ? "" : "";
     }
 
@@ -597,7 +597,7 @@ public partial class PopupWindow : Window
         // Past what a menu can hold, the last entry opens the folder for the rest.
         if (more)
         {
-            string rest = UiPreferences.Say("See all in the folder…", "Ver todo en la carpeta…", "Показать всё в папке…");
+            string rest = UiPreferences.Say("See all in the folder…", "Ver todo en la carpeta…", "Показать всё в папке…", "在文件夹中查看全部…");
             items.Add(new PopupItem
             {
                 Shortcut = new ProgramShortcut { FilePath = source, name = rest, ShellItem = source },
@@ -611,8 +611,8 @@ public partial class PopupWindow : Window
         if (items.Count == 0)
         {
             EmptyText.Text = ShellFolder.IsFolder(source)
-                ? UiPreferences.Say("This folder is empty.", "Esta carpeta está vacía.", "Эта папка пуста.")
-                : UiPreferences.Say("The folder can't be found. Pick another one from the pencil.", "No se encuentra la carpeta. Elige otra desde el lápiz.", "Папка не найдена. Выберите другую, нажав на карандаш.");
+                ? UiPreferences.Say("This folder is empty.", "Esta carpeta está vacía.", "Эта папка пуста.", "此文件夹为空。")
+                : UiPreferences.Say("The folder can't be found. Pick another one from the pencil.", "No se encuentra la carpeta. Elige otra desde el lápiz.", "Папка не найдена. Выберите другую, нажав на карандаш.", "找不到此文件夹。请单击铅笔图标，选择其他文件夹。");
             EmptyText.Visibility = Visibility.Visible;
             return;
         }
