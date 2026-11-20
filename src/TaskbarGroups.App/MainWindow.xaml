@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="Taskbar Groups"
         Height="620" Width="940"
-        MinHeight="480" MinWidth="680"
+        MinHeight="480" MinWidth="720"
         WindowBackdropType="Mica"
         WindowCornerPreference="Round"
         ExtendsContentIntoTitleBar="True"
@@ -24,7 +24,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="RadioButton">
-                        <Border x:Name="Chip" CornerRadius="5" Padding="8,3" MinHeight="24"
+                        <Border x:Name="Chip" CornerRadius="5" Padding="6,3" MinHeight="24"
                                 Background="Transparent">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
