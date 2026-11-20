@@ -223,6 +223,7 @@
     <s:String x:Key="Loc_Quick_ThemeLight">Светлая</s:String>
     <s:String x:Key="Loc_Quick_ThemeDark">Темная</s:String>
     <s:String x:Key="Loc_Quick_Language">Язык</s:String>
+    <s:String x:Key="Loc_Quick_LangAuto">Авто</s:String>
     <s:String x:Key="Loc_Quick_LangSystem">Автоматически: как в Windows</s:String>
     <s:String x:Key="Loc_Quick_Hover">Открывать при наведении</s:String>
     <s:String x:Key="Loc_Quick_Support">Поддержать</s:String>

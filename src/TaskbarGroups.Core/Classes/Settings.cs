@@ -153,7 +153,7 @@ namespace TaskbarGroups.Core
         [XmlElement]
         public string theme { get; set; } = UiPreferences.System;
 
-        /// <summary>"system" to follow Windows' display language, or "es", "en" or "ru".</summary>
+        /// <summary>"system" to follow Windows' display language, or an explicit supported language code.</summary>
         [XmlElement]
         public string language { get; set; } = UiPreferences.System;
     }

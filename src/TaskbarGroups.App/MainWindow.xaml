@@ -247,7 +247,7 @@
                         ToolTip="{DynamicResource Loc_Quick_Language}">
                     <StackPanel Orientation="Horizontal">
                         <RadioButton x:Name="LangSystem" GroupName="Lang" Style="{StaticResource QuickSegment}"
-                                     Content="Auto"
+                                     Content="{DynamicResource Loc_Quick_LangAuto}"
                                      ToolTip="{DynamicResource Loc_Quick_LangSystem}"
                                      AutomationProperties.Name="{DynamicResource Loc_Quick_LangSystem}"
                                      Checked="Lang_Checked" />
@@ -259,6 +259,9 @@
                                      Checked="Lang_Checked" />
                         <RadioButton x:Name="LangRu" GroupName="Lang" Style="{StaticResource QuickSegment}"
                                      Content="RU" ToolTip="Русский" AutomationProperties.Name="Русский"
+                                     Checked="Lang_Checked" />
+                        <RadioButton x:Name="LangZhHans" GroupName="Lang" Style="{StaticResource QuickSegment}"
+                                     Content="简中" ToolTip="简体中文" AutomationProperties.Name="简体中文"
                                      Checked="Lang_Checked" />
                     </StackPanel>
                 </Border>

@@ -175,16 +175,17 @@ namespace TaskbarGroups.Core
     /// </summary>
     public static class RecycleBinText
     {
-        public static string Title => UiPreferences.Say("Recycle Bin", "Papelera de reciclaje", "Корзина");
+        public static string Title => UiPreferences.Say("Recycle Bin", "Papelera de reciclaje", "Корзина", "回收站");
 
-        public static string Empty => UiPreferences.Say("Empty Recycle Bin", "Vaciar Papelera de reciclaje", "Очистить корзину");
+        public static string Empty => UiPreferences.Say("Empty Recycle Bin", "Vaciar Papelera de reciclaje", "Очистить корзину", "清空回收站");
 
-        public static string RestoreAll => UiPreferences.Say("Restore all items", "Restaurar todos los elementos", "Восстановить все объекты");
+        public static string RestoreAll => UiPreferences.Say("Restore all items", "Restaurar todos los elementos", "Восстановить все объекты", "还原所有项目");
 
         /// <summary>Asked before restoring; {0} is how many items there are.</summary>
         public static string RestoreAllQuestion => UiPreferences.Say(
             "Put the {0} items in the Recycle Bin back where they were?",
             "¿Devolver los {0} elementos de la Papelera a donde estaban?",
-            "Вернуть все объекты из корзины ({0}) на прежнее место?");
+            "Вернуть все объекты из корзины ({0}) на прежнее место?",
+            "确定要将回收站中的 {0} 个项目还原到原位置吗？");
     }
 }
