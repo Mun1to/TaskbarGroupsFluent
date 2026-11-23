@@ -107,8 +107,11 @@
     <s:String x:Key="Loc_Editor_BadName">Название не может заканчиваться точкой или содержать символы: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Добавьте в группу хотя бы один ярлык.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">Не удалось сохранить</s:String>
+    <s:String x:Key="Loc_Editor_RepinTitle">Обновить название на панели задач</s:String>
+    <s:String x:Key="Loc_Editor_RepinText">Группа сохранена. Чтобы на панели задач появилось название «{1}», открепите «{0}». Затем в Проводнике щёлкните правой кнопкой мыши по ярлыку «{1}» и выберите «Закрепить на панели задач» (при необходимости откройте «Показать дополнительные параметры»).</s:String>
+    <s:String x:Key="Loc_Editor_ShowShortcut">Показать новый ярлык</s:String>
     <s:String x:Key="Loc_Editor_RestartTitle">Обновить значок на панели задач?</s:String>
-    <s:String x:Key="Loc_Editor_RestartText">Windows показывает на панели задач прежний значок или название, пока не перезагрузит её. Если перезагрузить сейчас, панель задач исчезнет на несколько секунд. Если отложить, всё уже сохранено, и панель обновится при следующем входе в систему.</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows сохраняет значок в кэше. При перезапуске панель задач исчезнет на несколько секунд. Можно также дождаться следующего входа в систему.</s:String>
     <s:String x:Key="Loc_Editor_RestartNow">Перезагрузить сейчас</s:String>
     <s:String x:Key="Loc_Editor_RestartLater">Позже</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">Выберите папку</s:String>

@@ -40,45 +40,31 @@ namespace TaskbarGroups.Core
         /// <summary>
         /// Finds the pinned-taskbar shortcut for a group (matched by its background
         /// target and the group-name argument), or null if the group isn't pinned.
-        /// Must run on an STA thread — it uses the Shell.Application COM object.
         /// </summary>
         public static string FindPinnedShortcut(string groupName, string backgroundExe)
         {
             string dir = PinnedDir;
             if (!Directory.Exists(dir)) return null;
 
-            dynamic shell;
-            try { shell = Activator.CreateInstance(Type.GetTypeFromProgID("Shell.Application")); }
-            catch { return null; }
-
-            dynamic folder = shell.NameSpace(dir);
-            if (folder == null) return null;
-
-            string bgName = Path.GetFileName(backgroundExe);
-
-            foreach (string lnk in Directory.EnumerateFiles(dir, "*.lnk"))
+            try
             {
-                try
+                string bgName = Path.GetFileName(backgroundExe);
+                foreach (string lnk in Directory.EnumerateFiles(dir, "*.lnk"))
                 {
-                    dynamic item = folder.ParseName(Path.GetFileName(lnk));
-                    if (item == null) continue;
-
-                    dynamic link = item.GetLink;
-                    string target = link.Path as string ?? "";
-                    string args = link.Arguments as string ?? "";
-
-                    if (!string.Equals(Path.GetFileName(target), bgName, StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    string argName = args.Replace("\"", "").Trim();
-                    if (string.Equals(argName, groupName, StringComparison.OrdinalIgnoreCase))
+                    if (ShellLink.TryReadTarget(lnk, out string target, out string args)
+                        && string.Equals(Path.GetFileName(target), bgName, StringComparison.OrdinalIgnoreCase)
+                        && string.Equals(args.Trim().Trim('"'), groupName, StringComparison.OrdinalIgnoreCase))
                         return lnk;
                 }
-                catch { /* skip shortcuts we can't read */ }
             }
+            catch (IOException) { }
+            catch (UnauthorizedAccessException) { }
 
             return null;
         }
+
+        public static bool NeedsRepin(string pinnedLnk, string freshLnk)
+            => !string.Equals(Path.GetFileName(pinnedLnk), Path.GetFileName(freshLnk), StringComparison.Ordinal);
 
         /// <summary>
         /// Overwrites the pinned copy with the freshly built shortcut (new icon /

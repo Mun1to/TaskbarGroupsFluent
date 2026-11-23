@@ -107,8 +107,11 @@
     <s:String x:Key="Loc_Editor_BadName">名称不能以英文句点结尾，也不能包含以下字符：\ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">请至少添加一个快捷方式。</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">保存失败</s:String>
+    <s:String x:Key="Loc_Editor_RepinTitle">更新任务栏上的名称</s:String>
+    <s:String x:Key="Loc_Editor_RepinText">分组已保存。要让任务栏显示“{1}”，请先右键单击任务栏上的“{0}”，选择“从任务栏取消固定”。然后在文件资源管理器中右键单击“{1}”快捷方式，选择“固定到任务栏”。如果看不到此选项，请先选择“显示更多选项”。</s:String>
+    <s:String x:Key="Loc_Editor_ShowShortcut">显示新快捷方式</s:String>
     <s:String x:Key="Loc_Editor_RestartTitle">现在更新任务栏图标吗？</s:String>
-    <s:String x:Key="Loc_Editor_RestartText">Windows 需要重新加载任务栏才能显示新的图标或名称。立即重新加载会让任务栏短暂消失几秒。如果选择稍后更新，更改仍会保存，任务栏将在下次登录时更新。</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows 会缓存任务栏图标。立即重新加载会让任务栏短暂消失几秒，也可以等到下次登录时更新。</s:String>
     <s:String x:Key="Loc_Editor_RestartNow">立即重新加载</s:String>
     <s:String x:Key="Loc_Editor_RestartLater">稍后</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">选择文件夹</s:String>
