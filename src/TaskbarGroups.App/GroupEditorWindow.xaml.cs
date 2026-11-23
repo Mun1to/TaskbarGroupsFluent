@@ -826,13 +826,34 @@ public partial class GroupEditorWindow : FluentWindow
             bool iconChanged = _iconChanged && !SameIcon(_originalIcon, _groupImage);
             string fresh = Paths.ShortcutFileFor(name);
             string? pinned = TaskbarPin.FindPinnedShortcut(_originalName ?? name, Paths.PanelLauncher);
-            if (pinned is not null && File.Exists(fresh))
-            {
-                if (renamed || iconChanged) TaskbarPin.UpdatePinnedShortcut(pinned, fresh);
+            bool hasPin = pinned is not null && File.Exists(fresh);
+            if (hasPin && (renamed || iconChanged)) TaskbarPin.UpdatePinnedShortcut(pinned!, fresh);
 
+            // Finish the rename before offering to open Explorer at the new link.
+            if (renamed && File.Exists(fresh))
+            {
+                try
+                {
+                    DeleteOldGroup(_originalName!, name);
+                    if (!string.Equals(_originalName, name, StringComparison.OrdinalIgnoreCase))
+                        GroupJumpList.Remove(_originalName!);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    await new MessageBox
+                    {
+                        Title = Loc.Get("Loc_Editor_CleanupFailed"),
+                        Content = ex.Message,
+                        CloseButtonText = Loc.Get("Loc_Common_Close")
+                    }.ShowDialogAsync();
+                }
+            }
+
+            if (hasPin)
+            {
                 // Explorer keeps the pin's own file name even after its target and
                 // icon have been updated. Also catch groups renamed by older builds.
-                if (TaskbarPin.NeedsRepin(pinned, fresh))
+                if (TaskbarPin.NeedsRepin(pinned!, fresh))
                 {
                     var choice = await new MessageBox
                     {
@@ -847,15 +868,6 @@ public partial class GroupEditorWindow : FluentWindow
                 }
                 else if (iconChanged && await ConfirmTaskbarRestartAsync())
                     TaskbarPin.RestartExplorerInBackground();
-            }
-
-            // A rename writes a new config folder + .lnk; delete the old ones so the
-            // group isn't duplicated.
-            if (renamed)
-            {
-                DeleteOldGroup(_originalName!, name);
-                if (!string.Equals(_originalName, name, StringComparison.OrdinalIgnoreCase))
-                    GroupJumpList.Remove(_originalName!);
             }
         }
 
@@ -926,16 +938,13 @@ public partial class GroupEditorWindow : FluentWindow
     // Remove the previous group's config folder and shortcut after a rename.
     private static void DeleteOldGroup(string oldName, string newName)
     {
-        try
-        {
-            string oldConfig = Path.Combine(Paths.ConfigPath, oldName);
-            if (!string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(oldConfig)) Directory.Delete(oldConfig, true);
+        string oldLnk = Paths.ShortcutFileFor(oldName);
+        if (!string.Equals(oldLnk, Paths.ShortcutFileFor(newName), StringComparison.OrdinalIgnoreCase))
+            File.Delete(oldLnk);
 
-            string oldLnk = Paths.ShortcutFileFor(oldName);
-            if (!string.Equals(oldLnk, Paths.ShortcutFileFor(newName), StringComparison.OrdinalIgnoreCase)
-                && File.Exists(oldLnk)) File.Delete(oldLnk);
-        }
-        catch { /* a leftover old group is non-fatal; the user can delete it */ }
+        string oldConfig = Path.Combine(Paths.ConfigPath, oldName);
+        if (!string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(oldConfig))
+            Directory.Delete(oldConfig, true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)

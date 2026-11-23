@@ -107,6 +107,7 @@
     <s:String x:Key="Loc_Editor_BadName">The name can't end in a dot or contain: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Add at least one shortcut to the group.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">Couldn't save</s:String>
+    <s:String x:Key="Loc_Editor_CleanupFailed">Group saved, but the old files could not be removed</s:String>
     <s:String x:Key="Loc_Editor_RepinTitle">Update the name on the taskbar</s:String>
     <s:String x:Key="Loc_Editor_RepinText">Your group is saved. To show “{1}” on the taskbar, unpin “{0}”. Then right-click the “{1}” shortcut in File Explorer and choose “Pin to taskbar” (under “Show more options” if needed).</s:String>
     <s:String x:Key="Loc_Editor_ShowShortcut">Show new shortcut</s:String>

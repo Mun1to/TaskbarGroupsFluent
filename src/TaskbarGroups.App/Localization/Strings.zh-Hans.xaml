@@ -107,6 +107,7 @@
     <s:String x:Key="Loc_Editor_BadName">名称不能以英文句点结尾，也不能包含以下字符：\ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">请至少添加一个快捷方式。</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">保存失败</s:String>
+    <s:String x:Key="Loc_Editor_CleanupFailed">分组已保存，但清理旧文件失败</s:String>
     <s:String x:Key="Loc_Editor_RepinTitle">更新任务栏上的名称</s:String>
     <s:String x:Key="Loc_Editor_RepinText">分组已保存。要让任务栏显示“{1}”，请先右键单击任务栏上的“{0}”，选择“从任务栏取消固定”。然后在文件资源管理器中右键单击“{1}”快捷方式，选择“固定到任务栏”。如果看不到此选项，请先选择“显示更多选项”。</s:String>
     <s:String x:Key="Loc_Editor_ShowShortcut">显示新快捷方式</s:String>
