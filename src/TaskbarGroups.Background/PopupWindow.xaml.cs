@@ -356,7 +356,7 @@ public partial class PopupWindow : Window
         }
         else
         {
-            var (x, y) = _anchor is not null ? (_anchor.CenterX, _anchor.CenterY) : TaskbarHelper.GetCursor();
+            var (x, y) = OpeningPoint();
             TaskbarHelper.TaskbarInfo tb = TaskbarHelper.GetTaskbarAt(x, y);
             top = tb.WorkTop;
             bottom = tb.WorkBottom;
@@ -1047,6 +1047,14 @@ public partial class PopupWindow : Window
     [DllImport("user32.dll")]
     private static extern bool IsWindowVisible(IntPtr hwnd);
 
+    private (int X, int Y) OpeningPoint()
+    {
+        if (_anchor is not null) return (_anchor.CenterX, _anchor.CenterY);
+        if (_clickPosition is not { } click) return TaskbarHelper.GetCursor();
+        var point = TaskbarHelper.FromRealPixels(click.X, click.Y, click.X, click.Y);
+        return (point.Left, point.Top);
+    }
+
     /// <summary>
     /// Where the panel goes: against the taskbar of the screen it was opened on, above
     /// the icon it belongs to. Only worked out here; <see cref="Arrive"/> puts it there.
@@ -1061,11 +1069,7 @@ public partial class PopupWindow : Window
             _buttonLookup = null;
         }
 
-        int cursorX, cursorY;
-        if (_anchor is not null) (cursorX, cursorY) = (_anchor.CenterX, _anchor.CenterY);
-        else if (_clickPosition is { } click)
-            (cursorX, cursorY, _, _) = TaskbarHelper.FromRealPixels(click.X, click.Y, click.X, click.Y);
-        else (cursorX, cursorY) = TaskbarHelper.GetCursor();
+        var (cursorX, cursorY) = OpeningPoint();
 
         double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
         if (scale <= 0) scale = 1;
