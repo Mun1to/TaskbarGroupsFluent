@@ -152,8 +152,6 @@
                     </Grid>
                 </ui:Card>
 
-                <!-- The title on its own line and the buttons under it: with four
-                     buttons they no longer fit beside it. -->
                 <TextBlock Text="{DynamicResource Loc_Editor_Shortcuts}" FontSize="16" FontWeight="SemiBold"
                            Margin="0,0,0,8"
                            Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -173,6 +171,8 @@
                 <WrapPanel Margin="0,0,0,8">
                     <ui:Button Content="{DynamicResource Loc_Editor_Program}" Icon="{ui:SymbolIcon AppGeneric24}"
                                Appearance="Info" Margin="0,0,8,4" Click="AddProgram_Click" />
+                    <ui:Button Content="{DynamicResource Loc_Editor_FileOrShortcut}" Icon="{ui:SymbolIcon Document24}"
+                               Margin="0,0,8,4" Click="AddFiles_Click" />
                     <ui:Button Content="{DynamicResource Loc_Editor_Folder}" Icon="{ui:SymbolIcon Folder24}"
                                Margin="0,0,8,4" Click="AddFolder_Click" />
                     <ui:Button Content="{DynamicResource Loc_Editor_Group}" Icon="{ui:SymbolIcon GroupList24}"
@@ -182,6 +182,10 @@
                                ToolTip="{DynamicResource Loc_Editor_SeparatorTip}"
                                Margin="0,0,0,4" Click="AddSeparator_Click" />
                 </WrapPanel>
+
+                <TextBlock Text="{DynamicResource Loc_Editor_DropHint}" TextWrapping="Wrap"
+                           FontSize="13" Margin="0,0,0,8"
+                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
 
                 <!-- Rows are dragged to change the order, and files dropped here are
                      added where the line shows. -->
@@ -228,10 +232,6 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
 
-                <TextBlock x:Name="NoShortcutsText"
-                           Text="{DynamicResource Loc_Editor_EmptyHint}"
-                           FontSize="13" Margin="0,4,0,16" TextAlignment="Center"
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
                 </StackPanel>
 
                 <StackPanel x:Name="FolderSection" Visibility="Collapsed" Margin="0,0,0,16">

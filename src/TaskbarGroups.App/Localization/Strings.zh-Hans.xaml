@@ -101,7 +101,9 @@
     <s:String x:Key="Loc_Editor_Program">应用</s:String>
     <s:String x:Key="Loc_Editor_Folder">文件夹</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">商店应用</s:String>
-    <s:String x:Key="Loc_Editor_EmptyHint">可以添加程序、文件夹或商店应用，也可以从文件资源管理器或桌面将它们拖到这里。</s:String>
+    <s:String x:Key="Loc_Editor_FileOrShortcut">文件或快捷方式…</s:String>
+    <s:String x:Key="Loc_Editor_PickFiles">选择文件或快捷方式</s:String>
+    <s:String x:Key="Loc_Editor_DropHint">也可以把文件或桌面快捷方式拖到这里。</s:String>
     <s:String x:Key="Loc_Editor_Save">保存分组</s:String>
     <s:String x:Key="Loc_Editor_NeedName">请输入分组名称。</s:String>
     <s:String x:Key="Loc_Editor_BadName">名称不能以英文句点结尾，也不能包含以下字符：\ / : * ? " &lt; &gt; |</s:String>
