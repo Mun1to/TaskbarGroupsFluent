@@ -56,6 +56,11 @@ namespace TaskbarGroups.Core
         public static bool Click(string group, int timeoutMs = 300)
             => Send($"click\t{group}", timeoutMs);
 
+        public static bool Click(string group, System.Drawing.Point? origin, int timeoutMs)
+            => origin is { } point
+                ? Send(FormattableString.Invariant($"click\t{group}\t{point.X}\t{point.Y}"), timeoutMs)
+                : Click(group, timeoutMs);
+
         /// <summary>
         /// True if a warm flyout has finished loading and is listening. This is what
         /// keeps the watcher from talking to one that is still starting up, which
@@ -164,14 +169,22 @@ namespace TaskbarGroups.Core
         /// Reads a "click" message. Returns false for anything else or malformed.
         /// </summary>
         public static bool TryParseClick(string message, out string group)
+            => TryParseClick(message, out group, out _);
+
+        public static bool TryParseClick(string message, out string group, out System.Drawing.Point? origin)
         {
             group = string.Empty;
-
+            origin = null;
             string[] parts = message.Split('\t');
-            if (parts.Length != 2 || parts[0] != "click") return false;
-
+            if (parts.Length is not (2 or 4) || parts[0] != "click" || parts[1].Length == 0) return false;
+            if (parts.Length == 4)
+            {
+                if (!int.TryParse(parts[2], System.Globalization.CultureInfo.InvariantCulture, out int x)
+                    || !int.TryParse(parts[3], System.Globalization.CultureInfo.InvariantCulture, out int y)) return false;
+                origin = new System.Drawing.Point(x, y);
+            }
             group = parts[1];
-            return group.Length > 0;
+            return true;
         }
     }
 }

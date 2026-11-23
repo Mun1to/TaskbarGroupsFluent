@@ -47,6 +47,8 @@ internal static class Program
     /// </summary>
     internal static double StartMs = -1;
 
+    internal static System.Drawing.Point? ClickOrigin { get; private set; }
+
     [STAThread]
     private static void Main(string[] args)
     {
@@ -56,6 +58,7 @@ internal static class Program
         // The second click on a group's button closes its panel instead of opening
         // it again: pressing the button already closed it (issue #17).
         bool click = IsPlainClick(args);
+        if (click) ClickOrigin = Helpers.TaskbarHelper.CaptureClick();
         if (click && ClickToggle.JustClosed(string.Join(" ", args))) return;
 
         // What Windows took to get us here, before any of our own work.
@@ -105,7 +108,7 @@ internal static class Program
         // The pinned shortcut passes the name unquoted, so a name with spaces
         // arrives split across several args.
         ColdWhy = "no-answer";
-        if (!FlyoutChannel.Click(string.Join(" ", args), ReachMs)) return false;
+        if (!FlyoutChannel.Click(string.Join(" ", args), ClickOrigin, ReachMs)) return false;
 
         // Already showing a group (opened by hover): it takes the new one in place,
         // and there is nothing to wait for.

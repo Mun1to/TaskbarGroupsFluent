@@ -22,6 +22,14 @@ public partial class PopupWindow : Window
     // and a new icon to sit above.
     private Category _category;
     private HoverAnchor? _anchor;
+    private System.Drawing.Point? _clickPosition;
+    private System.Threading.Tasks.Task<System.Drawing.Point>? _buttonLookup;
+
+    private void BeginClickPosition(string group, System.Drawing.Point? origin)
+    {
+        _clickPosition = origin;
+        _buttonLookup = origin is { } point ? TaskbarHelper.FindClickPosition(group, point) : null;
+    }
     // The taskbar this panel opened from. Worked out once, on the way in: the cursor
     // has every right to be on another screen by the time the panel leaves.
     private TaskbarHelper.TaskbarInfo _bar;
@@ -80,11 +88,12 @@ public partial class PopupWindow : Window
     /// <summary>True while a warm flyout is waiting off screen rather than showing a group.</summary>
     public bool IsParked => Left <= OffScreen / 2;
 
-    public PopupWindow(Category category, HoverAnchor? anchor = null)
+    public PopupWindow(Category category, HoverAnchor? anchor = null, System.Drawing.Point? origin = null)
     {
         InitializeComponent();
         _category = category;
         _anchor = anchor?.InOwnPixels();
+        BeginClickPosition(category.Name, origin);
 
         // Opened by hover, so it must appear without taking the keyboard. Not
         // calling Activate() is not enough: Show() activates by default, and it was
@@ -717,6 +726,8 @@ public partial class PopupWindow : Window
         _mouseWentUp = false;
         _cursorLeftAt = null;
         _anchor = null;
+        _clickPosition = null;
+        _buttonLookup = null;
         Left = OffScreen;
         Top = OffScreen;
 
@@ -745,12 +756,12 @@ public partial class PopupWindow : Window
 
     /// <summary>
     /// Puts an already warm flyout on screen showing <paramref name="category"/>,
-    /// positioned over <paramref name="anchor"/>, or next to the cursor and with
+    /// positioned over <paramref name="anchor"/>, or over the clicked button and with
     /// the focus when there is no anchor, which is how a click opens it. Measured
     /// at about fifty milliseconds, against roughly nine hundred to start a fresh
     /// process.
     /// </summary>
-    public void ShowFor(Category category, HoverAnchor? anchor)
+    public void ShowFor(Category category, HoverAnchor? anchor, System.Drawing.Point? origin = null)
     {
         // A slide still running from the last showing must not carry on moving the
         // panel, nor finish by putting it away.
@@ -759,6 +770,7 @@ public partial class PopupWindow : Window
 
         _category = category;
         _anchor = anchor?.InOwnPixels();
+        BeginClickPosition(category.Name, origin);
         _closing = false;
         _hadFocus = false;
         _mouseWentUp = false;
@@ -1041,18 +1053,22 @@ public partial class PopupWindow : Window
     /// </summary>
     private Point TargetOverTaskbar()
     {
-        var (cursorX, cursorY) = TaskbarHelper.GetCursor();
+        // Most of the lookup overlaps layout. An unresponsive shell must never
+        // prevent opening, and later resizing must keep the same anchor.
+        if (_buttonLookup is { } lookup)
+        {
+            if (lookup.Wait(TimeSpan.FromMilliseconds(350))) _clickPosition = lookup.Result;
+            _buttonLookup = null;
+        }
+
+        int cursorX, cursorY;
+        if (_anchor is not null) (cursorX, cursorY) = (_anchor.CenterX, _anchor.CenterY);
+        else if (_clickPosition is { } click)
+            (cursorX, cursorY, _, _) = TaskbarHelper.FromRealPixels(click.X, click.Y, click.X, click.Y);
+        else (cursorX, cursorY) = TaskbarHelper.GetCursor();
+
         double scale = VisualTreeHelper.GetDpi(this).DpiScaleX;
         if (scale <= 0) scale = 1;
-
-        // Opened by hover: line the panel up with the icon rather than the cursor,
-        // so it lands in the same place whether the cursor stopped at the edge of
-        // the icon or dead centre.
-        if (_anchor is not null)
-        {
-            cursorX = _anchor.CenterX;
-            cursorY = _anchor.CenterY;
-        }
 
         TaskbarHelper.TaskbarInfo tb = _bar = TaskbarHelper.GetTaskbarAt(cursorX, cursorY);
 

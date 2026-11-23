@@ -254,6 +254,78 @@ public static class TaskbarHelper
         => p.X >= r.Left - margin && p.X < r.Right + margin
         && p.Y >= r.Top - margin && p.Y < r.Bottom + margin;
 
+    [StructLayout(LayoutKind.Sequential)]
+    private struct STARTUPINFO
+    {
+        public uint Size;
+        public IntPtr Reserved, Desktop, Title;
+        public uint X, Y, Width, Height, Columns, Rows, Fill, Flags;
+        public ushort Show, ReservedSize;
+        public IntPtr ReservedData, StdInput, StdOutput, StdError;
+    }
+
+    [DllImport("kernel32.dll", EntryPoint = "GetStartupInfoW")]
+    private static extern void GetStartupInfo(out STARTUPINFO startup);
+
+    // Explorer may supply the launch monitor in STARTUPINFO.hStdOutput. Keep a
+    // physical point on that screen even if the pointer has already crossed away.
+    internal static System.Drawing.Point CaptureClick()
+    {
+        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        try
+        {
+            GetCursorPos(out POINT point);
+            GetStartupInfo(out var startup);
+            var monitor = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+            if (startup.StdOutput != IntPtr.Zero && GetMonitorInfo(startup.StdOutput, ref monitor))
+            {
+                point.X = Math.Clamp(point.X, monitor.rcMonitor.Left, monitor.rcMonitor.Right - 1);
+                point.Y = Math.Clamp(point.Y, monitor.rcMonitor.Top, monitor.rcMonitor.Bottom - 1);
+            }
+            return new System.Drawing.Point(point.X, point.Y);
+        }
+        finally { SetThreadDpiAwarenessContext(previous); }
+    }
+
+    // Read the actual button by group identity, independent of the pointer. A
+    // shell without accessible buttons still gets the position saved at launch.
+    private static int _readingButtons;
+
+    internal static System.Threading.Tasks.Task<System.Drawing.Point>? FindClickPosition(string group, System.Drawing.Point launch)
+    {
+        // UI Automation runs off the window thread. Keep at most one reader if
+        // Explorer stops responding; a later click can still open immediately.
+        if (System.Threading.Interlocked.Exchange(ref _readingButtons, 1) != 0) return null;
+        return System.Threading.Tasks.Task.Run(() =>
+        {
+            try { return ClickPosition(group, launch); }
+            finally { System.Threading.Volatile.Write(ref _readingButtons, 0); }
+        });
+    }
+
+    private static System.Drawing.Point ClickPosition(string group, System.Drawing.Point launch)
+    {
+        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        try
+        {
+            TaskbarInfo bar = GetTaskbarAt(launch.X, launch.Y);
+            if (bar.Handle == IntPtr.Zero) return launch;
+            foreach (var button in TaskbarGroups.Shell.TaskbarButtons.Read(bar.Handle, Pins.Read()))
+            {
+                if (!string.Equals(group, button.Group, StringComparison.OrdinalIgnoreCase)) continue;
+                int x = (int)Math.Round(button.Bounds.Left + button.Bounds.Width / 2);
+                int y = (int)Math.Round(button.Bounds.Top + button.Bounds.Height / 2);
+                if (x >= bar.Left && x < bar.Right && y >= bar.Top && y < bar.Bottom)
+                    return new System.Drawing.Point(x, y);
+            }
+        }
+        catch (Exception) { /* Explorer may have restarted during the lookup. */ }
+        finally { SetThreadDpiAwarenessContext(previous); }
+        return launch;
+    }
+
+    private static readonly TaskbarGroups.Core.PinnedGroupsCache Pins = new(TimeSpan.FromSeconds(30));
+
     public static (int X, int Y) GetCursor()
     {
         GetCursorPos(out POINT p);
