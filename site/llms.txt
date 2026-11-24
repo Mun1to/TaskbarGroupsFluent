@@ -7,7 +7,7 @@
 
 ## Facts
 
-- Latest version: 1.10.7 (19 November 2026). 38 stable versions published on GitHub.
+- Latest version: 1.10.8 (24 November 2026). 39 stable versions published on GitHub.
 - Windows 11, and Windows 10 version 1809 or later, 64-bit.
 - Installs per user, so Windows does not ask for administrator rights. Needs the .NET 10
   Desktop Runtime: the installer downloads it if missing; the offline installer carries it.
@@ -16,7 +16,7 @@
 - Installer: https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup.exe
 - Offline installer: https://github.com/Mun1to/TaskbarGroupsFluent/releases/latest/download/TaskbarGroupsFluent-Setup-Offline.exe
 - Source code: https://github.com/Mun1to/TaskbarGroupsFluent
-- Languages: English, Spanish and Russian.
+- Languages: English, Spanish, Russian and Simplified Chinese.
 
 ## What it does
 

@@ -28,13 +28,21 @@ internal static class Program
 
         // One watcher is enough, and a second one would open every group twice.
         using var single = new Mutex(initiallyOwned: true, MutexName, out bool mine);
-        if (!mine) return;
+        if (!mine)
+        {
+            new HoverTrace().Event("start", "another watcher is already running, so this one leaves");
+            return;
+        }
 
         // Launched by hand, or by a startup entry left behind, with everything it
         // runs for switched off: honour that and leave, rather than quietly running
         // something the user has turned down. The entry itself is the app's to
         // clear: a copy started from somewhere else must never delete it.
-        if (!HoverService.Wanted()) return;
+        if (!HoverService.Wanted())
+        {
+            new HoverTrace().Event("start", "nothing it runs for is switched on, so it leaves");
+            return;
+        }
 
         ApplicationConfiguration.Initialize();
 
@@ -91,7 +99,7 @@ internal static class Program
     }
 
     /// <summary>The app's version for the menu's header, without the commit the build adds after a +.</summary>
-    private static string? AppVersion()
+    internal static string? AppVersion()
     {
         try
         {

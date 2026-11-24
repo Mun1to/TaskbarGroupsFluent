@@ -42,7 +42,7 @@ Las que se miraron y se quedan fuera, con su motivo, están en «Descartadas», 
 | Grupos dentro de grupos | Sí, se abren al lado como un submenú | README |
 | Sin permisos de administrador | Sí, instala solo para tu usuario | README; `PrivilegesRequired=lowest` en `installer/TaskbarGroupsFluent.iss`; manifiesto de WinGet 1.10.4 con `Scope: user` |
 | WinGet / Store | Sí (`Mun1to.TaskbarGroupsFluent` 1.10.4) / Sí (`9PCZDXWFT6SN`) | `winget search` en `winget` y `msstore` |
-| Idiomas | 3: inglés, español y ruso | README; `src/TaskbarGroups.App/Localization/Strings.{en,es,ru}.xaml` |
+| Idiomas | 4: inglés, español, ruso y chino simplificado | README; `src/TaskbarGroups.App/Localization/Strings.{en,es,ru,zh-Hans}.xaml` |
 | Requisito | .NET 10 Desktop Runtime: el instalador lo baja si falta y el Offline lo lleva dentro | README |
 | Varios monitores | Sí, el panel sale en la pantalla del icono | README |
 

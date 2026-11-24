@@ -18,14 +18,22 @@ internal static class TaskbarButtons
     /// The shortcut's own launch argument is the name that does, which is why the ID
     /// is looked up against the pinned shortcuts rather than used directly.
     /// </summary>
-    internal static List<(string Group, System.Windows.Rect Bounds)> Read(nint bar, IReadOnlyList<PinnedGroup> pins)
+    internal static List<(string Group, System.Windows.Rect Bounds)> Read(nint bar, IReadOnlyList<PinnedGroup> pins, Action<string>? trace = null)
     {
-        var found = new List<(string, System.Windows.Rect)>();
+        var found = new List<(string Group, System.Windows.Rect Bounds)>();
 
         AutomationElement? root;
         try { root = AutomationElement.FromHandle(bar); }
-        catch { return found; }
-        if (root is null) { return found; }
+        catch (Exception e)
+        {
+            trace?.Invoke($"{ClassOf(bar)}: UI Automation could not open it ({e.GetType().Name})");
+            return found;
+        }
+        if (root is null)
+        {
+            trace?.Invoke($"{ClassOf(bar)}: UI Automation gave nothing for it");
+            return found;
+        }
 
         // All the properties are fetched in the same pass. Read one at a time through
         // .Current they would be a cross-process call each, twenty buttons over,
@@ -41,13 +49,18 @@ internal static class TaskbarButtons
             using (cache.Activate())
                 buttons = root.FindAll(TreeScope.Descendants, ButtonCondition);
         }
-        catch { return found; }
+        catch (Exception e)
+        {
+            trace?.Invoke($"{ClassOf(bar)}: UI Automation could not list its buttons ({e.GetType().Name})");
+            return found;
+        }
 
         // Where the pinned and running apps sit on a Windows 10 taskbar. A button is
         // only matched by its name in there, so Start, the search box or a clock
         // that happens to read like a group never opens one.
         System.Windows.Rect? taskList = WindowsVersion.IsWindows11 ? null : TaskListOf(bar);
 
+        var seenIds = trace is null ? null : new List<string>();
         foreach (AutomationElement button in buttons)
         {
             string id, name;
@@ -61,6 +74,7 @@ internal static class TaskbarButtons
             catch { continue; }
             if (box.IsEmpty || box.Width <= 0 || box.Height <= 0) continue;
 
+            seenIds?.Add(id.Length > 0 ? id : "name: " + name);
             bool inTaskList = taskList is { } list && list.Contains(box.Left + box.Width / 2, box.Top + box.Height / 2);
             string? group = GroupFor(id, inTaskList ? name : null, pins);
             if (group is null) continue;
@@ -68,7 +82,41 @@ internal static class TaskbarButtons
             found.Add((group, box));
         }
 
+        if (trace is not null)
+        {
+            string seen = $"{ClassOf(bar)}: {buttons.Count} buttons, {found.Count} of them groups";
+            if (found.Count > 0) seen += ": " + string.Join(", ", found.Select(b => b.Group).Distinct());
+            else if (seenIds is { Count: > 0 })
+            {
+                // Ours first: a button carrying a group's ID that no pinned shortcut
+                // claims says the shortcuts are where the trouble is, not the buttons.
+                var sample = seenIds
+                    .OrderBy(i => i.Contains(Category.AppIdPrefix, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                    .Take(8)
+                    .Select(ForTrace);
+                seen += "; buttons read: " + string.Join(" | ", sample);
+            }
+            trace(seen);
+        }
         return found;
+    }
+
+    private static string ClassOf(nint window)
+    {
+        var name = new System.Text.StringBuilder(64);
+        return GetClassName(window, name, name.Capacity) > 0 ? name.ToString() : "?";
+    }
+
+    /// <summary>
+    /// A button's ID as the trace shows it: short, and with the user's own folder
+    /// put as %USERPROFILE%, since an app's ID can be its path and the file is
+    /// meant to be pasted in an issue.
+    /// </summary>
+    private static string ForTrace(string text)
+    {
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (home.Length > 0) text = text.Replace(home, "%USERPROFILE%", StringComparison.OrdinalIgnoreCase);
+        return text.Length <= 80 ? text : text[..77] + "...";
     }
 
     /// <summary>
