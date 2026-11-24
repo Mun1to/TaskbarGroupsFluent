@@ -101,7 +101,7 @@
     <s:String x:Key="Loc_Editor_Program">App</s:String>
     <s:String x:Key="Loc_Editor_Folder">Folder</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">Store app</s:String>
-    <s:String x:Key="Loc_Editor_FileOrShortcut">File or shortcut…</s:String>
+    <s:String x:Key="Loc_Editor_FileOrShortcut">File</s:String>
     <s:String x:Key="Loc_Editor_PickFiles">Select files or shortcuts</s:String>
     <s:String x:Key="Loc_Editor_DropHint">You can also drag files or desktop shortcuts here.</s:String>
     <s:String x:Key="Loc_Editor_Save">Save group</s:String>

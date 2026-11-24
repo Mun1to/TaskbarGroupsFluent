@@ -101,7 +101,7 @@
     <s:String x:Key="Loc_Editor_Program">应用</s:String>
     <s:String x:Key="Loc_Editor_Folder">文件夹</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">商店应用</s:String>
-    <s:String x:Key="Loc_Editor_FileOrShortcut">文件或快捷方式…</s:String>
+    <s:String x:Key="Loc_Editor_FileOrShortcut">文件</s:String>
     <s:String x:Key="Loc_Editor_PickFiles">选择文件或快捷方式</s:String>
     <s:String x:Key="Loc_Editor_DropHint">也可以把文件或桌面快捷方式拖到这里。</s:String>
     <s:String x:Key="Loc_Editor_Save">保存分组</s:String>
