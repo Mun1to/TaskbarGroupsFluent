@@ -202,7 +202,7 @@ export const FILAS = [
   },
   {
     id: "idiomas", es: "hablar español", en: "speaking Spanish", icono: "i-languages",
-    vende: { es: "Habla español, inglés y ruso", en: "Speaks Spanish, English and Russian" },
+    vende: { es: "Habla español, inglés, ruso y chino", en: "Speaks Spanish, English, Russian and Chinese" },
     v: { tgf: S(), appgroup: SOLO_INGLES, windows11: NA, original: SOLO_INGLES, pike: SOLO_INGLES, barras10: NA, explorerpatcher: NA, windhawk: NA },
   },
   {
@@ -275,7 +275,7 @@ export const FILAS = [
     vende: { es: "Habla más idiomas", en: "Speaks more languages" },
     v: {
       windows11: S("Los de Windows", "Those of Windows"), barras10: S("Los de Windows", "Those of Windows"),
-      explorerpatcher: S("20 en su barra; esta, 3", "20 on its taskbar; this one, 3"), windhawk: S("28 en Windhawk; el mod, en inglés", "28 in Windhawk; the mod, in English"),
+      explorerpatcher: S("20 en su barra; esta, 4", "20 on its taskbar; this one, 4"), windhawk: S("28 en Windhawk; el mod, en inglés", "28 in Windhawk; the mod, in English"),
     },
   },
   {

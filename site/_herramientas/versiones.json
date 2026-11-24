@@ -1,8 +1,8 @@
 [
   {
-    "version": "1.10.7",
+    "version": "1.10.8",
     "desde": "1.10.0",
-    "fecha": "2026-11-19",
+    "fecha": "2026-11-24",
     "es": {
       "titulo": "Ancla arrastrando y dale a cada app su icono",
       "puntos": [
@@ -12,7 +12,8 @@
         "<b>Nuevo menú junto al reloj</b>: el clic derecho en el icono de la app o de un grupo saca una tarjeta con el estilo de la app, un icono en cada línea e interruptores para abrir al pasar el cursor y abrir al instante, en claro u oscuro y con tu color de acento.",
         "<b>Funciona con Start11 y StartAllBack</b>: abrir al pasar reconoce el grupo por su icono cuando el cursor se para, también con la barra en dos filas y nada más anclar un grupo arrastrándolo, y si haces clic derecho antes de que salga el panel, gana el clic derecho.",
         "<b>Un segundo clic lo cierra</b>: pulsar un grupo anclado con su panel abierto lo cierra, como el menú Inicio. Además, guardar un grupo ya no reinicia la barra si su icono y su nombre no cambian, el panel ya no sale en Alt+Tab y, con el PC ocupado, un clic espera al panel ya cargado en vez de cargar otro.",
-        "<b>Iconos nítidos</b>: las apps que solo traen un icono pequeño, como RustDesk, ya no salen diminutas en un grupo ni en los grupos de carpeta, y un grupo con la cuadrícula de sus apps la redibuja al abrirlo en el editor (lo arregló g3ck0). Además, con la Papelera vacía su menú junto al reloj deja Vaciar y Restaurar en gris."
+        "<b>Iconos nítidos</b>: las apps que solo traen un icono pequeño, como RustDesk, ya no salen diminutas en un grupo ni en los grupos de carpeta, y un grupo con la cuadrícula de sus apps la redibuja al abrirlo en el editor (lo arregló g3ck0). Además, con la Papelera vacía su menú junto al reloj deja Vaciar y Restaurar en gris.",
+        "<b>Ahora también en chino</b>: la app, sus paneles y sus menús hablan chino simplificado, según el idioma de Windows o eligiendo <b>简中</b> en la barra rápida (lo tradujo WindAndWood). Además, el programa junto al reloj guarda un registro de lo que ve, para poder arreglar abrir al pasar en un PC donde no responde."
       ]
     },
     "en": {
@@ -24,7 +25,8 @@
         "<b>New menu by the clock</b>: right-clicking the app's icon or a group's brings up a card in the app's own style, with an icon on every line and switches for open on hover and instant opening, light or dark and in your accent colour.",
         "<b>Hover works on more taskbars</b>: with Start11 and StartAllBack it recognises the group by its icon once the cursor rests, also on a taskbar with two rows and right after pinning a group by dragging it, and if you right-click before the panel shows, the right-click wins.",
         "<b>A second click closes it</b>: clicking a pinned group while its panel is open closes it, like the Start menu. Also, saving a group no longer restarts the taskbar when its icon and name stay the same, the panel no longer shows up in Alt+Tab and, on a busy PC, a click waits for the panel kept loaded instead of loading another.",
-        "<b>Sharp icons</b>: apps that only ship a small icon, like RustDesk, no longer look tiny in a group or in a folder group, and a group wearing the grid of its apps redraws it when you open it in the editor (fixed by g3ck0). Also, with the Recycle Bin empty its menu by the clock greys out Empty and Restore."
+        "<b>Sharp icons</b>: apps that only ship a small icon, like RustDesk, no longer look tiny in a group or in a folder group, and a group wearing the grid of its apps redraws it when you open it in the editor (fixed by g3ck0). Also, with the Recycle Bin empty its menu by the clock greys out Empty and Restore.",
+        "<b>Now in Chinese too</b>: the app, its panels and its menus speak Simplified Chinese, picked with Windows or with <b>简中</b> in the quick bar (translated by WindAndWood). Also, the program by the clock keeps a log of what it sees, so open on hover can be fixed on a PC where it does not respond."
       ]
     }
   },
