@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Windows.Automation;
 using TaskbarGroups.Core;
@@ -61,6 +62,10 @@ internal sealed class TaskbarWatcher : IDisposable
     private readonly PinnedGroupsCache _pinCache = new(PinCacheLife);
     private IReadOnlyList<PinnedGroup> _pins = Array.Empty<PinnedGroup>();
 
+    /// <summary>What it saw, for an issue like #30 that comes with no more than "not working".</summary>
+    private readonly HoverTrace _trace = new();
+    private int _tracedPins = -1;
+
     private string? _hovered;
     private DateTime _hoverStart;
     private string? _opened;
@@ -93,7 +98,16 @@ internal sealed class TaskbarWatcher : IDisposable
         _timer.Tick += (_, _) => Tick();
     }
 
-    public void Start() => _timer.Start();
+    public void Start()
+    {
+        _trace.Event("start", string.Format(CultureInfo.InvariantCulture,
+            "version={0} windows={1} win11={2} store={3} hover={4} instant={5} delay={6}ms taskbars={7}",
+            Program.AppVersion() ?? "?", Environment.OSVersion.Version, WindowsVersion.IsWindows11,
+            AppPackage.IsPackaged, Settings.settingInfo.hoverToOpen, Settings.settingInfo.instantOpen,
+            Settings.settingInfo.hoverDelayMs, TaskbarWindows().Count));
+        RefreshPins();
+        _timer.Start();
+    }
 
     public void Dispose()
     {
@@ -118,9 +132,12 @@ internal sealed class TaskbarWatcher : IDisposable
         {
             if (!HoverService.Wanted())
             {
+                _trace.Event("stop", "nothing it runs for is switched on any more");
                 TurnedOff?.Invoke();
                 return;
             }
+            _trace.Note("settings", string.Format(CultureInfo.InvariantCulture, "hover={0} instant={1} delay={2}ms",
+                Settings.settingInfo.hoverToOpen, Settings.settingInfo.instantOpen, Settings.settingInfo.hoverDelayMs));
             SettingsChanged?.Invoke();
         }
 
@@ -186,8 +203,10 @@ internal sealed class TaskbarWatcher : IDisposable
 
         GroupButton? hit = null;
         string under = ClassUnder(cursor, bar);
+        string how = "buttons";
         if (under == Covered)
         {
+            how = "covered";
             // Another program's window lies over the taskbar here, and the cursor
             // is on that window, not on any icon of the taskbar.
         }
@@ -196,6 +215,7 @@ internal sealed class TaskbarWatcher : IDisposable
             // Issue #12: Start11 draws its own taskbar over the one of Windows 11,
             // which stays underneath with its buttons squeezed out of place, so its
             // buttons would name the wrong group. The icon on screen is what counts.
+            how = "icon";
             hit = MatchByIcon(cursor, bar, barRect);
         }
         else
@@ -217,6 +237,8 @@ internal sealed class TaskbarWatcher : IDisposable
             if (hit is null && under == TaskListClass) hit = MatchByIcon(cursor, bar, barRect);
         }
 
+        _trace.Note("cursor", $"{how} under={(under.Length == 0 ? "?" : under)} group={hit?.Group ?? "-"}");
+
         if (hit is null)
         {
             _hovered = null;
@@ -226,6 +248,7 @@ internal sealed class TaskbarWatcher : IDisposable
 
         if (hit.Group != _hovered)
         {
+            _trace.Forget("held");
             _hovered = hit.Group;
             _hoverStart = DateTime.UtcNow;
             _clicked = pressed;
@@ -242,7 +265,11 @@ internal sealed class TaskbarWatcher : IDisposable
         // away. The user asked for that menu, so hovering has nothing left to do
         // until the cursor leaves this icon and comes back.
         if (pressed) _clicked = true;
-        if (_clicked) return;
+        if (_clicked)
+        {
+            _trace.Note("held", $"{hit.Group}: a mouse button went down on it, so it waits for the cursor to leave");
+            return;
+        }
 
         int delay = Math.Max(0, Settings.settingInfo.hoverDelayMs);
         double waited = (DateTime.UtcNow - _hoverStart).TotalMilliseconds;
@@ -266,11 +293,13 @@ internal sealed class TaskbarWatcher : IDisposable
         if (warm && _warm.Show(hit.Group, hit.Rect))
         {
             _opened = hit.Group;
+            _trace.Event("open", $"{hit.Group}: shown by the panel kept loaded");
             return;
         }
 
         Open(hit, delay);
         _opened = hit.Group;
+        _trace.Event("open", $"{hit.Group}: a panel was started" + (warm ? ", the loaded one did not take it" : ""));
     }
 
     private const string TaskListClass = "MSTaskListWClass";
@@ -360,6 +389,9 @@ internal sealed class TaskbarWatcher : IDisposable
         int dpi = 96;
         try { dpi = (int)Native.GetDpiForWindow(barWindow); } catch { }
         var found = IconMatcher.GroupAt(cursor, bar, _pins, dpi == 0 ? 96 : dpi);
+        _trace.Note("icon", found is { } g
+            ? $"matched {g.Group}"
+            : $"no group's icon under the cursor (dpi={dpi}, {_pins.Count} pinned)");
         if (found is not { } f) return null;
 
         // The button stretches across its row of the bar around its icon (the whole
@@ -379,7 +411,19 @@ internal sealed class TaskbarWatcher : IDisposable
     /// <summary>How still the cursor has to be before its icon is looked at.</summary>
     private static readonly TimeSpan MatchAfter = TimeSpan.FromMilliseconds(80);
 
-    private void RefreshPins() => _pins = _pinCache.Read();
+    private void RefreshPins()
+    {
+        _pins = _pinCache.Read();
+        if (_pinCache.Changes == _tracedPins) return;
+        _tracedPins = _pinCache.Changes;
+
+        // How many shortcuts the taskbar holds in all tells "none of them is a
+        // group" apart from "the folder could not be read".
+        int links = PinnedGroups.Stamp().Count(c => c == ';');
+        _trace.Note("pins", _pins.Count == 0
+            ? $"no group among the {links} shortcuts pinned to the taskbar"
+            : $"{_pins.Count} of {links} pinned shortcuts are groups: " + string.Join(", ", _pins.Select(p => p.GroupName)));
+    }
 
     /// <summary>
     /// Forgets the open panel, and with it the reason to keep hiding the
@@ -459,8 +503,18 @@ internal sealed class TaskbarWatcher : IDisposable
 
         AutomationElement? root;
         try { root = AutomationElement.FromHandle(bar); }
-        catch { _buttons = found; return; }
-        if (root is null) { _buttons = found; return; }
+        catch (Exception e)
+        {
+            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation could not open it ({e.GetType().Name})");
+            _buttons = found;
+            return;
+        }
+        if (root is null)
+        {
+            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation gave nothing for it");
+            _buttons = found;
+            return;
+        }
 
         // All the properties are fetched in the same pass. Read one at a time through
         // .Current they would be a cross-process call each, twenty buttons over,
@@ -476,12 +530,21 @@ internal sealed class TaskbarWatcher : IDisposable
             using (cache.Activate())
                 buttons = root.FindAll(TreeScope.Descendants, ButtonCondition);
         }
-        catch { _buttons = found; return; }
+        catch (Exception e)
+        {
+            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation could not list its buttons ({e.GetType().Name})");
+            _buttons = found;
+            return;
+        }
 
         // Where the pinned and running apps sit on a Windows 10 taskbar. A button is
         // only matched by its name in there, so Start, the search box or a clock
         // that happens to read like a group never opens one.
         RECT? taskList = WindowsVersion.IsWindows11 ? null : TaskListOf(bar);
+
+        // The buttons as Windows names them, for the trace when none of them turns
+        // out to be a group: whether the IDs are there, and what shape they have.
+        var seenIds = new List<string>();
 
         foreach (AutomationElement button in buttons)
         {
@@ -495,6 +558,7 @@ internal sealed class TaskbarWatcher : IDisposable
             }
             catch { continue; }
             if (box.IsEmpty || box.Width <= 0) continue;
+            seenIds.Add(id.Length > 0 ? id : "name: " + name);
 
             bool inTaskList = taskList is RECT list && list.Contains(new POINT
             {
@@ -514,6 +578,38 @@ internal sealed class TaskbarWatcher : IDisposable
         }
 
         _buttons = found;
+
+        string seen = $"{ClassOf(bar)}: {buttons.Count} buttons, {found.Count} of them groups";
+        if (found.Count > 0) seen += ": " + string.Join(", ", found.Select(b => b.Group).Distinct());
+        else if (seenIds.Count > 0)
+        {
+            // Ours first: a button carrying a group's ID that no pinned shortcut
+            // claims says the shortcuts are where the trouble is, not the buttons.
+            var sample = seenIds
+                .OrderBy(i => i.Contains(Category.AppIdPrefix, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+                .Take(8)
+                .Select(ForTrace);
+            seen += "; buttons read: " + string.Join(" | ", sample);
+        }
+        _trace.Note("buttons", seen);
+    }
+
+    private static string ClassOf(nint window)
+    {
+        var name = new System.Text.StringBuilder(64);
+        return Native.GetClassName(window, name, name.Capacity) > 0 ? name.ToString() : "?";
+    }
+
+    /// <summary>
+    /// A button's ID as the trace shows it: short, and with the user's own folder
+    /// put as %USERPROFILE%, since an app's ID can be its path and the file is
+    /// meant to be pasted in an issue.
+    /// </summary>
+    private static string ForTrace(string text)
+    {
+        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        if (home.Length > 0) text = text.Replace(home, "%USERPROFILE%", StringComparison.OrdinalIgnoreCase);
+        return text.Length <= 80 ? text : text[..77] + "...";
     }
 
     /// <summary>
