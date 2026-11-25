@@ -10,7 +10,7 @@ Everything Partner Center asks for, ready to paste. Screenshots are in `screensh
 | Product type | MSIX app (Microsoft signs MSIX packages for free, as with winshotx and Vocript) |
 | Store ID | 9PCZDXWFT6SN (identity in `packaging/store/identidad.json`). Public since 16 October 2026: https://apps.microsoft.com/detail/9PCZDXWFT6SN |
 | Architecture | x64 |
-| Languages | English, Spanish |
+| Languages | English, Spanish, Simplified Chinese (the app also speaks Russian, but the package does not declare it) |
 | .NET | Self-contained inside the package: the Store does not install the .NET Desktop Runtime for an MSIX |
 
 ## Properties
@@ -140,3 +140,63 @@ Cada app de un grupo puede llevar su propio icono, y las web apps del navegador,
 - Gratis y de código abierto
 
 **Términos de búsqueda** (hasta 7): barra de tareas, grupos, lanzador, accesos directos, organizar, dock, productividad
+
+## 简体中文
+
+Since 1.10.8 the package declares zh-Hans (PR #29), so Partner Center asks for this listing. Its screenshots are the English ones, in `screenshots/en`.
+
+**产品名称：** Taskbar Groups Fluent
+
+**简短说明**
+
+把多个应用收进任务栏上的一个图标。点击它，或者只是把鼠标停在上面，就会弹出带有 Windows 11 毛玻璃效果的面板，显示组里的所有应用。
+
+**说明**
+
+任务栏上有十个图标？现在只需要一个。
+
+Taskbar Groups Fluent 把一组应用收进任务栏上的一个按钮。点击它，或者只是把鼠标停在上面，就会打开一个带有真正 Windows 11 毛玻璃效果的面板，列出组里的所有应用。任务栏保持整洁，常用的东西一键即达。
+
+按你的方式定制每个组：
+• 添加分隔符：在任务栏上把你的组和其他固定的图标分开，在面板里把它分成几个部分。
+• 面板可以排成网格、横排、竖排或列表，显示或不显示应用名称，图标有四种大小。
+• 在上方或下方显示组名，旁边的铅笔可以直接打开它的编辑器。
+• 用一张图片、一个彩色表情符号，或者由组里的应用拼成的图标作为组图标。
+• 混合放入应用、文件夹，甚至其他组（它们像子菜单一样在面板旁边打开），还能一键全部打开。
+• 或者让面板显示一个文件夹，每次打开时重新读取：任意文件夹，或者控制面板、此电脑、回收站、所有应用等 Windows 位置。
+• 用一个组布置整条任务栏：包含其他组的组会按顺序、连同分隔符，把它们依次固定到任务栏上。
+• 也可以把一个组放在时钟旁边，在通知区域有它自己的图标，一键打开它的面板。
+• 重命名组里的应用，给它单独的图标或启动参数，或者以管理员身份运行。
+
+添加应用很简单：一个可搜索的列表包含所有已安装的程序，桌面程序、Microsoft Store 应用和浏览器的网页应用都在里面，图标也都正确；也可以直接从文件资源管理器拖入文件和快捷方式。组可以导出为单个文件、在另一台电脑上导入，或者复制。用过 Taskbar Groups 或 AppGroup？导入你的组，接着用。
+
+它会跟随 Windows 的主题、强调色和语言（英语、西班牙语、俄语或简体中文），也可以在快捷栏里自己选择；只为当前用户安装，不需要管理员权限，没有账号、没有遥测、没有广告。完全免费并且开源（MIT）。
+
+**此版本的新功能**
+
+现在支持简体中文（由 WindAndWood 翻译）：应用、面板和菜单会跟随 Windows 的语言，也可以在快捷栏里选择“简中”。时钟旁边的程序现在会记录它看到的情况，方便在“悬停打开”没有反应的电脑上找出原因。之前的 1.10 版本还带来了：每个应用可以有自己的图标，从 Edge 或 Chrome 安装的网页应用会显示自己的图标和名称；面板打开时再点一次已固定的组就会关闭它；组可以显示回收站，并能清空或全部还原；可以把组的图标从主窗口拖到任务栏上来固定；使用 Start11 或 StartAllBack 时，悬停打开会通过图标认出组。
+
+**产品功能**（每行一项，最多 20 项）
+
+- 一个任务栏按钮装下一整组应用
+- 任务栏和面板里的分隔符
+- 点击即可打开，或者只需把鼠标停在上面
+- 真正的 Windows 11 毛玻璃效果，浅色和深色
+- 四种面板布局：网格、横排、竖排和列表
+- 编辑组时实时预览
+- 组图标可以用图片、表情符号或组里的应用
+- 应用、文件夹，以及像子菜单一样打开的组
+- 拖放文件和快捷方式即可添加
+- 一次打开组里的所有应用
+- 重命名应用、设置单独的图标、添加参数、以管理员身份运行
+- 在面板里直接使用每个应用自己的右键菜单
+- 可选动画：从任务栏后面升起，或者快速探出
+- 导出、导入和复制组
+- 从 Taskbar Groups 和 AppGroup 导入
+- 所有已安装的应用都在一个可搜索的列表里，包括 Store 应用和网页应用
+- 跟随你的主题、强调色和语言，或者使用你选择的
+- 快捷栏让主题、语言和更新一目了然
+- 不需要管理员权限，没有账号，没有遥测
+- 免费并且开源
+
+**搜索词**（最多 7 个）：任务栏, 分组, 启动器, 快捷方式, 整理, 程序坞, 效率
