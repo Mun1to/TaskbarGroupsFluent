@@ -120,7 +120,7 @@ public partial class App : Application
         // dismisses the one already on screen.
         CloseOtherFlyouts();
 
-        var w = new PopupWindow(category, anchor);
+        var w = new PopupWindow(category, anchor, Program.ClickOrigin);
 
         // The watcher starts us before the dwell is up so that loading and waiting
         // happen at the same time; whatever is left of the wait is seen out here.
@@ -329,9 +329,9 @@ public partial class App : Application
             return;
         }
 
-        if (FlyoutChannel.TryParseClick(message, out string clicked))
+        if (FlyoutChannel.TryParseClick(message, out string clicked, out var origin))
         {
-            ShowGroup(window, clicked, null);
+            ShowGroup(window, clicked, null, origin);
             return;
         }
 
@@ -342,14 +342,14 @@ public partial class App : Application
         ShowGroup(window, group, new HoverAnchor(left, top, right, bottom));
     }
 
-    private static void ShowGroup(PopupWindow window, string group, HoverAnchor? anchor)
+    private static void ShowGroup(PopupWindow window, string group, HoverAnchor? anchor, System.Drawing.Point? origin = null)
     {
         string dir = Path.Combine(Paths.ConfigPath, group);
         if (!File.Exists(Path.Combine(dir, "ObjectData.xml"))) return;
 
         try
         {
-            window.ShowFor(new Category(dir), anchor);
+            window.ShowFor(new Category(dir), anchor, origin);
         }
         catch
         {

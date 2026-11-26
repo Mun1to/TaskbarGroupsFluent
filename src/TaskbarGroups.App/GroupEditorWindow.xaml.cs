@@ -833,28 +833,51 @@ public partial class GroupEditorWindow : FluentWindow
             bool renamed = _originalName is not null
                 && !string.Equals(_originalName, name, StringComparison.Ordinal);
 
-            // Refresh the pinned taskbar button when the icon or the name changed
-            // (Windows caches it), which takes restarting Explorer: the taskbar goes
-            // away for a few seconds, so only for a change the taskbar would show,
-            // and only if the user says so (issue #16).
-            // The pinned shortcut is rewritten either way: after a rename it has to
-            // open the group by its new name.
             bool iconChanged = _iconChanged && !SameIcon(_originalIcon, _groupImage);
-            if ((iconChanged || renamed) && UpdatePinnedButton(name)
-                && await ConfirmTaskbarRestartAsync())
+            string fresh = Paths.ShortcutFileFor(name);
+            string? pinned = TaskbarPin.FindPinnedShortcut(_originalName ?? name, Paths.PanelLauncher);
+            bool hasPin = pinned is not null && File.Exists(fresh);
+            if (hasPin && (renamed || iconChanged)) TaskbarPin.UpdatePinnedShortcut(pinned!, fresh);
+
+            // Finish the rename before offering to open Explorer at the new link.
+            if (renamed && File.Exists(fresh))
             {
-                // On a thread that keeps the app alive until the taskbar is back:
-                // opened from the pinned group, the app closes as soon as this
-                // window does.
-                TaskbarPin.RestartExplorerInBackground();
+                try
+                {
+                    DeleteOldGroup(_originalName!, name);
+                    if (!string.Equals(_originalName, name, StringComparison.OrdinalIgnoreCase))
+                        GroupJumpList.Remove(_originalName!);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    await new MessageBox
+                    {
+                        Title = Loc.Get("Loc_Editor_CleanupFailed"),
+                        Content = ex.Message,
+                        CloseButtonText = Loc.Get("Loc_Common_Close")
+                    }.ShowDialogAsync();
+                }
             }
 
-            // A rename writes a new config folder + .lnk; delete the old ones so the
-            // group isn't duplicated.
-            if (renamed)
+            if (hasPin)
             {
-                DeleteOldGroup(_originalName!);
-                GroupJumpList.Remove(_originalName!);
+                // Explorer keeps the pin's own file name even after its target and
+                // icon have been updated. Also catch groups renamed by older builds.
+                if (TaskbarPin.NeedsRepin(pinned!, fresh))
+                {
+                    var choice = await new MessageBox
+                    {
+                        Title = Loc.Get("Loc_Editor_RepinTitle"),
+                        Content = Loc.Format("Loc_Editor_RepinText",
+                            Path.GetFileNameWithoutExtension(pinned), Path.GetFileNameWithoutExtension(fresh)),
+                        PrimaryButtonText = Loc.Get("Loc_Editor_ShowShortcut"),
+                        CloseButtonText = Loc.Get("Loc_Editor_RestartLater")
+                    }.ShowDialogAsync();
+                    if (choice == Wpf.Ui.Controls.MessageBoxResult.Primary)
+                        ShellHelper.SelectInExplorer(fresh);
+                }
+                else if (iconChanged && await ConfirmTaskbarRestartAsync())
+                    TaskbarPin.RestartExplorerInBackground();
             }
         }
 
@@ -923,37 +946,15 @@ public partial class GroupEditorWindow : FluentWindow
     }
 
     // Remove the previous group's config folder and shortcut after a rename.
-    private static void DeleteOldGroup(string oldName)
+    private static void DeleteOldGroup(string oldName, string newName)
     {
-        try
-        {
-            string oldConfig = Path.Combine(Paths.ConfigPath, oldName);
-            if (Directory.Exists(oldConfig)) Directory.Delete(oldConfig, true);
+        string oldLnk = Paths.ShortcutFileFor(oldName);
+        if (!string.Equals(oldLnk, Paths.ShortcutFileFor(newName), StringComparison.OrdinalIgnoreCase))
+            File.Delete(oldLnk);
 
-            string oldLnk = Paths.ShortcutFileFor(oldName);
-            if (File.Exists(oldLnk)) File.Delete(oldLnk);
-        }
-        catch { /* a leftover old group is non-fatal; the user can delete it */ }
-    }
-
-    /// <summary>
-    /// Rewrites the pinned copy of the group's shortcut, if the group is pinned,
-    /// and says whether it was. Windows pins a copy, so the original alone would
-    /// leave the button with the old icon and, after a rename, the old name.
-    /// </summary>
-    private bool UpdatePinnedButton(string currentName)
-    {
-        try
-        {
-            // The pin was created under the original name; find it by that.
-            string? pinnedLnk = TaskbarPin.FindPinnedShortcut(
-                _originalName ?? currentName, Paths.PanelLauncher);
-            if (pinnedLnk is null) return false; // not pinned: nothing to refresh
-
-            TaskbarPin.UpdatePinnedShortcut(pinnedLnk, Paths.ShortcutFileFor(currentName));
-            return true;
-        }
-        catch { return false; /* never block saving on a refresh failure */ }
+        string oldConfig = Path.Combine(Paths.ConfigPath, oldName);
+        if (!string.Equals(oldName, newName, StringComparison.OrdinalIgnoreCase) && Directory.Exists(oldConfig))
+            Directory.Delete(oldConfig, true);
     }
 
     private void Cancel_Click(object sender, RoutedEventArgs e)

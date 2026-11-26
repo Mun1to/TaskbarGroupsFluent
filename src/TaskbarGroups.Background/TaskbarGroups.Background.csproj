@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
+    <Compile Include="..\Shared\TaskbarButtons.cs" Link="Helpers\TaskbarButtons.cs" />
     <ProjectReference Include="..\TaskbarGroups.Core\TaskbarGroups.Core.csproj" />
   </ItemGroup>
 

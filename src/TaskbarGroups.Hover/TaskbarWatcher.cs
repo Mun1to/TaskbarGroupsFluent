@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using System.Windows.Automation;
+using TaskbarGroups.Shell;
 using TaskbarGroups.Core;
 
 namespace TaskbarGroups.Hover;
@@ -483,204 +483,17 @@ internal sealed class TaskbarWatcher : IDisposable
         return list;
     }
 
-    /// <summary>
-    /// Reads the taskbar's buttons and keeps the ones that belong to us.
-    ///
-    /// Each pinned group carries the AppUserModelID we stamped on its shortcut, and
-    /// UI Automation hands it back as the button's AutomationId. That identifies the
-    /// button, but it is not the group's name: the ID is fixed when the shortcut is
-    /// built and survives a rename, so it can name a group that no longer exists.
-    /// The shortcut's own launch argument is the name that does, which is why the ID
-    /// is looked up against the pinned shortcuts rather than used directly.
-    /// </summary>
     private void RefreshButtons(nint bar)
     {
         _cachedAt = DateTime.UtcNow;
         _cachedBar = bar;
-        var found = new List<GroupButton>();
-
         RefreshPins();
-
-        AutomationElement? root;
-        try { root = AutomationElement.FromHandle(bar); }
-        catch (Exception e)
+        _buttons = TaskbarButtons.Read(bar, _pins, message => _trace.Note("buttons", message)).Select(button => new GroupButton(button.Group, new RECT
         {
-            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation could not open it ({e.GetType().Name})");
-            _buttons = found;
-            return;
-        }
-        if (root is null)
-        {
-            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation gave nothing for it");
-            _buttons = found;
-            return;
-        }
-
-        // All the properties are fetched in the same pass. Read one at a time through
-        // .Current they would be a cross-process call each, twenty buttons over,
-        // which is where nearly all the time was going.
-        var cache = new CacheRequest { AutomationElementMode = AutomationElementMode.None };
-        cache.Add(AutomationElement.AutomationIdProperty);
-        cache.Add(AutomationElement.BoundingRectangleProperty);
-        cache.Add(AutomationElement.NameProperty);
-
-        AutomationElementCollection buttons;
-        try
-        {
-            using (cache.Activate())
-                buttons = root.FindAll(TreeScope.Descendants, ButtonCondition);
-        }
-        catch (Exception e)
-        {
-            _trace.Note("buttons", $"{ClassOf(bar)}: UI Automation could not list its buttons ({e.GetType().Name})");
-            _buttons = found;
-            return;
-        }
-
-        // Where the pinned and running apps sit on a Windows 10 taskbar. A button is
-        // only matched by its name in there, so Start, the search box or a clock
-        // that happens to read like a group never opens one.
-        RECT? taskList = WindowsVersion.IsWindows11 ? null : TaskListOf(bar);
-
-        // The buttons as Windows names them, for the trace when none of them turns
-        // out to be a group: whether the IDs are there, and what shape they have.
-        var seenIds = new List<string>();
-
-        foreach (AutomationElement button in buttons)
-        {
-            string id, name;
-            System.Windows.Rect box;
-            try
-            {
-                id = button.Cached.AutomationId ?? string.Empty;
-                name = button.Cached.Name ?? string.Empty;
-                box = button.Cached.BoundingRectangle;
-            }
-            catch { continue; }
-            if (box.IsEmpty || box.Width <= 0) continue;
-            seenIds.Add(id.Length > 0 ? id : "name: " + name);
-
-            bool inTaskList = taskList is RECT list && list.Contains(new POINT
-            {
-                X = (int)Math.Round(box.Left + box.Width / 2),
-                Y = (int)Math.Round(box.Top + box.Height / 2)
-            });
-            string? group = GroupFor(id, inTaskList ? name : null);
-            if (group is null) continue;
-
-            found.Add(new GroupButton(group, new RECT
-            {
-                Left = (int)Math.Round(box.Left),
-                Top = (int)Math.Round(box.Top),
-                Right = (int)Math.Round(box.Right),
-                Bottom = (int)Math.Round(box.Bottom)
-            }));
-        }
-
-        _buttons = found;
-
-        string seen = $"{ClassOf(bar)}: {buttons.Count} buttons, {found.Count} of them groups";
-        if (found.Count > 0) seen += ": " + string.Join(", ", found.Select(b => b.Group).Distinct());
-        else if (seenIds.Count > 0)
-        {
-            // Ours first: a button carrying a group's ID that no pinned shortcut
-            // claims says the shortcuts are where the trouble is, not the buttons.
-            var sample = seenIds
-                .OrderBy(i => i.Contains(Category.AppIdPrefix, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
-                .Take(8)
-                .Select(ForTrace);
-            seen += "; buttons read: " + string.Join(" | ", sample);
-        }
-        _trace.Note("buttons", seen);
+            Left = (int)Math.Round(button.Bounds.Left), Top = (int)Math.Round(button.Bounds.Top),
+            Right = (int)Math.Round(button.Bounds.Right), Bottom = (int)Math.Round(button.Bounds.Bottom)
+        })).ToList();
     }
-
-    private static string ClassOf(nint window)
-    {
-        var name = new System.Text.StringBuilder(64);
-        return Native.GetClassName(window, name, name.Capacity) > 0 ? name.ToString() : "?";
-    }
-
-    /// <summary>
-    /// A button's ID as the trace shows it: short, and with the user's own folder
-    /// put as %USERPROFILE%, since an app's ID can be its path and the file is
-    /// meant to be pasted in an issue.
-    /// </summary>
-    private static string ForTrace(string text)
-    {
-        string home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        if (home.Length > 0) text = text.Replace(home, "%USERPROFILE%", StringComparison.OrdinalIgnoreCase);
-        return text.Length <= 80 ? text : text[..77] + "...";
-    }
-
-    /// <summary>
-    /// What counts as a taskbar button. On Windows 11 its buttons are buttons. The
-    /// taskbar of Windows 10 is an older control, and a pinned icon there can also
-    /// come through as a menu item or a split button, so those are taken too.
-    /// </summary>
-    private static readonly Condition ButtonCondition = WindowsVersion.IsWindows11
-        ? new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button)
-        : new OrCondition(
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.Button),
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.MenuItem),
-            new PropertyCondition(AutomationElement.ControlTypeProperty, ControlType.SplitButton));
-
-    /// <summary>
-    /// The group a taskbar button opens, or null if the button is not one of ours.
-    ///
-    /// The pinned shortcut is the authority, because it holds the same name the
-    /// click path uses. Falling back to the ID's own suffix covers the case where
-    /// the shortcut cannot be read at all, and it is still checked against a real
-    /// config folder so a stale ID never launches a group that is not there.
-    ///
-    /// A button with no ID at all is matched by its name instead, which is the
-    /// name of its pinned shortcut. That is how the taskbar of Windows 10 may hand
-    /// its buttons over, and it is never tried on a button that does carry an ID,
-    /// nor on one outside the taskbar's list of apps (a null name).
-    /// </summary>
-    private string? GroupFor(string automationId, string? name)
-    {
-        string? appId = AppIdFromAutomationId(automationId);
-        if (appId is not null) return PinnedGroups.Resolve(appId, _pins);
-        return automationId.Length == 0 && name is not null
-            ? PinnedGroups.ResolveByButtonName(name, _pins)
-            : null;
-    }
-
-    /// <summary>
-    /// The rectangle of a Windows 10 taskbar's list of apps (MSTaskListWClass),
-    /// somewhere inside the taskbar window, or null if it is not there.
-    /// </summary>
-    private static RECT? TaskListOf(nint bar)
-    {
-        RECT? found = null;
-        var name = new System.Text.StringBuilder(32);
-        Native.EnumChildWindows(bar, (child, _) =>
-        {
-            name.Clear();
-            if (Native.GetClassName(child, name, name.Capacity) > 0
-                && name.ToString() == "MSTaskListWClass"
-                && Native.GetWindowRect(child, out RECT r))
-            {
-                found = r;
-                return false;
-            }
-            return true;
-        }, 0);
-        return found;
-    }
-
-    /// <summary>
-    /// The AppUserModelID inside a taskbar button's AutomationId, or null if the
-    /// button is not a pinned group. Windows prefixes the id with "Appid: ".
-    /// </summary>
-    internal static string? AppIdFromAutomationId(string automationId)
-    {
-        if (string.IsNullOrEmpty(automationId)) return null;
-
-        int at = automationId.IndexOf(Category.AppIdPrefix, StringComparison.OrdinalIgnoreCase);
-        return at < 0 ? null : automationId[at..].Trim();
-    }
-
 
     /// <summary>
     /// Launches the flyout in hover mode, telling it which rectangle opened it so it

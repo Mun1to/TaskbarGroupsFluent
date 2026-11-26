@@ -109,8 +109,12 @@
     <s:String x:Key="Loc_Editor_BadName">El nombre no puede terminar en punto ni contener: \ / : * ? " &lt; &gt; |</s:String>
     <s:String x:Key="Loc_Editor_NeedShortcut">Añade al menos un acceso directo al grupo.</s:String>
     <s:String x:Key="Loc_Editor_SaveFailTitle">No se pudo guardar</s:String>
+    <s:String x:Key="Loc_Editor_CleanupFailed">Grupo guardado, pero no se pudieron eliminar los archivos anteriores</s:String>
+    <s:String x:Key="Loc_Editor_RepinTitle">Actualizar el nombre en la barra de tareas</s:String>
+    <s:String x:Key="Loc_Editor_RepinText">El grupo está guardado. Para que aparezca «{1}» en la barra de tareas, desancla «{0}». Después, haz clic con el botón derecho en el acceso directo «{1}» en el Explorador y selecciona «Anclar a la barra de tareas» (en «Mostrar más opciones» si es necesario).</s:String>
+    <s:String x:Key="Loc_Editor_ShowShortcut">Mostrar el nuevo acceso directo</s:String>
     <s:String x:Key="Loc_Editor_RestartTitle">¿Actualizar el icono de la barra?</s:String>
-    <s:String x:Key="Loc_Editor_RestartText">Windows sigue enseñando el icono o el nombre de antes en la barra de tareas hasta que la recarga. Recargarla ahora la oculta unos segundos. Si lo dejas para luego, todo queda guardado y la barra se pone al día la próxima vez que inicies sesión.</s:String>
+    <s:String x:Key="Loc_Editor_RestartText">Windows guarda el icono en caché. Si recargas la barra de tareas, desaparecerá unos segundos. También puedes esperar hasta el próximo inicio de sesión.</s:String>
     <s:String x:Key="Loc_Editor_RestartNow">Recargar ahora</s:String>
     <s:String x:Key="Loc_Editor_RestartLater">Más tarde</s:String>
     <s:String x:Key="Loc_Editor_PickFolder">Selecciona una carpeta</s:String>
