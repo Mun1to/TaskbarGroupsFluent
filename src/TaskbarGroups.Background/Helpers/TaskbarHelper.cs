@@ -277,7 +277,9 @@ public static class TaskbarHelper
             GetCursorPos(out POINT point);
             GetStartupInfo(out var startup);
             var monitor = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
-            if (startup.StdOutput != IntPtr.Zero && GetMonitorInfo(startup.StdOutput, ref monitor))
+            // Only without STARTF_USESTDHANDLES (0x100) is hStdOutput the monitor.
+            if ((startup.Flags & 0x100) == 0 && startup.StdOutput != IntPtr.Zero
+                && GetMonitorInfo(startup.StdOutput, ref monitor))
             {
                 point.X = Math.Clamp(point.X, monitor.rcMonitor.Left, monitor.rcMonitor.Right - 1);
                 point.Y = Math.Clamp(point.Y, monitor.rcMonitor.Top, monitor.rcMonitor.Bottom - 1);
@@ -310,14 +312,21 @@ public static class TaskbarHelper
         {
             TaskbarInfo bar = GetTaskbarAt(launch.X, launch.Y);
             if (bar.Handle == IntPtr.Zero) return launch;
+
+            // A group pinned twice (an old pin kept beside a new one after a rename)
+            // has two buttons: the one nearest the launch point is the one clicked.
+            System.Drawing.Point? best = null;
+            long bestDistance = long.MaxValue;
             foreach (var button in TaskbarGroups.Shell.TaskbarButtons.Read(bar.Handle, Pins.Read()))
             {
                 if (!string.Equals(group, button.Group, StringComparison.OrdinalIgnoreCase)) continue;
                 int x = (int)Math.Round(button.Bounds.Left + button.Bounds.Width / 2);
                 int y = (int)Math.Round(button.Bounds.Top + button.Bounds.Height / 2);
-                if (x >= bar.Left && x < bar.Right && y >= bar.Top && y < bar.Bottom)
-                    return new System.Drawing.Point(x, y);
+                if (x < bar.Left || x >= bar.Right || y < bar.Top || y >= bar.Bottom) continue;
+                long dx = x - launch.X, dy = y - launch.Y, distance = dx * dx + dy * dy;
+                if (distance < bestDistance) { bestDistance = distance; best = new System.Drawing.Point(x, y); }
             }
+            if (best is { } found) return found;
         }
         catch (Exception) { /* Explorer may have restarted during the lookup. */ }
         finally { SetThreadDpiAwarenessContext(previous); }
@@ -325,6 +334,25 @@ public static class TaskbarHelper
     }
 
     private static readonly TaskbarGroups.Core.PinnedGroupsCache Pins = new(TimeSpan.FromSeconds(30));
+
+    /// <summary>
+    /// True if a point in real pixels is on a taskbar. A click's launch point that
+    /// still is was caught on, or right beside, the button that was pressed, and the
+    /// panel opens there without waiting on UI Automation (measured 150-450 ms with
+    /// the pinned shortcuts read again, which a click 30 s after the last one does).
+    /// </summary>
+    internal static bool IsOnTaskbar(System.Drawing.Point real)
+    {
+        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        try
+        {
+            var p = new POINT { X = real.X, Y = real.Y };
+            foreach (IntPtr bar in Taskbars())
+                if (GetWindowRect(bar, out RECT r) && Inside(r, p, 0)) return true;
+            return false;
+        }
+        finally { SetThreadDpiAwarenessContext(previous); }
+    }
 
     public static (int X, int Y) GetCursor()
     {

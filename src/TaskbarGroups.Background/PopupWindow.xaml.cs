@@ -28,7 +28,11 @@ public partial class PopupWindow : Window
     private void BeginClickPosition(string group, System.Drawing.Point? origin)
     {
         _clickPosition = origin;
-        _buttonLookup = origin is { } point ? TaskbarHelper.FindClickPosition(group, point) : null;
+        // Only when the pointer had already left the taskbar (or the click came from
+        // the keyboard): otherwise the launch point is good and the panel must not wait.
+        _buttonLookup = origin is { } point && !TaskbarHelper.IsOnTaskbar(point)
+            ? TaskbarHelper.FindClickPosition(group, point)
+            : null;
     }
     // The taskbar this panel opened from. Worked out once, on the way in: the cursor
     // has every right to be on another screen by the time the panel leaves.

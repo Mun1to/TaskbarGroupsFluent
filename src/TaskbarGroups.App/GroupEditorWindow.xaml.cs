@@ -869,7 +869,7 @@ public partial class GroupEditorWindow : FluentWindow
                     {
                         Title = Loc.Get("Loc_Editor_RepinTitle"),
                         Content = Loc.Format("Loc_Editor_RepinText",
-                            Path.GetFileNameWithoutExtension(pinned), Path.GetFileNameWithoutExtension(fresh)),
+                            Path.GetFileNameWithoutExtension(pinned!), Path.GetFileNameWithoutExtension(fresh)),
                         PrimaryButtonText = Loc.Get("Loc_Editor_ShowShortcut"),
                         CloseButtonText = Loc.Get("Loc_Editor_RestartLater")
                     }.ShowDialogAsync();
