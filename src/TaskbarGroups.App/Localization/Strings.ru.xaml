@@ -101,7 +101,9 @@
     <s:String x:Key="Loc_Editor_Program">Приложение</s:String>
     <s:String x:Key="Loc_Editor_Folder">Папка</s:String>
     <s:String x:Key="Loc_Editor_StoreApp">Приложение Store</s:String>
-    <s:String x:Key="Loc_Editor_EmptyHint">Добавьте в эту группу программы, папки или приложения из Store либо перетащите их сюда из Проводника или с рабочего стола</s:String>
+    <s:String x:Key="Loc_Editor_FileOrShortcut">Файл</s:String>
+    <s:String x:Key="Loc_Editor_PickFiles">Выберите файлы или ярлыки</s:String>
+    <s:String x:Key="Loc_Editor_DropHint">Сюда также можно перетащить файлы или ярлыки с рабочего стола.</s:String>
     <s:String x:Key="Loc_Editor_Save">Сохранить группу</s:String>
     <s:String x:Key="Loc_Editor_NeedName">Введите название группы.</s:String>
     <s:String x:Key="Loc_Editor_BadName">Название не может заканчиваться точкой или содержать символы: \ / : * ? " &lt; &gt; |</s:String>

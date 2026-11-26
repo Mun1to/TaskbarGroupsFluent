@@ -68,7 +68,6 @@ public partial class GroupEditorWindow : FluentWindow
         PreviewItems.ItemsSource = _shortcuts;
         _shortcuts.CollectionChanged += (_, _) =>
         {
-            UpdateEmptyHint();
             if (_gridIcon) RebuildGridIcon();
             UpdatePreview();
         };
@@ -130,7 +129,6 @@ public partial class GroupEditorWindow : FluentWindow
         }
         LoadPanelOptions(panel);
 
-        UpdateEmptyHint();
         _loadingPanel = false;
         UpdatePreview();
     }
@@ -447,6 +445,18 @@ public partial class GroupEditorWindow : FluentWindow
             AddShortcut(shortcut);
     }
 
+    private void AddFiles_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = Loc.Get("Loc_Editor_PickFiles"),
+            Filter = Loc.Get("Loc_Prog_FilterAll") + "|*.*",
+            DereferenceLinks = false,
+            Multiselect = true
+        };
+        if (dialog.ShowDialog(this) == true) AddPaths(dialog.FileNames);
+    }
+
     private void AddFolder_Click(object sender, RoutedEventArgs e)
     {
         var dialog = new Microsoft.Win32.OpenFolderDialog
@@ -518,9 +528,9 @@ public partial class GroupEditorWindow : FluentWindow
         return true;
     }
 
-    // Files, shortcuts and folders dragged in from File Explorer or the desktop,
+    // Files, shortcuts and folders selected or dropped in the editor,
     // in the order they came, from position at (or at the end).
-    private void AddDropped(string[] paths, int at)
+    private void AddPaths(string[] paths, int at = -1)
     {
         foreach (string path in paths)
         {
@@ -548,7 +558,7 @@ public partial class GroupEditorWindow : FluentWindow
             if (folder is not null) ChooseFolder(folder);
             return;
         }
-        AddDropped(paths, -1);
+        AddPaths(paths);
     }
 
     // Dragging rows. A row is picked up by pressing anywhere on it but its
@@ -620,7 +630,7 @@ public partial class GroupEditorWindow : FluentWindow
         }
         else if (e.Data.GetData(DataFormats.FileDrop) is string[] paths)
         {
-            AddDropped(paths, at);
+            AddPaths(paths, at);
         }
     }
 
@@ -951,9 +961,6 @@ public partial class GroupEditorWindow : FluentWindow
         DialogResult = false;
         Close();
     }
-
-    private void UpdateEmptyHint()
-        => NoShortcutsText.Visibility = _shortcuts.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
 
     private static DrawingImage GenerateDefaultGroupImage(string name)
     {
