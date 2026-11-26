@@ -59,6 +59,8 @@ RestartApplications=no
 Name: "en"; MessagesFile: "compiler:Default.isl"
 Name: "es"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "ru"; MessagesFile: "compiler:Languages\Russian.isl"
+; Inno Setup 6 does not bundle this translation. Source: jrsoftware/issrc@6ef32198, Files/Languages.
+Name: "zhHans"; MessagesFile: "languages\ChineseSimplified.isl"
 
 ; The texts of our own: the page that fetches .NET and what it says when that fails.
 ; This file is saved as UTF-8 with a BOM, which is how Inno Setup reads it as Unicode.
@@ -75,6 +77,10 @@ ru.RuntimeTitle=Подготовка Taskbar Groups Fluent
 ru.RuntimeText=Загрузка .NET 10 Desktop Runtime, необходимого для работы…
 ru.RuntimeNotStarted=Не удалось запустить установщик .NET 10 Desktop Runtime.
 ru.RuntimeNotDownloaded=Не удалось загрузить .NET 10 Desktop Runtime. Установите его с https://dotnet.microsoft.com/download/dotnet/10.0 и запустите установку снова.
+zhHans.RuntimeTitle=正在准备安装 Taskbar Groups Fluent
+zhHans.RuntimeText=正在下载所需的 .NET 10 桌面运行时…
+zhHans.RuntimeNotStarted=无法启动 .NET 10 桌面运行时安装程序。
+zhHans.RuntimeNotDownloaded=无法下载 .NET 10 桌面运行时。请从 https://dotnet.microsoft.com/download/dotnet/10.0 安装运行时，然后重新运行安装程序。
 
 [Tasks]
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
