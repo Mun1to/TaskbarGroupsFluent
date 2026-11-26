@@ -7,7 +7,7 @@
 
 ## Facts
 
-- Latest version: 1.10.8 (24 November 2026). 39 stable versions published on GitHub.
+- Latest version: 1.10.9 (26 November 2026). 40 stable versions published on GitHub.
 - Windows 11, and Windows 10 version 1809 or later, 64-bit.
 - Installs per user, so Windows does not ask for administrator rights. Needs the .NET 10
   Desktop Runtime: the installer downloads it if missing; the offline installer carries it.
