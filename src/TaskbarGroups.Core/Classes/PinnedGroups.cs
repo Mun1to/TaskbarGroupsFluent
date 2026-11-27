@@ -63,9 +63,8 @@ namespace TaskbarGroups.Core
 
             foreach (string link in links)
             {
-                string appId, target, arguments;
-                try { ShellLink.ReadShortcut(link, out target, out arguments, out appId); }
-                catch { continue; }
+                if (!ShellLink.TryReadPinnedShortcut(link, requireArguments: true, out string target, out string arguments, out string appId))
+                    continue;
 
                 if (!IsOurFlyout(target)) continue;
 
@@ -179,6 +178,40 @@ namespace TaskbarGroups.Core
         }
 
         /// <summary>
+        /// Every AppUserModelID a taskbar button for <paramref name="groupName"/> may
+        /// carry, mirroring <see cref="Resolve"/>: the current name's default ID plus
+        /// the ID and legacy link-name ID of every pinned shortcut launching that group.
+        /// </summary>
+        public static List<string> CandidateAppIds(string groupName, IReadOnlyList<PinnedGroup> pins)
+        {
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var ids = new List<string>();
+            void Add(string? id)
+            {
+                if (string.IsNullOrWhiteSpace(id)) return;
+                string trimmed = id.Trim();
+                if (trimmed.StartsWith(Category.AppIdPrefix, StringComparison.OrdinalIgnoreCase) && seen.Add(trimmed))
+                    ids.Add(trimmed);
+            }
+
+            if (!string.IsNullOrWhiteSpace(groupName))
+                Add(Category.AppIdPrefix + groupName.Trim());
+
+            if (pins is not null)
+            {
+                foreach (var p in pins)
+                {
+                    if (!string.Equals(p.GroupName, groupName, StringComparison.OrdinalIgnoreCase)) continue;
+                    Add(p.AppId);
+                    if (!string.IsNullOrWhiteSpace(p.LinkName))
+                        Add(Category.AppIdPrefix + p.LinkName.Trim());
+                }
+            }
+
+            return ids;
+        }
+
+        /// <summary>
         /// The AppUserModelID of every shortcut of ours pinned to the taskbar, groups
         /// and taskbar separators alike. A separator's shortcut names no group, so
         /// <see cref="Scan"/> leaves it out; this is how the pin assistant tells
@@ -198,12 +231,9 @@ namespace TaskbarGroups.Core
 
             foreach (string link in links)
             {
-                try
-                {
-                    ShellLink.ReadShortcut(link, out string target, out _, out string appId);
-                    if (IsOurFlyout(target) && !string.IsNullOrEmpty(appId)) ids.Add(appId);
-                }
-                catch { /* a shortcut we cannot read is not one we made */ }
+                if (ShellLink.TryReadPinnedShortcut(link, requireArguments: false, out string target, out _, out string appId)
+                    && IsOurFlyout(target) && !string.IsNullOrEmpty(appId))
+                    ids.Add(appId);
             }
             return ids;
         }

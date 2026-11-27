@@ -291,17 +291,85 @@ public static class TaskbarHelper
 
     // Read the actual button by group identity, independent of the pointer. A
     // shell without accessible buttons still gets the position saved at launch.
-    private static int _readingButtons;
+    private static int _readingClick;
+    private static int _warmingCache;
+
+    // Pinned shortcuts only change when the taskbar pin folder's stamp changes,
+    // so clicks never pay to rescan shortcuts just because 30 seconds passed.
+    private static readonly TaskbarGroups.Core.PinnedGroupsCache Pins = new(System.Threading.Timeout.InfiniteTimeSpan);
+    private static readonly TaskbarGroups.Core.TaskbarButtonCache ButtonCache = new(TimeSpan.FromSeconds(2));
+
+    /// <summary>
+    /// Fast 0 ms check against cached button bounds in physical pixels. Succeeds
+    /// only when <paramref name="launch"/> still sits on a cached button of
+    /// <paramref name="group"/> on the same taskbar with unchanged pinned shortcuts;
+    /// sliding away along the taskbar or opening via Win+number misses and triggers
+    /// a live UIA lookup.
+    /// </summary>
+    internal static bool TryCachedClickPosition(
+        string group,
+        System.Drawing.Point launch,
+        out System.Drawing.Point position,
+        out bool needsRefresh)
+    {
+        position = launch;
+        needsRefresh = false;
+
+        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+        try
+        {
+            TaskbarInfo bar = GetTaskbarAt(launch.X, launch.Y);
+            if (bar.Handle == IntPtr.Zero) return false;
+            var barRect = ToRectangle(bar);
+            if (!barRect.Contains(launch)) return false;
+
+            string stamp = TaskbarGroups.Core.PinnedGroups.Stamp();
+            return ButtonCache.TryHit(bar.Handle, barRect, stamp, group, launch, out position, out needsRefresh);
+        }
+        catch { return false; }
+        finally { SetThreadDpiAwarenessContext(previous); }
+    }
 
     internal static System.Threading.Tasks.Task<System.Drawing.Point>? FindClickPosition(string group, System.Drawing.Point launch)
     {
-        // UI Automation runs off the window thread. Keep at most one reader if
+        // UI Automation runs off the window thread. Keep at most one click reader if
         // Explorer stops responding; a later click can still open immediately.
-        if (System.Threading.Interlocked.Exchange(ref _readingButtons, 1) != 0) return null;
+        if (System.Threading.Interlocked.Exchange(ref _readingClick, 1) != 0) return null;
         return System.Threading.Tasks.Task.Run(() =>
         {
             try { return ClickPosition(group, launch); }
-            finally { System.Threading.Volatile.Write(ref _readingButtons, 0); }
+            finally { System.Threading.Volatile.Write(ref _readingClick, 0); }
+        });
+    }
+
+    /// <summary>
+    /// Pre-warms UI Automation and populates the button cache for visible taskbars
+    /// while a warm flyout is idle, keeping subsequent clicks off the UIA path.
+    /// </summary>
+    internal static void WarmButtonCacheAsync()
+    {
+        if (System.Threading.Interlocked.Exchange(ref _warmingCache, 1) != 0) return;
+        System.Threading.Tasks.Task.Run(() =>
+        {
+            IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+            try
+            {
+                string stamp = TaskbarGroups.Core.PinnedGroups.Stamp();
+                var pins = Pins.Read();
+                foreach (IntPtr bar in Taskbars())
+                {
+                    if (!GetWindowRect(bar, out RECT r)) continue;
+                    var barRect = new System.Drawing.Rectangle(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
+                    var buttons = ToCachedButtons(TaskbarGroups.Shell.TaskbarButtons.Read(bar, pins));
+                    ButtonCache.Store(bar, barRect, stamp, buttons);
+                }
+            }
+            catch { /* Explorer may be restarting while idle. */ }
+            finally
+            {
+                SetThreadDpiAwarenessContext(previous);
+                System.Threading.Volatile.Write(ref _warmingCache, 0);
+            }
         });
     }
 
@@ -313,45 +381,70 @@ public static class TaskbarHelper
             TaskbarInfo bar = GetTaskbarAt(launch.X, launch.Y);
             if (bar.Handle == IntPtr.Zero) return launch;
 
-            // A group pinned twice (an old pin kept beside a new one after a rename)
-            // has two buttons: the one nearest the launch point is the one clicked.
-            System.Drawing.Point? best = null;
-            long bestDistance = long.MaxValue;
-            foreach (var button in TaskbarGroups.Shell.TaskbarButtons.Read(bar.Handle, Pins.Read()))
+            var barRect = ToRectangle(bar);
+            string stamp = TaskbarGroups.Core.PinnedGroups.Stamp();
+            var pins = Pins.Read();
+
+            // 1. If the launch point is still on this taskbar, probe just that single
+            //    point first (~4 ms) rather than walking the taskbar tree. If the user
+            //    slid sideways onto empty taskbar space or another icon, this misses
+            //    immediately and falls through to the group lookup below.
+            if (barRect.Contains(launch)
+                && TaskbarGroups.Shell.TaskbarButtons.TryReadAtPoint(bar.Handle, launch.X, launch.Y, pins, out string hitGroup, out var hitBox)
+                && string.Equals(hitGroup, group, StringComparison.OrdinalIgnoreCase))
             {
-                if (!string.Equals(group, button.Group, StringComparison.OrdinalIgnoreCase)) continue;
-                int x = (int)Math.Round(button.Bounds.Left + button.Bounds.Width / 2);
-                int y = (int)Math.Round(button.Bounds.Top + button.Bounds.Height / 2);
-                if (x < bar.Left || x >= bar.Right || y < bar.Top || y >= bar.Bottom) continue;
-                long dx = x - launch.X, dy = y - launch.Y, distance = dx * dx + dy * dy;
-                if (distance < bestDistance) { bestDistance = distance; best = new System.Drawing.Point(x, y); }
+                var hitRect = ToRectangle(hitBox);
+                var center = TaskbarGroups.Core.TaskbarButtonCache.CenterOf(hitRect);
+                if (barRect.Contains(center))
+                {
+                    ButtonCache.StoreGroup(bar.Handle, barRect, stamp, group, [hitRect]);
+                    return center;
+                }
             }
-            if (best is { } found) return found;
+
+            // 2. Targeted lookup for the clicked group (filtered by candidate AppIds on
+            //    Windows 11, falling back to a full read on Windows 10 or legacy IDs).
+            //    When a group is pinned twice (an old pin beside a new one after a
+            //    rename), pick the button nearest the launch point.
+            var matches = TaskbarGroups.Shell.TaskbarButtons.FindGroup(bar.Handle, group, pins, out var allButtons);
+            if (allButtons is not null)
+                ButtonCache.Store(bar.Handle, barRect, stamp, ToCachedButtons(allButtons));
+
+            if (matches.Count > 0)
+            {
+                var rects = new List<System.Drawing.Rectangle>(matches.Count);
+                foreach (var box in matches) rects.Add(ToRectangle(box));
+                if (allButtons is null)
+                    ButtonCache.StoreGroup(bar.Handle, barRect, stamp, group, rects);
+
+                if (TaskbarGroups.Core.TaskbarButtonCache.NearestCenter(rects, barRect, launch) is { } found)
+                    return found;
+            }
         }
         catch (Exception) { /* Explorer may have restarted during the lookup. */ }
         finally { SetThreadDpiAwarenessContext(previous); }
         return launch;
     }
 
-    private static readonly TaskbarGroups.Core.PinnedGroupsCache Pins = new(TimeSpan.FromSeconds(30));
+    private static System.Drawing.Rectangle ToRectangle(TaskbarInfo bar)
+        => new(bar.Left, bar.Top, bar.Right - bar.Left, bar.Bottom - bar.Top);
 
-    /// <summary>
-    /// True if a point in real pixels is on a taskbar. A click's launch point that
-    /// still is was caught on, or right beside, the button that was pressed, and the
-    /// panel opens there without waiting on UI Automation (measured 150-450 ms with
-    /// the pinned shortcuts read again, which a click 30 s after the last one does).
-    /// </summary>
-    internal static bool IsOnTaskbar(System.Drawing.Point real)
+    private static System.Drawing.Rectangle ToRectangle(System.Windows.Rect box)
     {
-        IntPtr previous = SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
-        try
-        {
-            var p = new POINT { X = real.X, Y = real.Y };
-            foreach (IntPtr bar in Taskbars())
-                if (GetWindowRect(bar, out RECT r) && Inside(r, p, 0)) return true;
-            return false;
-        }
-        finally { SetThreadDpiAwarenessContext(previous); }
+        int left = (int)Math.Round(box.Left);
+        int top = (int)Math.Round(box.Top);
+        int right = (int)Math.Round(box.Right);
+        int bottom = (int)Math.Round(box.Bottom);
+        return new System.Drawing.Rectangle(left, top, Math.Max(0, right - left), Math.Max(0, bottom - top));
+    }
+
+    private static List<(string Group, System.Drawing.Rectangle Bounds)> ToCachedButtons(
+        IReadOnlyList<(string Group, System.Windows.Rect Bounds)> buttons)
+    {
+        var list = new List<(string Group, System.Drawing.Rectangle Bounds)>(buttons.Count);
+        foreach (var (group, box) in buttons)
+            list.Add((group, ToRectangle(box)));
+        return list;
     }
 
     public static (int X, int Y) GetCursor()

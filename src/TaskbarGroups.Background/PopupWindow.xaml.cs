@@ -24,15 +24,28 @@ public partial class PopupWindow : Window
     private HoverAnchor? _anchor;
     private System.Drawing.Point? _clickPosition;
     private System.Threading.Tasks.Task<System.Drawing.Point>? _buttonLookup;
+    private bool _refreshButtonsAfterShow;
 
-    private void BeginClickPosition(string group, System.Drawing.Point? origin)
+    private void BeginClickPosition(string group, System.Drawing.Point? origin, bool coldStart)
     {
         _clickPosition = origin;
-        // Only when the pointer had already left the taskbar (or the click came from
-        // the keyboard): otherwise the launch point is good and the panel must not wait.
-        _buttonLookup = origin is { } point && !TaskbarHelper.IsOnTaskbar(point)
-            ? TaskbarHelper.FindClickPosition(group, point)
-            : null;
+        _buttonLookup = null;
+        _refreshButtonsAfterShow = false;
+        if (origin is not { } point) return;
+
+        // A warm click that stayed on its cached button opens immediately at the
+        // button's centre without waiting on UI Automation. Sliding away along the
+        // taskbar, leaving it, or opening via Win+number misses the cached button
+        // and runs a live lookup in parallel with panel layout; a cold start always
+        // runs the lookup because WPF startup easily hides its cost.
+        if (!coldStart && TaskbarHelper.TryCachedClickPosition(group, point, out var cached, out bool stale))
+        {
+            _clickPosition = cached;
+            _refreshButtonsAfterShow = stale;
+            return;
+        }
+
+        _buttonLookup = TaskbarHelper.FindClickPosition(group, point);
     }
     // The taskbar this panel opened from. Worked out once, on the way in: the cursor
     // has every right to be on another screen by the time the panel leaves.
@@ -97,7 +110,7 @@ public partial class PopupWindow : Window
         InitializeComponent();
         _category = category;
         _anchor = anchor?.InOwnPixels();
-        BeginClickPosition(category.Name, origin);
+        BeginClickPosition(category.Name, origin, coldStart: true);
 
         // Opened by hover, so it must appear without taking the keyboard. Not
         // calling Activate() is not enough: Show() activates by default, and it was
@@ -732,6 +745,7 @@ public partial class PopupWindow : Window
         _anchor = null;
         _clickPosition = null;
         _buttonLookup = null;
+        _refreshButtonsAfterShow = false;
         Left = OffScreen;
         Top = OffScreen;
 
@@ -774,7 +788,7 @@ public partial class PopupWindow : Window
 
         _category = category;
         _anchor = anchor?.InOwnPixels();
-        BeginClickPosition(category.Name, origin);
+        BeginClickPosition(category.Name, origin, coldStart: false);
         _closing = false;
         _hadFocus = false;
         _mouseWentUp = false;
@@ -797,6 +811,12 @@ public partial class PopupWindow : Window
         Arrive(TargetOverTaskbar());
 
         StartDismissGuard();
+
+        if (_refreshButtonsAfterShow)
+        {
+            _refreshButtonsAfterShow = false;
+            Dispatcher.BeginInvoke(TaskbarHelper.WarmButtonCacheAsync, DispatcherPriority.ApplicationIdle);
+        }
     }
 
     private void OnLoadedPosition(object sender, RoutedEventArgs e)

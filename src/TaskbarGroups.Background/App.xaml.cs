@@ -252,6 +252,10 @@ public partial class App : Application
         // are ready. Saying it any earlier is what lost the first showing.
         _ready = FlyoutChannel.CreateReady();
         Exit += (_, _) => { try { _ready?.Dispose(); } catch { } };
+
+        // Pre-warm UI Automation and button positions once idle so later clicks
+        // stay fast without paying cold UIA setup on the click path.
+        Dispatcher.BeginInvoke(TaskbarHelper.WarmButtonCacheAsync, System.Windows.Threading.DispatcherPriority.ApplicationIdle);
     }
 
     private EventWaitHandle? _ready;

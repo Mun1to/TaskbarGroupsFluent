@@ -101,6 +101,166 @@ internal static class TaskbarButtons
         return found;
     }
 
+    /// <summary>
+    /// Identifies the pinned group button directly under a physical screen point
+    /// without walking the whole taskbar tree. Returns false if the point lies on
+    /// empty taskbar space, another app, or another window covering the taskbar.
+    /// </summary>
+    internal static bool TryReadAtPoint(
+        nint bar,
+        int x,
+        int y,
+        IReadOnlyList<PinnedGroup> pins,
+        out string group,
+        out System.Windows.Rect bounds)
+    {
+        group = string.Empty;
+        bounds = System.Windows.Rect.Empty;
+
+        if (!GetWindowRect(bar, out RECT barRect)) return false;
+        if (x < barRect.Left || x >= barRect.Right || y < barRect.Top || y >= barRect.Bottom) return false;
+
+        int barWidth = barRect.Right - barRect.Left;
+        int barHeight = barRect.Bottom - barRect.Top;
+        System.Windows.Rect? taskList = WindowsVersion.IsWindows11 ? null : TaskListOf(bar);
+
+        var cache = new CacheRequest { AutomationElementMode = AutomationElementMode.Full };
+        cache.Add(AutomationElement.AutomationIdProperty);
+        cache.Add(AutomationElement.BoundingRectangleProperty);
+        cache.Add(AutomationElement.NameProperty);
+
+        AutomationElement? element;
+        try
+        {
+            using (cache.Activate())
+                element = AutomationElement.FromPoint(new System.Windows.Point(x, y));
+        }
+        catch { return false; }
+
+        // FromPoint can land on an inner glyph/label inside a taskbar button, so
+        // climb at most two ancestors while staying inside the taskbar bounds.
+        for (int depth = 0; depth < 3 && element is not null; depth++)
+        {
+            string id, name;
+            System.Windows.Rect box;
+            try
+            {
+                id = element.Cached.AutomationId ?? string.Empty;
+                name = element.Cached.Name ?? string.Empty;
+                box = element.Cached.BoundingRectangle;
+            }
+            catch { return false; }
+
+            if (!box.IsEmpty && box.Width > 0 && box.Height > 0)
+            {
+                if (box.Width >= barWidth * 0.9 && box.Height >= barHeight * 0.9) break;
+
+                double cx = box.Left + box.Width / 2;
+                double cy = box.Top + box.Height / 2;
+                if (cx >= barRect.Left && cx < barRect.Right && cy >= barRect.Top && cy < barRect.Bottom)
+                {
+                    bool inTaskList = taskList is { } list && list.Contains(cx, cy);
+                    string? resolved = GroupFor(id, inTaskList ? name : null, pins);
+                    if (resolved is not null)
+                    {
+                        group = resolved;
+                        bounds = box;
+                        return true;
+                    }
+                }
+            }
+
+            if (depth == 2) break;
+            try
+            {
+                element = TreeWalker.ControlViewWalker.GetParent(element, cache);
+            }
+            catch { return false; }
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Finds every button on <paramref name="bar"/> belonging to <paramref name="group"/>.
+    /// On Windows 11 this filters server-side by the group's candidate AppUserModelIDs
+    /// instead of pulling every taskbar button across processes, falling back to a full
+    /// <see cref="Read"/> when needed (Windows 10 name-matched pins or legacy frozen IDs).
+    /// </summary>
+    internal static List<System.Windows.Rect> FindGroup(
+        nint bar,
+        string group,
+        IReadOnlyList<PinnedGroup> pins,
+        out List<(string Group, System.Windows.Rect Bounds)>? allButtons)
+    {
+        allButtons = null;
+        var found = new List<System.Windows.Rect>();
+
+        if (WindowsVersion.IsWindows11)
+        {
+            List<string> candidates = PinnedGroups.CandidateAppIds(group, pins);
+            if (candidates.Count > 0)
+            {
+                AutomationElement? root = null;
+                try { root = AutomationElement.FromHandle(bar); }
+                catch { /* fall back below */ }
+
+                if (root is not null)
+                {
+                    Condition cond = candidates.Count == 1
+                        ? new PropertyCondition(
+                            AutomationElement.AutomationIdProperty,
+                            "Appid: " + candidates[0],
+                            PropertyConditionFlags.IgnoreCase)
+                        : new OrCondition(candidates
+                            .Select(id => (Condition)new PropertyCondition(
+                                AutomationElement.AutomationIdProperty,
+                                "Appid: " + id,
+                                PropertyConditionFlags.IgnoreCase))
+                            .ToArray());
+
+                    var cache = new CacheRequest { AutomationElementMode = AutomationElementMode.None };
+                    cache.Add(AutomationElement.AutomationIdProperty);
+                    cache.Add(AutomationElement.BoundingRectangleProperty);
+
+                    try
+                    {
+                        AutomationElementCollection matches;
+                        using (cache.Activate())
+                            matches = root.FindAll(TreeScope.Descendants, cond);
+
+                        foreach (AutomationElement button in matches)
+                        {
+                            string id;
+                            System.Windows.Rect box;
+                            try
+                            {
+                                id = button.Cached.AutomationId ?? string.Empty;
+                                box = button.Cached.BoundingRectangle;
+                            }
+                            catch { continue; }
+                            if (box.IsEmpty || box.Width <= 0 || box.Height <= 0) continue;
+
+                            string? resolved = GroupFor(id, null, pins);
+                            if (string.Equals(resolved, group, StringComparison.OrdinalIgnoreCase))
+                                found.Add(box);
+                        }
+                        if (found.Count > 0) return found;
+                    }
+                    catch { /* fall back to full read below */ }
+                }
+            }
+        }
+
+        allButtons = Read(bar, pins);
+        foreach (var button in allButtons)
+        {
+            if (string.Equals(button.Group, group, StringComparison.OrdinalIgnoreCase))
+                found.Add(button.Bounds);
+        }
+        return found;
+    }
+
     private static string ClassOf(nint window)
     {
         var name = new System.Text.StringBuilder(64);
