@@ -105,6 +105,32 @@ public class PinnedGroupsCacheTests : IDisposable
         Assert.Equal(2, _scans);
     }
 
+    [Fact] // Click-side cache only rescans when the taskbar shortcuts folder actually changes.
+    public void InfiniteLife_RescansOnlyWhenShortcutsChange()
+    {
+        var cache = new PinnedGroupsCache(
+            System.Threading.Timeout.InfiniteTimeSpan,
+            () => PinnedGroups.Stamp(_pins),
+            () =>
+            {
+                _scans++;
+                return Directory.GetFiles(_pins, "*.lnk")
+                    .Select(f => new PinnedGroup { GroupName = Path.GetFileNameWithoutExtension(f) })
+                    .ToList();
+            },
+            () => _clock);
+
+        Pin("Browsers");
+        cache.Read();
+        _clock += TimeSpan.FromHours(12);
+        cache.Read();
+        Assert.Equal(1, _scans);
+
+        Pin("Media");
+        Assert.Equal(2, cache.Read().Count);
+        Assert.Equal(2, _scans);
+    }
+
     [Fact] // A rename rewrites the shortcut under the same file name.
     public void TheStamp_ChangesWhenAShortcutIsRewritten()
     {

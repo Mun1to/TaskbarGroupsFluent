@@ -55,9 +55,11 @@ namespace TaskbarGroups.Core
         {
             // Taken before the reading: a shortcut that changes while it is being
             // read leaves a stamp that is already old, and the next call reads again.
+            // A negative life (such as Timeout.InfiniteTimeSpan) keeps the reading
+            // until the shortcut folder's stamp actually changes.
             string stamp = _stamp();
             DateTime now = _now();
-            if (stamp == _stampRead && now - _readAt <= _life) return _pins;
+            if (stamp == _stampRead && (_life < TimeSpan.Zero || now - _readAt <= _life)) return _pins;
 
             try { _pins = _scan(); }
             catch { /* keep the previous reading rather than losing every group */ }
